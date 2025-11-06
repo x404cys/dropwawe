@@ -1,0 +1,31 @@
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+  profile_image: string;
+  type: string;  
+  email_verified_at: string | null;
+  password: string;
+  mobile: string;
+  register_type: string;  
+  is_assign_store: string | null;
+  current_store: string;
+  language: string;
+  default_language: string;
+  plan_id: string;
+  plan_expire_date: string | null;
+  plan_is_active: string | null;
+  requested_plan: string | null;
+  trial_plan: number;
+  trial_expire_date: string | null;
+  active_module: string | null;
+  storage_limit: string;  
+  is_active: string; 
+  is_enable_login: number;  
+  created_by: string;
+  theme_id: string;
+  remember_token: string | null;
+  created_at: string;  
+  updated_at: string;  
+  phone: string;
+}

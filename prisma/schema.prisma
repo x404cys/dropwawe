@@ -1,0 +1,279 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id              String         @id @default(cuid())
+  name            String?
+  email           String?        @unique
+  image           String?
+  role            UserRole       @default(TRADER)
+  createdAt       DateTime       @default(now())
+  storeSlug       String?        @unique
+  storeName       String?        @unique
+  description     String?
+  facebookLink    String?
+  hasReturnPolicy String?
+  instaLink       String?
+  phone           String?
+  shippingPrice   Float?
+  shippingType    String?
+  telegram        String?
+  active          Boolean?       @default(true)
+  theme           ThemeStore     @default(NORMAL)
+  Notification    Notification[]
+  orders          Order[]
+  Product         Product[]
+  Store           Store[]
+
+  Supplier Supplier[]
+
+  UserSubscription UserSubscription[]
+}
+model Supplier {
+  id              String      @id @default(cuid())
+  userId          String      @unique
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  image           String?
+  Header          String?
+  description     String?
+  facebookLink    String?
+  instaLink       String?
+  telegram        String?
+  methodPayment   String?
+  hasReturnPolicy String?
+  shippingPrice   Float?
+  shippingType    String?
+  theme           ThemeStore  @default(NORMAL)
+  active          Boolean     @default(true)
+  address         String?
+  paymentInfo     String?     
+  rating          Float?      @default(0)
+  commission      Float?      @default(0)  
+
+  stores          Store[]
+  products        Product[]
+  orders          Order[]
+
+  ProductPricing ProductPricing[]
+}
+
+model Store {
+  id              String    @id @default(cuid())
+  name            String?
+  subLink         String?   @unique
+  shippingPrice   Float?
+  shippingType    String?
+  hasReturnPolicy String?
+  image           String?
+  Header          String?
+  facebookLink    String?
+  instaLink       String?
+  phone           String?
+  active          Boolean?
+  methodPayment   String?
+  telegram        String?
+  description     String?
+  createdAt       DateTime  @default(now())
+  userId          String?   @unique
+  products        Product[]
+  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facebookPixel   String?
+  instagramPixel  String?
+  tiktokPixel     String?
+  googlePixel     String?
+  Order Order[]
+  theme           ThemeStore     @default(NORMAL)
+  Notification Notification[]
+
+  Supplier Supplier[]
+}
+
+model Product {
+  id              String         @id @default(cuid())
+  name            String
+  description     String?
+  price           Float
+  quantity        Int            @default(0)
+  image           String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  userId          String?
+  category        String?
+  discount        Float?
+  hasReturnPolicy String?
+  shippingPrice   Float?
+  shippingType    String?
+  storeId         String?
+  Notification    Notification[]
+  OrderItem       OrderItem[]
+  store           Store?         @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images          ProductImage[]
+  sizes           ProductSize[]
+  unlimited       Boolean         @default(false)
+  colors ProductColor[]
+  isFromSupplier   Boolean        @default(false)
+  Supplier Supplier[]
+  pricingDetails  ProductPricing?
+
+}
+model ProductPricing {
+  id              String    @id @default(cuid())
+  productId       String    @unique      
+  supplierId      String?
+  wholesalePrice  Float      
+  minPrice        Float     
+  maxPrice        Float      
+  minQuantity     Int?       
+  createdAt       DateTime  @default(now())
+
+  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplier        Supplier? @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+}
+model ProductImage {
+  id        String   @id @default(cuid())
+  url       String
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model ProductSize {
+  id        String   @id @default(cuid())
+  size      String    
+  stock     Int      @default(0)  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+model ProductColor {
+  id        String   @id @default(cuid())
+  color     String    
+  hex       String?  
+  stock     Int      @default(0)  
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+
+model Order {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  status       OrderStatus    @default(PENDING)
+  total        Float          @default(0)
+  userId       String?
+  storeId      String?       
+  email        String?
+  fullName     String?
+  location     String?
+  phone        String?
+  Notification Notification[]
+  user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store        Store?       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  items        OrderItem[]
+
+  Supplier Supplier[]
+}
+
+model OrderItem {
+  id        String   @id @default(cuid())
+  quantity  Int      @default(1)
+  price     Float
+  orderId   String
+  color     String?
+  size      String?
+  productId String?
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product   Product? @relation(fields: [productId], references: [id])
+}
+
+model Visitor {
+  id        String   @id @default(cuid())
+  visitorId String
+  ip        String
+  userAgent String?
+  createdAt DateTime @default(now())
+  storeName String?
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  storeId   String?
+  message   String
+  url       String?
+  isRead    Boolean  @default(false)
+  type      String?
+  createdAt DateTime @default(now())
+  orderId   String?
+  productId String?
+
+  order     Order?   @relation(fields: [orderId], references: [id])
+  product   Product? @relation(fields: [productId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([orderId])
+  @@index([productId])
+}
+
+
+enum UserRole {
+  GUEST
+  SUPPLIER
+  DROPSHIPPER
+  TRADER
+  A
+}
+
+enum ThemeStore {
+  NORMAL
+  MODERN
+}
+
+enum OrderStatus {
+  PENDING
+  CONFIRMED
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+model SubscriptionPlan {
+  id                String   @id @default(cuid())
+  name              String
+  price             Float
+  durationDays      Int      
+  maxProducts       Int?      
+  maxTemplates      Int?      
+  templateCategory  String?   
+  maxStores         Int?     
+  maxSuppliers      Int?      
+  features          Json?     
+
+  createdAt         DateTime @default(now())
+  subscriptions     UserSubscription[]
+}
+
+model UserSubscription {
+  id              String   @id @default(cuid())
+  userId          String
+  planId          String
+  startDate       DateTime @default(now())
+  endDate         DateTime
+  isActive        Boolean  @default(true)
+  canceledAt      DateTime?
+  limitProducts   Int?
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([planId])
+}

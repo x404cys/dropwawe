@@ -1,0 +1,99 @@
+'use client';
+import { useState } from 'react';
+import {
+  Home,
+  Users,
+  ShoppingCart,
+  BarChart2,
+  Settings,
+  Package,
+  Store,
+  Menu,
+  X,
+} from 'lucide-react';
+import Logo from '@/components/utils/Logo';
+import { useSession } from 'next-auth/react';
+import { useSidebar } from '../context/SideBarContext';
+import { useRouter } from 'next/navigation';
+import { MdLeaderboard } from 'react-icons/md';
+
+export default function Sidebar() {
+  const { activeSection, setActiveSection } = useSidebar();
+  const { data: session } = useSession();
+  const router = useRouter();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const menuItems: { name: string; key: string; icon: React.ElementType }[] = [
+    { name: 'الرئيسية', key: '/admin', icon: Home },
+    { name: 'المتجر', key: '/admin/stores', icon: Store },
+    { name: 'المستخدمين', key: '/admin/users', icon: Users },
+    { name: 'الطلبات', key: '/admin/orders', icon: ShoppingCart },
+    { name: 'المنتجات', key: '/admin/products', icon: Package },
+    { name: 'التقارير', key: '/admin/stats', icon: BarChart2 },
+    { name: 'Leaderboard', key: '/admin/Leaderboard', icon: MdLeaderboard },
+  ];
+
+  return (
+    <aside dir="rtl" className="z-50 hidden md:block">
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-e border-gray-200 bg-white transition-transform duration-300 ease-in-out md:static md:flex md:translate-x-0 md:flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'} `}
+      >
+        <div className="flex h-full flex-col justify-between px-4">
+          <div>
+            <div className="mb-5">
+              <Logo />
+            </div>
+            <ul className="space-y-2">
+              {menuItems.map(item => {
+                const Icon = item.icon;
+                const isActive = activeSection === item.key;
+
+                return (
+                  <li key={item.key}>
+                    <button
+                      onClick={() => {
+                        router.push(item.key);
+                        setIsOpen(false);
+                      }}
+                      className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition ${
+                        isActive
+                          ? 'bg-gray-100 text-gray-900'
+                          : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+                      }`}
+                    >
+                      <Icon className="h-5 w-5" />
+                      <span>{item.name}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          <div className="border-t border-gray-100 p-4">
+            {session?.user && (
+              <div className="flex items-center gap-3">
+                <img
+                  src={session.user.image as string}
+                  alt={session.user.name || 'User'}
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+                <div>
+                  <p className="text-sm font-medium">{session.user.name}</p>
+                  <p className="text-xs text-gray-500">{session.user.email}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {isOpen && (
+        <div
+          onClick={() => setIsOpen(false)}
+          className="fixed inset-0 z-30 bg-black opacity-30 md:hidden"
+        />
+      )}
+    </aside>
+  );
+}

@@ -1,0 +1,85 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '../../../lib/db';
+
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  const userId = url.searchParams.get('userId');
+
+  if (!userId) {
+    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+  }
+
+  try {
+    const totalSum = await prisma.order.aggregate({
+      where: {
+        userId,
+        status: 'CONFIRMED',
+      },
+      _sum: {
+        total: true,
+      },
+    });
+
+    const allOrders = await prisma.order.findMany({
+      where: {
+        userId,
+        status: 'CONFIRMED',
+      },
+      select: {
+        total: true,
+        createdAt: true,
+      },
+      orderBy: {
+        createdAt: 'asc',
+      },
+    });
+
+    const dailyMap: Record<string, number> = {};
+    const weeklyMap: Record<string, number> = {};
+    const monthlyMap: Record<string, number> = {};
+
+    const getWeekKey = (date: Date) => {
+      const startOfYear = new Date(date.getFullYear(), 0, 1);
+      const days = Math.floor((+date - +startOfYear) / (1000 * 60 * 60 * 24));
+      const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+      return `${date.getFullYear()}-W${week}`;
+    };
+
+    allOrders.forEach(order => {
+      const dayKey = order.createdAt.toISOString().split('T')[0];
+      const monthKey = `${order.createdAt.getFullYear()}-${String(
+        order.createdAt.getMonth() + 1
+      ).padStart(2, '0')}`;
+      const weekKey = getWeekKey(order.createdAt);
+
+      dailyMap[dayKey] = (dailyMap[dayKey] || 0) + order.total;
+      monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + order.total;
+      weeklyMap[weekKey] = (weeklyMap[weekKey] || 0) + order.total;
+    });
+
+    const daily = Object.entries(dailyMap).map(([day, profit]) => ({
+      day,
+      profit,
+    }));
+
+    const weekly = Object.entries(weeklyMap).map(([week, profit]) => ({
+      week,
+      profit,
+    }));
+
+    const monthly = Object.entries(monthlyMap).map(([month, profit]) => ({
+      month,
+      profit,
+    }));
+
+    return NextResponse.json({
+      totalProfit: totalSum._sum.total ?? 0,
+      daily,
+      weekly,
+      monthly,
+    });
+  } catch (error) {
+    console.error('خطأ في جلب الأرباح:', error);
+    return NextResponse.json({ error: 'خطأ في السيرفر' }, { status: 500 });
+  }
+}

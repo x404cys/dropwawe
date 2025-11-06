@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>نموذج دفع تجريبي - Paylib (Managed Form)</title>
+    <style>
+      body {
+        font-family: system-ui, Arial;
+        background: #f7f7f8;
+        color: #222;
+        padding: 24px;
+      }
+      .card {
+        background: #fff;
+        padding: 20px;
+        border-radius: 10px;
+        max-width: 720px;
+        margin: auto;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+      }
+      h1 {
+        font-size: 20px;
+        margin-bottom: 10px;
+      }
+      label {
+        display: block;
+        font-size: 14px;
+        margin-bottom: 6px;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 100%;
+        padding: 8px 10px;
+        margin-bottom: 12px;
+        border: 1px solid #e2e6ef;
+        border-radius: 8px;
+        font-size: 14px;
+        box-sizing: border-box;
+      }
+      .row {
+        margin-bottom: 10px;
+      }
+      .muted {
+        color: #666;
+        font-size: 13px;
+      }
+      .btn {
+        background: #0066cc;
+        color: #fff;
+        padding: 10px 14px;
+        border-radius: 8px;
+        border: 0;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      .error {
+        color: #b00020;
+        margin-bottom: 10px;
+      }
+      pre {
+        background: #0f1724;
+        color: #e6eef8;
+        padding: 12px;
+        border-radius: 8px;
+        overflow: auto;
+        font-size: 13px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card" dir="rtl">
+      <h1>نموذج دفع تجريبي — Managed Form (paylib.js)</h1>
+      <p class="muted">
+        يمكنك تجربة العملية بأمان في الوضع التجريبي. لا يتم سحب أموال حقيقية.
+      </p>
+
+      <!-- خطأ أو رسائل -->
+      <div
+        id="paymentErrors"
+        class="error"
+        role="alert"
+        aria-live="polite"
+      ></div>
+
+      <!-- نموذج الدفع: لاحظ أن الحقول الحساسة لا تحتوي على attribute "name" بل "data-paylib" -->
+      <!-- عند الإرسال، paylib سيعطي token بدلاً من بيانات البطاقة -->
+      <form id="payform" action="https://yourserver.com/payment" method="post">
+        <div class="row">
+          <label>اسم صاحب البطاقة (مثال)</label>
+          <input
+            type="text"
+            name="card_holder"
+            placeholder="Ahmed Ali"
+            required
+          />
+        </div>
+
+        <div class="row">
+          <label>رقم البطاقة (اختباري)</label>
+          <!-- data-paylib => managed by paylib, not submitted to your server -->
+          <input
+            type="text"
+            data-paylib="number"
+            placeholder="4111 1111 1111 1111"
+            required
+          />
+        </div>
+
+        <div class="row" style="display: flex; gap: 8px">
+          <div style="flex: 1">
+            <label>شهر الانتهاء (MM)</label>
+            <input
+              type="text"
+              data-paylib="expmonth"
+              placeholder="MM"
+              required
+            />
+          </div>
+          <div style="flex: 1">
+            <label>سنة الانتهاء (YYYY)</label>
+            <input
+              type="text"
+              data-paylib="expyear"
+              placeholder="YYYY"
+              required
+            />
+          </div>
+          <div style="flex: 1">
+            <label>CVV</label>
+            <input type="text" data-paylib="cvv" placeholder="123" required />
+          </div>
+        </div>
+
+        <div class="row">
+          <label>المبلغ (اختبار)</label>
+          <input type="number" name="amount" value="10" min="1" required />
+        </div>
+
+        <!-- هنا ستضاف قيمة التوكن قبل الإرسال الفعلي -->
+        <button id="payBtn" class="btn" type="button">
+          إجراء الدفع (تجريبي)
+        </button>
+        <p class="muted" style="margin-top: 10px">
+          أرقام بطاقات اختبار شائعة: 4111 1111 1111 1111 (Visa test)
+        </p>
+      </form>
+
+      <hr style="margin: 18px 0" />
+
+      <h3>نتيجة التجربة</h3>
+      <div id="result" class="muted">لم يتم تنفيذ أي عملية بعد.</div>
+
+      <h4 style="margin-top: 12px">ملاحظات للمطور</h4>
+      <pre>
+- استبدل '--YOUR_CLIENT_KEY--' بالمفتاح الخاص بك (client key).
+- غيّر action في الفورم إلى endpoint السيرفر لديك (مثال: https://api.example.com/payments).
+- في السيرفر: تلقي الحقل payment_token (أو الاسم الذي تضيفه) واستخدمه مع الـ Transaction API لإتمام الدفع.
+    </pre
+      >
+    </div>
+
+    <!-- مكتبة paylib من التوثيق (مثال) -->
+    <script src="https://secure-iraq.paytabs.com/payment/js/paylib.js"></script>
+
+    <script>
+      (function () {
+        // عناصر DOM
+        const myform = document.getElementById("payform");
+        const payBtn = document.getElementById("payBtn");
+        const paymentErrors = document.getElementById("paymentErrors");
+        const result = document.getElementById("result");
+
+        // تهيئة paylib inline form
+        // Important: replace '--YOUR_CLIENT_KEY--' with your actual client key (test key).
+        // We set autoSubmit: false so we intercept the token and can add it to form or call our API.
+        paylib.inlineForm({
+          key: "C6K2B9-V9GB6N-2RNVHV-M6P2TT", // <-- غيّر هذا
+          form: myform,
+          autoSubmit: false,
+          callback: function (response) {
+            // تفريغ أي رسائل خطأ سابقة
+            paymentErrors.innerText = "";
+
+            if (response && response.error) {
+              // handle/display errors returned by paylib
+              paylib.handleError(paymentErrors, response);
+              // يمكنك أيضاً عرض رسالة مخصصة:
+              // paymentErrors.innerText = 'حدث خطأ أثناء توليد التوكن: ' + response.error.message;
+              return;
+            }
+
+            // إذا نجحنا نحصل على توكن مؤقت (مثلاً response.token أو حسب بنية الـ response)
+            // تحقق بنية response من التوثيق الفعلي لخدمتكم؛ هذا مثال شائع:
+            const token =
+              response &&
+              (response.payment_token ||
+                response.token ||
+                response.token_id ||
+                response.paymentToken);
+
+            if (!token) {
+              paymentErrors.innerText =
+                "لم نحصل على رمز الدفع (token). الطباعة في الكونسول للمزيد.";
+              console.log("Full paylib response:", response);
+              return;
+            }
+
+            // أضف الحقل المخفي إلى الفورم ليُرسل إلى السيرفر بدل بيانات البطاقة
+            let input = document.createElement("input");
+            input.type = "hidden";
+            input.name = "payment_token"; // في السيرفر ابحث عن هذا الحقل
+            input.value = token;
+            myform.appendChild(input);
+
+            // نظهر للمستخدم التوكن (للتجربة فقط) ثم نرسل الفورم
+            result.innerText =
+              "تم توليد توكن تجريبي: " +
+              token +
+              " — سيُرسل الآن إلى السيرفر (form submit).";
+
+            // خياران: 1) إرسال الفورم بشكل تقليدي إلى action
+            myform.submit();
+
+            // 2) أو استخدام fetch لإرسال JSON إلى API دون عمل submit (مثال - ملغي هنا)
+            /*
+          fetch('https://yourserver.com/payment-api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              payment_token: token,
+              amount: myform.querySelector('[name=amount]').value,
+              card_holder: myform.querySelector('[name=card_holder]').value
+            })
+          })
+          .then(r => r.json())
+          .then(data => {
+            result.innerText = 'Response from server: ' + JSON.stringify(data);
+          })
+          .catch(err => { paymentErrors.innerText = 'خطأ في الإرسال إلى السيرفر.'; console.error(err); });
+          */
+          },
+        });
+
+        // زر الدفع: نرسل حدث submit إلى paylib لكي يبدأ التوكنز
+        payBtn.addEventListener("click", function () {
+          paymentErrors.innerText = "";
+          result.innerText = "جارٍ توليد التوكن...";
+          // Trigger actual native submit — paylib intercepts and prevents real card data submission.
+          myform.requestSubmit(); // modern method, triggers submit event
+        });
+
+        // لمنع إرسال الفورم يدويًا بدون مرور paylib (حماية إضافية)
+        myform.addEventListener("submit", function (e) {
+          // إذا paylib لم تضع التوكن بعد، نمنع الإرسال
+          // (paylib.inlineForm مع autoSubmit: false سيمنع الإرسال ويستدعي callback أولاً)
+          // هنا نتركها كما هي، فقط نعرض لوج.
+          console.log("form submit event intercepted (after paylib).");
+        });
+      })();
+    </script>
+  </body>
+</html>

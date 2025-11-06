@@ -1,0 +1,13 @@
+User
+ ├── SupplierProfile (1:1)
+ │    ├── Store (1:N)
+ │    │    ├── Product (1:N)
+ │    │    │    ├── OrderItem (N:1)
+ │    │    │    ├── ProductImage / Size / Color
+ │    │    ├── Order (1:N)
+ │    │    └── Notification (1:N)
+ │    └── Orders (N)
+ ├── Store (1:N)
+ ├── Product (1:N)
+ ├── Order (1:N)
+ └── Notification (1:N)
