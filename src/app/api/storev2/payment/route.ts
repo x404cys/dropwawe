@@ -58,10 +58,10 @@ export async function POST(req: Request) {
       message: 'تم إنشاء طلب الدفع بنجاح',
       data,
     });
-  } catch (error: any) {
+  } catch (error) {
     console.error('PayTabs Error:', error);
     return NextResponse.json(
-      { success: false, message: 'حدث خطأ في الخادم', error: error.message },
+      { success: false, message: 'حدث خطأ في الخادم', error },
       { status: 500 }
     );
   }
