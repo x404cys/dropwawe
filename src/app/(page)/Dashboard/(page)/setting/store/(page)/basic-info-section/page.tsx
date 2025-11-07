@@ -15,7 +15,7 @@ interface BasicInfoSectionProps {
   onDescriptionChange: (value: string) => void;
 }
 
-export function BasicInfoSection({
+export default function  BasicInfoSection({
   storeSlug,
   storeName,
   description,

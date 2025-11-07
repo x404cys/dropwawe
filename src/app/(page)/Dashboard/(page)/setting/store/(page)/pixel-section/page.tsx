@@ -12,7 +12,7 @@ interface PixelSectionProps {
   onTiktokPixelChange: (value: string) => void;
 }
 
-export function PixelSection({
+export default function PixelSection({
   facebookPixel,
   googlePixel,
   tiktokPixel,

@@ -12,7 +12,7 @@ interface ShippingSectionProps {
   onShippingPriceChange: (value: string) => void;
 }
 
-export function ShippingSection({
+export default function ShippingSection({
   phone,
   shippingPrice,
   fieldErrors,

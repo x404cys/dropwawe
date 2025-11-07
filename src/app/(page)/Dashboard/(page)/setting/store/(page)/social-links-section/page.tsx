@@ -13,7 +13,7 @@ interface SocialLinksSectionProps {
   onTelegramChange: (value: string) => void
 }
 
-export function SocialLinksSection({
+export default function SocialLinksSection({
   facebookLink,
   instaLink,
   telegram,

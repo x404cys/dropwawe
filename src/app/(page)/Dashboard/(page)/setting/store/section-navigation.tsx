@@ -27,7 +27,10 @@ interface SectionNavigationProps {
   onSectionChange: (section: SectionType) => void;
 }
 
-export function SectionNavigation({ activeSection, onSectionChange }: SectionNavigationProps) {
+export default function SectionNavigation({
+  activeSection,
+  onSectionChange,
+}: SectionNavigationProps) {
   const { data: session } = useSession();
 
   const sections: Section[] = [
@@ -46,7 +49,7 @@ export function SectionNavigation({ activeSection, onSectionChange }: SectionNav
   ];
 
   return (
-    <div className="flex h-screen w-full flex-col items-center py-">
+    <div className="py- flex h-screen w-full flex-col items-center">
       <div dir="rtl" className="w-full max-w-xl space-y-5 rounded-lg bg-white">
         <div className="rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 p-5 text-white shadow-md">
           <div className="flex items-center justify-between">
