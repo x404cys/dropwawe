@@ -4,9 +4,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { UserProps } from '@/types/Products';
 import Loader from '@/components/Loader';
-import StoreNavbar from '../(page)/s/[slug]/_components/StoreNavbar';
-import StoreBottomNav from '../(page)/s/[slug]/_components/StoreBottomNav';
-import Footer from './_components/Footer';
+
 import StoreNavBarV1 from './_components/NavBar/StoreNavBarV1';
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
