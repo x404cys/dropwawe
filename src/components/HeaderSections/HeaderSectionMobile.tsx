@@ -2,7 +2,7 @@ import { MdOutlineNotificationsNone } from 'react-icons/md';
 import Logo from '../utils/Logo';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import UserActions from '@/app/Dashboard/_components/UserActions';
+import UserActions from '@/app/(page)/Dashboard/_components/UserActions';
 
 export default function HeaderSectionsMobile() {
   return (
