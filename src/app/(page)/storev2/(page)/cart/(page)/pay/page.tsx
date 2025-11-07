@@ -17,7 +17,7 @@ type Paylib = {
     form: HTMLFormElement;
     autoSubmit: boolean;
     callback: (response: PaylibResponse) => void;
-  }) => void;
+  }) => void;//
   handleError: (element: HTMLElement, response: PaylibResponse) => void;
 };
 
