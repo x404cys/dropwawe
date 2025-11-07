@@ -5,10 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 import { Product } from '@/types/Products';
 import getProductsByStore from '@/app/axios/products/getProductByStore';
 import { Skeleton } from '@/components/ui/skeleton';
-import MobileSearch from '@/app/(page)/s/[slug]/_components/_components4NavBar/MobileSearch';
-import FilterBox from '@/app/(page)/s/[slug]/_components/_components4NavBar/FilterBox';
-import DesktopSearch from '@/app/(page)/s/[slug]/_components/_components4NavBar/DesktopSearch';
-import NavbarActions from '@/app/(page)/s/[slug]/_components/_components4NavBar/NavbarActions';
+import MobileSearch from '@/app/(page)/storev2/_components/subComponents/_components/_components4NavBar/MobileSearch';
+import FilterBox from '@/app/(page)/storev2/_components/subComponents/_components/_components4NavBar/FilterBox';
+import DesktopSearch from '@/app/(page)/storev2/_components/subComponents/_components/_components4NavBar/DesktopSearch';
+import NavbarActions from '@/app/(page)/storev2/_components/subComponents/_components/_components4NavBar/NavbarActions';
 
 export default function StoreNavBarV1({ slug }: { slug: string }) {
   const [storeName, setStoreName] = useState('');

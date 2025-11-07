@@ -5,9 +5,9 @@ import { useAdmin } from '../context/DataContext';
 import Loader from '@/components/Loader';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
-import ProductCard from '@/app/Dashboard/(page)/ProductManagment/_components/ProductCard';
 import { Product } from '@/types/Products';
 import useSWR from 'swr';
+import ProductCard from '../../Dashboard/(page)/ProductManagment/_components/ProductCard';
 
 interface Props {
   filterByCategory?: string;
@@ -61,7 +61,7 @@ export default function ProductList({ filterByCategory }: Props) {
   };
 
   return (
-    <div className="w-full space-y-3 px-2  py-2">
+    <div className="w-full space-y-3 px-2 py-2">
       <div className="flex max-w-full flex-col gap-2 md:max-w-full md:flex-row md:flex-wrap md:items-center">
         <input
           type="text"
