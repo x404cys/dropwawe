@@ -3,7 +3,7 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import { z } from 'zod';
-import { uploadToSupabase } from '@/app/lib/uploadToSupabase';
+import { uploadToServer } from '@/app/lib/uploadToSupabase';
 const storeSchema = z.object({
   name: z.string().min(3).max(100),
   subLink: z
@@ -72,12 +72,12 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    const imageUrl = await uploadToSupabase(data.imageUrl as File, userId!);
+    const imageUrl = await uploadToServer(data.imageUrl as File, userId!);
 
     if (!imageUrl) {
       return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
     }
-    const headerUrl = await uploadToSupabase(data.header as File, userId!);
+    const headerUrl = await uploadToServer(data.header as File, userId!);
 
     if (!headerUrl) {
       return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
