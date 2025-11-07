@@ -9,8 +9,7 @@ import { MdClear } from 'react-icons/md';
 import { Product } from '@/types/Products';
 import Image from 'next/image';
 import Link from 'next/link';
-import ProductCard from '@/app/storev2/_components/Prosuct/ProductCardV2';
-
+ 
 export default function FavoritesPage() {
   const { getFavoritesByKey, clearFavoritesByKey, getTotalFavoritesByKey } = useFavorite();
   const [favoriteItems, setFavoriteItems] = useState<Product[]>([]);
@@ -75,7 +74,7 @@ export default function FavoritesPage() {
         <div className="mx-auto">
           <h2 className="sr-only">Products</h2>
           <div className=" ">
-            <ProductCard products={favoriteItems} />
+            {/* <ProductCard products={favoriteItems} /> */}
           </div>
         </div>
       </div>

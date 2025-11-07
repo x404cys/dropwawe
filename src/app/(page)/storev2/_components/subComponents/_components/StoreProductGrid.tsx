@@ -1,5 +1,4 @@
 import { Store } from '@/app/axios/products/getProductByStore';
-import ProductCard from '@/components/Product/ProductDesign';
 import SkeletonProduct from '@/components/SkeletonProduct';
 import { Product } from '@/types/Products';
 
@@ -33,7 +32,7 @@ export default function StoreProductGrid({
 
   return (
     <div className="grid grid-cols-2 gap-4 py-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
-      {products.map(product => (
+      {/* {products.map(product => (
         <ProductCard
           key={product.id}
           {...product}
@@ -41,7 +40,7 @@ export default function StoreProductGrid({
           userId={userId}
           storeSlug={storeSlug}
         />
-      ))}
+      ))} */}
       <br />
       <br />
     </div>
