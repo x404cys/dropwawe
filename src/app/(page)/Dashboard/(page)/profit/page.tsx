@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { usePathname } from 'next/navigation';
-import FloatingNavBarForDashboard from '@/app/Dashboard/_components/FloatingNavBarForDashboard';
 import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../../_utils/useDashboardData';
 import { FiDollarSign, FiClock } from 'react-icons/fi';
