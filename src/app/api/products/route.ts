@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '../../lib/db';
 import { authOperation } from '../../lib/authOperation';
 import { getServerSession } from 'next-auth';
-import { supabase } from '@/lib/supabaseClient';
 import { uploadToServer } from '@/app/lib/uploadToSupabase';
 
 export async function POST(req: Request) {
@@ -103,46 +102,46 @@ export async function POST(req: Request) {
       },
     });
 
-    for (const gFile of galleryFiles) {
-      const gBytes = await gFile.arrayBuffer();
-      const gBuffer = Buffer.from(gBytes);
-      const gCleanName = gFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
-      const gFileName = `${userId}/gallery/${Date.now()}-${gCleanName}`;
-      const { error: gUploadError } = await supabase.storage
-        .from('upload-sahl-img')
-        .upload(gFileName, gBuffer, { contentType: gFile.type || 'image/png' });
-      if (!gUploadError) {
-        const { data } = supabase.storage.from('upload-sahl-img').getPublicUrl(gFileName);
-        if (data?.publicUrl) {
-          await prisma.productImage.create({
-            data: {
-              url: data.publicUrl,
-              productId: product.id,
-            },
-          });
-        }
-      }
-    }
+    // for (const gFile of galleryFiles) {
+    //   const gBytes = await gFile.arrayBuffer();
+    //   const gBuffer = Buffer.from(gBytes);
+    //   const gCleanName = gFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    //   const gFileName = `${userId}/gallery/${Date.now()}-${gCleanName}`;
+    //   const { error: gUploadError } = await supabase.storage
+    //     .from('upload-sahl-img')
+    //     .upload(gFileName, gBuffer, { contentType: gFile.type || 'image/png' });
+    //   if (!gUploadError) {
+    //     const { data } = supabase.storage.from('upload-sahl-img').getPublicUrl(gFileName);
+    //     if (data?.publicUrl) {
+    //       await prisma.productImage.create({
+    //         data: {
+    //           url: data.publicUrl,
+    //           productId: product.id,
+    //         },
+    //       });
+    //     }
+    //   }
+    // }
 
-    for (const s of sizes) {
-      await prisma.productSize.create({
-        data: {
-          size: s.size,
-          stock: s.stock,
-          productId: product.id,
-        },
-      });
-    }
-    for (const c of colors) {
-      await prisma.productColor.create({
-        data: {
-          color: c.name,
-          hex: c.hex,
-          stock: c.stock,
-          productId: product.id,
-        },
-      });
-    }
+    // for (const s of sizes) {
+    //   await prisma.productSize.create({
+    //     data: {
+    //       size: s.size,
+    //       stock: s.stock,
+    //       productId: product.id,
+    //     },
+    //   });
+    // }
+    // for (const c of colors) {
+    //   await prisma.productColor.create({
+    //     data: {
+    //       color: c.name,
+    //       hex: c.hex,
+    //       stock: c.stock,
+    //       productId: product.id,
+    //     },
+    //   });
+    // }
 
     return NextResponse.json(product, { status: 201 });
   } catch (error: unknown) {

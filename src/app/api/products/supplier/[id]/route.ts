@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import { writeFile } from 'fs/promises';
 import path from 'path';
-import { supabase } from '@/lib/supabaseClient';
+// import { supabase } from '@/lib/supabaseClient';
 
 interface Params {
   params: { id: string };
@@ -100,29 +100,29 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
     let imagePath: string | undefined;
 
-    if (file && file.size > 0) {
-      const bytes = await file.arrayBuffer();
-      const buffer = Buffer.from(bytes);
+    // if (file && file.size > 0) {
+    //   const bytes = await file.arrayBuffer();
+    //   const buffer = Buffer.from(bytes);
 
-      const fileName = `${session.user.id}/${Date.now()}-${file.name}`;
+    //   const fileName = `${session.user.id}/${Date.now()}-${file.name}`;
 
-      const { error: uploadError } = await supabase.storage
-        .from('upload-sahl-img')
-        .upload(fileName, buffer, {
-          contentType: file.type,
-          upsert: false,
-        });
+    //   const { error: uploadError } = await supabase.storage
+    //     .from('upload-sahl-img')
+    //     .upload(fileName, buffer, {
+    //       contentType: file.type,
+    //       upsert: false,
+    //     });
 
-      if (uploadError) {
-        return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
-      }
+    //   if (uploadError) {
+    //     return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+    //   }
 
-      const { data: publicUrlData } = supabase.storage
-        .from('upload-sahl-img')
-        .getPublicUrl(fileName);
+    //   const { data: publicUrlData } = supabase.storage
+    //     .from('upload-sahl-img')
+    //     .getPublicUrl(fileName);
 
-      imagePath = publicUrlData.publicUrl;
-    }
+    //   imagePath = publicUrlData.publicUrl;
+    // }
 
     const updatedProduct = await prisma.product.update({
       where: { id },
