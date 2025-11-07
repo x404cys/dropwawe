@@ -1,7 +1,6 @@
 'use client';
 
 import { useSession } from 'next-auth/react';
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, CircleDollarSign, Rocket } from 'lucide-react';
 import type { ElementType } from 'react';

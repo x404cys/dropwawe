@@ -9,14 +9,14 @@ import { Save } from 'lucide-react';
 import axios from 'axios';
 import type { StoreProps } from '@/types/store/StoreType';
 import { useDashboardData } from '../../../_utils/useDashboardData';
-import { BasicInfoSection } from './(page)/basic-info-section/page';
-import { ShippingSection } from './(page)/shipping-section/page';
-import { SocialLinksSection } from './(page)/social-links-section/page';
-import { ThemeSection } from './(page)/theme-section/page';
-import { PixelSection } from './(page)/pixel-section/page';
-import { SectionNavigation } from './section-navigation';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import SectionNavigation from './section-navigation';
+import BasicInfoSection from './(page)/basic-info-section/basic-info-section';
+import ShippingSection from './(page)/shipping-section/shipping-section';
+import SocialLinksSection from './(page)/social-links-section/social-links-section';
+import ThemeSection from './(page)/theme-section/theme-section';
+import PixelSection from './(page)/pixel-section/pixel-section';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
