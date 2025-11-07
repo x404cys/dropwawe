@@ -5,8 +5,9 @@ import getProductsByStore, { Store } from '@/app/axios/products/getProductByStor
 
 import { Product } from '@/types/Products';
 import { useTrackVisitor } from '@/app/lib/context/SaveVisitorId';
-import StoreProductGrid from '../(page)/s/[slug]/_components/StoreProductGrid';
-import StoreCategoriesBar from '../(page)/s/[slug]/_components/StoreCategoriesBar';
+import StoreCategoriesBar from '../storev2/_components/subComponents/_components/StoreCategoriesBar';
+import StoreProductGrid from '../storev2/_components/subComponents/_components/StoreProductGrid';
+ 
 
 export default function StorePage() {
   const [products, setProducts] = useState<Product[]>([]);

@@ -22,7 +22,7 @@ import {
 import { Label } from '@/components/ui/label';
 import axios from 'axios';
 import { StoreProps } from '@/types/store/StoreType';
-import { useDashboardData } from '@/app/Dashboard/_utils/useDashboardData';
+import { useDashboardData } from '../Dashboard/_utils/useDashboardData';
 type ServerErrorDetail = {
   field: string;
   message: string;
