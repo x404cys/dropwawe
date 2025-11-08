@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { toast } from 'sonner';
 import { VscEye } from 'react-icons/vsc';
-import { DollarSign, Package, ShoppingBag, Users } from 'lucide-react';
+import { DollarSign, Package, Rocket, ShoppingBag, Users } from 'lucide-react';
 import { AiOutlineProduct } from 'react-icons/ai';
 import { BsShop } from 'react-icons/bs';
 import { FiCopy, FiEdit2 } from 'react-icons/fi';
@@ -18,6 +18,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { useEffect } from 'react';
 import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import UrlCard from './_components/UrlCard';
+import { Button } from '@/components/ui/button';
+import { IoBusinessOutline } from 'react-icons/io5';
+import PlanCard from './_components/PlanCard';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -29,13 +33,13 @@ export default function Dashboard() {
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
   );
-  useEffect(() => {
-    if (status === 'loading' || loading) return;
+  // useEffect(() => {
+  //   if (status === 'loading' || loading) return;
 
-    if (status === 'unauthenticated') {
-      router.push('https://login.sahlapp.io');
-    }
-  }, [status, loading, data, router, session]);
+  //   if (status === 'unauthenticated') {
+  //     router.push('https://login.sahlapp.io');
+  //   }
+  // }, [status, loading, data, router, session]);
 
   if (status !== 'authenticated' || loading || !data) {
     return (
@@ -51,11 +55,11 @@ export default function Dashboard() {
       </section>
     );
   }
-  const storeSubLink = data.storeSlug?.subLink ?? null;
-  if (storeSubLink == null) {
-    router.push('/Dashboard/create-store');
-  }
-  const storeUrl = `https://${storeSubLink}.sahlapp.io`;
+  // const storeSubLink = data.storeSlug?.subLink ?? null;
+  // if (storeSubLink == null) {
+  //   router.push('/Dashboard/create-store');
+  // }
+  const storeUrl = `https://${202210}.sahlapp.io`;
 
   const stats: StatCardProps[] = [
     {
@@ -102,7 +106,7 @@ export default function Dashboard() {
 
   return (
     <section>
-      <div
+      {/* <div
         dir="ltr"
         className="flex items-center justify-between rounded-lg border border-gray-200 px-2 py-2"
       >
@@ -133,36 +137,19 @@ export default function Dashboard() {
             <VscEye size={20} />
           </button>
         </div>
-      </div>
+      </div> */}
 
-      <div dir="rtl" className="flex min-h-screen flex-col bg-white py-2">
-        <main className="flex-1 space-y-8 py-1">
+      <div dir="rtl" className="flex min-h-screen flex-col bg-white">
+        <main className="flex-1 space-y-4 py-1">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
             {stats.map((item, idx) => (
               <StatCard key={idx} {...item} />
             ))}
           </div>
 
-          <div className="block md:hidden">
-            <MonthlyTargetCard target={data.orderDone} fullTarget={9} />
-          </div>
-
           <div className="grid gap-4 md:grid-cols-2">
-            <ManagementCard
-              title="إدارة المنتجات والمتجر"
-              description="تحكم كامل بالمنتجات (حذف، تعديل، إضافة، خصم)"
-              button1Text="ادارة"
-              button1Icon={<AiOutlineProduct />}
-              button1Variant="default"
-              onButton1Click={() => router.push('/Dashboard/ProductManagment')}
-              button2Text="تصفح منتجات الموردين"
-              button2Icon={<BsShop />}
-              button2Variant="outline"
-            />
-
-            <div className="hidden md:block">
-              <MonthlyTargetCard target={data.orderCount} fullTarget={9} />
-            </div>
+            <UrlCard storeUrl={storeUrl} copyToClipboard={copyToClipboard} />
+            <PlanCard />
           </div>
 
           <div className="mx-auto w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">

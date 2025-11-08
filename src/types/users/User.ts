@@ -26,9 +26,9 @@ export type UsersResponse = {
 
 export interface SubscriptionPlan {
   id: string;
-  name: string;
+  planName: string;
   price: number;
-  durationDays: number;
+  remainingDays: number;
   maxProducts?: number | null;
   maxTemplates?: number | null;
   templateCategory?: string | null;
@@ -49,3 +49,31 @@ export interface UserSubscription {
   limitProducts?: number | null;
   plan: SubscriptionPlan;
 }
+export type SubscriptionType = {
+  id: string;
+  name: string;
+  type: string;
+  price: number;
+  durationDays: number;
+  maxProducts: number;
+  maxTemplates: number;
+  templateCategory: string;
+  maxStores: number;
+  maxSuppliers: number;
+  features: string[];
+  createdAt: string;
+};
+
+export type Subscription = {
+  id: string;
+  planName: string;
+  startDate: string;
+  endDate: string;
+  remainingDays: number;
+  detailsSubscription: SubscriptionType;
+};
+
+export type SubscriptionResponse = {
+  isActive: boolean;
+  subscription: Subscription;
+};

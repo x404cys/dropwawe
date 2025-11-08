@@ -11,12 +11,12 @@ import type { StoreProps } from '@/types/store/StoreType';
 import { useDashboardData } from '../../../_utils/useDashboardData';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
-import SectionNavigation from './section-navigation';
 import BasicInfoSection from './(page)/basic-info-section/basic-info-section';
 import ShippingSection from './(page)/shipping-section/shipping-section';
 import SocialLinksSection from './(page)/social-links-section/social-links-section';
 import ThemeSection from './(page)/theme-section/theme-section';
 import PixelSection from './(page)/pixel-section/pixel-section';
+import SettingOptions from './Setting-options';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -137,7 +137,7 @@ export default function StoreSetupPage() {
         <div className="text-xs text-red-500">لديك أخطاء بالحقول راجع النقاط الحمراء</div>
       )}
 
-      <SectionNavigation
+      <SettingOptions
         activeSection={activeSection}
         onSectionChange={section => {
           setActiveSection(section);
@@ -149,7 +149,7 @@ export default function StoreSetupPage() {
         <SheetContent
           dir="rtl"
           side="bottom"
-          className="mx-auto flex h-[100vh] max-w-2xl translate-y-[20vh] flex-col overflow-auto rounded-2xl border bg-white p-2 px-4 shadow-xl"
+          className="z-50 mx-auto flex max-h-[70vh] max-w-2xl translate-y-[0] flex-col overflow-hidden rounded-2xl border p-2 px-4 shadow-xl md:max-h-[90vh] md:min-h-[90vh]"
         >
           <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-gray-300" />
 
@@ -157,7 +157,7 @@ export default function StoreSetupPage() {
             <SheetTitle className="text-center text-lg font-semibold">إعدادات المتجر</SheetTitle>
           </SheetHeader>
 
-          <div className="mt-4 flex-1 space-y-4 overflow-auto px-2">
+          <div className="mt-4 flex-1 space-y-4 overflow-y-auto px-2">
             {activeSection === 'basic' && (
               <BasicInfoSection
                 storeSlug={storeSlug}
@@ -204,11 +204,12 @@ export default function StoreSetupPage() {
                 onTiktokPixelChange={setTiktokPixel}
               />
             )}
+
             <div className="mt-4 flex justify-center">
               <Button
                 disabled={loading}
                 onClick={handleSubmit}
-                className="flex w-full items-center gap-2 px-2"
+                className="flex w-full items-center gap-2 px-2 py-5"
               >
                 <Save className="h-4 w-4" />
                 {loading ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}

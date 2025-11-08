@@ -73,7 +73,7 @@ export default function NavBarForDesktop() {
     <div
       dir="rtl"
       ref={dropdownRef}
-      className="z-50 mb-2 hidden w-full items-center justify-between rounded-lg bg-white px-6 py-3 shadow-sm md:flex"
+      className="z-50 mb-2 hidden w-full items-center justify-between border-b bg-white px-6 py-3 md:flex"
     >
       <div className="flex items-center gap-8">
         <Link href="/">
@@ -89,7 +89,7 @@ export default function NavBarForDesktop() {
           </div>
         </Link>
 
-        <nav className="hidden gap-6 font-medium text-gray-700 lg:flex">
+        <nav className="hidden gap-6 font-stretch-90% text-gray-700 lg:flex">
           {navItems.map((item, idx) => (
             <Link
               key={idx}
@@ -109,9 +109,9 @@ export default function NavBarForDesktop() {
               setOpenNotifications(!openNotifications);
               setOpenUserMenu(false);
             }}
-            className="relative rounded-full p-2 transition hover:bg-gray-100"
+            className="relative cursor-pointer rounded-lg border bg-gray-100 p-2 transition hover:bg-gray-200"
           >
-            <MdOutlineNotificationsNone className="text-2xl text-gray-800" />
+            <MdOutlineNotificationsNone className="text-xl text-gray-800" />
             {unreadNotifications && unreadNotifications.length > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                 {unreadNotifications.length}
@@ -168,15 +168,20 @@ export default function NavBarForDesktop() {
             }}
             className="flex items-center gap-2 rounded-full p-1 transition hover:bg-gray-100"
           >
-            <span className="hidden text-sm font-medium text-gray-900 sm:block">
-              {session.user.name?.split(' ')[0]}
-            </span>
+            <div className="flex flex-col text-end">
+              <span className="hidden text-xs font-medium text-gray-900 sm:block">
+                {session.user.name?.split(' ')[0]}
+              </span>
+              <span className="hidden text-xs font-medium text-gray-900 sm:block">
+                {session.user.email?.split(' ')[0]}
+              </span>
+            </div>
             <Image
               src={session.user.image as string}
               alt={session.user.name as string}
-              width={36}
-              height={36}
-              className="rounded-full object-cover"
+              width={38}
+              height={38}
+              className="rounded-xl object-cover"
             />
           </button>
 

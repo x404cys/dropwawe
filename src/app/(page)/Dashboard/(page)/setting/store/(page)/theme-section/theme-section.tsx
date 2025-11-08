@@ -1,25 +1,133 @@
+'use client';
+
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { Check, Sparkles } from 'lucide-react';
+import axios from 'axios';
+import useSWR from 'swr';
+
+type Theme = {
+  id: 'NORMAL' | 'MODERN';
+  name: string;
+  description: string;
+  image?: string;
+  badge?: string;
+};
+
+const themes: Theme[] = [
+  {
+    id: 'MODERN',
+    name: 'ثيم عصري',
+    description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
+    image: '/img-theme/NORMAL-THEME.png',
+    badge: 'شائع',
+  },
+  {
+    id: 'NORMAL',
+    name: 'ثيم كلاسيكي',
+    description: 'تصميم بسيط وألوان هادئة',
+    image: '/img-theme/MODREN-THEME.PNG',
+  },
+];
+type ThemeProps = {
+  theme: 'NORMAL' | 'MODREN';
+};
 export default function ThemeSection() {
+  const [activeTheme, setActiveTheme] = useState<'NORMAL' | 'MODERN' | null>(null);
+  const [loadingTheme, setLoadingTheme] = useState<'NORMAL' | 'MODERN' | null>(null);
+  const { data } = useSWR<ThemeProps>(
+    '/api/dashboard/setting/get-theme',
+    (url: string | URL | Request) => fetch(url).then(res => res.json()),
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 1000,
+      revalidateOnMount: true,
+    }
+  );
+  const selectTheme = async (themeId: 'NORMAL' | 'MODERN') => {
+    setLoadingTheme(themeId);
+    try {
+      const res = await axios.post(`/api/dashboard/setting/update/${themeId}`);
+      if (res.status === 200) {
+        setActiveTheme(themeId);
+      }
+    } catch (err) {
+      console.error('حدث خطأ عند تحديث الثيم:', err);
+    } finally {
+      setLoadingTheme(null);
+    }
+  };
+
   return (
-    <div role="alert" className="rounded-md border-s-4 border-green-600 bg-green-50 p-4">
-      <div className="flex items-center gap-2 text-green-600">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          className="h-5 w-5"
-        >
-          <path
-            fillRule="evenodd"
-            d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z"
-            clipRule="evenodd"
-          />
-        </svg>
-        <strong className="font-medium">تخصيص الموقع قريبًا</strong>
+    <div className="space-y-8">
+      <div className="space-y-2">
+        <h2 className="text-2xl font-bold tracking-tight">اختر ثيم متجرك</h2>
+        <p className="text-muted-foreground">
+          حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي
+        </p>
       </div>
-      <p className="mt-2 text-sm text-green-600">
-        قريبًا ستتمكن من تخصيص عرض المنتجات، الألوان، والمزايا الأخرى في نسخة سهل{' '}
-        <strong>v2.0.0</strong>
-      </p>
+      <div className="flex items-center gap-4">
+        <span>الثيم الحالي</span>
+        <span className="rounded-full bg-blue-200 px-3">
+          {data?.theme === 'NORMAL' ? 'ثيم كلاسيكي' : 'ثيم عصري'}
+        </span>
+      </div>
+      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+        {themes.map(theme => {
+          const isActive = activeTheme === theme.id || data?.theme === theme.id;
+          const isLoading = loadingTheme === theme.id;
+
+          return (
+            <div
+              key={theme.id}
+              className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
+                isActive
+                  ? 'border-primary ring-primary/30 shadow-lg ring-2'
+                  : 'border-border hover:border-primary/50 hover:shadow-md'
+              }`}
+            >
+              {theme.image && (
+                <img
+                  src={theme.image}
+                  alt={theme.name}
+                  className="h-60 w-full object-cover transition-transform duration-500 hover:scale-105"
+                />
+              )}
+
+              {theme.badge && (
+                <span className="bg-primary absolute top-3 left-3 rounded-full px-3 py-1 text-xs text-white shadow-md">
+                  {theme.badge}
+                </span>
+              )}
+
+              <div className="space-y-4 p-5">
+                <h3 className="text-lg font-semibold">{theme.name}</h3>
+                <p className="text-muted-foreground text-sm">{theme.description}</p>
+
+                <Button
+                  variant={isActive ? 'secondary' : 'default'}
+                  size="sm"
+                  className="w-full"
+                  onClick={() => selectTheme(theme.id)}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    'جارٍ التحديث...'
+                  ) : isActive ? (
+                    <>
+                      <Check className="ml-2 h-4 w-4" /> مفعل
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="ml-2 h-4 w-4" /> اختر الثيم
+                    </>
+                  )}
+                </Button>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }

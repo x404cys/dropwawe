@@ -50,7 +50,7 @@ export default function SocialLinksSection({
   ]
 
   return (
-    <div className="grid gap-6 sm:grid-cols-3">
+    <div className="flex flex-col">
       {socialLinks.map(({ label, value, onChange, icon: Icon, field, placeholder }) => (
         <div key={field} className="space-y-2">
           <label className="text-sm font-medium text-gray-700">{label}</label>

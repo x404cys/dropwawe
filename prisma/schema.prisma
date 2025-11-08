@@ -244,10 +244,16 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
+enum TypePlan { 
+  NORMAL
+  MODERN
+  PENDINGROFESSIONAL
+}
 
 model SubscriptionPlan {
   id                String   @id @default(cuid())
-  name              String
+  name              String  
+  type              TypePlan @unique
   price             Float
   durationDays      Int      
   maxProducts       Int?      
