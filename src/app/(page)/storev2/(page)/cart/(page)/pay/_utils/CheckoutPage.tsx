@@ -1,5 +1,6 @@
 'use client';
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
+import Script from 'next/script';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/app/lib/context/CartContext';
@@ -46,48 +47,41 @@ export default function CheckoutPage() {
   const discountTotal = getTotalPriceAfterDiscountByKey(cartKey);
   const totalAfter = discountTotal + shippingTotal;
 
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://secure-iraq.paytabs.com/payment/js/paylib.js';
-    script.async = true;
+  const initializePaylib = () => {
+    const paylib = window.paylib;
+    const form = formRef.current;
+    if (!paylib || !form) return;
 
-    script.onload = () => {
-      const paylib = window.paylib;
-      const form = formRef.current;
+    paylib.inlineForm({
+      key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT', // Client Key الخاص بك
+      form,
+      autoSubmit: true,
+      callback: (response: PaylibResponse) => {
+        const errorContainer = document.getElementById('paymentErrors');
+        if (!errorContainer) return;
+        errorContainer.innerHTML = '';
 
-      if (!paylib || !form) return;
+        if (response.error) {
+          paylib.handleError(errorContainer, response);
+          return;
+        }
 
-      paylib.inlineForm({
-        key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT', // ضع هنا الـ Client Key الخاص بك
-        form,
-        autoSubmit: true,
-        callback: (response: PaylibResponse) => {
-          const errorContainer = document.getElementById('paymentErrors');
-          if (!errorContainer) return;
-          errorContainer.innerHTML = '';
-
-          if (response.error) {
-            paylib.handleError(errorContainer, response);
-            return;
-          }
-
-          if (!response.payment_token) {
-            setErrors('لم يتم إنشاء رمز الدفع (token)');
-          }
-        },
-      });
-    };
-
-    script.onerror = () => console.error('فشل تحميل مكتبة Paylib');
-    document.body.appendChild(script);
-
-    return () => {
-      if (document.body.contains(script)) document.body.removeChild(script);
-    };
-  }, []);
+        if (!response.payment_token) {
+          setErrors('لم يتم إنشاء رمز الدفع (token)');
+        }
+      },
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 py-3">
+      <Script
+        src="https://secure-iraq.paytabs.com/payment/js/paylib.js"
+        strategy="afterInteractive"
+        onLoad={initializePaylib}
+        onError={() => console.error('فشل تحميل مكتبة Paylib')}
+      />
+
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-4 shadow-sm" dir="rtl">
         <div className="mb-8 flex items-center justify-between gap-2 border-b pb-4">
           <h1 className="font-semibold text-gray-800">إتمام الدفع</h1>
@@ -124,7 +118,6 @@ export default function CheckoutPage() {
         <form ref={formRef} id="payform" method="post" action="/api/storev2/payment">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
 
-          {/* الحقول الحساسة */}
           <div className="grid gap-4">
             <input type="hidden" name="payment_token" />
 
