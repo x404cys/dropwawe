@@ -58,7 +58,7 @@ export default function CheckoutPage() {
       const form = formRef.current;
 
       if (!paylib || !form) {
-         return;
+        return;
       }
 
       paylib.inlineForm({
@@ -160,6 +160,8 @@ export default function CheckoutPage() {
         <form ref={formRef} id="payform" method="post" action="/api/storev2/payment">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
           <div className="grid gap-4">
+            <input type="hidden" name="payment_token" />
+
             <div>
               <label className="mb-1 block text-sm text-gray-700">رقم البطاقة</label>
               <input
