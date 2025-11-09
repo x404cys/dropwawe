@@ -158,7 +158,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <form ref={formRef} id="payform" method="post" className="mt-8 space-y-3">
+        <form ref={formRef} id="payform" method="post" action="#" className="mt-8 space-y-3">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
           <div className="grid gap-4">
             <div>
@@ -209,7 +209,12 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="submit"
+            type="button"
+            onClick={() =>
+              formRef.current?.dispatchEvent(
+                new Event('submit', { cancelable: true, bubbles: true })
+              )
+            }
             disabled={loading}
             className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-50"
           >
