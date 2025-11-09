@@ -47,15 +47,20 @@ export default function CheckoutPage() {
   const discountTotal = getTotalPriceAfterDiscountByKey(cartKey);
   const totalAfter = discountTotal + shippingTotal;
 
-  const initializePaylib = () => {
+  const handlePayment = () => {
     const paylib = window.paylib;
     const form = formRef.current;
-    if (!paylib || !form) return;
+    if (!paylib || !form) {
+      setErrors('مكتبة الدفع غير جاهزة أو الفورم غير موجود');
+      return;
+    }
+
+    setErrors(null); // إعادة تعيين أي خطأ سابق
 
     paylib.inlineForm({
-      key: 'C7K2B9-V9276N-M2VQP2-NN6BKM',
+      key: 'C7K2B9-V9276N-M2VQP2-NN6BKM', // Client Key
       form,
-      autoSubmit: true,
+      autoSubmit: false, // مهم جداً، لن يرسل الفورم مباشرة
       callback: (response: PaylibResponse) => {
         const errorContainer = document.getElementById('paymentErrors');
         if (!errorContainer) return;
@@ -68,7 +73,15 @@ export default function CheckoutPage() {
 
         if (!response.payment_token) {
           setErrors('لم يتم إنشاء رمز الدفع (token)');
+          return;
         }
+
+        // إدراج التوكن في الحقل المخفي
+        const tokenInput = form.querySelector<HTMLInputElement>('input[name="payment_token"]');
+        if (tokenInput) tokenInput.value = response.payment_token;
+
+        // إرسال الفورم بعد توليد التوكن
+        form.submit();
       },
     });
   };
@@ -78,7 +91,6 @@ export default function CheckoutPage() {
       <Script
         src="https://secure-iraq.paytabs.com/payment/js/paylib.js"
         strategy="afterInteractive"
-        onLoad={initializePaylib}
         onError={() => console.error('فشل تحميل مكتبة Paylib')}
       />
 
@@ -169,7 +181,8 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="submit"
+            type="button" // مهم جداً
+            onClick={handlePayment}
             className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90"
           >
             تأكيد الدفع
