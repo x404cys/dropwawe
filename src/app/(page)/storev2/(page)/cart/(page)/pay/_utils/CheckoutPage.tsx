@@ -182,7 +182,7 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="submit"
+            type="button"
             onClick={handlePayment}
             className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90"
           >
