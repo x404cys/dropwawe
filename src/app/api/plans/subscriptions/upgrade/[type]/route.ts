@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/app/lib/db';
 import { authOperation } from '@/app/lib/authOperation';
+import { TypePlan } from '@prisma/client';
 
 export async function POST(
   req: Request,
@@ -11,14 +12,21 @@ export async function POST(
   if (!session || !session.user?.id) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
-  const userId = session.user.id;
 
-  const typeOfPlanRaw = (await context.params).type;
-  let typeOfPlan: 'NORMAL' | 'MODERN' | 'PENDINGROFESSIONAL';
-  if (typeOfPlanRaw === 'MODREN') {
-    typeOfPlan = 'MODERN';
-  } else {
-    typeOfPlan = typeOfPlanRaw;
+  const userId = session.user.id;
+  const { type: typeParam } = await context.params;
+
+  let typeOfPlan: TypePlan;
+  switch (typeParam) {
+    case 'MODREN':
+      typeOfPlan = TypePlan.MODERN;
+      break;
+    case 'PENDINGROFESSIONAL':
+      typeOfPlan = TypePlan.PENDINGROFESSIONAL;
+      break;
+    default:
+      typeOfPlan = TypePlan.NORMAL;
+      break;
   }
 
   const plan = await prisma.subscriptionPlan.findFirst({
