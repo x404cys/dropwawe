@@ -158,7 +158,7 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        <form ref={formRef} id="payform" method="post" action="#" className="mt-8 space-y-3">
+        <form ref={formRef} id="payform" method="post" action="/api/storev2/payment">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
           <div className="grid gap-4">
             <div>
