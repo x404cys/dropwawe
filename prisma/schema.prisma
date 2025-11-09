@@ -265,7 +265,7 @@ model SubscriptionPlan {
 
   createdAt         DateTime @default(now())
   subscriptions     UserSubscription[]
-}
+}//
 
 model UserSubscription {
   id              String   @id @default(cuid())
