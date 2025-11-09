@@ -2,8 +2,11 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { payment_token, amount, cart_id, description } = body;
+    const formData = await req.formData();
+    const payment_token = formData.get('payment_token')?.toString();
+    const amount = formData.get('amount')?.toString();
+    const cart_id = formData.get('cart_id')?.toString();
+    const description = formData.get('description')?.toString();
 
     if (!payment_token) {
       return NextResponse.json(
@@ -49,6 +52,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, message: 'Payment processed successfully', data });
   } catch (err) {
-    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    return NextResponse.json({ success: false, message: err || 'Server error' }, { status: 500 });
   }
 }
