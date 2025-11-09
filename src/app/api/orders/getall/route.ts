@@ -79,7 +79,6 @@ export async function GET(req: Request) {
       monthly,
     });
   } catch (error) {
-    console.error('خطأ في جلب الأرباح:', error);
-    return NextResponse.json({ error: 'خطأ في السيرفر' }, { status: 500 });
+    return NextResponse.json({ error: 'err to get profit' }, { status: 500 });
   }
 }

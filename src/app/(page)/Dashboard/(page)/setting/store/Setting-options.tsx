@@ -15,8 +15,17 @@ import { useDashboardData } from '../../../_utils/useDashboardData';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { IoBusinessOutline } from 'react-icons/io5';
 import PlanCard from '../../../_components/PlanCard';
+import { PiCurrencyDollarLight } from 'react-icons/pi';
 
-type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'subscriptions' | 'about';
+type SectionType =
+  | 'basic'
+  | 'shipping'
+  | 'social'
+  | 'theme'
+  | 'pixel'
+  | 'subscriptions'
+  | 'about'
+  | 'profit';
 
 interface Section {
   id: SectionType;
@@ -36,6 +45,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
   const sections: Section[] = [
     { id: 'basic', label: 'الإعدادات الأساسية', icon: LuUserRoundPen },
     { id: 'shipping', label: 'إعدادات التوصيل', icon: LiaShippingFastSolid },
+    { id: 'profit', label: 'سحب العوائد', icon: PiCurrencyDollarLight },
     { id: 'social', label: 'الروابط ووسائل التواصل', icon: IoShareSocialOutline },
     { id: 'theme', label: 'إعدادات القالب والمظهر', icon: MdOutlineStyle },
     { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin },

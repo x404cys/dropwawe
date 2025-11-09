@@ -4,10 +4,10 @@ import { DollarSign, Home, Settings, ShoppingBag } from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { AiOutlineProduct } from 'react-icons/ai';
 import { useState, useEffect } from 'react';
- import { useSession } from 'next-auth/react';
+import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../_utils/useDashboardData';
 import Loader from '@/components/Loader';
- 
+import { IoSettingsOutline } from 'react-icons/io5';
 
 export default function FloatingNavBarForDashboard() {
   const router = useRouter();
@@ -84,7 +84,14 @@ export default function FloatingNavBarForDashboard() {
             <DollarSign size={20} />
             <span className="mt-1 text-xs text-gray-700">العوائد</span>
           </button>
-        </div> 
+          <button
+            className={`${baseStyle} ${isActive(`/Dashboard/setting/store`) ? activeStyle : inactiveStyle}`}
+            onClick={() => handleNavigate(`/Dashboard/setting/store`)}
+          >
+            <IoSettingsOutline size={20} />
+            <span className="mt-1 text-xs text-gray-700">الاعدادات</span>
+          </button>
+        </div>
       </div>
     </>
   );

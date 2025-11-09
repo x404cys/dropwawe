@@ -1,8 +1,29 @@
+'use client';
 import { PricingCard } from '@/components/pricing-card';
 import { Badge } from '@/components/ui/badge';
 import { Check } from 'lucide-react';
+import { useState } from 'react';
+import { subscribePlan } from '../../_utils/subscribePlan';
+import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function Plans() {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubscribe = async (type: string) => {
+    setLoading(true);
+    try {
+      const result = await subscribePlan(type);
+      toast.success(`تم الاشتراك بنجاح في خطة: ${type}`);
+      router.replace('/Dashboard');
+    } catch (err) {
+      toast.error('حدث خطأ أثناء الاشتراك');
+    } finally {
+      setLoading(false);  
+    }
+  };
+
   return (
     <div dir="rtl" className="bg-background min-h-screen">
       <div className="container mx-auto px-4 py-16 md:py-24">
@@ -36,6 +57,8 @@ export default function Plans() {
             ]}
             buttonText="ابدأ مجانًا"
             buttonVariant="outline"
+            planType="NORMAL"
+            onClick={handleSubscribe}
           />
 
           <PricingCard
@@ -55,6 +78,8 @@ export default function Plans() {
             ]}
             buttonText="ابدأ الآن"
             buttonVariant="secondary"
+            planType="MODREN"
+            onClick={handleSubscribe}
           />
 
           <PricingCard
@@ -76,6 +101,8 @@ export default function Plans() {
             buttonText="الترقية الآن"
             buttonVariant="default"
             recommended
+            planType="PENDINGROFESSIONAL"
+            onClick={handleSubscribe}
           />
         </div>
 

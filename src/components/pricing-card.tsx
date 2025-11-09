@@ -1,18 +1,27 @@
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Check } from "lucide-react"
-import { cn } from "@/lib/utils"
+import { Button } from '@/components/ui/button';
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface PricingCardProps {
-  name: string
-  price: string
-  period: string
-  description: string
-  features: string[]
-  buttonText: string
-  buttonVariant?: "default" | "secondary" | "outline"
-  recommended?: boolean
+  name: string;
+  price: string;
+  period: string;
+  description: string;
+  features: string[];
+  buttonText: string;
+  buttonVariant?: 'default' | 'secondary' | 'outline';
+  recommended?: boolean;
+  onClick?: (type: string) => void;
+  planType?: string;
 }
 
 export function PricingCard({
@@ -22,14 +31,16 @@ export function PricingCard({
   description,
   features,
   buttonText,
-  buttonVariant = "default",
+  buttonVariant = 'default',
   recommended = false,
+  onClick,
+  planType,
 }: PricingCardProps) {
   return (
     <Card
       className={cn(
-        "relative flex flex-col border-border bg-card transition-all hover:shadow-lg",
-        recommended && "border-accent shadow-md",
+        'border-border bg-card relative flex flex-col transition-all hover:shadow-lg',
+        recommended && 'border-accent shadow-md'
       )}
     >
       {recommended && (
@@ -38,34 +49,39 @@ export function PricingCard({
         </div>
       )}
       <CardHeader className="pb-8">
-        <CardTitle className="text-2xl font-bold text-card-foreground">{name}</CardTitle>
+        <CardTitle className="text-card-foreground text-2xl font-bold">{name}</CardTitle>
         <div className="mt-4 flex items-baseline gap-1">
-          <span className="text-5xl font-bold tracking-tight text-card-foreground">{price}</span>
+          <span className="text-card-foreground text-5xl font-bold tracking-tight">{price}</span>
           <span className="text-muted-foreground">{period}</span>
         </div>
-        <CardDescription className="mt-4 text-base text-muted-foreground">{description}</CardDescription>
+        <CardDescription className="text-muted-foreground mt-4 text-base">
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent className="flex-1">
         <ul className="space-y-3">
-          {features.map((feature) => (
+          {features.map(feature => (
             <li key={feature} className="flex items-start gap-3">
-              <Check className="h-5 w-5 shrink-0 text-accent mt-0.5" />
-              <span className="text-sm leading-relaxed text-card-foreground">{feature}</span>
+              <Check className="text-accent mt-0.5 h-5 w-5 shrink-0" />
+              <span className="text-card-foreground text-sm leading-relaxed">{feature}</span>
             </li>
           ))}
         </ul>
       </CardContent>
       <CardFooter>
         <Button
+          onClick={() => onClick?.(planType ?? '')}
           variant={buttonVariant}
           className={cn(
-            "w-full",
-            recommended && buttonVariant === "default" && "bg-primary text-primary-foreground hover:bg-primary/90",
+            'w-full',
+            recommended &&
+              buttonVariant === 'default' &&
+              'bg-primary text-primary-foreground hover:bg-primary/90'
           )}
         >
           {buttonText}
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

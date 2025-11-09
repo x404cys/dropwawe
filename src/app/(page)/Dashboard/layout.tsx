@@ -1,4 +1,3 @@
-import Breadcrumb from '@/components/Breadcrumb';
 import FloatingNavBarForDashboard from './_components/FloatingNavBarForDashboard';
 import UserActions from './_components/UserActions';
 import NavBarForDesktop from './_components/NavBarDesktop';

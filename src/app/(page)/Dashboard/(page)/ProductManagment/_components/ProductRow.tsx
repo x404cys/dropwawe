@@ -53,7 +53,7 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
           <Package className="text-muted-foreground h-4 w-4" />
           <span className="font-medium tabular-nums">{product.quantity}</span>
           {product.quantity < 10 && (
-            <Badge variant="destructive" className="text-xs">
+            <Badge variant="warning" className="text-xs">
               مخزون منخفض
             </Badge>
           )}
@@ -104,7 +104,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
             aria-label="تعديل المنتج"
           >
             <Pencil className="h-4 w-4" />
-            <span className="mr-1.5 hidden sm:inline">تعديل</span>
           </Button>
           <Button
             size="sm"
@@ -114,7 +113,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
             aria-label="حذف المنتج"
           >
             <Trash className="h-4 w-4" />
-            <span className="mr-1.5 hidden sm:inline">حذف</span>
           </Button>
         </div>
       </TableCell>

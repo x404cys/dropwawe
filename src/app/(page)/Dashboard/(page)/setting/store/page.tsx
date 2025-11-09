@@ -21,7 +21,15 @@ import SettingOptions from './Setting-options';
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
 
-type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'subscriptions' | 'about';
+type SectionType =
+  | 'basic'
+  | 'shipping'
+  | 'social'
+  | 'theme'
+  | 'pixel'
+  | 'subscriptions'
+  | 'about'
+  | 'profit';
 
 export default function StoreSetupPage() {
   const { data: session } = useSession();

@@ -1,0 +1,5 @@
+export enum TypePlan {
+  NORMAL = 'NORMAL',
+  MODERN = 'MODERN',
+  PENDINGROFESSIONAL = 'PENDINGROFESSIONAL',
+}
