@@ -24,7 +24,7 @@ export async function POST(
   const plan = await prisma.subscriptionPlan.findFirst({
     where: { type: typeOfPlan },
   });
-//
+
   if (!plan) {
     return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
   }
