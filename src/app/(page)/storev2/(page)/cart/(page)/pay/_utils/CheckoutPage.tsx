@@ -32,7 +32,6 @@ export default function CheckoutPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const formRef = useRef<HTMLFormElement | null>(null);
-  const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<string | null>(null);
 
   const name = searchParams.get('name');
@@ -53,74 +52,39 @@ export default function CheckoutPage() {
     script.async = true;
 
     script.onload = () => {
-      console.log('  Paylib loaded');
       const paylib = window.paylib;
       const form = formRef.current;
 
-      if (!paylib || !form) {
-        return;
-      }
+      if (!paylib || !form) return;
 
       paylib.inlineForm({
-        key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT',
+        key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT', // ضع هنا الـ Client Key الخاص بك
         form,
         autoSubmit: true,
-        callback: async (response: PaylibResponse) => {
-          console.log('💬 Paylib response:', response);
+        callback: (response: PaylibResponse) => {
           const errorContainer = document.getElementById('paymentErrors');
           if (!errorContainer) return;
-
           errorContainer.innerHTML = '';
 
           if (response.error) {
             paylib.handleError(errorContainer, response);
-            setLoading(false);
             return;
           }
 
-          const token = response.payment_token;
-          if (!token) {
+          if (!response.payment_token) {
             setErrors('لم يتم إنشاء رمز الدفع (token)');
-            setLoading(false);
-            return;
-          }
-
-          try {
-            setLoading(true);
-            const res = await fetch('/api/storev2/payment', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({
-                payment_token: token,
-                amount: totalAfter,
-                cart_id: `order_${Date.now()}`,
-                description: 'طلب من التطبيق',
-              }),
-            });
-
-            const data: { success?: boolean; message?: string } = await res.json();
-
-            if (res.ok && data.success) {
-              router.push('/success');
-            } else {
-              setErrors('فشل الدفع: ' + (data.message || JSON.stringify(data)));
-            }
-          } catch (err) {
-            if (err instanceof Error) setErrors('خطأ في الاتصال بالخادم: ' + err.message);
-          } finally {
-            setLoading(false);
           }
         },
       });
     };
 
-    script.onerror = () => console.error('  فشل تحميل مكتبة Paylib');
+    script.onerror = () => console.error('فشل تحميل مكتبة Paylib');
     document.body.appendChild(script);
 
     return () => {
       if (document.body.contains(script)) document.body.removeChild(script);
     };
-  }, [router, totalAfter]);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 py-3">
@@ -159,6 +123,8 @@ export default function CheckoutPage() {
 
         <form ref={formRef} id="payform" method="post" action="/api/storev2/payment">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
+
+          {/* الحقول الحساسة */}
           <div className="grid gap-4">
             <input type="hidden" name="payment_token" />
 
@@ -210,16 +176,10 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="button"
-            onClick={() =>
-              formRef.current?.dispatchEvent(
-                new Event('submit', { cancelable: true, bubbles: true })
-              )
-            }
-            disabled={loading}
-            className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            type="submit"
+            className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90"
           >
-            {loading ? 'جاري المعالجة...' : 'تأكيد الدفع'}
+            تأكيد الدفع
           </button>
         </form>
       </div>
