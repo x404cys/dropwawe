@@ -14,8 +14,8 @@ export async function subscribePlan(type: string) {
     }
 
     return data;
-  } catch (error: any) {
-    console.error('Subscription error:', error.message);
+  } catch (error) {
+    console.error('Subscription error:', error);
     throw error;
   }
 }
