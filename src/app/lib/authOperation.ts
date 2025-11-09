@@ -76,7 +76,7 @@ export const authOperation: AuthOptions = {
     },
 
     async redirect({ baseUrl }) {
-      return `${baseUrl}/Dashboard/create-store`;
+      return `dashboard.matager.store`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

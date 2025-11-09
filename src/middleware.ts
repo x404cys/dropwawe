@@ -14,11 +14,6 @@ export async function middleware(req: NextRequest) {
     subdomain = parts[0];
   }
 
-  if (hostname.includes('192.168.0.198:3000') && parts.length > 1) {
-    subdomain = parts[0];
-  } else if (parts.length > 2) {
-    subdomain = parts[0];
-  }
   if (subdomain) {
     if (subdomain === 'admin') {
       if (pathname.startsWith('/admin')) {
