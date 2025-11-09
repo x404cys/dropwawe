@@ -53,7 +53,7 @@ export default function CheckoutPage() {
     if (!paylib || !form) return;
 
     paylib.inlineForm({
-      key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT', // Client Key الخاص بك
+      key: 'C7K2B9-V9276N-M2VQP2-NN6BKM',
       form,
       autoSubmit: true,
       callback: (response: PaylibResponse) => {
