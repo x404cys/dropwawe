@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
+import { toast } from 'sonner';
 
 type PaylibResponse = {
   payment_token?: string;
@@ -91,7 +92,7 @@ export default function CheckoutPage() {
       <Script
         src="https://secure-iraq.paytabs.com/payment/js/paylib.js"
         strategy="afterInteractive"
-        onError={() => console.error('فشل تحميل مكتبة Paylib')}
+        onError={() => toast.error('فشل تحميل مكتبة Paylib')}
       />
 
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-4 shadow-sm" dir="rtl">
@@ -181,7 +182,7 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="button" // مهم جداً
+            type="submit"
             onClick={handlePayment}
             className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90"
           >
