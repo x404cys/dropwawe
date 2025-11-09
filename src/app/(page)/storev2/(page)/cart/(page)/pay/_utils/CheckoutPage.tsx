@@ -58,8 +58,7 @@ export default function CheckoutPage() {
       const form = formRef.current;
 
       if (!paylib || !form) {
-        console.error('  Paylib غير متاح أو الفورم غير موجود');
-        return;
+         return;
       }
 
       paylib.inlineForm({
