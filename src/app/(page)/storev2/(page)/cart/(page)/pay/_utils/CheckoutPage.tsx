@@ -5,7 +5,6 @@ import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 
-// ✅ تعريف الأنواع بدقة
 type PaylibResponse = {
   payment_token?: string;
   error?: boolean;
@@ -22,7 +21,6 @@ type Paylib = {
   handleError: (element: HTMLElement, response: PaylibResponse) => void;
 };
 
-// ✅ تعريف global type لـ window.paylib
 declare global {
   interface Window {
     paylib?: Paylib;
@@ -49,24 +47,23 @@ export default function CheckoutPage() {
   const discountTotal = getTotalPriceAfterDiscountByKey(cartKey);
   const totalAfter = discountTotal + shippingTotal;
 
-  // ✅ تحميل paylib.js وربطها بالفورم بعد التحميل
   useEffect(() => {
     const script = document.createElement('script');
     script.src = 'https://secure-iraq.paytabs.com/payment/js/paylib.js';
     script.async = true;
 
     script.onload = () => {
-      console.log('✅ Paylib loaded');
+      console.log('  Paylib loaded');
       const paylib = window.paylib;
       const form = formRef.current;
 
       if (!paylib || !form) {
-        console.error('❌ Paylib غير متاح أو الفورم غير موجود');
+        console.error('  Paylib غير متاح أو الفورم غير موجود');
         return;
       }
 
       paylib.inlineForm({
-        key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT', // المفتاح الخاص بك
+        key: 'C6K2B9-V9GB6N-2RNVHV-M6P2TT',
         form,
         autoSubmit: true,
         callback: async (response: PaylibResponse) => {
@@ -118,7 +115,7 @@ export default function CheckoutPage() {
       });
     };
 
-    script.onerror = () => console.error('❌ فشل تحميل مكتبة Paylib');
+    script.onerror = () => console.error('  فشل تحميل مكتبة Paylib');
     document.body.appendChild(script);
 
     return () => {
@@ -134,7 +131,6 @@ export default function CheckoutPage() {
           <ShoppingBag className="h-5 w-5 text-gray-800" />
         </div>
 
-        {/* معلومات الطلب */}
         <div className="space-y-2 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
           <div className="flex justify-between">
             <span>الزبون</span>
@@ -162,7 +158,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* نموذج الدفع */}
         <form ref={formRef} id="payform" method="post" className="mt-8 space-y-3">
           <h2 className="text-center text-lg font-semibold text-gray-800">بيانات البطاقة</h2>
           <div className="grid gap-4">
