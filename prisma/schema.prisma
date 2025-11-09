@@ -253,7 +253,7 @@ enum TypePlan {
 model SubscriptionPlan {
   id                String   @id @default(cuid())
   name              String  
-  type              TypePlan @unique
+  type              TypePlan  
   price             Float
   durationDays      Int      
   maxProducts       Int?      
@@ -265,7 +265,7 @@ model SubscriptionPlan {
 
   createdAt         DateTime @default(now())
   subscriptions     UserSubscription[]
-}//
+}
 
 model UserSubscription {
   id              String   @id @default(cuid())
