@@ -21,7 +21,7 @@ export async function POST(
     typeOfPlan = typeOfPlanRaw;
   }
 
-  const plan = await prisma.subscriptionPlan.findFirst({
+  const plan = await prisma.subscriptionPlan.findUnique({
     where: { type: typeOfPlan },
   });
 
