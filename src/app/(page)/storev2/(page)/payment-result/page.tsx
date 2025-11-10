@@ -21,7 +21,7 @@ export default function PaymentResult() {
   const isSuccess = status === 'A';
   if (!mounted) return null;
 
-  return (
+  return (//
     <div className="flex min-h-screen items-center justify-center p-4" dir="rtl">
       <div className="w-full max-w-md space-y-4 rounded-xl border bg-white p-6 shadow-lg">
         <div className="flex justify-center">
