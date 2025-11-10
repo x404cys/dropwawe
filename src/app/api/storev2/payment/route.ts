@@ -5,26 +5,29 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { name, phone, address, amount, cart_id, description } = body;
 
-    if (!amount || !cart_id) {
+    if (!amount || !cart_id)
       return NextResponse.json(
-        { success: false, message: 'Missing required fields (amount, cart_id)' },
+        { success: false, message: 'Missing amount/cart_id' },
         { status: 400 }
       );
-    }
 
-    const PAYTABS_PROFILE_ID = 'C7K2B9-V9276N-M2VQP2-NN6BKM';
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-    const RETURN_URL = 'https://accseshop.matager.store/storev2/payment/callback';
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://matager.store';
+    const PAYTABS_PROFILE_ID = 169218;
 
-    const paymentRequest = {
-      profile_id: 169218,
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
+    const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/callback`;
+    const RETURN_URL = `${SITE_URL}/storev2/payment-result`;
+
+    const payload = {
+      profile_id: PAYTABS_PROFILE_ID,
       tran_type: 'sale',
       tran_class: 'ecom',
       cart_id,
+      cart_description: description || `طلب من ${name || 'عميل'}`,
       cart_currency: 'IQD',
       cart_amount: amount,
-      cart_description: description || `طلب من ${name}`,
+      callback: CALLBACK_URL,
+      return: RETURN_URL,
       customer_details: {
         name: name || 'عميل',
         email: 'no-reply@example.com',
@@ -33,8 +36,6 @@ export async function POST(req: Request) {
         city: 'Baghdad',
         country: 'IQ',
       },
-      return: RETURN_URL,
-      callback: `${SITE_URL}/api/storev2/payment/callback`,
     };
 
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
@@ -43,24 +44,20 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
         Authorization: PAYTABS_SERVER_KEY,
       },
-      body: JSON.stringify(paymentRequest),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
 
-    if (!response.ok || !data.redirect_url) {
+    if (!response.ok || !data.redirect_url)
       return NextResponse.json(
-        { success: false, message: data.message || 'Payment request failed' },
+        { success: false, message: data.message || 'Failed to create payment' },
         { status: 400 }
       );
-    }
 
-    return NextResponse.json({
-      success: true,
-      redirect_url: data.redirect_url,
-    });
+    return NextResponse.json({ success: true, redirect_url: data.redirect_url });
   } catch (err) {
-    console.error('Server Error:', err);
-    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    console.error('Error creating payment:', err);
+    return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
