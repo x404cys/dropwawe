@@ -7,15 +7,25 @@ import { Card } from '@/components/ui/card';
 import { FaTrash, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from '@/components/ui/dialog';
+import { User, Phone, MapPin, Wallet } from 'lucide-react';
 
 import { useParams, useRouter } from 'next/navigation';
 import { FiShoppingBag } from 'react-icons/fi';
 import { LiaShoppingBagSolid } from 'react-icons/lia';
-import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useProducts } from '../../../Data/context/products/ProductsContext';
-import CheckoutButton from '../(page)/pay/page';
 import { MdOutlinePayments } from 'react-icons/md';
 import OrderSubmitButton from '../../../lib/Checkout/OrderSubmitButton';
+import { toast } from 'sonner';
 
 export default function CartPage() {
   const {
@@ -31,11 +41,14 @@ export default function CartPage() {
   } = useCart();
   const { storeId } = useParams();
   const { store } = useProducts();
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
   const [locationInput, setLocationInput] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   if (!storeId) {
     return <p>User ID not found in URL</p>;
@@ -72,6 +85,42 @@ export default function CartPage() {
       </div>
     );
   }
+  const handlePay = async () => {
+    try {
+      setLoading(true);
+      toast.loading('جاري إنشاء عملية الدفع...');
+
+      const res = await fetch('/api/storev2/payment', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: fullName,
+          phone: phone,
+          address: locationInput,
+          amount: totalAfter,
+          cart_id: `order-${Date.now()}`,
+          description: `طلب جديد من ${name}`,
+        }),
+      });
+
+      const data = await res.json();
+      toast.dismiss();
+
+      if (!data.success) {
+        toast.error(data.message || 'فشل إنشاء عملية الدفع');
+        return;
+      }
+
+      window.location.href = data.redirect_url;
+    } catch (err) {
+      toast.dismiss();
+      toast.error('حدث خطأ أثناء إرسال الطلب');
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <section dir="rtl">
       <div className="container mx-auto py-8">
@@ -246,19 +295,88 @@ export default function CartPage() {
                   items={cartItems}
                   total={totalAfter}
                 />
-                <Button
-                  onClick={() =>
-                    router.push(
-                      `/storev2/cart/pay?name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(
-                        phone
-                      )}&address=${encodeURIComponent(locationInput)}`
-                    )
-                  }
-                  variant="outline"
-                  className="flex w-full cursor-pointer items-center gap-2 border-2 border-gray-950 bg-gray-950 py-4 text-white duration-300 hover:bg-gray-800 hover:text-white"
-                >
-                  <span> الدفع الالكتروني</span> <MdOutlinePayments />
-                </Button>
+
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger dir="rtl" asChild>
+                    <Button
+                      variant="outline"
+                      className="flex w-full cursor-pointer items-center justify-center gap-2 border-2 border-gray-950 bg-gray-950 py-4 text-white duration-300 hover:bg-gray-800"
+                    >
+                      <span>الدفع الإلكتروني</span>
+                      <MdOutlinePayments className="h-5 w-5" />
+                    </Button>
+                  </DialogTrigger>
+
+                  <DialogContent className="sm:max-w-md" dir="rtl">
+                    <DialogHeader>
+                      <DialogTitle>تأكيد عملية الدفع</DialogTitle>
+                      <DialogDescription>
+                        يرجى التأكد من تفاصيل الطلب قبل المتابعة إلى صفحة الدفع الإلكتروني، سيتم
+                        تحويلك إلى صفحة الدفع المقدمة من{' '}
+                        <span className="font-semibold text-gray-800">أموال</span>.
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <div className="space-y-3 text-sm text-gray-800">
+                      <div className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <User className="h-4 w-4 text-gray-600" />
+                          <span className="font-medium">الاسم</span>
+                        </div>
+                        <span className="text-gray-900">{fullName}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <Phone className="h-4 w-4 text-gray-600" />
+                          <span className="font-medium">الهاتف</span>
+                        </div>
+                        <span className="text-gray-900">{phone}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between border-b pb-2">
+                        <div className="flex items-center gap-2">
+                          <MapPin className="h-4 w-4 text-gray-600" />
+                          <span className="font-medium">العنوان</span>
+                        </div>
+                        <span className="text-gray-900">{locationInput}</span>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-2">
+                        <div className="flex items-center gap-2">
+                          <Wallet className="h-4 w-4 text-green-600" />
+                          <span className="font-semibold text-green-700">الإجمالي</span>
+                        </div>
+                        <span className="font-bold text-green-700">
+                          {formatIQD(totalAfter)} د.ع
+                        </span>
+                      </div>
+                    </div>
+
+                    <DialogFooter className="mt-6 flex flex-col flex-wrap-reverse space-y-3">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDialogOpen(false)}
+                        className="w-full border-gray-400 text-gray-700 hover:bg-gray-100"
+                      >
+                        إلغاء
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setIsDialogOpen(false);
+                          router.push(
+                            `/storev2/cart/pay?name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(
+                              phone
+                            )}&address=${encodeURIComponent(locationInput)}`
+                          );
+                        }}
+                        className="w-full bg-gray-900 py-3 text-white hover:bg-gray-800"
+                      >
+                        تأكيد والدفع الآن
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
 
                 <Button variant="outline" className="w-full hover:bg-gray-100">
                   متابعة التسوق
@@ -268,6 +386,7 @@ export default function CartPage() {
           </div>
         </div>
       </div>
+
       <br />
       <br />
     </section>

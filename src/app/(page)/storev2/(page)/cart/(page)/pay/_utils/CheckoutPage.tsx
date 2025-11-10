@@ -1,13 +1,30 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ShoppingBag } from 'lucide-react';
+import { useCart } from '@/app/lib/context/CartContext';
+import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 import { toast } from 'sonner';
 
 export default function CheckoutPage() {
+  const { store } = useProducts();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const formRef = useRef<HTMLFormElement | null>(null);
   const [loading, setLoading] = useState(false);
-  const [name, setName] = useState('عبد الرحمن');
-  const [phone, setPhone] = useState('07700000000');
-  const [address, setAddress] = useState('بغداد - المنصور');
-  const [amount, setAmount] = useState(15000);
+  const [errors, setErrors] = useState<string | null>(null);
+
+  const name = searchParams.get('name');
+  const phone = searchParams.get('phone');
+  const address = searchParams.get('address');
+
+  const { getAllShippingPricesByKey, getTotalPriceByKey, getTotalPriceAfterDiscountByKey } =
+    useCart();
+  const cartKey = `cart/${store?.id}`;
+  const subtotal = getTotalPriceByKey(cartKey);
+  const shippingTotal = getAllShippingPricesByKey(cartKey);
+  const discountTotal = getTotalPriceAfterDiscountByKey(cartKey);
+  const totalAfter = discountTotal + shippingTotal;
 
   const handlePay = async () => {
     try {
@@ -18,12 +35,12 @@ export default function CheckoutPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name,
-          phone,
-          address,
-          amount,
+          name: name,
+          phone: phone,
+          address: address,
+          amount: totalAfter,
           cart_id: `order-${Date.now()}`,
-          description: 'طلب جديد من المتجر',
+          description: `new Order from : ${name} - ${Date.now()}`,
         }),
       });
 
@@ -44,25 +61,48 @@ export default function CheckoutPage() {
       setLoading(false);
     }
   };
-
   return (
-    <div className="mx-auto max-w-lg rounded-lg bg-white p-10 shadow" dir="rtl">
-      <h1 className="mb-4 text-xl font-bold">الدفع الآمن</h1>
+    <div className="min-h-screen bg-gray-50 py-3">
+      <div className="mx-auto max-w-3xl rounded-2xl bg-white p-4 shadow-sm" dir="rtl">
+        <div className="mb-8 flex items-center justify-between gap-2 border-b pb-4">
+          <h1 className="font-semibold text-gray-800">إتمام الدفع</h1>
+          <ShoppingBag className="h-5 w-5 text-gray-800" />
+        </div>
 
-      <div className="space-y-2 text-sm">
-        <p>الاسم: {name}</p>
-        <p>الهاتف: {phone}</p>
-        <p>العنوان: {address}</p>
-        <p className="font-semibold text-green-700">الإجمالي: {amount} د.ع</p>
+        <div className="space-y-2 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
+          <div className="flex justify-between">
+            <span>الزبون</span>
+            <span>{name}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>الهاتف</span>
+            <span>{phone}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>العنوان</span>
+            <span>{address}</span>
+          </div>
+          <div className="flex justify-between">
+            <span>المجموع الفرعي</span>
+            <span>{subtotal} د.ع</span>
+          </div>
+          <div className="flex justify-between">
+            <span>التوصيل</span>
+            <span>{shippingTotal} د.ع</span>
+          </div>
+          <div className="flex justify-between border-t pt-2 font-semibold text-green-700">
+            <span>الإجمالي بعد الخصم</span>
+            <span>{totalAfter} د.ع</span>
+          </div>
+        </div>
+        <button
+          disabled={loading}
+          onClick={handlePay}
+          className="mt-6 w-full rounded-lg bg-black py-3 text-white hover:opacity-90"
+        >
+          {loading ? 'جاري المعالجة...' : 'تأكيد الدفع'}
+        </button>
       </div>
-
-      <button
-        disabled={loading}
-        onClick={handlePay}
-        className="mt-6 w-full rounded-lg bg-black py-3 text-white hover:opacity-90"
-      >
-        {loading ? 'جاري المعالجة...' : 'تأكيد الدفع'}
-      </button>
     </div>
   );
 }
