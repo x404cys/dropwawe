@@ -49,84 +49,94 @@ export default function CheckoutPage() {
   const discountTotal = getTotalPriceAfterDiscountByKey(cartKey);
   const totalAfter = discountTotal + shippingTotal;
 
-  // ✅ الزر الرئيسي لمعالجة الدفع
-  const handlePayment = () => {
-    const paylib = window.paylib;
-    const form = formRef.current;
+  const handlePayment = async () => {
+    try {
+      const paylib = window.paylib;
+      const form = formRef.current;
 
-    if (!paylib) {
-      setErrors('مكتبة الدفع Paylib غير محمّلة بعد، يرجى الانتظار قليلاً أو إعادة تحميل الصفحة');
-      return;
-    }
-    if (!form) {
-      setErrors('النموذج غير موجود في الصفحة');
-      return;
-    }
+      if (!paylib) {
+        setErrors(
+          '⚠️ مكتبة الدفع Paylib غير محمّلة بعد، يرجى الانتظار قليلاً أو إعادة تحميل الصفحة'
+        );
+        return;
+      }
+      if (!form) {
+        setErrors('⚠️ النموذج غير موجود في الصفحة');
+        return;
+      }
 
-    setErrors(null);
-    console.log('🔹 بدء إنشاء التوكن من PayTabs ...');
+      setErrors(null);
+      console.log('🔹 بدء عملية إنشاء التوكن من PayTabs ...');
 
-    paylib.inlineForm({
-      key: 'C7K2B9-V9276N-M2VQP2-NN6BKM', // ✅ استبدل بالمفتاح الصحيح من حسابك في PayTabs
-      form,
-      autoSubmit: false, // لا يرسل تلقائياً
-      callback: async (response: PaylibResponse) => {
-        console.log('🔸 استجابة Paylib:', response);
+      paylib.inlineForm({
+        key: 'C7K2B9-V9276N-M2VQP2-NN6BKM',
+        form,
+        autoSubmit: false,
+        callback: async (response: PaylibResponse) => {
+          try {
+            console.log('🔸 استجابة Paylib:', response);
 
-        const errorContainer = document.getElementById('paymentErrors');
-        if (errorContainer) errorContainer.innerHTML = '';
+            const errorContainer = document.getElementById('paymentErrors');
+            if (errorContainer) errorContainer.innerHTML = '';
 
-        if (response.error) {
-          if (errorContainer) errorContainer.innerText = response.message || 'حدث خطأ في الدفع';
-          setErrors(response.message || 'فشل في إنشاء رمز الدفع');
-          return;
-        }
+            if (response.error) {
+              if (errorContainer) errorContainer.innerText = response.message || 'حدث خطأ في الدفع';
+              setErrors(response.message || 'فشل في إنشاء رمز الدفع');
+              console.error('❌ خطأ من Paylib:', response.message);
+              return;
+            }
 
-        if (!response.payment_token) {
-          setErrors('لم يتم إنشاء رمز الدفع (token)');
-          return;
-        }
+            if (!response.payment_token) {
+              setErrors('لم يتم إنشاء رمز الدفع (token)');
+              console.error('⚠️ لم يتم استلام payment_token من Paylib');
+              return;
+            }
 
-        // ✅ حفظ التوكن في input hidden داخل الفورم
-        const tokenInput = form.querySelector<HTMLInputElement>('input[name="payment_token"]');
-        if (tokenInput) tokenInput.value = response.payment_token;
+            const tokenInput = form.querySelector<HTMLInputElement>('input[name="payment_token"]');
+            if (tokenInput) tokenInput.value = response.payment_token;
 
-        toast.loading('جاري معالجة الدفع...');
+            toast.loading('💳 جاري معالجة الدفع...');
 
-        try {
-          const res = await fetch('/api/storev2/payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              payment_token: response.payment_token,
-              amount: totalAfter,
-              cart_id: cartKey,
-              description: `طلب جديد من ${name} (${phone})`,
-            }),
-          });
+            // إرسال البيانات إلى السيرفر
+            const res = await fetch('/api/storev2/payment', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                payment_token: response.payment_token,
+                amount: totalAfter,
+                cart_id: cartKey,
+                description: `طلب جديد من ${name} (${phone})`,
+              }),
+            });
 
-          const data = await res.json();
-          toast.dismiss();
+            const data = await res.json();
+            toast.dismiss();
 
-          if (!res.ok || !data.success) {
-            console.error('❌ خطأ من السيرفر:', data);
-            toast.error(data.message || 'فشل في معالجة الدفع');
-            return;
+            if (!res.ok || !data.success) {
+              console.error('❌ خطأ من السيرفر:', data);
+              toast.error(data.message || 'فشل في معالجة الدفع');
+              return;
+            }
+
+            toast.success('✅ تم إرسال الدفع بنجاح');
+            console.log('🎉 الدفع تم بنجاح:', data);
+            router.push('/storev2/success');
+          } catch (err) {
+            console.error('❌ خطأ أثناء تنفيذ callback:', err);
+            toast.dismiss();
+            toast.error('حدث خطأ أثناء تنفيذ الدفع');
           }
-
-          toast.success('✅ تم إرسال الدفع بنجاح');
-          router.push('/storev2/success');
-        } catch (err) {
-          console.error('❌ خطأ في الاتصال بالسيرفر:', err);
-          toast.error('فشل الاتصال بالسيرفر');
-        }
-      },
-    });
+        },
+      });
+    } catch (err) {
+      console.error('🔥 خطأ عام في handlePayment:', err);
+      setErrors('حدث خطأ غير متوقع أثناء عملية الدفع');
+      toast.error('حدث خطأ غير متوقع');
+    }
   };
 
   return (
     <div className="min-h-screen bg-gray-50 py-3">
-      {/* ✅ تحميل مكتبة Paylib */}
       <Script
         src="https://secure-iraq.paytabs.com/payment/js/paylib.js"
         strategy="afterInteractive"
@@ -140,7 +150,6 @@ export default function CheckoutPage() {
           <ShoppingBag className="h-5 w-5 text-gray-800" />
         </div>
 
-        {/* بيانات الطلب */}
         <div className="space-y-2 rounded-md border border-gray-200 bg-gray-50 p-4 text-sm text-gray-700">
           <div className="flex justify-between">
             <span>الزبون</span>
@@ -168,7 +177,6 @@ export default function CheckoutPage() {
           </div>
         </div>
 
-        {/* ✅ نموذج الدفع */}
         <form ref={formRef} id="payform" method="POST" className="mt-6 space-y-4">
           <input type="hidden" name="payment_token" />
 
