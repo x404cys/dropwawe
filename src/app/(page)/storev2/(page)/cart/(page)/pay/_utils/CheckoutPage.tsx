@@ -13,9 +13,19 @@ type PaylibResponse = {
   message?: string;
 };
 
+type Paylib = {
+  inlineForm: (options: {
+    key: string;
+    form: HTMLFormElement;
+    autoSubmit: boolean;
+    callback: (response: PaylibResponse) => void;
+  }) => void;
+  handleError: (element: HTMLElement, response: PaylibResponse) => void;
+};
+
 declare global {
   interface Window {
-    paylib?: any;
+    paylib?: Paylib;
   }
 }
 
