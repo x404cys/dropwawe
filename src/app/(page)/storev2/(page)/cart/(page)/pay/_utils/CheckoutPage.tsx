@@ -55,18 +55,15 @@ export default function CheckoutPage() {
       const form = formRef.current;
 
       if (!paylib) {
-        setErrors(
-          '⚠️ مكتبة الدفع Paylib غير محمّلة بعد، يرجى الانتظار قليلاً أو إعادة تحميل الصفحة'
-        );
+        setErrors('Paylib library not loaded yet, please wait or reload the page.');
         return;
       }
       if (!form) {
-        setErrors('⚠️ النموذج غير موجود في الصفحة');
+        setErrors('Payment form not found.');
         return;
       }
 
       setErrors(null);
-      console.log('🔹 بدء عملية إنشاء التوكن من PayTabs ...');
 
       paylib.inlineForm({
         key: 'C7K2B9-V9276N-M2VQP2-NN6BKM',
@@ -74,30 +71,25 @@ export default function CheckoutPage() {
         autoSubmit: false,
         callback: async (response: PaylibResponse) => {
           try {
-            console.log('🔸 استجابة Paylib:', response);
-
             const errorContainer = document.getElementById('paymentErrors');
             if (errorContainer) errorContainer.innerHTML = '';
 
             if (response.error) {
-              if (errorContainer) errorContainer.innerText = response.message || 'حدث خطأ في الدفع';
-              setErrors(response.message || 'فشل في إنشاء رمز الدفع');
-              console.error('❌ خطأ من Paylib:', response.message);
+              if (errorContainer) errorContainer.innerText = response.message || 'Payment failed';
+              setErrors(response.message || 'Failed to generate payment token');
               return;
             }
 
             if (!response.payment_token) {
-              setErrors('لم يتم إنشاء رمز الدفع (token)');
-              console.error('⚠️ لم يتم استلام payment_token من Paylib');
+              setErrors('Payment token not generated');
               return;
             }
 
             const tokenInput = form.querySelector<HTMLInputElement>('input[name="payment_token"]');
             if (tokenInput) tokenInput.value = response.payment_token;
 
-            toast.loading('💳 جاري معالجة الدفع...');
+            toast.loading('Processing payment...');
 
-            // إرسال البيانات إلى السيرفر
             const res = await fetch('/api/storev2/payment', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
@@ -105,7 +97,7 @@ export default function CheckoutPage() {
                 payment_token: response.payment_token,
                 amount: totalAfter,
                 cart_id: cartKey,
-                description: `طلب جديد من ${name} (${phone})`,
+                description: `New order from ${name} (${phone})`,
               }),
             });
 
@@ -113,25 +105,23 @@ export default function CheckoutPage() {
             toast.dismiss();
 
             if (!res.ok || !data.success) {
-              console.error('❌ خطأ من السيرفر:', data);
-              toast.error(data.message || 'فشل في معالجة الدفع');
+              toast.error(data.message || 'Payment processing failed');
               return;
             }
 
-            toast.success('✅ تم إرسال الدفع بنجاح');
-            console.log('🎉 الدفع تم بنجاح:', data);
+            toast.success('Payment processed successfully');
             router.push('/storev2/success');
           } catch (err) {
-            console.error('❌ خطأ أثناء تنفيذ callback:', err);
+            console.error('Callback error:', err);
             toast.dismiss();
-            toast.error('حدث خطأ أثناء تنفيذ الدفع');
+            toast.error('Error while processing payment');
           }
         },
       });
     } catch (err) {
-      console.error('🔥 خطأ عام في handlePayment:', err);
-      setErrors('حدث خطأ غير متوقع أثناء عملية الدفع');
-      toast.error('حدث خطأ غير متوقع');
+      console.error('Payment error:', err);
+      setErrors('Unexpected error during payment');
+      toast.error('Unexpected error');
     }
   };
 
@@ -140,8 +130,8 @@ export default function CheckoutPage() {
       <Script
         src="https://secure-iraq.paytabs.com/payment/js/paylib.js"
         strategy="afterInteractive"
-        onError={() => toast.error('فشل تحميل مكتبة Paylib')}
-        onLoad={() => console.log('✅ Paylib تم تحميلها بنجاح')}
+        onError={() => toast.error('Failed to load Paylib library')}
+        onLoad={() => console.log('Paylib loaded successfully')}
       />
 
       <div className="mx-auto max-w-3xl rounded-2xl bg-white p-4 shadow-sm" dir="rtl">
@@ -228,7 +218,7 @@ export default function CheckoutPage() {
           {errors && <div className="rounded-md bg-red-50 p-3 text-sm text-red-600">{errors}</div>}
 
           <button
-            type="button"
+            type="submit"
             onClick={handlePayment}
             className="w-full rounded-lg bg-black px-5 py-3 font-semibold text-white hover:opacity-90"
           >
