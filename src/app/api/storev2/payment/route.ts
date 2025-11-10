@@ -42,8 +42,27 @@ export async function POST(req: Request) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: PAYTABS_SERVER_KEY,
       },
-      body: JSON.stringify(paymentRequest),
+      body: JSON.stringify({
+        profile_id: PAYTABS_PROFILE_ID,
+        tran_type: 'sale',
+        tran_class: 'ecom',
+        cart_id,
+        cart_currency: 'IQD',
+        cart_amount: amount,
+        cart_description: description || `طلب من ${name}`,
+        customer_details: {
+          name: name || 'عميل',
+          email: 'no-reply@example.com',
+          phone: phone || '',
+          street1: address || '',
+          city: 'Baghdad',
+          country: 'IQ',
+        },
+        return: RETURN_URL,
+        callback: `${SITE_URL}/api/storev2/payment/callback`,
+      }),
     });
 
     const data = await response.json();
