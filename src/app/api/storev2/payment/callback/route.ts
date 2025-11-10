@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   const redirectUrl = new URL(
     '/storev2/payment-result',
-    process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store'
   );
   redirectUrl.searchParams.set('respStatus', respStatus as string);
   redirectUrl.searchParams.set('tranRef', tranRef as string);
