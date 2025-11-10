@@ -2,56 +2,52 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const payment_token = formData.get('payment_token')?.toString();
-    const amount = formData.get('amount')?.toString();
-    const cart_id = formData.get('cart_id')?.toString();
-    const description = formData.get('description')?.toString();
+    const body = await req.json();
+    const { name, phone, address, amount, cart_id, description } = body;
 
-    if (!payment_token) {
-      return NextResponse.json(
-        { success: false, message: 'Missing payment token' },
-        { status: 400 }
-      );
-    }
-
-    const paymentData = {
-      profile_id: process.env.PAYTABS_PROFILE_ID,
+    const payload = {
+      profile_id: 169218,
       tran_type: 'sale',
       tran_class: 'ecom',
-      cart_id,
+      cart_id: cart_id || `order-${Date.now()}`,
+      cart_description: description || 'طلب جديد',
       cart_currency: 'IQD',
       cart_amount: amount,
-      payment_token,
-      description,
+      callback: 'https://yourdomain.com/api/storev2/payment/callback',
+      return: 'https://yourdomain.com/storev2/success',
       customer_details: {
-        name: 'اسم العميل',
-        email: 'email@example.com',
-        phone: '078xxxxxxxx',
+        name,
+        email: 'customer@email.com',
+        phone,
+        street1: address || 'Baghdad',
+        city: 'Baghdad',
+        country: 'IQ',
+        ip: '127.0.0.1',
       },
-      callback: 'https://accseshop.matager.store/',
     };
 
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
       method: 'POST',
       headers: {
+        Authorization: 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ',
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${process.env.PAYTABS_SECRET_KEY}`,
       },
-      body: JSON.stringify(paymentData),
+      body: JSON.stringify(payload),
     });
 
     const data = await response.json();
 
-    if (!response.ok || data.error) {
-      return NextResponse.json(
-        { success: false, message: data.message || 'Payment failed' },
-        { status: 400 }
-      );
+    if (data.redirect_url) {
+      return NextResponse.json({ success: true, redirect_url: data.redirect_url });
     }
 
-    return NextResponse.json({ success: true, message: 'Payment processed successfully', data });
-  } catch (err) {
-    return NextResponse.json({ success: false, message: err || 'Server error' }, { status: 500 });
+    return NextResponse.json({
+      success: false,
+      message: data.message || 'Payment request failed',
+      data,
+    });
+  } catch (error) {
+    console.error('Payment request error:', error);
+    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
   }
 }
