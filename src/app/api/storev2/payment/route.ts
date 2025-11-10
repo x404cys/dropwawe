@@ -35,13 +35,13 @@ export async function POST(req: Request) {
       },
       return: RETURN_URL,
       callback: `${SITE_URL}/api/storev2/payment/callback`,
+      server_key: PAYTABS_SERVER_KEY,
     };
 
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${PAYTABS_SERVER_KEY}`,
       },
       body: JSON.stringify(paymentRequest),
     });
