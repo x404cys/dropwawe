@@ -1,26 +1,27 @@
 import { NextResponse } from 'next/server';
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
-    const formData = await req.formData();
-    const data = Object.fromEntries(formData.entries());
-    const { tranRef, cartId, respStatus, respMessage } = data;
+    const { searchParams } = new URL(req.url);
+    const respStatus = searchParams.get('respStatus');
+    const tranRef = searchParams.get('tranRef');
+    const cartId = searchParams.get('cartId');
 
-    console.log('  PayTabs Callback Received:', data);
+    console.log('💳 PayTabs Redirect Callback:', { respStatus, tranRef, cartId });
 
     if (respStatus === 'A') {
-      console.log(`  Payment SUCCESS for cart ${cartId} - TranRef: ${tranRef}`);
+      return NextResponse.redirect(
+        `https://accseshop.matager.store/storev2/payment-result?status=success&tranRef=${tranRef}&cartId=${cartId}`
+      );
     } else {
-      console.log(`  Payment FAILED for cart ${cartId} - Reason: ${respMessage}`);
+      return NextResponse.redirect(
+        `https://accseshop.matager.store/storev2/payment-result?status=failed&tranRef=${tranRef}&cartId=${cartId}`
+      );
     }
-
-    return NextResponse.json({ received: true });
   } catch (err) {
-    console.error('Callback error:', err);
-    return NextResponse.json({ success: false, message: 'Server error' }, { status: 500 });
+    console.error('Callback GET error:', err);
+    return NextResponse.redirect(
+      'https://accseshop.matager.store/storev2/payment-result?status=error'
+    );
   }
-}
-
-export async function GET() {
-  return NextResponse.json({ success: true });
 }
