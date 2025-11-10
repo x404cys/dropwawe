@@ -14,8 +14,8 @@ export async function POST(req: Request) {
 
     const PAYTABS_PROFILE_ID = 'C7K2B9-V9276N-M2VQP2-NN6BKM';
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-    const RETURN_URL = process.env.PAYTABS_RETURN_URL || 'https://yourdomain.com/storev2/success';
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
+    const RETURN_URL = process.env.PAYTABS_RETURN_URL || 'https://accseshop.matager.store/storev2';
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://matager.store';
 
     const paymentRequest = {
       profile_id: 169218,
