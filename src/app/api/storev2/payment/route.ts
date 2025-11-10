@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://yourdomain.com';
 
     const paymentRequest = {
-      profile_id: PAYTABS_PROFILE_ID,
+      profile_id: 169218,
       tran_type: 'sale',
       tran_class: 'ecom',
       cart_id,
@@ -35,7 +35,6 @@ export async function POST(req: Request) {
       },
       return: RETURN_URL,
       callback: `${SITE_URL}/api/storev2/payment/callback`,
-      server_key: PAYTABS_SERVER_KEY,
     };
 
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
@@ -44,25 +43,7 @@ export async function POST(req: Request) {
         'Content-Type': 'application/json',
         Authorization: PAYTABS_SERVER_KEY,
       },
-      body: JSON.stringify({
-        profile_id: 5646554654654654656545,
-        tran_type: 'sale',
-        tran_class: 'ecom',
-        cart_id,
-        cart_currency: 'IQD',
-        cart_amount: amount,
-        cart_description: description || `طلب من ${name}`,
-        customer_details: {
-          name: name || 'عميل',
-          email: 'no-reply@example.com',
-          phone: phone || '',
-          street1: address || '',
-          city: 'Baghdad',
-          country: 'IQ',
-        },
-        return: RETURN_URL,
-        callback: `${SITE_URL}/api/storev2/payment/callback`,
-      }),
+      body: JSON.stringify(paymentRequest),
     });
 
     const data = await response.json();
