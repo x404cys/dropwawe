@@ -364,11 +364,7 @@ export default function CartPage() {
                       <Button
                         onClick={() => {
                           setIsDialogOpen(false);
-                          router.push(
-                            `/storev2/cart/pay?name=${encodeURIComponent(fullName)}&phone=${encodeURIComponent(
-                              phone
-                            )}&address=${encodeURIComponent(locationInput)}`
-                          );
+                          handlePay();
                         }}
                         className="w-full bg-gray-900 py-3 text-white hover:bg-gray-800"
                       >
