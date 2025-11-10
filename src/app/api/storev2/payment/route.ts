@@ -45,7 +45,7 @@ export async function POST(req: Request) {
         Authorization: PAYTABS_SERVER_KEY,
       },
       body: JSON.stringify({
-        profile_id: PAYTABS_PROFILE_ID,
+        profile_id: 5646554654654654656545,
         tran_type: 'sale',
         tran_class: 'ecom',
         cart_id,
