@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
-  return handleCallback(req);
-}
+// export async function GET(req: Request) {
+//   return handleCallback(req);
+// }
 
 export async function POST(req: Request) {
   return handleCallback(req);
