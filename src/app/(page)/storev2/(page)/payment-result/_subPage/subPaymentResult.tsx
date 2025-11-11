@@ -41,7 +41,6 @@ export default function PaymentResultContent() {
           {respMessage || (isSuccess ? 'تمت معالجة الدفع بنجاح' : 'حدث خطأ أثناء الدفع')}
         </p>
 
-        {/* تفاصيل الدفع */}
         <div className="space-y-2 rounded-lg bg-gray-100 p-4 text-sm">
           <div className="flex justify-between">
             <span>حالة العملية</span>
@@ -69,7 +68,6 @@ export default function PaymentResultContent() {
           </div>
         </div>
 
-        {/* أزرار الإجراء */}
         <div className="space-y-3">
           {isSuccess ? (
             <>
