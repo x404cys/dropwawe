@@ -27,7 +27,7 @@ export async function POST(req: Request) {
       cart_currency: 'IQD',
       cart_amount: amount,
       callback: CALLBACK_URL,
-      return: RETURN_URL,
+      return: CALLBACK_URL,
       customer_details: {
         name: name || 'عميل',
         email: 'no-reply@example.com',
