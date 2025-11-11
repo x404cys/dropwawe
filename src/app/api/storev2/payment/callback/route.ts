@@ -1,43 +1,15 @@
 import { NextResponse } from 'next/server';
 
-// export async function GET(req: Request) {
-//   return handleCallback(req);
-// }
-
 export async function POST(req: Request) {
-  return handleCallback(req);
-}
-
-async function handleCallback(req: Request) {
   try {
-    let respStatus, tranRef, cartId;
+    const formData = await req.formData();
+    const data = Object.fromEntries(formData.entries());
 
-    if (req.method === 'POST') {
-      const formData = await req.formData();
-      const data = Object.fromEntries(formData.entries());
-      respStatus = data.respStatus;
-      tranRef = data.tranRef;
-      cartId = data.cartId;
-    } else {
-      const { searchParams } = new URL(req.url);
-      respStatus = searchParams.get('respStatus');
-      tranRef = searchParams.get('tranRef');
-      cartId = searchParams.get('cartId');
-    }
+    console.log('PayTabs IPN Data:', data);
 
-    if (respStatus === 'A') {
-      return NextResponse.redirect(
-        `https://accseshop.matager.store/storev2/payment-result?status=success&tranRef=${tranRef}&cartId=${cartId}`
-      );
-    } else {
-      return NextResponse.redirect(
-        `https://accseshop.matager.store/storev2/payment-result?status=failed&tranRef=${tranRef}&cartId=${cartId}`
-      );
-    }
+    return NextResponse.json({ success: true, received: data }, { status: 200 });
   } catch (err) {
-    console.error('Callback error:', err);
-    return NextResponse.redirect(
-      'https://accseshop.matager.store/storev2/payment-result?status=error'
-    );
+    console.error('IPN Error:', err);
+    return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });
   }
 }
