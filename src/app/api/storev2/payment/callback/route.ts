@@ -24,18 +24,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 });
     }
 
-    const payment = await prisma.paymentOrder.upsert({
-      where: { cartId },
-      update: {
-        tranRef,
-        amount: parseFloat(data.cart_amount || '0'),
-        status: respStatus || 'F',
-        respCode,
-        respMessage,
-        customerEmail,
-        signature,
-      },
-      create: {
+    const payment = await prisma.paymentOrder.create({
+      data: {
         orderId: order.id,
         cartId,
         tranRef,
