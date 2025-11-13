@@ -28,7 +28,7 @@ export async function POST(req: Request) {
       where: { cartId },
       update: {
         tranRef,
-        amount: parseFloat(data.cart_amount || '0'),  
+        amount: parseFloat(data.cart_amount || '0'),
         status: respStatus || 'F',
         respCode,
         respMessage,
