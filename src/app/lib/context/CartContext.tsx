@@ -20,6 +20,8 @@ type CartContextType = {
   getTotalPriceByKey: (keyName: string) => number;
   getAllShippingPricesByKey: (keyName: string) => number;
   getTotalPriceAfterDiscountByKey: (keyName: string) => number;
+  saveCartId: (cartId: string, keyName: string) => void;
+  getCartIdByKey: (keyName: string) => string | null;
 };
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -133,7 +135,12 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return acc + item.quantity * priceAfterDiscount;
     }, 0);
   };
-
+  const saveCartId = (cartId: string, keyName: string) => {
+    localStorage.setItem(`cartId_${keyName}`, cartId);
+  };
+  const getCartIdByKey = (keyName: string): string | null => {
+    return localStorage.getItem(`cartId_${keyName}`);
+  };
   return (
     <CartContext.Provider
       value={{
@@ -147,6 +154,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         getTotalPriceByKey,
         getAllShippingPricesByKey,
         getTotalPriceAfterDiscountByKey,
+        saveCartId,
+        getCartIdByKey,
       }}
     >
       {children}

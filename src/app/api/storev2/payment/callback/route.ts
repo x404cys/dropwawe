@@ -1,13 +1,54 @@
 import { NextResponse } from 'next/server';
+import { prisma } from '@/app/lib/db';
 
 export async function POST(req: Request) {
   try {
-    const formData = await req.formData();
-    const data = Object.fromEntries(formData.entries());
+    let data: Record<string, string>;
 
-    console.log('PayTabs IPN Data:', data);
+    const contentType = req.headers.get('content-type') || '';
+    if (contentType.includes('application/json')) {
+      data = await req.json();
+    } else {
+      const formData = await req.formData();
+      data = Object.fromEntries(formData.entries()) as Record<string, string>;
+    }
 
-    return NextResponse.json({ success: true, received: data }, { status: 200 });
+    const { tranRef, cartId, respStatus, respCode, respMessage, customerEmail, signature } = data;
+
+    if (!cartId) {
+      return NextResponse.json({ success: false, message: 'Missing cartId' }, { status: 400 });
+    }
+
+    const order = await prisma.order.findUnique({ where: { id: cartId } });
+    if (!order) {
+      return NextResponse.json({ success: false, message: 'Order not found' }, { status: 404 });
+    }
+
+    const payment = await prisma.paymentOrder.upsert({
+      where: { cartId },
+      update: {
+        tranRef,
+        amount: parseFloat(data.cart_amount || '0'),  
+        status: respStatus || 'F',
+        respCode,
+        respMessage,
+        customerEmail,
+        signature,
+      },
+      create: {
+        orderId: order.id,
+        cartId,
+        tranRef,
+        amount: parseFloat(data.cart_amount || '0'),
+        status: respStatus || 'F',
+        respCode,
+        respMessage,
+        customerEmail,
+        signature,
+      },
+    });
+
+    return NextResponse.json({ success: true, payment }, { status: 200 });
   } catch (err) {
     console.error('IPN Error:', err);
     return NextResponse.json({ success: false, message: 'Internal Server Error' }, { status: 500 });

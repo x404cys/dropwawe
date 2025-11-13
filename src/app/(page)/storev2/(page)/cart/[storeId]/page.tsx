@@ -17,6 +17,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { User, Phone, MapPin, Wallet } from 'lucide-react';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useParams, useRouter } from 'next/navigation';
 import { FiShoppingBag } from 'react-icons/fi';
@@ -26,6 +27,7 @@ import { useProducts } from '../../../Data/context/products/ProductsContext';
 import { MdOutlinePayments } from 'react-icons/md';
 import OrderSubmitButton from '../../../lib/Checkout/OrderSubmitButton';
 import { toast } from 'sonner';
+import { randomUUID } from 'crypto';
 
 export default function CartPage() {
   const {
@@ -38,6 +40,8 @@ export default function CartPage() {
     getTotalPriceByKey,
     getTotalQuantityByKey,
     getTotalPriceAfterDiscountByKey,
+    saveCartId,
+    getCartIdByKey,
   } = useCart();
   const { storeId } = useParams();
   const { store } = useProducts();
@@ -89,7 +93,8 @@ export default function CartPage() {
     try {
       setLoading(true);
       toast.loading('جاري إنشاء عملية الدفع...');
-
+      const cart_id = uuidv4();
+      saveCartId(cart_id, cartKey);
       const res = await fetch('/api/storev2/payment', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -98,7 +103,7 @@ export default function CartPage() {
           phone: phone,
           address: locationInput,
           amount: totalAfter,
-          cart_id: `order-${Date.now()}`,
+          cart_id: `${cart_id}`,
           description: `طلب جديد من ${name}`,
         }),
       });

@@ -72,16 +72,16 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    const imageUrl = await uploadToServer(data.imageUrl as File, userId!);
+    // const imageUrl = await uploadToServer(data.imageUrl as File, userId!);
 
-    if (!imageUrl) {
-      return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
-    }
-    const headerUrl = await uploadToServer(data.header as File, userId!);
+    // if (!imageUrl) {
+    //   return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+    // }
+    // const headerUrl = await uploadToServer(data.header as File, userId!);
 
-    if (!headerUrl) {
-      return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
-    }
+    // if (!headerUrl) {
+    //   return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
+    // }
 
     let store;
     if (existingStore) {
@@ -102,8 +102,8 @@ export async function POST(req: Request) {
           facebookPixel: parsed.data.facebookPixel || '',
           tiktokPixel: parsed.data.tiktokPixel || '',
           googlePixel: parsed.data.googlePixel || '',
-          Header: headerUrl || '',
-          image: imageUrl,
+          Header: 'headerUrl',
+          image: 'imageUrl',
           methodPayment: parsed.data.selectedMethods || '',
         },
       });
@@ -129,8 +129,8 @@ export async function POST(req: Request) {
           facebookPixel: parsed.data.facebookPixel || '',
           tiktokPixel: parsed.data.tiktokPixel || '',
           googlePixel: parsed.data.googlePixel || '',
-          Header: headerUrl || '',
-          image: imageUrl,
+          Header: 'headerUrl',
+          image: 'imageUrl',
           methodPayment: parsed.data.selectedMethods || '',
         },
       });
@@ -146,8 +146,8 @@ export async function POST(req: Request) {
         description: parsed.data.description,
         active: parsed.data.active ?? true,
         userId: session.user.id,
-        Header: headerUrl || '',
-        image: imageUrl,
+        Header: 'headerUrl',
+        image: 'imageUrl',
         methodPayment: parsed.data.selectedMethods || '',
       },
     });

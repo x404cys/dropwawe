@@ -178,6 +178,9 @@ model Order {
   items        OrderItem[]
 
   Supplier Supplier[]
+
+ 
+  paymentOrder PaymentOrder?
 }
 
 model OrderItem {
@@ -190,6 +193,25 @@ model OrderItem {
   productId String?
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product? @relation(fields: [productId], references: [id])
+}
+model PaymentOrder {
+  id            String    @id @default(cuid())
+  orderId       String    @unique
+  cartId        String    @unique
+  tranRef       String?
+  amount        Float
+  currency      String    @default("IQD")
+  status        String     
+  respCode      String?
+  respMessage   String?
+  token         String?
+  customerEmail String?
+  signature     String?
+  createdAt     DateTime  @default(now())
+
+  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([cartId])
 }
 
 model Visitor {

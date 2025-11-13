@@ -14,22 +14,22 @@ export async function POST(req: Request) {
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
     const PAYTABS_PROFILE_ID = 169218;
 
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/callback`;
-    const RETURN_URL = `https://www.youtube.com/watch?v=qRAgPEAeNlI&list=RD_9rTVzXo2c8&index=2`;
+    const RETURN_URL = `${SITE_URL}/storev2/payment-result`;
 
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: 'sale',
       tran_class: 'ecom',
-      cart_id,
+      cart_id: cart_id,
       cart_description: description || `طلب من ${name || 'عميل'}`,
       cart_currency: 'IQD',
       cart_amount: amount,
       callback: CALLBACK_URL,
       return: RETURN_URL,
       customer_details: {
-        name: name || 'عميل',
+        name: name || ' ',
         email: 'no-reply@example.com',
         phone: phone || '',
         street1: address || '',
