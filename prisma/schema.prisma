@@ -213,6 +213,23 @@ model PaymentOrder {
 
   @@index([cartId])
 }
+model Payment {
+  id            String    @id @default(cuid())
+  cartId        String    @unique
+  tranRef       String?
+  amount        Float
+  currency      String    @default("IQD")
+  status        String     
+  respCode      String?
+  respMessage   String?
+  token         String?
+  customerEmail String?
+  signature     String?
+  createdAt     DateTime  @default(now())
+
+ 
+  @@index([cartId])
+}
 
 model Visitor {
   id        String   @id @default(cuid())

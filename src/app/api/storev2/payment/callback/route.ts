@@ -10,7 +10,7 @@ export async function GET(req: Request) {
   const signature = params.get('signature') ?? '';
   const token = params.get('token') ?? '';
   const acquirerRRN = params.get('acquirerRRN') ?? '';
-  const payment = await prisma.paymentOrder.create({
+  const payment = await prisma.payment.create({
     data: {
       tranRef: tranRef,
       respCode: respStatus,
@@ -21,9 +21,6 @@ export async function GET(req: Request) {
       signature: signature,
       token: token,
       status: respStatus === 'A' ? 'Success' : 'Failed',
-      order: {
-        connect: { id: 'cmex85j990001js04dyve39bc' },
-      },
     },
   });
 
@@ -38,7 +35,7 @@ export async function POST(req: Request) {
   for (const [key, value] of formData.entries()) {
     data[key] = typeof value === 'string' ? value : '';
   }
-  const payment = await prisma.paymentOrder.create({
+  const payment = await prisma.payment.create({
     data: {
       tranRef: data.tranRef,
       respCode: data.respStatus,
@@ -49,9 +46,6 @@ export async function POST(req: Request) {
       signature: data.signature,
       token: data.token,
       status: data.respStatus === 'A' ? 'Success' : 'Failed',
-      order: {
-        connect: { id: 'cmex85j990001js04dyve39bc' },
-      },
     },
   });
   const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
