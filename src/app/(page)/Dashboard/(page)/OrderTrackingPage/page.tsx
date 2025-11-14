@@ -35,7 +35,7 @@ export default function OrderSummaryPage() {
     const res = await axios.delete(`/api/orders/details/delete/${id}`);
     if (res.status !== 200) {
       return;
-    }
+    }//
   };
   useEffect(() => {
     async function fetchOrders() {
