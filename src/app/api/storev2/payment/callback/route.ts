@@ -4,25 +4,26 @@ export async function GET(req: Request) {
   const url = new URL(req.url);
   const params = url.searchParams;
 
-  const data = {
-    tranRef: params.get('tranRef'),
-    respStatus: params.get('respStatus'),
-    respMessage: params.get('respMessage'),
-    cartId: params.get('cartId'),
-  };
+  const tranRef = params.get('tranRef') ?? '';
+  const respStatus = params.get('respStatus') ?? '';
+  const respMessage = params.get('respMessage') ?? '';
+  const cartId = params.get('cartId') ?? '';
 
-  console.log('PAYTABS CALLBACK GET:', data);
+  const returnUrl = `/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
 
-  const returnUrl = `/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
-  return NextResponse.json({ data, returnUrl });
+  return NextResponse.redirect(returnUrl);
 }
 
 export async function POST(req: Request) {
   const formData = await req.formData();
   const data = Object.fromEntries(formData.entries());
 
-  console.log('PAYTABS CALLBACK POST:', data);
+  const tranRef = data.tranRef ?? '';
+  const respStatus = data.respStatus ?? '';
+  const respMessage = data.respMessage ?? '';
+  const cartId = data.cartId ?? '';
 
-  const returnUrl = `/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
-  return NextResponse.json({ data, returnUrl });
+  const returnUrl = `/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+
+  return NextResponse.redirect(returnUrl);
 }
