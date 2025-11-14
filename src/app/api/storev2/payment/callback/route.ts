@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 
 export async function handler(req: Request) {
-  let data: Record<string, string> = {
+  const data: Record<string, string> = {
     tranRef: '',
     respStatus: '',
     respMessage: '',
