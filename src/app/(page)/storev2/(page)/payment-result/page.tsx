@@ -1,22 +1,22 @@
-export default async function PaymentResultPage({
+export const dynamic = 'force-dynamic';
+
+export default function PaymentResultPage({
   searchParams,
 }: {
-  searchParams: Promise<Record<string, string>>;
+  searchParams: Record<string, string>;
 }) {
-  const params = await searchParams;
+  console.log('Callback Received:', searchParams);
 
-  console.log('Callback Received:', params);
-
-  const tranRef = params.tranRef ?? null;
-  const cartId = params.cartId ?? null;
-  const respStatus = params.respStatus ?? null;
-  const respMessage = params.respMessage ?? null;
+  const tranRef = searchParams.tranRef ?? null;
+  const cartId = searchParams.cartId ?? null;
+  const respStatus = searchParams.respStatus ?? null;
+  const respMessage = searchParams.respMessage ?? null;
 
   return (
     <div className="p-10">
       <h1 className="mb-6 text-2xl font-bold">Payment Result</h1>
 
-      <pre className="rounded bg-gray-200 p-4">{JSON.stringify(params, null, 2)}</pre>
+      <pre className="rounded bg-gray-200 p-4">{JSON.stringify(searchParams, null, 2)}</pre>
 
       {!tranRef && (
         <p className="mt-6 text-xl text-red-600">
