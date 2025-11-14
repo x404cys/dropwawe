@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/callback`;
     const RETURN_URL = `${SITE_URL}/storev2/payment-result`;
-
+//
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: 'sale',
