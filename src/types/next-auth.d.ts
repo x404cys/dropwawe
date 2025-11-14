@@ -1,3 +1,5 @@
+import NextAuth from 'next-auth';
+
 type UserRole = 'GUEST' | 'SUPPLIER' | 'DROPSHIPPER' | 'TRADER' | 'A';
 
 declare module 'next-auth' {
