@@ -3,7 +3,7 @@ export const dynamic = 'force-dynamic';
 export default function PaymentResultPage({
   searchParams,
 }: {
-  searchParams: Record<string, string>;
+  searchParams: { [key: string]: string | undefined };
 }) {
   console.log('Callback Received:', searchParams);
 
