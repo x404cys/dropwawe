@@ -1,20 +1,10 @@
-'use client';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+import PaymentResultClient from './PaymentResultClient/PaymentResultClient';
 
 export default function PaymentResultPage() {
-  const params = useSearchParams();
-  const tranRef = params.get('tranRef');
-  const respStatus = params.get('respStatus');
-  const respMessage = params.get('respMessage');
-  const cartId = params.get('cartId');
-
   return (
-    <div>
-      <h1>Payment Result</h1>
-      <p>Transaction: {tranRef}</p>
-      <p>Status: {respStatus}</p>
-      <p>Message: {respMessage}</p>
-      <p>Cart ID: {cartId}</p>
-    </div>
+    <Suspense fallback={<p>Loading...</p>}>
+      <PaymentResultClient />
+    </Suspense>
   );
 }
