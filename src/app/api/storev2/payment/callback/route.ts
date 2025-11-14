@@ -38,7 +38,22 @@ export async function POST(req: Request) {
   for (const [key, value] of formData.entries()) {
     data[key] = typeof value === 'string' ? value : '';
   }
-
+  const payment = await prisma.paymentOrder.create({
+    data: {
+      tranRef: data.tranRef,
+      respCode: data.respStatus,
+      respMessage: data.respMessage,
+      cartId: data.cartId,
+      amount: 100,
+      customerEmail: data.customerEmail,
+      signature: data.signature,
+      token: data.token,
+      status: data.respStatus === 'A' ? 'Success' : 'Failed',
+      order: {
+        connect: { id: 'cmex85j990001js04dyve39bc' },
+      },
+    },
+  });
   const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
 
   return NextResponse.redirect(returnUrl, { status: 303 });
