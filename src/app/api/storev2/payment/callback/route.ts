@@ -1,29 +1,36 @@
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
-  const url = new URL(req.url);
-  const params = url.searchParams;
+export async function handler(req: Request) {
+  let data: Record<string, string> = {
+    tranRef: '',
+    respStatus: '',
+    respMessage: '',
+    cartId: '',
+  };
 
-  const tranRef = params.get('tranRef') ?? '';
-  const respStatus = params.get('respStatus') ?? '';
-  const respMessage = params.get('respMessage') ?? '';
-  const cartId = params.get('cartId') ?? '';
+  try {
+    if (req.method === 'POST') {
+      const formData = await req.formData();
+      for (const [key, value] of formData.entries()) {
+        data[key] = typeof value === 'string' ? value : '';
+      }
+    } else if (req.method === 'GET') {
+      const params = new URL(req.url).searchParams;
+      data.tranRef = params.get('tranRef') ?? '';
+      data.respStatus = params.get('respStatus') ?? '';
+      data.respMessage = params.get('respMessage') ?? '';
+      data.cartId = params.get('cartId') ?? '';
+    }
 
-  const returnUrl = `/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+    const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
 
-  return NextResponse.redirect(returnUrl);
+    console.log('PAYTABS CALLBACK DATA:', data);
+
+    return NextResponse.redirect(returnUrl);
+  } catch (err) {
+    console.error('Callback error:', err);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
+  }
 }
 
-export async function POST(req: Request) {
-  const formData = await req.formData();
-  const data = Object.fromEntries(formData.entries());
-
-  const tranRef = data.tranRef ?? '';
-  const respStatus = data.respStatus ?? '';
-  const respMessage = data.respMessage ?? '';
-  const cartId = data.cartId ?? '';
-
-  const returnUrl = `/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
-
-  return NextResponse.redirect(returnUrl);
-}
+export { handler as GET, handler as POST };
