@@ -1,28 +1,20 @@
-export const dynamic = 'force-dynamic';
+'use client';
 
-export default function PaymentResultPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | undefined };
-}) {
-  console.log('Callback Received:', searchParams);
+import { useSearchParams } from 'next/navigation';
 
-  const tranRef = searchParams.tranRef ?? null;
-  const cartId = searchParams.cartId ?? null;
-  const respStatus = searchParams.respStatus ?? null;
-  const respMessage = searchParams.respMessage ?? null;
+export default function PaymentResult() {
+  const params = useSearchParams();
+
+  const status = params.get('respStatus');
+  const message = params.get('respMessage');
+  const tranRef = params.get('tranRef');
 
   return (
     <div className="p-10">
-      <h1 className="mb-6 text-2xl font-bold">Payment Result</h1>
-
-      <pre className="rounded bg-gray-200 p-4">{JSON.stringify(searchParams, null, 2)}</pre>
-
-      {!tranRef && (
-        <p className="mt-6 text-xl text-red-600">
-          ❌ لا توجد بيانات دفع. PayTabs لم يُرسل أي معلومات.
-        </p>
-      )}
+      <h1>Payment Result</h1>
+      <p>Status: {status}</p>
+      <p>Message: {message}</p>
+      <p>Reference: {tranRef}</p>
     </div>
   );
 }
