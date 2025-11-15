@@ -28,6 +28,7 @@ import { MdOutlinePayments } from 'react-icons/md';
 import OrderSubmitButton from '../../../lib/Checkout/OrderSubmitButton';
 import { toast } from 'sonner';
 import { randomUUID } from 'crypto';
+import OrderSubmitButtonPayment from '../../../lib/Checkout/OrderSubmitPayment/OrderSubmitPayment';
 
 export default function CartPage() {
   const {
@@ -95,7 +96,7 @@ export default function CartPage() {
       toast.loading('جاري إنشاء عملية الدفع...');
       const cart_id = uuidv4();
       saveCartId(cart_id, cartKey);
-      const res = await fetch('/api/storev2/payment', {
+      const res = await fetch('/api/storev2/payment/paytabs/order', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -366,15 +367,20 @@ export default function CartPage() {
                       >
                         إلغاء
                       </Button>
-                      <Button
-                        onClick={() => {
-                          setIsDialogOpen(false);
-                          handlePay();
-                        }}
-                        className="w-full bg-gray-900 py-3 text-white hover:bg-gray-800"
-                      >
-                        تأكيد والدفع الآن
-                      </Button>
+                      <OrderSubmitButtonPayment
+                        selectedColor={
+                          cartItems.find(item => item.selectedColor)?.selectedColor ?? ''
+                        }
+                        selectedSize={cartItems.find(item => item.selectedSize)?.selectedSize ?? ''}
+                        userId={store?.userId as string}
+                        storeId={storeId as string}
+                        fullName={fullName as string}
+                        phone={phone}
+                        email={email}
+                        location={locationInput as string}
+                        items={cartItems}
+                        total={totalAfter}
+                      />
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>

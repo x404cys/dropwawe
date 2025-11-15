@@ -230,7 +230,7 @@ model Payment {
  
   @@index([cartId])
 }
-//
+ 
 model Visitor {
   id        String   @id @default(cuid())
   visitorId String

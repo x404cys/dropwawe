@@ -49,6 +49,6 @@ export async function POST(req: Request) {
     },
   });
   const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
-//
+  //
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
