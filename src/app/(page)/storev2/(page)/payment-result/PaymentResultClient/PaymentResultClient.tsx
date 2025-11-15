@@ -4,6 +4,11 @@ import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
 import { CheckCircle2, XCircle, Package, MapPin, Phone, User, CreditCard } from 'lucide-react';
 import Loader from '../../../lib/Checkout/Loading';
+import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import { LuCopy } from 'react-icons/lu';
+import { CiShare1 } from 'react-icons/ci';
+import { toast } from 'sonner';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -61,6 +66,7 @@ export default function PaymentResultClient() {
   const respStatus = params.get('respStatus') ?? '';
   const respMessage = params.get('respMessage') ?? '';
   const cartId = params.get('cartId') ?? '';
+  const [copied, setCopied] = useState(false);
 
   const {
     data: order,
@@ -72,44 +78,89 @@ export default function PaymentResultClient() {
   );
 
   const isSuccess = respStatus === 'A' || respStatus === 'success';
+  const handleShare = async () => {
+    const url = window.location.href;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'تفاصيل الطلب',
+          text: `تفاصيل الطلب - ${isSuccess ? 'تمت بنجاح' : 'فشلت'}`,
+          url: url,
+        });
+      } catch (err) {
+        console.log('Error sharing:', err);
+      }
+    } else {
+      handleCopy();
+    }
+  };
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      setCopied(true);
+      toast.success('تم نسخ الرابط');
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.log('Failed to copy:', err);
+    }
+  };
 
   return (
     <div dir="rtl" className="min-h-screen py-5">
       <div className="mx-auto max-w-3xl space-y-6">
         <div
-          className={`rounded-2xl p-8 text-center shadow-sm ${
+          className={`rounded-lg p-8 text-center shadow-sm ${
             isSuccess
               ? 'border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50'
               : 'border border-red-200 bg-gradient-to-br from-red-50 to-rose-50'
           }`}
         >
-          <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-white shadow-sm">
+          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
             {isSuccess ? (
-              <CheckCircle2 className="h-12 w-12 text-green-600" />
+              <CheckCircle2 className="h-8 w-8 text-green-600" />
             ) : (
-              <XCircle className="h-12 w-12 text-red-600" />
+              <XCircle className="h-8 w-8 text-red-600" />
             )}
           </div>
 
-          <h1
-            className={`mb-2 text-3xl font-bold ${isSuccess ? 'text-green-800' : 'text-red-800'}`}
-          >
+          <h1 className={`mb-2 text-xl font-bold ${isSuccess ? 'text-green-800' : 'text-red-800'}`}>
             {isSuccess ? 'تمت عملية الدفع بنجاح' : 'فشلت عملية الدفع'}
           </h1>
 
           <p className={`text-lg ${isSuccess ? 'text-green-700' : 'text-red-700'}`}>
             {respMessage || 'تمت معالجة عملية الدفع'}
           </p>
+
+          <div className="flex flex-col items-center justify-center gap-3 pt-6 sm:flex-row sm:gap-5">
+            <Button
+              onClick={() => handleShare()}
+              variant={'outline'}
+              className="w-full px-6 py-2 font-semibold sm:w-auto"
+            >
+              <span> شارك الطلب</span> <CiShare1 />
+            </Button>
+
+            <Button
+              onClick={() => handleCopy()}
+              variant={'default'}
+              className="w-full px-6 py-2 font-semibold sm:w-auto"
+            >
+              <span>نسخ</span> <LuCopy />
+            </Button>
+          </div>
         </div>
+
         {order?.status === 'DELIVERED' && (
-          <div>
+          <div className="bg-accent w-full rounded-lg border border-green-300 py-1">
             <div className="flex items-center justify-center">
               <Loader />
             </div>
             <div className="flex items-center justify-center font-semibold">طلبك في طريقه اليك</div>
           </div>
         )}
-        <div className="rounded-2xl bg-white p-6 shadow-sm">
+        <div className="rounded-lg border bg-white p-6 shadow-sm">
           <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-800">
             <CreditCard className="h-5 w-5" />
             تفاصيل المعاملة
@@ -140,8 +191,8 @@ export default function PaymentResultClient() {
         </div>
         {isLoading && (
           <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-blue-600"></div>
-            <p className="mt-4 text-gray-600">جاري تحميل تفاصيل الطلب...</p>
+            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-gray-950"></div>
+            <p className="mt-4 text-gray-600">جاري تحميل تفاصيل الطلب</p>
           </div>
         )}
 
@@ -153,39 +204,40 @@ export default function PaymentResultClient() {
 
         {order && (
           <div className="space-y-6">
-            <div className="rounded-2xl bg-white p-6 shadow-sm">
-              <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-800">
-                <User className="h-5 w-5" />
+            <div className="rounded-2xl border bg-white p-6 shadow-md">
+              {/* العنوان */}
+              <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-800">
+                <User className="h-6 w-6 text-gray-700" />
                 معلومات العميل
               </h2>
 
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="flex items-start gap-3">
-                  <User className="mt-1 h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">الاسم الكامل</p>
-                    <p className="font-medium text-gray-900">{order.fullName}</p>
+              <div className="space-y-5">
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center gap-3">
+                    <User className="h-5 w-5 text-gray-400" />
+                    <p className="text-xs text-gray-500">الاسم الكامل</p>
                   </div>
+                  <p className="text-base font-semibold text-gray-900">{order.fullName}</p>
                 </div>
 
-                <div className="flex items-start gap-3">
-                  <Phone className="mt-1 h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">رقم الهاتف</p>
-                    <p className="font-medium text-gray-900">{order.phone}</p>
+                <div className="flex items-center justify-between border-b pb-2">
+                  <div className="flex items-center gap-3">
+                    <Phone className="h-5 w-5 text-gray-400" />
+                    <p className="text-xs text-gray-500">رقم الهاتف</p>
                   </div>
+                  <p className="text-base font-semibold text-gray-900">{order.phone}</p>
                 </div>
 
-                <div className="flex items-start gap-3 md:col-span-2">
-                  <MapPin className="mt-1 h-5 w-5 text-gray-400" />
-                  <div>
-                    <p className="text-sm text-gray-500">موقع التسليم</p>
-                    <p className="font-medium text-gray-900">{order.location}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <MapPin className="h-5 w-5 text-gray-400" />
+                    <p className="text-xs text-gray-500">موقع التسليم</p>
                   </div>
+                  <p className="text-base font-semibold text-gray-900">{order.location}</p>
                 </div>
               </div>
 
-              <div className="mt-6 flex items-center justify-between border-t pt-4">
+              <div className="mt-8 flex items-center justify-between border-t pt-4">
                 <span className="text-lg font-semibold text-gray-700">المبلغ الإجمالي</span>
                 <span className="text-2xl font-bold text-gray-900">
                   {order.total.toLocaleString()} دينار
