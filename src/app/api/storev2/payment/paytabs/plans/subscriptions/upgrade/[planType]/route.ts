@@ -21,14 +21,12 @@ export async function POST(
 
     const allowedTypes = ['NORMAL', 'MODREN', 'PENDINGPROFESSIONAL'];
 
-    const planTypeUpper = planType.toUpperCase();
-
-    if (!allowedTypes.includes(planTypeUpper)) {
+    if (!allowedTypes.includes(planType)) {
       return NextResponse.json({ message: 'Invalid plan type' }, { status: 400 });
     }
-//
+    //
     const plan = await prisma.subscriptionPlan.findFirst({
-      where: { type: planTypeUpper },
+      where: { type: planType },
     });
     if (!plan) {
       return NextResponse.json({ message: 'Plan not found' }, { status: 404 });
