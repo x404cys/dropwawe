@@ -1,10 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { pool } from '@/app/lib/mysqlPool/createPool';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
-import type { Product } from '@/types/dropwave/Products';
-import { RowDataPacket } from 'mysql2';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOperation);
@@ -18,11 +15,9 @@ export async function POST(req: NextRequest) {
 
   const { productId, profit, category } = await req.json();
 
-  const [rows] = await pool.query<(Product & RowDataPacket)[]>(
-    'SELECT * FROM products WHERE id = ?',
-    [productId]
-  );
-  const product = rows[0];
+  const product = await prisma.product.findUnique({
+    where: { id: productId },
+  });
 
   if (!product) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
@@ -37,13 +32,13 @@ export async function POST(req: NextRequest) {
   if (!store) {
     return NextResponse.json({ error: 'Store not found for user' }, { status: 404 });
   }
-
+  
   const addProduct = await prisma.product.create({
     data: {
       name: product.name,
       description: product.description,
       price: Number(product.price) + Number(profit),
-      image: product.cover_image_url,
+      image: product.image,
       userId: session.user.id,
       category: category,
       storeId: store.id,

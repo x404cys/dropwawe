@@ -292,7 +292,7 @@ enum TypePlan {
 model SubscriptionPlan {
   id                String   @id @default(cuid())
   name              String  
-  type              TypePlan  
+  type              String  
   price             Float
   durationDays      Int      
   maxProducts       Int?      

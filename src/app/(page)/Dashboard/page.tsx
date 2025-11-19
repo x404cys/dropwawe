@@ -3,24 +3,15 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { toast } from 'sonner';
-import { VscEye } from 'react-icons/vsc';
-import { DollarSign, Package, Rocket, ShoppingBag, Users } from 'lucide-react';
-import { AiOutlineProduct } from 'react-icons/ai';
-import { BsShop } from 'react-icons/bs';
-import { FiCopy, FiEdit2 } from 'react-icons/fi';
-import { HiOutlineLink } from 'react-icons/hi';
+import { DollarSign, Package, ShoppingBag, Users } from 'lucide-react';
 import { CiTimer } from 'react-icons/ci';
 import { useDashboardData } from './_utils/useDashboardData';
 import StatCard, { StatCardProps } from './_components/StatCard';
-import ManagementCard from './_components/ManagementCard';
-import MonthlyTargetCard from '@/components/Target';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useEffect } from 'react';
 import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
-import { Button } from '@/components/ui/button';
-import { IoBusinessOutline } from 'react-icons/io5';
+
 import PlanCard from './_components/PlanCard';
 
 export default function Dashboard() {
@@ -106,39 +97,6 @@ export default function Dashboard() {
 
   return (
     <section>
-      {/* <div
-        dir="ltr"
-        className="flex items-center justify-between rounded-lg border border-gray-200 px-2 py-2"
-      >
-        <div className="text-gray-black flex items-center gap-1 text-sm">
-          <HiOutlineLink size={18} className="text-gray-500" />
-          <span
-            className="max-w-[200px] truncate text-sm select-text md:max-w-3xs"
-            title={storeUrl}
-          >
-            {storeUrl}
-          </span>
-        </div>
-
-        <div className="flex gap-2">
-          <button
-            onClick={() => router.push('/Dashboard/setting/store')}
-            className="rounded-full p-1.5 hover:bg-gray-200"
-          >
-            <FiEdit2 size={16} />
-          </button>
-          <button onClick={copyToClipboard} className="rounded-full p-1.5 hover:bg-gray-200">
-            <FiCopy size={16} />
-          </button>
-          <button
-            onClick={() => router.push(storeUrl)}
-            className="rounded-full p-1.5 hover:bg-gray-200"
-          >
-            <VscEye size={20} />
-          </button>
-        </div>
-      </div> */}
-
       <div dir="rtl" className="flex min-h-screen flex-col bg-white">
         <main className="flex-1 space-y-4 py-1">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

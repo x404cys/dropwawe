@@ -1,16 +1,33 @@
-import { pool } from '@/app/lib/mysqlPool/createPool';
+import { prisma } from '@/app/lib/db';
 
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
 
   try {
-    const [rows] = await pool.query('SELECT * FROM products WHERE id = ?', [id]);
+    const product = await prisma.product.findUnique({
+      where: { id },
+      include: {
+        pricingDetails: true,
+        user: {
+          select: {
+            id: true,
+            storeName: true,
+            storeSlug: true,
+            shippingPrice: true,
+            Store: {
+              select: {
+                shippingPrice: true,
+              },
+            },
+          },
+        },
+        images: true,
+        sizes: true,
+        colors: true,
+      },
+    });
 
-    if (Array.isArray(rows) && rows.length > 0) {
-      return Response.json(rows[0]);
-    } else {
-      return Response.json({ message: 'Product not found' }, { status: 404 });
-    }
+    return Response.json(product);
   } catch (error) {
     return Response.json({ error }, { status: 500 });
   }

@@ -13,14 +13,21 @@ export default function Plans() {
 
   const handleSubscribe = async (type: string) => {
     setLoading(true);
+
     try {
       const result = await subscribePlan(type);
+
+      if (result.redirect_url) {
+        window.location.href = result.redirect_url;
+        return;
+      }
+
       toast.success(`تم الاشتراك بنجاح في خطة: ${type}`);
       router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ أثناء الاشتراك');
     } finally {
-      setLoading(false);  
+      setLoading(false);
     }
   };
 

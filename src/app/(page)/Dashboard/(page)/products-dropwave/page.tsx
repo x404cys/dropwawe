@@ -2,9 +2,9 @@
 import axios from 'axios';
 import useSWR from 'swr';
 import { Boxes, Package, Search } from 'lucide-react';
-import type { Product } from '@/types/dropwave/Products';
 import { useMemo, useState } from 'react';
 import ProductsCardDropWave from '../ProductManagment/_components/ProductsCard-dropwave';
+import { Product } from '@/types/Products';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
@@ -17,12 +17,12 @@ export default function ProductsPage() {
     if (!data) return [];
     return data
       .filter(p => p.name.toLowerCase().includes(search.toLowerCase().trim()))
-      .filter(p => (categoryFilter ? p.slug === categoryFilter : true));
+      .filter(p => (categoryFilter ? p.category === categoryFilter : true));
   }, [search, categoryFilter, data]);
 
   const categories = useMemo(() => {
     if (!data) return [];
-    const cats = data.map(p => p.slug);
+    const cats = data.map(p => p.category);
     return Array.from(new Set(cats));
   }, [data]);
 
@@ -61,9 +61,9 @@ export default function ProductsPage() {
             <h1 className="mb-3 text-3xl font-semibold tracking-tight text-balance">
               تصفح المنتجات
             </h1>
-            <div className='flex justify-center gap-2'>
+            <div className="flex justify-center gap-2">
               <p className="text-muted-foreground">{data?.length || 0} منتج متاح</p>
-              <Boxes className='text-green-400'/>
+              <Boxes className="text-green-400" />
             </div>
           </div>
 
@@ -92,7 +92,7 @@ export default function ProductsPage() {
             >
               <button
                 onClick={() => setCategoryFilter('')}
-                className={`rounded-xl px-4 py-2 text-center text-xs  transition-all ${
+                className={`rounded-xl px-4 py-2 text-center text-xs transition-all ${
                   categoryFilter === ''
                     ? 'bg-foreground text-background'
                     : 'bg-muted/60 text-foreground hover:bg-muted'
@@ -105,13 +105,13 @@ export default function ProductsPage() {
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
-                  className={`rounded-xl px-4 py-2 text-center text-xs  transition-all ${
+                  className={`rounded-xl px-4 py-2 text-center text-xs transition-all ${
                     categoryFilter === cat
                       ? 'bg-foreground text-background'
-                      : 'bg-gray-200 text-foreground hover:bg-muted'
+                      : 'text-foreground hover:bg-muted bg-gray-200'
                   }`}
                 >
-                  {cat.split(' ').slice(0, 2).join(' ')}
+                  {cat}
                 </button>
               ))}
             </div>

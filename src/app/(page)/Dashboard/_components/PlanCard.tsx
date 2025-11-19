@@ -18,8 +18,8 @@ export default function PlanCard() {
     revalidateOnMount: true,
   });
 
-  const startDate = data?.subscription.startDate ? new Date(data.subscription.startDate) : null;
-  const endDate = data?.subscription.endDate ? new Date(data.subscription.endDate) : null;
+  const startDate = data?.subscription?.startDate ? new Date(data.subscription.startDate) : null;
+  const endDate = data?.subscription?.endDate ? new Date(data.subscription.endDate) : null;
 
   const formattedStartDate = startDate ? format(startDate, 'dd/MM/yyyy') : '-';
   const formattedEndDate = endDate ? format(endDate, 'dd/MM/yyyy') : '-';
@@ -29,7 +29,7 @@ export default function PlanCard() {
       <div className="rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-base font-semibold">{data?.subscription.planName}</p>
+            <p className="text-base font-semibold">{data?.subscription?.planName}</p>
             <p className="mt-1 text-xs leading-snug text-gray-300">
               مناسبة للتجار المبتدئين، مع مزايا ممتازة واحترافية.
             </p>
