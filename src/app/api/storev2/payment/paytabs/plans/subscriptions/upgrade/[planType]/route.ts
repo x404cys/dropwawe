@@ -3,20 +3,20 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 
-export async function POST(request: NextRequest, context: { params: { planType: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { type: string } }) {
   try {
     const session = await getServerSession(authOperation);
     if (!session || !session.user) {
       return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
     }
 
-    const { planType } = await context.params;
+    const planType = params.type; // param هنا هو type وليس planType
 
     if (!planType) {
-      return NextResponse.json({ error: 'Plan does not selected' }, { status: 401 });
+      return NextResponse.json({ error: 'Plan not selected' }, { status: 400 });
     }
 
-    const allowedTypes = ['NORMAL', 'MODREN', 'PENDINGPROFESSIONAL'];
+    const allowedTypes = ['NORMAL', 'MODERN', 'PENDINGPROFESSIONAL'];
 
     const planTypeUpper = planType.toUpperCase();
 
@@ -27,6 +27,7 @@ export async function POST(request: NextRequest, context: { params: { planType: 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planTypeUpper },
     });
+
     if (!plan) {
       return NextResponse.json({ message: 'Plan not found' }, { status: 404 });
     }
@@ -41,15 +42,13 @@ export async function POST(request: NextRequest, context: { params: { planType: 
     if (existing) {
       return NextResponse.json(
         { message: 'User already subscribed to this plan' },
-        { status: 401 }
+        { status: 400 }
       );
     }
 
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
     const PAYTABS_PROFILE_ID = 169218;
-
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
 
     const payload = {
