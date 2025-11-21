@@ -119,6 +119,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
 
+  try {
+    await prisma.payment.create({
+      data: {
+        cartId: data.cartId ?? '',
+        tranRef: data.tranRef ?? '',
+        respCode: data.respStatus ?? '',
+        respMessage: data.respMessage ?? '',
+        customerEmail: data.customerEmail ?? '',
+        signature: data.signature ?? '',
+        token: data.token ?? '',
+        amount: 0,
+        status: data.respStatus,
+      },
+    });
+  } catch (e) {
+    return NextResponse.json(`error to add payment ${e}`);
+  }
+
   await handlePayment(
     data.cartId ?? '',
     data.tranRef ?? '',
