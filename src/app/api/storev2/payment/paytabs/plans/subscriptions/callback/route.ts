@@ -6,20 +6,20 @@ const SECRET_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
 
 interface PayTabsCallbackData {
   cartId: string;
-  userId: string;
-  planId: string;
+  userId?: string;
+  planId?: string;
   tranRef: string;
   respStatus: string;
   respMessage: string;
   customerEmail?: string;
-  signature: string;
+  signature?: string;
   token?: string;
 }
 
 interface VerificationData {
   cartId: string;
-  userId: string;
-  planId: string;
+  userId?: string;
+  planId?: string;
   tranRef: string;
   respStatus: string;
   respMessage: string;
@@ -27,13 +27,10 @@ interface VerificationData {
   token?: string;
 }
 
-interface CallbackResult {
-  success: boolean;
-  reason?: string;
-}
+// ========== SIGNATURE CHECK ==========
+function verifySignature(data: VerificationData, signature: string | undefined): boolean {
+  if (!signature) return false;
 
-// ---------- Verify Signature ----------
-function verifySignature(data: VerificationData, signature: string): boolean {
   const sortedKeys = Object.keys(data).sort();
   const sortedData: Record<string, string | undefined> = {};
 
@@ -49,8 +46,8 @@ function verifySignature(data: VerificationData, signature: string): boolean {
   return calculated === signature;
 }
 
-// ---------- Main Handler ----------
-async function handlePaymentCallback(data: PayTabsCallbackData): Promise<CallbackResult> {
+// ========== MAIN PROCESS ==========
+async function handlePaymentCallback(data: PayTabsCallbackData) {
   const {
     cartId,
     userId,
@@ -59,11 +56,17 @@ async function handlePaymentCallback(data: PayTabsCallbackData): Promise<Callbac
     respStatus,
     respMessage,
     customerEmail,
-    signature,
     token,
+    signature,
   } = data;
 
-  const checkData: VerificationData = {
+  // ========== CHECK REQUIRED ==========
+  if (!cartId || !tranRef || !respStatus) {
+    return { success: false, reason: 'Missing required fields' };
+  }
+
+  // ========== CHECK SIGNATURE (only if signature exists) ==========
+  const verificationData: VerificationData = {
     cartId,
     userId,
     planId,
@@ -74,12 +77,11 @@ async function handlePaymentCallback(data: PayTabsCallbackData): Promise<Callbac
     token,
   };
 
-  const isValidSignature = verifySignature(checkData, signature);
-
-  if (!isValidSignature) {
+  if (signature && !verifySignature(verificationData, signature)) {
     return { success: false, reason: 'Invalid signature' };
   }
 
+  // ========== UPDATE / CREATE PAYMENT ==========
   let payment = await prisma.payment.findUnique({ where: { cartId } });
 
   if (payment) {
@@ -111,18 +113,21 @@ async function handlePaymentCallback(data: PayTabsCallbackData): Promise<Callbac
     });
   }
 
+  // ========== PAYMENT FAILED ==========
   if (respStatus !== 'A') {
     return { success: false, reason: 'Payment failed' };
   }
 
-  const plan = await prisma.subscriptionPlan.findUnique({
-    where: { id: planId },
-  });
-
-  if (!plan) {
-    return { success: false, reason: 'Invalid planId' };
+  // ========== NO PLAN OR USER? ==========
+  if (!userId || !planId) {
+    return { success: false, reason: 'UserId or PlanId missing' };
   }
 
+  // ========== ACTIVATE SUBSCRIPTION ==========
+  const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
+  if (!plan) return { success: false, reason: 'Invalid Plan ID' };
+
+  // deactivate old
   await prisma.userSubscription.updateMany({
     where: { userId, isActive: true },
     data: { isActive: false, canceledAt: new Date() },
@@ -132,6 +137,7 @@ async function handlePaymentCallback(data: PayTabsCallbackData): Promise<Callbac
   const endDate = new Date();
   endDate.setDate(endDate.getDate() + plan.durationDays);
 
+  // create new subscription
   await prisma.userSubscription.create({
     data: {
       userId,
@@ -146,40 +152,42 @@ async function handlePaymentCallback(data: PayTabsCallbackData): Promise<Callbac
   return { success: true };
 }
 
-// ---------- POST ----------
+// ========== POST (JSON + FORM) ==========
 export async function POST(req: Request) {
-  const body = (await req.json()) as PayTabsCallbackData;
+  try {
+    const text = await req.text();
 
-  const result = await handlePaymentCallback(body);
+    let body: PayTabsCallbackData;
+    try {
+      body = JSON.parse(text);
+    } catch {
+      body = Object.fromEntries(new URLSearchParams(text)) as unknown as PayTabsCallbackData;
+    }
 
-  const redirectUrl =
-    `${new URL(req.url).origin}/storev2/payment-result` +
-    `?status=${result.success ? 'success' : 'failed'}`;
+    const result = await handlePaymentCallback(body);
 
-  return NextResponse.redirect(redirectUrl, { status: 303 });
+    const redirectUrl = `${new URL(req.url).origin}/storev2/payment-result?status=${result.success ? 'success' : 'failed'}`;
+
+    return NextResponse.redirect(redirectUrl, { status: 303 });
+  } catch (err) {
+    console.error('POST Callback Error:', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
 
-// ---------- GET ----------
+// ========== GET ==========
 export async function GET(req: Request) {
-  const params = Object.fromEntries(new URL(req.url).searchParams.entries());
+  try {
+    const params = Object.fromEntries(new URL(req.url).searchParams.entries());
+    const data = params as unknown as PayTabsCallbackData;
 
-  const data: PayTabsCallbackData = {
-    cartId: params.cartId,
-    userId: params.userId,
-    planId: params.planId,
-    tranRef: params.tranRef,
-    respStatus: params.respStatus,
-    respMessage: params.respMessage,
-    customerEmail: params.customerEmail,
-    signature: params.signature,
-    token: params.token,
-  };
+    const result = await handlePaymentCallback(data);
 
-  const result = await handlePaymentCallback(data);
+    const redirectUrl = `${new URL(req.url).origin}/storev2/payment-result?status=${result.success ? 'success' : 'failed'}`;
 
-  const redirectUrl =
-    `${new URL(req.url).origin}/storev2/payment-result` +
-    `?status=${result.success ? 'success' : 'failed'}`;
-
-  return NextResponse.redirect(redirectUrl, { status: 303 });
+    return NextResponse.redirect(redirectUrl, { status: 303 });
+  } catch (err) {
+    console.error('GET Callback Error:', err);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  }
 }
