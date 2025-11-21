@@ -122,7 +122,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
 
-  if (data.respCode === 'A') {
+  if (data.respStatus === 'A') {
     try {
       const plan = await prisma.subscriptionPlan.findFirst({
         where: { type: 'MODREN' },
