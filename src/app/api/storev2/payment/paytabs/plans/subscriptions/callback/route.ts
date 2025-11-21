@@ -125,7 +125,7 @@ export async function POST(req: Request) {
   if (data.respCode === 'A') {
     try {
       const plan = await prisma.subscriptionPlan.findFirst({
-        where: { name: 'MODREN' },
+        where: { type: 'MODREN' },
       });
       if (!plan) {
         throw new Error('Plan not found');
