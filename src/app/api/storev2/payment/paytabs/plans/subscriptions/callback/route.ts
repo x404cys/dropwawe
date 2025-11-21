@@ -103,7 +103,9 @@ async function handlePayment(
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOperation);
-
+  if (!session?.user.id) {
+    return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+  }
   const contentType = req.headers.get('content-type') || '';
   let data: Record<string, string> = {};
 
@@ -144,10 +146,7 @@ export async function POST(req: Request) {
           status: data.respStatus,
         },
       });
-      
-      if (!session?.user.id) {
-        return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
-      }
+
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + plan.durationDays);
