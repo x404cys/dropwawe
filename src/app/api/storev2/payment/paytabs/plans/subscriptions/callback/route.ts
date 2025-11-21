@@ -97,22 +97,20 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const raw = await req.text(); // ← NOT formData()
-  const params = new URLSearchParams(raw);
+  const body = await req.text();
+  const params = new URLSearchParams(body);
 
-  const data: Record<string, string> = {};
-  params.forEach((value, key) => (data[key] = value));
+  const cartId = params.get('cartId') ?? '';
+  const tranRef = params.get('tranRef') ?? '';
+  const respStatus = params.get('respStatus') ?? '';
+  const respMessage = params.get('respMessage') ?? '';
+  const customerEmail = params.get('customerEmail') ?? '';
+  const signature = params.get('signature') ?? '';
+  const token = params.get('token') ?? '';
 
-  await handlePayment(
-    data.cartId ?? '',
-    data.tranRef ?? '',
-    data.respStatus ?? '',
-    data.respMessage ?? '',
-    data.customerEmail ?? '',
-    data.signature ?? '',
-    data.token ?? ''
-  );
+  await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
+  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
