@@ -9,10 +9,79 @@ async function handlePayment(
   customerEmail: string,
   signature: string,
   token: string
-) {}
+) {
+  const paymentOrder = await prisma.paymentOrder.findUnique({
+    where: { cartId },
+    include: { order: { include: { items: true } } },
+  });
+
+  if (!paymentOrder || !paymentOrder.order) {
+    return null;
+  }
+
+  const order = paymentOrder.order;
+
+  let paymentRecord = await prisma.payment.findUnique({
+    where: { cartId },
+  });
+
+  if (paymentRecord) {
+    paymentRecord = await prisma.payment.update({
+      where: { cartId },
+      data: {
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        customerEmail,
+        signature,
+        token,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
+      },
+    });
+  } else {
+    paymentRecord = await prisma.payment.create({
+      data: {
+        cartId,
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        customerEmail,
+        signature,
+        token,
+        amount: order.total || 0,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
+      },
+    });
+  }
+
+  if (respStatus === 'A') {
+    await Promise.all(
+      order.items
+        .filter(item => !!item.productId)
+        .map(item =>
+          prisma.product.update({
+            where: { id: item.productId! },
+            data: { quantity: { decrement: item.quantity } },
+          })
+        )
+    );
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'DELIVERED' },
+    });
+  } else {
+    await prisma.payment.delete({
+      where: { cartId },
+    });
+  }
+
+  return paymentRecord;
+}
 
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
+
   const cartId = params.get('cartId') ?? '';
   const tranRef = params.get('tranRef') ?? '';
   const respStatus = params.get('respStatus') ?? '';
@@ -28,11 +97,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
+  const raw = await req.text(); // ← NOT formData()
+  const params = new URLSearchParams(raw);
+
   const data: Record<string, string> = {};
-  for (const [key, value] of formData.entries()) {
-    data[key] = typeof value === 'string' ? value : '';
-  }
+  params.forEach((value, key) => (data[key] = value));
 
   await handlePayment(
     data.cartId ?? '',
