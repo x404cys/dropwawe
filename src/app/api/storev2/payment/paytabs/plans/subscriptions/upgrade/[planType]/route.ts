@@ -44,60 +44,61 @@ export async function POST(
         { message: 'User already subscribed to this plan' },
         { status: 401 }
       );
-    }
+    } else {
+      const uuid = crypto.randomUUID();
 
-    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-    const PAYTABS_PROFILE_ID = 169218;
+      const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+      const PAYTABS_PROFILE_ID = 169218;
 
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
+      const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
 
-    const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
+      const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
 
-    const payload = {
-      profile_id: PAYTABS_PROFILE_ID,
-      tran_type: 'sale',
-      tran_class: 'ecom',
-      cart_id: session.user.id,
-      cart_description: `دفع خطة (${planType}) للمستخدم ${session.user.email}`,
-      cart_currency: 'IQD',
-      cart_amount: plan.price,
-      callback: CALLBACK_URL,
-      return: CALLBACK_URL,
-      customer_details: {
-        email: session.user.email,
-        city: 'Baghdad',
-        country: 'IQ',
-      },
-    };
+      const payload = {
+        profile_id: PAYTABS_PROFILE_ID,
+        tran_type: 'sale',
+        tran_class: 'ecom',
+        cart_id: `${session.user.id}-${uuid}`,
+        cart_description: `دفع خطة (${planType}) للمستخدم ${session.user.email}`,
+        cart_currency: 'IQD',
+        cart_amount: plan.price,
+        callback: CALLBACK_URL,
+        return: CALLBACK_URL,
+        customer_details: {
+          email: session.user.email,
+          city: 'Baghdad',
+          country: 'IQ',
+        },
+      };
 
-    const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: PAYTABS_SERVER_KEY,
-      },
-      body: JSON.stringify(payload),
-    });
+      const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: PAYTABS_SERVER_KEY,
+        },
+        body: JSON.stringify(payload),
+      });
 
-    const paytabsResponse = await response.json();
+      const paytabsResponse = await response.json();
 
-    if (!response.ok || !paytabsResponse.redirect_url) {
+      if (!response.ok || !paytabsResponse.redirect_url) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: paytabsResponse.message || 'Failed to create payment',
+          },
+          { status: 400 }
+        );
+      }
       return NextResponse.json(
         {
-          success: false,
-          message: paytabsResponse.message || 'Failed to create payment',
+          success: true,
+          redirect_url: paytabsResponse.redirect_url,
         },
-        { status: 400 }
+        { status: 201 }
       );
     }
-
-    return NextResponse.json(
-      {
-        success: true,
-        redirect_url: paytabsResponse.redirect_url,
-      },
-      { status: 201 }
-    );
   } catch (error) {
     console.error('Upgrade Subscription Error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
