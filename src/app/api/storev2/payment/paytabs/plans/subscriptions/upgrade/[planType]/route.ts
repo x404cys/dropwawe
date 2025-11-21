@@ -1,84 +1,105 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import { getServerSession } from 'next-auth';
+import { authOperation } from '@/app/lib/authOperation';
 
-async function handleSubscriptionPayment(
-  userId: string,
-  tranRef: string,
-  respStatus: string,
-  respMessage: string,
-  signature: string,
-  token: string
+export async function POST(
+  request: NextRequest,
+  context: { params: Promise<{ planType: string }> }
 ) {
-  const paymentRecord = await prisma.payment.create({
-    data: {
-      cartId: 'oopopqw-e-0-31023',
-      amount: 123,
-      tranRef,
-      respCode: respStatus,
-      respMessage,
-      signature,
-      token,
-      status: respStatus === 'A' ? 'Success' : 'Failed',
-    },
-  });
+  try {
+    const session = await getServerSession(authOperation);
+    if (!session || !session.user) {
+      return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+    }
 
-  if (respStatus === 'A') {
-    await prisma.userSubscription.updateMany({
-      where: { userId },
-      data: { isActive: true },
+    const { planType } = await context.params;
+
+    if (!planType) {
+      return NextResponse.json({ error: 'Plan does not selected' }, { status: 401 });
+    }
+
+    const allowedTypes = ['NORMAL', 'MODREN', 'PENDINGPROFESSIONAL'];
+
+    if (!allowedTypes.includes(planType)) {
+      return NextResponse.json({ message: 'Invalid plan type' }, { status: 400 });
+    }
+    //
+    const plan = await prisma.subscriptionPlan.findFirst({
+      where: { type: planType },
     });
+    if (!plan) {
+      return NextResponse.json({ message: 'Plan not found' }, { status: 404 });
+    }
+
+    const existing = await prisma.userSubscription.findFirst({
+      where: {
+        userId: session.user.id,
+        planId: plan.id,
+      },
+    });
+
+    if (existing) {
+      return NextResponse.json(
+        { message: 'User already subscribed to this plan' },
+        { status: 401 }
+      );
+    }
+
+    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_PROFILE_ID = 169218;
+
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'http://www.matager.store';
+
+    const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
+
+    const payload = {
+      profile_id: PAYTABS_PROFILE_ID,
+      tran_type: 'sale',
+      tran_class: 'ecom',
+      cart_id: session.user.id,
+      cart_description: `دفع خطة (${planType}) للمستخدم ${session.user.email}`,
+      cart_currency: 'IQD',
+      cart_amount: plan.price,
+      callback: CALLBACK_URL,
+      return: CALLBACK_URL,
+      customer_details: {
+        email: session.user.email,
+        city: 'Baghdad',
+        country: 'IQ',
+      },
+    };
+
+    const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: PAYTABS_SERVER_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
+
+    const paytabsResponse = await response.json();
+
+    if (!response.ok || !paytabsResponse.redirect_url) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: paytabsResponse.message || 'Failed to create payment',
+        },
+        { status: 400 }
+      );
+    }
+
+    return NextResponse.json(
+      {
+        success: true,
+        redirect_url: paytabsResponse.redirect_url,
+      },
+      { status: 201 }
+    );
+  } catch (error) {
+    console.error('Upgrade Subscription Error:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
-
-  return paymentRecord;
-}
-
-// -------------------------------------------------------
-//                    GET Handler
-// -------------------------------------------------------
-export async function GET(req: Request) {
-  const params = new URL(req.url).searchParams;
-
-  const userId = params.get('cartId') ?? '';
-  const tranRef = params.get('tranRef') ?? '';
-  const respStatus = params.get('respStatus') ?? '';
-  const respMessage = params.get('respMessage') ?? '';
-  const signature = params.get('signature') ?? '';
-  const token = params.get('token') ?? '';
-
-  await handleSubscriptionPayment(userId, tranRef, respStatus, respMessage, signature, token);
-
-  const returnUrl =
-    `${new URL(req.url).origin}/storev2/subscription-result` +
-    `?tranRef=${encodeURIComponent(tranRef)}` +
-    `&respStatus=${encodeURIComponent(respStatus)}` +
-    `&respMessage=${encodeURIComponent(respMessage)}` +
-    `&userId=${encodeURIComponent(userId)}`;
-
-  return NextResponse.redirect(returnUrl, { status: 303 });
-}
-
-// -------------------------------------------------------
-//                    POST Handler
-// -------------------------------------------------------
-export async function POST(req: Request) {
-  const rawBody = await req.text();
-  const params = new URLSearchParams(rawBody);
-
-  const userId = params.get('cartId') ?? '';
-  const tranRef = params.get('tranRef') ?? '';
-  const respStatus = params.get('respStatus') ?? '';
-  const respMessage = params.get('respMessage') ?? '';
-  const signature = params.get('signature') ?? '';
-  const token = params.get('token') ?? '';
-
-  await handleSubscriptionPayment(userId, tranRef, respStatus, respMessage, signature, token);
-
-  const returnUrl =
-    `${new URL(req.url).origin}/storev2/subscription-result` +
-    `?tranRef=${encodeURIComponent(tranRef)}` +
-    `&respStatus=${encodeURIComponent(respStatus)}` +
-    `&respMessage=${encodeURIComponent(respMessage)}` +
-    `&userId=${encodeURIComponent(userId)}`;
-
-  return NextResponse.redirect(returnUrl, { status: 303 });
 }
