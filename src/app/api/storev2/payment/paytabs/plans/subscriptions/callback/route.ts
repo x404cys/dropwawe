@@ -46,7 +46,6 @@ function verifySignature(data: VerificationData, signature: string | undefined):
   return calculated === signature;
 }
 
-// ========== MAIN PROCESS ==========
 async function handlePaymentCallback(data: PayTabsCallbackData) {
   const {
     cartId,
@@ -60,12 +59,10 @@ async function handlePaymentCallback(data: PayTabsCallbackData) {
     signature,
   } = data;
 
-  // ========== CHECK REQUIRED ==========
   if (!cartId || !tranRef || !respStatus) {
     return { success: false, reason: 'Missing required fields' };
   }
 
-  // ========== CHECK SIGNATURE (only if signature exists) ==========
   const verificationData: VerificationData = {
     cartId,
     userId,
@@ -81,7 +78,6 @@ async function handlePaymentCallback(data: PayTabsCallbackData) {
     return { success: false, reason: 'Invalid signature' };
   }
 
-  // ========== UPDATE / CREATE PAYMENT ==========
   let payment = await prisma.payment.findUnique({ where: { cartId } });
 
   if (payment) {
@@ -152,7 +148,6 @@ async function handlePaymentCallback(data: PayTabsCallbackData) {
   return { success: true };
 }
 
-// ========== POST (JSON + FORM) ==========
 export async function POST(req: Request) {
   try {
     const text = await req.text();
@@ -166,16 +161,14 @@ export async function POST(req: Request) {
 
     const result = await handlePaymentCallback(body);
 
-    const redirectUrl = `${new URL(req.url).origin}/storev2/payment-result?status=${result.success ? 'success' : 'failed'}`;
-
-    return NextResponse.redirect(redirectUrl, { status: 303 });
+    // لا تقم بالـ redirect للـ IPN
+    return NextResponse.json({ success: result.success, reason: result.reason }, { status: 200 });
   } catch (err) {
     console.error('POST Callback Error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
 
-// ========== GET ==========
 export async function GET(req: Request) {
   try {
     const params = Object.fromEntries(new URL(req.url).searchParams.entries());
@@ -183,9 +176,7 @@ export async function GET(req: Request) {
 
     const result = await handlePaymentCallback(data);
 
-    const redirectUrl = `${new URL(req.url).origin}/storev2/payment-result?status=${result.success ? 'success' : 'failed'}`;
-
-    return NextResponse.redirect(redirectUrl, { status: 303 });
+    return NextResponse.json({ success: result.success, reason: result.reason }, { status: 200 });
   } catch (err) {
     console.error('GET Callback Error:', err);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
