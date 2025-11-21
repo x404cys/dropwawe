@@ -144,13 +144,13 @@ export async function POST(req: Request) {
           status: data.respStatus,
         },
       });
-
+      
+      if (!session?.user.id) {
+        return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
+      }
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + plan.durationDays);
-      if (!session?.user?.id) {
-        return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
-      }
       await prisma.userSubscription.create({
         data: {
           userId: session?.user.id,
