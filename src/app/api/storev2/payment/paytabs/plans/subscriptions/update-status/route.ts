@@ -1,31 +1,43 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import { getServerSession } from 'next-auth';
+import { authOperation } from '@/app/lib/authOperation';
 
 export async function PATCH(req: Request) {
-  try {
-    const body = await req.json();
+  const session = await getServerSession(authOperation);
 
-    const { tranRef, respCode, respMessage, cartId } = body;
-
-    if (!cartId) {
-      return NextResponse.json({ error: 'cartId is required' }, { status: 400 });
-    }
-
-    const updated = await prisma.payment.update({
-      where: { cartId },
-      data: {
-        tranRef,
-        respCode,
-        respMessage,
-        
-      },
-    });
-
-    return NextResponse.json({ success: true, payment: updated });
-  } catch (error) {
-    return NextResponse.json(
-      { error: 'failed to update payment', details: error },
-      { status: 500 }
-    );
+  if (!session?.user?.id) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
+
+  const { tranRef, respCode, respMessage, cartId } = await req.json();
+
+  if (!cartId) {
+    return NextResponse.json({ error: 'cartId is required' }, { status: 400 });
+  }
+
+  const checkPayment = await prisma.payment.findUnique({
+    where: { cartId },
+  });
+
+  if (!checkPayment) {
+    return NextResponse.json({ error: 'Payment not found' }, { status: 404 });
+  }
+
+  const subscription = await prisma.userSubscription.findFirst({
+    where: { userId: session.user.id },
+  });
+
+  if (!subscription) {
+    return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
+  }
+
+  const updated = await prisma.userSubscription.update({
+    where: { id: subscription.id },
+    data: {
+      isActive: true,
+    },
+  });
+
+  return NextResponse.json({ success: true, subscription: updated });
 }

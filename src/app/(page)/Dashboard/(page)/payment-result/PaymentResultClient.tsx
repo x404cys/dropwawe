@@ -2,63 +2,12 @@
 
 import useSWR from 'swr';
 import { useSearchParams } from 'next/navigation';
-import { CheckCircle2, XCircle, Package, MapPin, Phone, User, CreditCard } from 'lucide-react';
-import { useState } from 'react';
+import { CheckCircle2, XCircle, CreditCard } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { LuCopy } from 'react-icons/lu';
 import { CiShare1 } from 'react-icons/ci';
 import { toast } from 'sonner';
-import Loader from '@/components/Loader';
-
-const fetcher = (url: string) => fetch(url).then(res => res.json());
-
-export type Product = {
-  id: string;
-  name: string;
-  description: string;
-  price: number;
-  quantity: number;
-  image: string;
-  category: string;
-  discount: number;
-  shippingType: string | null;
-  hasReturnPolicy: string | null;
-};
-
-export type OrderItem = {
-  id: string;
-  quantity: number;
-  price: number;
-  orderId: string;
-  color: string;
-  size: string;
-  productId: string;
-  product: Product;
-};
-
-export type PaymentOrder = {
-  id: string;
-  cartId: string;
-  status: string;
-  tranRef?: string | null;
-  amount: number;
-  createdAt: string;
-};
-
-export type Order = {
-  id: string;
-  createdAt: string;
-  status: string;
-  total: number;
-  userId: string;
-  storeId: string;
-  email?: string | null;
-  fullName: string;
-  location: string;
-  phone: string;
-  items: OrderItem[];
-  paymentOrder?: PaymentOrder | null;
-};
 
 export default function PaymentResultClient() {
   const params = useSearchParams();
@@ -68,43 +17,45 @@ export default function PaymentResultClient() {
   const cartId = params.get('cartId') ?? '';
   const [copied, setCopied] = useState(false);
 
-  const {
-    data: order,
-    error,
-    isLoading,
-  } = useSWR<Order>(
-    cartId ? `/api/storev2/payment/paytabs/order/get-payment/${cartId}` : null,
-    fetcher
-  );
-
   const isSuccess = respStatus === 'A' || respStatus === 'success';
+
+  async function updateSubscription() {
+    await fetch('/api/payment/paytabs/plans/subscriptions/update-status', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        cartId,
+      }),
+    });
+  }
+
+  useEffect(() => {
+    if (isSuccess && cartId) {
+      updateSubscription();
+    }
+  }, [isSuccess, cartId]);
+
   const handleShare = async () => {
     const url = window.location.href;
-
     if (navigator.share) {
-      try {
-        await navigator.share({
-          title: 'تفاصيل الطلب',
-          text: `تفاصيل الطلب - ${isSuccess ? 'تمت بنجاح' : 'فشلت'}`,
-          url: url,
-        });
-      } catch (err) {
-        console.log('Error sharing:', err);
-      }
+      await navigator.share({
+        title: 'تفاصيل الطلب',
+        text: `تفاصيل الطلب`,
+        url,
+      });
     } else {
       handleCopy();
     }
   };
 
   const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(window.location.href);
-      setCopied(true);
-      toast.success('تم نسخ الرابط');
-      setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.log('Failed to copy:', err);
-    }
+    await navigator.clipboard.writeText(window.location.href);
+    setCopied(true);
+    toast.success('تم نسخ الرابط');
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
@@ -135,7 +86,7 @@ export default function PaymentResultClient() {
 
           <div className="flex flex-col items-center justify-center gap-3 pt-6 sm:flex-row sm:gap-5">
             <Button
-              onClick={() => handleShare()}
+              onClick={handleShare}
               variant={'outline'}
               className="w-full px-6 py-2 font-semibold sm:w-auto"
             >
@@ -143,7 +94,7 @@ export default function PaymentResultClient() {
             </Button>
 
             <Button
-              onClick={() => handleCopy()}
+              onClick={handleCopy}
               variant={'default'}
               className="w-full px-6 py-2 font-semibold sm:w-auto"
             >
@@ -181,18 +132,6 @@ export default function PaymentResultClient() {
             </div>
           </div>
         </div>
-        {isLoading && (
-          <div className="rounded-2xl bg-white p-12 text-center shadow-sm">
-            <div className="mx-auto h-12 w-12 animate-spin rounded-full border-4 border-gray-200 border-t-gray-950"></div>
-            <p className="mt-4 text-gray-600">جاري تحميل تفاصيل الطلب</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-6 shadow-sm">
-            <p className="text-center text-red-600">فشل تحميل تفاصيل الطلب</p>
-          </div>
-        )}
       </div>
     </div>
   );

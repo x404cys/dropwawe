@@ -103,9 +103,7 @@ async function handlePayment(
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOperation);
-  // if (!session?.user.id) {
-  //   return NextResponse.json({ error: 'User not authenticated' }, { status: 401 });
-  // }
+
   const contentType = req.headers.get('content-type') || '';
   let data: Record<string, string> = {};
 
@@ -146,20 +144,6 @@ export async function POST(req: Request) {
           status: data.respStatus,
         },
       });
-
-      const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + plan.durationDays);
-      await prisma.userSubscription.create({
-        data: {
-          userId: data.cartId,
-          planId: plan.id,
-          startDate,
-          endDate,
-          isActive: true,
-          limitProducts: plan.maxProducts ?? null,
-        },
-      });
     } catch (e) {
       return NextResponse.json(
         { error: `Failed to add payment/subscription: ${e}` },
@@ -179,7 +163,7 @@ export async function POST(req: Request) {
   );
 
   const returnUrl =
-    `${new URL(req.url).origin}/storev2/payment-result` +
+    `${new URL(req.url).origin}/Dashboard/payment-result` +
     `?tranRef=${encodeURIComponent(data.tranRef || '')}` +
     `&respStatus=${encodeURIComponent(data.respStatus || '')}` +
     `&respMessage=${encodeURIComponent(data.respMessage || '')}` +

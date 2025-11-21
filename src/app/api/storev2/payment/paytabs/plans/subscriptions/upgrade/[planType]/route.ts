@@ -45,8 +45,21 @@ export async function POST(
         { status: 401 }
       );
     } else {
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + plan.durationDays);
+      await prisma.userSubscription.create({
+        data: {
+          userId: session?.user.id,
+          planId: plan.id,
+          startDate,
+          endDate,
+          isActive: false,
+          limitProducts: plan.maxProducts ?? null,
+        },
+      });
       const uuid = crypto.randomUUID();
-
+      
       const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
       const PAYTABS_PROFILE_ID = 169218;
 
