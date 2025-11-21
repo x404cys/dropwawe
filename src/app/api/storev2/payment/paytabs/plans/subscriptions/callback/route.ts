@@ -73,7 +73,6 @@ async function handlePayment(
   return paymentRecord;
 }
 
-// ----------------   GET Handler   ------------------
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
 
@@ -96,7 +95,6 @@ export async function GET(req: Request) {
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
 
-// ----------------   POST Handler   ------------------
 export async function POST(req: Request) {
   const rawBody = await req.text();
   const params = new URLSearchParams(rawBody);
