@@ -1,84 +1,111 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 
-async function handleSubscriptionPayment(
-  userId: string,
+async function handlePayment(
+  cartId: string,
   tranRef: string,
   respStatus: string,
   respMessage: string,
+  customerEmail: string,
   signature: string,
   token: string
 ) {
-  const paymentRecord = await prisma.payment.create({
-    data: {
-      cartId: 'oopopqw-e-0-31023',
-      amount: 123,
-      tranRef,
-      respCode: respStatus,
-      respMessage,
-      signature,
-      token,
-      status: respStatus === 'A' ? 'Success' : 'Failed',
-    },
+  const paymentOrder = await prisma.paymentOrder.findUnique({
+    where: { cartId },
+    include: { order: { include: { items: true } } },
   });
 
+  if (!paymentOrder || !paymentOrder.order) {
+    return null;
+  }
+
+  const order = paymentOrder.order;
+
+  let paymentRecord = await prisma.payment.findUnique({ where: { cartId } });
+  if (paymentRecord) {
+    paymentRecord = await prisma.payment.update({
+      where: { cartId },
+      data: {
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        customerEmail,
+        signature,
+        token,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
+      },
+    });
+  } else {
+    paymentRecord = await prisma.payment.create({
+      data: {
+        cartId,
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        customerEmail,
+        signature,
+        token,
+        amount: order.total || 0,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
+      },
+    });
+  }
+
   if (respStatus === 'A') {
-    await prisma.userSubscription.updateMany({
-      where: { userId },
-      data: { isActive: true },
+    prisma.payment.create({
+      data: {
+        tranRef: tranRef,
+        status: status,
+        amount: 483920,
+        customerEmail: customerEmail,
+        cartId: cartId,
+        token: token,
+        respCode: respStatus,
+        respMessage: respMessage,
+      },
+    });
+  } else {
+    await prisma.payment.delete({
+      where: { cartId },
     });
   }
 
   return paymentRecord;
 }
 
-// -------------------------------------------------------
-//                    GET Handler
-// -------------------------------------------------------
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
-
-  const userId = params.get('cartId') ?? '';
+  const cartId = params.get('cartId') ?? '';
   const tranRef = params.get('tranRef') ?? '';
   const respStatus = params.get('respStatus') ?? '';
   const respMessage = params.get('respMessage') ?? '';
+  const customerEmail = params.get('customerEmail') ?? '';
   const signature = params.get('signature') ?? '';
   const token = params.get('token') ?? '';
 
-  await handleSubscriptionPayment(userId, tranRef, respStatus, respMessage, signature, token);
+  await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl =
-    `${new URL(req.url).origin}/storev2/subscription-result` +
-    `?tranRef=${encodeURIComponent(tranRef)}` +
-    `&respStatus=${encodeURIComponent(respStatus)}` +
-    `&respMessage=${encodeURIComponent(respMessage)}` +
-    `&userId=${encodeURIComponent(userId)}`;
-
+  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
 
-// -------------------------------------------------------
-//                    POST Handler
-// -------------------------------------------------------
 export async function POST(req: Request) {
-  const rawBody = await req.text();
-  const params = new URLSearchParams(rawBody);
+  const formData = await req.formData();
+  const data: Record<string, string> = {};
+  for (const [key, value] of formData.entries()) {
+    data[key] = typeof value === 'string' ? value : '';
+  }
 
-  const userId = params.get('cartId') ?? '';
-  const tranRef = params.get('tranRef') ?? '';
-  const respStatus = params.get('respStatus') ?? '';
-  const respMessage = params.get('respMessage') ?? '';
-  const signature = params.get('signature') ?? '';
-  const token = params.get('token') ?? '';
+  await handlePayment(
+    data.cartId ?? '',
+    data.tranRef ?? '',
+    data.respStatus ?? '',
+    data.respMessage ?? '',
+    data.customerEmail ?? '',
+    data.signature ?? '',
+    data.token ?? ''
+  );
 
-  await handleSubscriptionPayment(userId, tranRef, respStatus, respMessage, signature, token);
-
-  const returnUrl =
-    `${new URL(req.url).origin}/storev2/subscription-result` +
-    `?tranRef=${encodeURIComponent(tranRef)}` +
-    `&respStatus=${encodeURIComponent(respStatus)}` +
-    `&respMessage=${encodeURIComponent(respMessage)}` +
-    `&userId=${encodeURIComponent(userId)}`;
-
+  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
