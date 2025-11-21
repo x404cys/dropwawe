@@ -15,15 +15,11 @@ async function handlePayment(
     include: { order: { include: { items: true } } },
   });
 
-  if (!paymentOrder || !paymentOrder.order) {
-    return null;
-  }
+  if (!paymentOrder || !paymentOrder.order) return null;
 
   const order = paymentOrder.order;
 
-  let paymentRecord = await prisma.payment.findUnique({
-    where: { cartId },
-  });
+  let paymentRecord = await prisma.payment.findUnique({ where: { cartId } });
 
   if (paymentRecord) {
     paymentRecord = await prisma.payment.update({
@@ -71,14 +67,13 @@ async function handlePayment(
       data: { status: 'DELIVERED' },
     });
   } else {
-    await prisma.payment.delete({
-      where: { cartId },
-    });
+    await prisma.payment.delete({ where: { cartId } });
   }
 
   return paymentRecord;
 }
 
+// ----------------   GET Handler   ------------------
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
 
@@ -92,13 +87,19 @@ export async function GET(req: Request) {
 
   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${encodeURIComponent(
+    tranRef
+  )}&respStatus=${encodeURIComponent(respStatus)}&respMessage=${encodeURIComponent(
+    respMessage
+  )}&cartId=${encodeURIComponent(cartId)}`;
+
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
 
+// ----------------   POST Handler   ------------------
 export async function POST(req: Request) {
-  const body = await req.text();
-  const params = new URLSearchParams(body);
+  const rawBody = await req.text();
+  const params = new URLSearchParams(rawBody);
 
   const cartId = params.get('cartId') ?? '';
   const tranRef = params.get('tranRef') ?? '';
@@ -110,7 +111,11 @@ export async function POST(req: Request) {
 
   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${encodeURIComponent(
+    tranRef
+  )}&respStatus=${encodeURIComponent(respStatus)}&respMessage=${encodeURIComponent(
+    respMessage
+  )}&cartId=${encodeURIComponent(cartId)}`;
 
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
