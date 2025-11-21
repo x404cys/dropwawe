@@ -152,7 +152,7 @@ export async function POST(req: Request) {
       endDate.setDate(endDate.getDate() + plan.durationDays);
       await prisma.userSubscription.create({
         data: {
-          userId: session?.user.id!,
+          userId: data.cartId,
           planId: plan.id,
           startDate,
           endDate,
