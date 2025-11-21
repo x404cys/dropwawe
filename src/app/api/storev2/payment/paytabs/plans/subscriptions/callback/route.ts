@@ -1,184 +1,140 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
-import crypto from 'crypto';
 
-const SECRET_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+async function handlePayment(
+  cartId: string,
+  tranRef: string,
+  respStatus: string,
+  respMessage: string,
+  customerEmail: string,
+  signature: string,
+  token: string
+) {
+  const paymentOrder = await prisma.paymentOrder.findUnique({
+    where: { cartId },
+    include: { order: { include: { items: true } } },
+  });
 
-interface PayTabsCallbackData {
-  cartId: string;
-  userId?: string;
-  planId?: string;
-  tranRef: string;
-  respStatus: string;
-  respMessage: string;
-  customerEmail?: string;
-  signature?: string;
-  token?: string;
-}
-
-interface VerificationData {
-  cartId: string;
-  userId?: string;
-  planId?: string;
-  tranRef: string;
-  respStatus: string;
-  respMessage: string;
-  customerEmail?: string;
-  token?: string;
-}
-
-// ========== SIGNATURE CHECK ==========
-function verifySignature(data: VerificationData, signature: string | undefined): boolean {
-  if (!signature) return false;
-
-  const sortedKeys = Object.keys(data).sort();
-  const sortedData: Record<string, string | undefined> = {};
-
-  for (const key of sortedKeys) {
-    sortedData[key] = data[key as keyof VerificationData];
+  if (!paymentOrder || !paymentOrder.order) {
+    return null;
   }
 
-  const calculated = crypto
-    .createHmac('sha256', SECRET_KEY)
-    .update(JSON.stringify(sortedData))
-    .digest('hex');
+  const order = paymentOrder.order;
 
-  return calculated === signature;
-}
+  let paymentRecord = await prisma.payment.findUnique({ where: { cartId } });
 
-async function handlePaymentCallback(data: PayTabsCallbackData) {
-  const {
-    cartId,
-    userId,
-    planId,
-    tranRef,
-    respStatus,
-    respMessage,
-    customerEmail,
-    token,
-    signature,
-  } = data;
-
-  if (!cartId || !tranRef || !respStatus) {
-    return { success: false, reason: 'Missing required fields' };
-  }
-
-  const verificationData: VerificationData = {
-    cartId,
-    userId,
-    planId,
-    tranRef,
-    respStatus,
-    respMessage,
-    customerEmail,
-    token,
-  };
-
-  if (signature && !verifySignature(verificationData, signature)) {
-    return { success: false, reason: 'Invalid signature' };
-  }
-
-  let payment = await prisma.payment.findUnique({ where: { cartId } });
-
-  if (payment) {
-    payment = await prisma.payment.update({
+  if (paymentRecord) {
+    paymentRecord = await prisma.payment.update({
       where: { cartId },
       data: {
         tranRef,
-        status: respStatus === 'A' ? 'Success' : 'Failed',
         respCode: respStatus,
         respMessage,
         customerEmail,
         signature,
         token,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
       },
     });
   } else {
-    payment = await prisma.payment.create({
+    paymentRecord = await prisma.payment.create({
       data: {
         cartId,
         tranRef,
-        amount: 0,
-        status: respStatus === 'A' ? 'Success' : 'Failed',
         respCode: respStatus,
         respMessage,
         customerEmail,
         signature,
         token,
+        amount: order.total || 0,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
       },
     });
   }
 
-  // ========== PAYMENT FAILED ==========
-  if (respStatus !== 'A') {
-    return { success: false, reason: 'Payment failed' };
+  if (respStatus === 'A') {
+    await Promise.all(
+      order.items
+        .filter(item => !!item.productId)
+        .map(item =>
+          prisma.product.update({
+            where: { id: item.productId! },
+            data: { quantity: { decrement: item.quantity } },
+          })
+        )
+    );
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'DELIVERED' },
+    });
+  } else {
+    await prisma.payment.delete({
+      where: { cartId },
+    });
   }
 
-  // ========== NO PLAN OR USER? ==========
-  if (!userId || !planId) {
-    return { success: false, reason: 'UserId or PlanId missing' };
-  }
-
-  // ========== ACTIVATE SUBSCRIPTION ==========
-  const plan = await prisma.subscriptionPlan.findUnique({ where: { id: planId } });
-  if (!plan) return { success: false, reason: 'Invalid Plan ID' };
-
-  // deactivate old
-  await prisma.userSubscription.updateMany({
-    where: { userId, isActive: true },
-    data: { isActive: false, canceledAt: new Date() },
-  });
-
-  const startDate = new Date();
-  const endDate = new Date();
-  endDate.setDate(endDate.getDate() + plan.durationDays);
-
-  // create new subscription
-  await prisma.userSubscription.create({
-    data: {
-      userId,
-      planId,
-      startDate,
-      endDate,
-      isActive: true,
-      limitProducts: plan.maxProducts ?? null,
-    },
-  });
-
-  return { success: true };
-}
-
-export async function POST(req: Request) {
-  try {
-    const text = await req.text();
-
-    let body: PayTabsCallbackData;
-    try {
-      body = JSON.parse(text);
-    } catch {
-      body = Object.fromEntries(new URLSearchParams(text)) as unknown as PayTabsCallbackData;
-    }
-
-    const result = await handlePaymentCallback(body);
-
-    // لا تقم بالـ redirect للـ IPN
-    return NextResponse.json({ success: result.success, reason: result.reason }, { status: 200 });
-  } catch (err) {
-    console.error('POST Callback Error:', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  return paymentRecord;
 }
 
 export async function GET(req: Request) {
-  try {
-    const params = Object.fromEntries(new URL(req.url).searchParams.entries());
-    const data = params as unknown as PayTabsCallbackData;
+  const params = new URL(req.url).searchParams;
 
-    const result = await handlePaymentCallback(data);
+  const cartId = params.get('cartId') ?? '';
+  const tranRef = params.get('tranRef') ?? '';
+  const respStatus = params.get('respStatus') ?? '';
+  const respMessage = params.get('respMessage') ?? '';
+  const customerEmail = params.get('customerEmail') ?? '';
+  const signature = params.get('signature') ?? '';
+  const token = params.get('token') ?? '';
 
-    return NextResponse.json({ success: result.success, reason: result.reason }, { status: 200 });
-  } catch (err) {
-    console.error('GET Callback Error:', err);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
+  await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
+
+  const returnUrl =
+    `${new URL(req.url).origin}/storev2/payment-result` +
+    `?tranRef=${encodeURIComponent(tranRef)}` +
+    `&respStatus=${encodeURIComponent(respStatus)}` +
+    `&respMessage=${encodeURIComponent(respMessage)}` +
+    `&cartId=${encodeURIComponent(cartId)}`;
+
+  return NextResponse.redirect(returnUrl, { status: 303 });
+}
+
+export async function POST(req: Request) {
+  const contentType = req.headers.get('content-type') || '';
+  let data: Record<string, string> = {};
+
+  if (contentType.includes('application/json')) {
+    data = await req.json();
+  } else if (contentType.includes('application/x-www-form-urlencoded')) {
+    const text = await req.text();
+    const params = new URLSearchParams(text);
+    params.forEach((v, k) => (data[k] = v));
+  } else if (contentType.includes('multipart/form-data')) {
+    const form = await req.formData();
+    for (const [key, value] of form.entries()) {
+      data[key] = typeof value === 'string' ? value : '';
+    }
+  } else {
+    return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
+
+  await handlePayment(
+    data.cartId ?? '',
+    data.tranRef ?? '',
+    data.respStatus ?? '',
+    data.respMessage ?? '',
+    data.customerEmail ?? '',
+    data.signature ?? '',
+    data.token ?? ''
+  );
+
+  const returnUrl =
+    `${new URL(req.url).origin}/storev2/payment-result` +
+    `?tranRef=${encodeURIComponent(data.tranRef || '')}` +
+    `&respStatus=${encodeURIComponent(data.respStatus || '')}` +
+    `&respMessage=${encodeURIComponent(data.respMessage || '')}` +
+    `&cartId=${encodeURIComponent(data.cartId || '')}`;
+
+  return NextResponse.redirect(returnUrl, { status: 303 });
 }
