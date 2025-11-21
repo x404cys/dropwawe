@@ -22,6 +22,7 @@ async function handlePayment(
   const order = paymentOrder.order;
 
   let paymentRecord = await prisma.payment.findUnique({ where: { cartId } });
+
   if (paymentRecord) {
     paymentRecord = await prisma.payment.update({
       where: { cartId },
@@ -52,17 +53,20 @@ async function handlePayment(
   }
 
   if (respStatus === 'A') {
-    prisma.payment.create({
-      data: {
-        tranRef: tranRef,
-        status: status,
-        amount: 483920,
-        customerEmail: customerEmail,
-        cartId: cartId,
-        token: token,
-        respCode: respStatus,
-        respMessage: respMessage,
-      },
+    await Promise.all(
+      order.items
+        .filter(item => !!item.productId)
+        .map(item =>
+          prisma.product.update({
+            where: { id: item.productId! },
+            data: { quantity: { decrement: item.quantity } },
+          })
+        )
+    );
+
+    await prisma.order.update({
+      where: { id: order.id },
+      data: { status: 'DELIVERED' },
     });
   } else {
     await prisma.payment.delete({
@@ -75,6 +79,7 @@ async function handlePayment(
 
 export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
+
   const cartId = params.get('cartId') ?? '';
   const tranRef = params.get('tranRef') ?? '';
   const respStatus = params.get('respStatus') ?? '';
@@ -85,15 +90,33 @@ export async function GET(req: Request) {
 
   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+  const returnUrl =
+    `${new URL(req.url).origin}/storev2/payment-result` +
+    `?tranRef=${encodeURIComponent(tranRef)}` +
+    `&respStatus=${encodeURIComponent(respStatus)}` +
+    `&respMessage=${encodeURIComponent(respMessage)}` +
+    `&cartId=${encodeURIComponent(cartId)}`;
+
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
 
 export async function POST(req: Request) {
-  const formData = await req.formData();
-  const data: Record<string, string> = {};
-  for (const [key, value] of formData.entries()) {
-    data[key] = typeof value === 'string' ? value : '';
+  const contentType = req.headers.get('content-type') || '';
+  let data: Record<string, string> = {};
+
+  if (contentType.includes('application/json')) {
+    data = await req.json();
+  } else if (contentType.includes('application/x-www-form-urlencoded')) {
+    const text = await req.text();
+    const params = new URLSearchParams(text);
+    params.forEach((v, k) => (data[k] = v));
+  } else if (contentType.includes('multipart/form-data')) {
+    const form = await req.formData();
+    for (const [key, value] of form.entries()) {
+      data[key] = typeof value === 'string' ? value : '';
+    }
+  } else {
+    return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
 
   await handlePayment(
@@ -106,6 +129,12 @@ export async function POST(req: Request) {
     data.token ?? ''
   );
 
-  const returnUrl = `${new URL(req.url).origin}/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${data.respMessage}&cartId=${data.cartId}`;
+  const returnUrl =
+    `${new URL(req.url).origin}/storev2/payment-result` +
+    `?tranRef=${encodeURIComponent(data.tranRef || '')}` +
+    `&respStatus=${encodeURIComponent(data.respStatus || '')}` +
+    `&respMessage=${encodeURIComponent(data.respMessage || '')}` +
+    `&cartId=${encodeURIComponent(data.cartId || '')}`;
+
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
