@@ -77,28 +77,28 @@ async function handlePayment(
   return paymentRecord;
 }
 
-export async function GET(req: Request) {
-  const params = new URL(req.url).searchParams;
+// export async function GET(req: Request) {
+//   const params = new URL(req.url).searchParams;
 
-  const cartId = params.get('cartId') ?? '';
-  const tranRef = params.get('tranRef') ?? '';
-  const respStatus = params.get('respStatus') ?? '';
-  const respMessage = params.get('respMessage') ?? '';
-  const customerEmail = params.get('customerEmail') ?? '';
-  const signature = params.get('signature') ?? '';
-  const token = params.get('token') ?? '';
+//   const cartId = params.get('cartId') ?? '';
+//   const tranRef = params.get('tranRef') ?? '';
+//   const respStatus = params.get('respStatus') ?? '';
+//   const respMessage = params.get('respMessage') ?? '';
+//   const customerEmail = params.get('customerEmail') ?? '';
+//   const signature = params.get('signature') ?? '';
+//   const token = params.get('token') ?? '';
 
-  await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
+//   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl =
-    `${new URL(req.url).origin}/storev2/payment-result` +
-    `?tranRef=${encodeURIComponent(tranRef)}` +
-    `&respStatus=${encodeURIComponent(respStatus)}` +
-    `&respMessage=${encodeURIComponent(respMessage)}` +
-    `&cartId=${encodeURIComponent(cartId)}`;
+//   const returnUrl =
+//     `${new URL(req.url).origin}/storev2/payment-result` +
+//     `?tranRef=${encodeURIComponent(tranRef)}` +
+//     `&respStatus=${encodeURIComponent(respStatus)}` +
+//     `&respMessage=${encodeURIComponent(respMessage)}` +
+//     `&cartId=${encodeURIComponent(cartId)}`;
 
-  return NextResponse.redirect(returnUrl, { status: 303 });
-}
+//   return NextResponse.redirect(returnUrl, { status: 303 });
+// }
 
 export async function POST(req: Request) {
   const contentType = req.headers.get('content-type') || '';
