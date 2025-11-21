@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
-
+import { getServerSession } from 'next-auth';
+import { authOperation } from '@/app/lib/authOperation';
 async function handlePayment(
   cartId: string,
   tranRef: string,
@@ -101,6 +102,8 @@ async function handlePayment(
 // }
 
 export async function POST(req: Request) {
+  const session = await getServerSession(authOperation);
+
   const contentType = req.headers.get('content-type') || '';
   let data: Record<string, string> = {};
 
@@ -119,22 +122,49 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
 
-  try {
-    await prisma.payment.create({
-      data: {
-        cartId: data.cartId ?? '',
-        tranRef: data.tranRef ?? '',
-        respCode: data.respStatus ?? '',
-        respMessage: data.respMessage ?? '',
-        customerEmail: data.customerEmail ?? '',
-        signature: data.signature ?? '',
-        token: data.token ?? '',
-        amount: 0,
-        status: data.respStatus,
-      },
-    });
-  } catch (e) {
-    return NextResponse.json(`error to add payment ${e}`);
+  if (data.respCode === 'A') {
+    try {
+      const plan = await prisma.subscriptionPlan.findFirst({
+        where: { name: 'MODREN' },
+      });
+      if (!plan) {
+        throw new Error('Plan not found');
+      }
+
+      await prisma.payment.create({
+        data: {
+          cartId: data.cartId ?? '',
+          tranRef: data.tranRef ?? '',
+          respCode: data.respStatus ?? '',
+          respMessage: data.respMessage ?? '',
+          customerEmail: data.customerEmail ?? '',
+          signature: data.signature ?? '',
+          token: data.token ?? '',
+          amount: plan?.price,
+          status: data.respStatus,
+        },
+      });
+
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + plan.durationDays);
+
+      await prisma.userSubscription.create({
+        data: {
+          userId: session?.user.id!,
+          planId: plan.id,
+          startDate,
+          endDate,
+          isActive: true,
+          limitProducts: plan.maxProducts ?? null,
+        },
+      });
+    } catch (e) {
+      return NextResponse.json(
+        { error: `Failed to add payment/subscription: ${e}` },
+        { status: 500 }
+      );
+    }
   }
 
   await handlePayment(
