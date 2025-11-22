@@ -29,6 +29,7 @@ export async function PATCH(req: Request) {
   });
 
   if (!subscription) {
+    console.log('errrrrrrrror ');
     return NextResponse.json({ error: 'Subscription not found' }, { status: 404 });
   }
 

@@ -52,7 +52,7 @@ export default function Plans() {
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3 lg:gap-8">
           <PricingCard
             name="الخطة المجانية"
-            price="مجاني"
+            price="7 ايام مجانية"
             period=""
             description="مثالية للبدء والتجربة"
             features={[
@@ -84,7 +84,8 @@ export default function Plans() {
               'محتوى المنتجات',
             ]}
             buttonText="ابدأ الآن"
-            buttonVariant="secondary"
+            buttonVariant="outline"
+            recommended
             planType="MODREN"
             onClick={handleSubscribe}
           />
@@ -107,7 +108,6 @@ export default function Plans() {
             ]}
             buttonText="الترقية الآن"
             buttonVariant="default"
-            recommended
             planType="PENDINGROFESSIONAL"
             onClick={handleSubscribe}
           />

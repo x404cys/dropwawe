@@ -8,6 +8,9 @@ import { Button } from '@/components/ui/button';
 import { LuCopy } from 'react-icons/lu';
 import { CiShare1 } from 'react-icons/ci';
 import { toast } from 'sonner';
+import type { PaymentResult } from '@/types/api/PaymentRes';
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function PaymentResultClient() {
   const params = useSearchParams();
@@ -20,7 +23,7 @@ export default function PaymentResultClient() {
   const isSuccess = respStatus === 'A' || respStatus === 'success';
 
   async function updateSubscription() {
-    await fetch('/api/payment/paytabs/plans/subscriptions/update-status', {
+    await fetch('/api/storev2/payment/paytabs/plans/subscriptions/update-status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -37,6 +40,16 @@ export default function PaymentResultClient() {
       updateSubscription();
     }
   }, [isSuccess, cartId]);
+  const {
+    data: payment,
+    error,
+    isLoading,
+  } = useSWR<PaymentResult>(
+    cartId
+      ? `/api/storev2/payment/paytabs/plans/subscriptions/get-payment-and-plan/${cartId}`
+      : null,
+    fetcher
+  );
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -59,79 +72,236 @@ export default function PaymentResultClient() {
   };
 
   return (
-    <div dir="rtl" className="min-h-screen py-5">
+    <div dir="rtl" className="min-h-screen bg-gradient-to-br from-[#f8f8f8] to-white py-4">
       <div className="mx-auto max-w-3xl space-y-6">
-        <div
-          className={`rounded-lg p-8 text-center shadow-sm ${
-            isSuccess
-              ? 'border border-green-200 bg-gradient-to-br from-green-50 to-emerald-50'
-              : 'border border-red-200 bg-gradient-to-br from-red-50 to-rose-50'
-          }`}
-        >
-          <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-sm">
+        <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-8 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
             {isSuccess ? (
-              <CheckCircle2 className="h-8 w-8 text-green-600" />
+              <CheckCircle2 className="h-9 w-9 text-[#111]" strokeWidth={2} />
             ) : (
-              <XCircle className="h-8 w-8 text-red-600" />
+              <XCircle className="h-9 w-9 text-[#111]" strokeWidth={2} />
             )}
           </div>
 
-          <h1 className={`mb-2 text-xl font-bold ${isSuccess ? 'text-green-800' : 'text-red-800'}`}>
+          <h1 className="mb-3 text-[22px] leading-tight font-bold text-[#111]">
             {isSuccess ? 'تمت عملية الدفع بنجاح' : 'فشلت عملية الدفع'}
           </h1>
 
-          <p className={`text-lg ${isSuccess ? 'text-green-700' : 'text-red-700'}`}>
+          <p className="text-[15px] leading-relaxed text-[#444]">
             {respMessage || 'تمت معالجة عملية الدفع'}
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-3 pt-6 sm:flex-row sm:gap-5">
+          <div className="flex flex-col items-center justify-center gap-3 pt-8 sm:flex-row sm:gap-4">
             <Button
               onClick={handleShare}
-              variant={'outline'}
-              className="w-full px-6 py-2 font-semibold sm:w-auto"
+              variant="outline"
+              className="w-full rounded-[10px] border-[#111] bg-transparent px-6 py-2.5 font-semibold text-[#111] hover:bg-[#f5f5f5] sm:w-auto"
             >
-              <span> شارك الطلب</span> <CiShare1 />
+              <span>شارك الطلب</span> <CiShare1 className="mr-2" />
             </Button>
 
             <Button
               onClick={handleCopy}
-              variant={'default'}
-              className="w-full px-6 py-2 font-semibold sm:w-auto"
+              className="w-full rounded-[10px] bg-[#111] px-6 py-2.5 font-semibold text-white hover:bg-[#222] sm:w-auto"
             >
-              <span>نسخ</span> <LuCopy />
+              <span>نسخ</span> <LuCopy className="mr-2" />
             </Button>
           </div>
         </div>
 
-        <div className="rounded-lg border bg-white p-6 shadow-sm">
-          <h2 className="mb-4 flex items-center gap-2 text-xl font-semibold text-gray-800">
-            <CreditCard className="h-5 w-5" />
+        <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <h2 className="mb-6 flex items-center gap-2 text-[18px] font-semibold text-[#111]">
+            <CreditCard className="h-5 w-5 text-[#333]" strokeWidth={2} />
             تفاصيل المعاملة
           </h2>
 
-          <div className="space-y-3">
-            <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">رقم المعاملة</span>
-              <span className="font-mono text-sm font-medium text-gray-900">
+          <div className="space-y-4">
+            <div className="flex justify-between border-b border-[#e6e6e6] pb-3">
+              <span className="text-[14px] text-[#555]">رقم المعاملة</span>
+              <span className="font-mono text-[15px] font-medium text-[#111]">
                 {tranRef || 'غير متوفر'}
               </span>
             </div>
 
-            <div className="flex justify-between border-b pb-2">
-              <span className="text-gray-600">الحالة</span>
-              <span className={`font-semibold ${isSuccess ? 'text-green-600' : 'text-red-600'}`}>
-                {isSuccess ? 'نجحت' : 'فشلت'}
+            <div className="flex justify-between border-b border-[#e6e6e6] pb-3">
+              <span className="text-[14px] text-[#555]">الحالة</span>
+              <span className="flex items-center gap-2 font-semibold text-[#111]">
+                {isSuccess ? (
+                  <>
+                    <span>نجحت</span>
+                    <CheckCircle2 className="h-4 w-4" />
+                  </>
+                ) : (
+                  <>
+                    <span>فشلت</span>
+                    <XCircle className="h-4 w-4" />
+                  </>
+                )}
               </span>
             </div>
 
-            <div className="flex justify-between">
-              <span className="text-gray-600">معرف السلة</span>
-              <span className="font-mono text-sm font-medium text-gray-900">
+            <div className="flex justify-between pt-1">
+              <span className="text-[14px] text-[#555]">معرف السلة</span>
+              <span className="font-mono text-[15px] font-medium text-[#111]">
                 {cartId || 'غير متوفر'}
               </span>
             </div>
           </div>
         </div>
+
+        <>
+          {!isLoading && payment && (
+            <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+              <h2 className="mb-6 text-[18px] font-semibold text-[#111]">بيانات الدفع</h2>
+
+              <div className="space-y-4">
+                <div className="border-b border-[#e6e6e6] pb-3">
+                  <span className="block text-[14px] text-[#555]">معرف الدفع</span>
+                  <div className="mt-1 font-mono text-[15px] font-medium text-[#111]">
+                    {payment.payment.id}
+                  </div>
+                </div>
+
+                <div className="border-b border-[#e6e6e6] pb-3">
+                  <span className="block text-[14px] text-[#555]">رقم العملية (tranRef)</span>
+                  <div className="mt-1 font-mono text-[15px] font-medium text-[#111]">
+                    {payment.payment.tranRef}
+                  </div>
+                </div>
+
+                <div className="border-b border-[#e6e6e6] pb-3">
+                  <span className="block text-[14px] text-[#555]">المبلغ</span>
+                  <div className="mt-1 text-[16px] font-semibold text-[#111]">
+                    {payment.payment.amount} IQD
+                  </div>
+                </div>
+
+                <div className="border-b border-[#e6e6e6] pb-3">
+                  <span className="block text-[14px] text-[#555]">رسالة النظام</span>
+                  <div className="mt-1 text-[15px] leading-relaxed font-medium text-[#111]">
+                    {payment.payment.respMessage}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+          {!isLoading && payment && (
+            <div className="space-y-6">
+              <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+                <h2 className="mb-4 text-[18px] font-semibold text-[#111]">بيانات الاشتراك</h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">تاريخ البداية</span>
+                    <span className="mt-1 font-mono text-[15px] font-medium text-[#111]">
+                      {new Date(payment.userSubscription.startDate).toLocaleDateString('ar')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">تاريخ الانتهاء</span>
+                    <span className="mt-1 font-mono text-[15px] font-medium text-[#111]">
+                      {new Date(payment.userSubscription.endDate).toLocaleDateString('ar')}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">حالة الاشتراك</span>
+                    <span className="mt-1 flex items-center gap-2 text-[15px] font-semibold text-[#111]">
+                      {payment.userSubscription.isActive ? (
+                        <>
+                          <span>نشط</span>
+                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                        </>
+                      ) : (
+                        <>
+                          <span>غير نشط</span>
+                          <XCircle className="h-4 w-4 text-red-500" />
+                        </>
+                      )}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">حد المنتجات</span>
+                    <span className="mt-1 font-semibold text-[#111]">
+                      {payment.userSubscription.limitProducts}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+                <h2 className="mb-4 text-[18px] font-semibold text-[#111]">تفاصيل الخطة</h2>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">اسم الخطة</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.name}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">نوع الخطة</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.type}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">السعر</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.price} IQD
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">مدة الخطة (أيام)</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.durationDays}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">عدد المتاجر</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.maxStores}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">عدد الموردين</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.maxSuppliers}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">عدد القوالب المسموح بها</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.maxTemplates}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[14px] text-[#555]">فئة القالب</span>
+                    <span className="mt-1 font-medium text-[#111]">
+                      {payment.userSubscription.plan.templateCategory}
+                    </span>
+                  </div>
+
+                  <div className="col-span-1 mt-2 sm:col-span-2">
+                    <span className="mb-1 block text-[14px] text-[#555]">الميزات</span>
+                    <ul className="list-disc space-y-1 pl-5 text-[15px] text-[#111]">
+                      {payment.userSubscription.plan.features.map((feature, idx) => (
+                        <li key={idx}>{feature}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       </div>
     </div>
   );
