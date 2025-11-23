@@ -1,4 +1,4 @@
- import { prisma } from '@/app/lib/db';
+import { prisma } from '@/app/lib/db';
 import { NextRequest, NextResponse } from 'next/server';
 import bcrypt from 'bcrypt';
 
@@ -13,10 +13,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json({ status: true, merchant });
-  } catch (error: any) {
-    return NextResponse.json(
-      { status: false, msg: error.message || 'Server Error' },
-      { status: 500 }
-    );
+  } catch (error) {
+    return NextResponse.json({ status: false, msg: error || 'Server Error' }, { status: 500 });
   }
 }
