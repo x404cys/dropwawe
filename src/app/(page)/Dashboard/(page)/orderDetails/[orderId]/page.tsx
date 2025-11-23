@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { GrDeliver } from 'react-icons/gr';
+
 import {
   CheckCircle,
   Clock,
@@ -29,6 +31,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import CityRegionDialog from '../../../_components/Citys_and_regions';
 
 type Product = { name?: string; image?: string };
 type OrderItem = {
@@ -59,7 +62,8 @@ export default function OrderDetailsPage() {
 
   const [openAccept, setOpenAccept] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
-
+  const [cityId, setCityId] = useState('');
+  const [regionId, setRegionId] = useState('');
   const statusConfig: Record<
     OrderDetails['status'],
     { color: string; bgColor: string; label: string; icon: JSX.Element }
@@ -167,7 +171,7 @@ export default function OrderDetailsPage() {
 
   return (
     <>
-      <div dir="rtl" className="bg-muted/30 min-h-screen  py-8 md:px-8">
+      <div dir="rtl" className="bg-muted/30 min-h-screen py-8 md:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
             <span className="hover:text-foreground cursor-pointer">الطلبات</span>
@@ -201,7 +205,7 @@ export default function OrderDetailsPage() {
 
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              <div className="bg-card rounded-xl border ">
+              <div className="bg-card rounded-xl border">
                 <div className="bg-muted/50 border-b px-6 py-4">
                   <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
                     <ShoppingBag className="h-5 w-5" />
@@ -285,7 +289,7 @@ export default function OrderDetailsPage() {
             </div>
 
             <div className="space-y-6">
-              <div className="bg-card rounded-xl border ">
+              <div className="bg-card rounded-xl border">
                 <div className="bg-muted/50 border-b px-6 py-4">
                   <h2 className="text-foreground text-lg font-semibold">ملخص الطلب</h2>
                 </div>
@@ -310,7 +314,7 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
-              <div className="bg-card rounded-xl border ">
+              <div className="bg-card rounded-xl border">
                 <div className="bg-muted/50 border-b px-6 py-4">
                   <h2 className="text-foreground text-lg font-semibold">معلومات العميل</h2>
                 </div>
@@ -383,13 +387,25 @@ export default function OrderDetailsPage() {
             </div>
           </div>
 
-          <DialogFooter className="gap-4">
-            <Button variant="outline" onClick={() => setOpenAccept(false)} className="flex-1">
-              إلغاء
+          <DialogFooter className="flex flex-col flex-wrap gap-4">
+            <Button
+              variant={'outline'}
+              onClick={handleAccept}
+              className="flex-1 border border-black"
+            >
+              <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
+              تأكيد الطلب ,والتوصيل ذاتي
             </Button>
-            <Button onClick={handleAccept} className="flex-1 bg-emerald-600 hover:bg-emerald-700">
-              <CheckCircle className="ml-2 h-4 w-4" />
-              تأكيد الطلب
+            <Button
+              variant={'ghost'}
+              onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
+              className="flex-1 border border-black"
+            >
+              <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
+              التوصيل مع الوسيط
+            </Button>
+            <Button variant="destructive" onClick={() => setOpenAccept(false)} className="flex-1">
+              إلغاء
             </Button>
           </DialogFooter>
         </DialogContent>

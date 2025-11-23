@@ -35,6 +35,8 @@ model User {
   Supplier Supplier[]
 
   UserSubscription UserSubscription[]
+  merchant  Merchant? @relation("UserMerchant")
+
 }
 model Supplier {
   id              String      @id @default(cuid())
@@ -322,3 +324,16 @@ model UserSubscription {
   @@index([userId])
   @@index([planId])
 }
+model Merchant {
+  id        String   @id @default(cuid())
+  userId    String?  @unique
+  user      User?    @relation("UserMerchant", fields: [userId], references: [id], onDelete: Cascade)
+
+  username  String   @unique
+  password  String
+  token     String?
+  tokenExp  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
