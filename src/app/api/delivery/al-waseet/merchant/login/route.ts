@@ -8,11 +8,18 @@ interface MerchantLoginResponse {
   data?: { token: string };
   msg?: string;
 }
-
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOperation);
+
   try {
     const { username, password } = await req.json();
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { status: false, msg: 'Username & password required' },
+        { status: 400 }
+      );
+    }
 
     const form = new FormData();
     form.append('username', username);
@@ -30,13 +37,12 @@ export async function POST(req: NextRequest) {
     try {
       data = JSON.parse(rawText);
     } catch (err) {
-      console.error('Failed to parse JSON:', err);
-      return NextResponse.json({ status: false, msg: 'err format data api' }, { status: 500 });
+      return NextResponse.json({ status: false, msg: 'API Format Error' }, { status: 500 });
     }
 
     if (!data.status || !data.data?.token) {
       return NextResponse.json(
-        { status: false, msg: data.msg || 'username or passw ' },
+        { status: false, msg: data.msg || 'Invalid credentials' },
         { status: 400 }
       );
     }
@@ -46,9 +52,7 @@ export async function POST(req: NextRequest) {
     const tokenExp = new Date();
     tokenExp.setHours(tokenExp.getHours() + 24);
 
-    const existing = await prisma.merchant.findUnique({
-      where: { username },
-    });
+    const existing = await prisma.merchant.findUnique({ where: { username } });
 
     if (existing) {
       await prisma.merchant.update({
@@ -63,10 +67,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       status: true,
+      msg: 'تم تسجيل الدخول بنجاح',
       login: { token, tokenExp },
     });
   } catch (error) {
-    console.error('API Error:', error);
-    return NextResponse.json({ status: false, msg: error || 'Server Error' }, { status: 500 });
+    return NextResponse.json({ status: false, msg: 'Server Error: ' + error }, { status: 500 });
   }
 }

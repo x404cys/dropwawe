@@ -60,17 +60,17 @@ export default function StoreSetupPage() {
         const storeData: StoreProps = res.data;
 
         setStore(storeData);
-        setStoreSlug(storeData.subLink ?? '');
-        setStoreName(storeData.name ?? '');
-        setShippingPrice(storeData.shippingPrice?.toString() ?? '');
-        setDescription(storeData.description ?? '');
-        setPhone(storeData.phone ?? '');
-        setFacebook(storeData.facebookLink ?? '');
-        setInstagram(storeData.instaLink ?? '');
-        setTelegram(storeData.telegram ?? '');
-        setFacebookPixel(storeData.facebookPixel ?? '');
-        setGooglePixel(storeData.googlePixel ?? '');
-        setTiktokPixel(storeData.tiktokPixel ?? '');
+        setStoreSlug(storeData?.subLink ?? '');
+        setStoreName(storeData?.name ?? '');
+        setShippingPrice(storeData?.shippingPrice?.toString() ?? '');
+        setDescription(storeData?.description ?? '');
+        setPhone(storeData?.phone ?? '');
+        setFacebook(storeData?.facebookLink ?? '');
+        setInstagram(storeData?.instaLink ?? '');
+        setTelegram(storeData?.telegram ?? '');
+        setFacebookPixel(storeData?.facebookPixel ?? '');
+        setGooglePixel(storeData?.googlePixel ?? '');
+        setTiktokPixel(storeData?.tiktokPixel ?? '');
       } catch (err) {
         console.error('Error fetching store info:', err);
       }
