@@ -4,7 +4,7 @@ import { Input } from '@/components/ui/input';
 import axios, { AxiosError } from 'axios';
 import { Phone, Truck, User } from 'lucide-react';
 import { MdPassword } from 'react-icons/md';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -40,6 +40,22 @@ export default function ShippingSection({
 }: ShippingSectionProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const res = await fetch('/api/delivery/al-waseet/merchant/get-info');
+        const data = await res.json();
+
+        if (data?.username) {
+          setUsername(data.username);
+        }
+      } catch (err) {
+        console.log('Fetch Error:', err);
+      }
+    };
+
+    getData();
+  }, []);
 
   const login = async () => {
     try {
@@ -67,6 +83,7 @@ export default function ShippingSection({
       }
     }
   };
+
   return (
     <div className="flex flex-col space-y-6">
       <span className="flex items-center">
