@@ -33,8 +33,18 @@ export default function FloatingNavBarForDashboard() {
   }, [pathname]);
 
   const baseStyle = 'flex cursor-pointer flex-col items-center justify-center transition';
-  const inactiveStyle = 'text-black opacity-70 hover:opacity-100';
-  const activeStyle = 'text-green-600 opacity-100 font-bold';
+  const activeStyle = `
+  text-black font-semibold relative
+  after:content-[''] after:absolute after:-bottom-1 after:left-1/2
+  after:h-[2px] after:w-10 after:-translate-x-1/2
+  after:bg-black after:rounded-full
+  transition-all duration-200 ease-out scale-105
+`;
+
+  const inactiveStyle = `
+  text-gray-500 opacity-70 hover:opacity-100
+  transition-all duration-200 ease-out scale-100
+`;
 
   const isActive = (path: string) => pathname === path;
 

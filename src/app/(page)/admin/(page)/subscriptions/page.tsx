@@ -23,7 +23,7 @@ type Subscription = {
   planId: string;
   isActive: boolean;
   startDate: string;
-  endDate: string;  
+  endDate: string;
   limitProducts: number;
 };
 

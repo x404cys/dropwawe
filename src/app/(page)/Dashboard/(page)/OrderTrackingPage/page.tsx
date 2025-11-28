@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import { useDashboardData } from '../../_utils/useDashboardData';
 import Loader from '@/components/Loader';
-import { ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag } from 'lucide-react';
 
 interface Order {
   id: string;
@@ -31,11 +31,57 @@ export default function OrderSummaryPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [search, setSearch] = useState('');
+  useEffect(() => {
+    let filtered = [...orders];
+
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(o => o.status === statusFilter.toUpperCase());
+    }
+
+    const now = new Date();
+    const from = new Date();
+
+    switch (dateFilter) {
+      case 'month':
+        from.setMonth(now.getMonth() - 1);
+        break;
+      case '3months':
+        from.setMonth(now.getMonth() - 3);
+        break;
+      case '6months':
+        from.setMonth(now.getMonth() - 6);
+        break;
+      case 'year':
+        from.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        from.setDate(now.getDate() - 7);
+        break;
+    }
+
+    filtered = filtered.filter(o => new Date(o.createdAt) >= from);
+
+    if (search.trim() !== '') {
+      const s = search.toLowerCase();
+      filtered = filtered.filter(
+        o =>
+          o.fullName.toLowerCase().includes(s) ||
+          o.phone.includes(s) ||
+          o.location.toLowerCase().includes(s) ||
+          o.productName?.toLowerCase().includes(s) ||
+          o.id.toLowerCase().includes(s)
+      );
+    }
+
+    setFilteredOrders(filtered);
+  }, [orders, statusFilter, dateFilter, search]);
+
   const deletOrder = async (id: string) => {
     const res = await axios.delete(`/api/orders/details/delete/${id}`);
     if (res.status !== 200) {
       return;
-    }//
+    }
   };
   useEffect(() => {
     async function fetchOrders() {
@@ -124,7 +170,9 @@ export default function OrderSummaryPage() {
 
   return (
     <>
-      {orders.length === 0 ? (
+      {loading ? (
+        <Loader />
+      ) : orders.length === 0 ? (
         <section className="flex min-h-screen flex-col items-center justify-center gap-4 dark:bg-gray-900">
           <ShoppingBag className="h-24 w-24 text-gray-400 dark:text-gray-600" />
 
@@ -137,21 +185,29 @@ export default function OrderSummaryPage() {
       ) : (
         <>
           {loading ? (
-            <Loader />
+            <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center space-y-4 bg-white/70 backdrop-blur-sm">
+              <Loader />
+            </div>
           ) : (
             <>
-              <section
-                className="w-full bg-white py-2 md:py-2 dark:bg-gray-900"
-                dir="rtl"
-                lang="ar"
-              >
-                <div className="mx-auto max-w-full">
-                  <div className="mx-auto max-w-full">
-                    <div className="mb-6 flex gap-4">
+              <section className="w-full bg-white py-2 md:py-2 dark:bg-gray-900" dir="rtl">
+                <div className="max-w-full">
+                  <div className="max-w-full">
+                    <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
+                      <div className="relative flex w-full rounded-md border md:max-w-full">
+                        <input
+                          value={search}
+                          onChange={e => setSearch(e.target.value)}
+                          placeholder="ابحث عن طلب (اسم – رقم – هاتف – موقع – منتج)"
+                          className="w-full rounded-md p-2 text-sm dark:bg-gray-700 dark:text-white"
+                        />
+                        <Search size={20} className="absolute top-2 left-2 text-gray-500" />
+                      </div>
+
                       <select
                         value={statusFilter}
                         onChange={e => setStatusFilter(e.target.value)}
-                        className="w-full max-w-xs rounded-md border p-2.5 text-sm dark:bg-gray-700"
+                        className="w-full rounded-md border p-2.5 text-sm md:max-w-xs dark:bg-gray-700"
                       >
                         <option value="all">كل الطلبات</option>
                         <option value="PRE_ORDER">طلب مسبق</option>
@@ -163,7 +219,7 @@ export default function OrderSummaryPage() {
                       <select
                         value={dateFilter}
                         onChange={e => setDateFilter(e.target.value)}
-                        className="w-full max-w-xs rounded-md border p-2.5 text-sm dark:bg-gray-700"
+                        className="w-full rounded-md border p-2.5 text-sm md:max-w-xs dark:bg-gray-700"
                       >
                         <option value="week">هذا الأسبوع</option>
                         <option value="month">هذا الشهر</option>
