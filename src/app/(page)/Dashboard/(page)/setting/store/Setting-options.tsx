@@ -49,12 +49,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     { id: 'social', label: 'الروابط ووسائل التواصل', icon: IoShareSocialOutline },
     { id: 'theme', label: 'إعدادات القالب والمظهر', icon: MdOutlineStyle },
     { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin },
-    {
-      id: 'subscriptions',
-      label: 'الاشتراكات والخطط',
-      icon: CircleDollarSign,
-      color: 'text-orange-500',
-    },
+
     { id: 'about', label: 'من نحن', icon: CiCircleInfo },
   ];
 

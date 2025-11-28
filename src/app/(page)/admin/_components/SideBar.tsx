@@ -10,12 +10,13 @@ import {
   Store,
   Menu,
   X,
+  DollarSignIcon,
 } from 'lucide-react';
 import Logo from '@/components/utils/Logo';
 import { useSession } from 'next-auth/react';
 import { useSidebar } from '../context/SideBarContext';
 import { useRouter } from 'next/navigation';
-import { MdLeaderboard } from 'react-icons/md';
+import { MdLeaderboard, MdPayment } from 'react-icons/md';
 
 export default function Sidebar() {
   const { activeSection, setActiveSection } = useSidebar();
@@ -28,6 +29,8 @@ export default function Sidebar() {
     { name: 'المتجر', key: '/admin/stores', icon: Store },
     { name: 'المستخدمين', key: '/admin/users', icon: Users },
     { name: 'الطلبات', key: '/admin/orders', icon: ShoppingCart },
+    { name: 'عمليات الدفع', key: '/admin/payment', icon: DollarSignIcon },
+    { name: 'الاشتراكات', key: '/admin/subscriptions', icon: MdPayment },
     { name: 'المنتجات', key: '/admin/products', icon: Package },
     { name: 'التقارير', key: '/admin/stats', icon: BarChart2 },
     { name: 'Leaderboard', key: '/admin/Leaderboard', icon: MdLeaderboard },
@@ -55,7 +58,7 @@ export default function Sidebar() {
                         router.push(item.key);
                         setIsOpen(false);
                       }}
-                      className={`flex w-full items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition ${
+                      className={`flex w-full cursor-pointer items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition ${
                         isActive
                           ? 'bg-gray-100 text-gray-900'
                           : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'

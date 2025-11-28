@@ -8,8 +8,10 @@ import useSWR from 'swr';
 import { format, differenceInDays } from 'date-fns';
 import { BiTestTube } from 'react-icons/bi';
 import { RiFireLine } from 'react-icons/ri';
+import { useRouter } from 'next/navigation';
 
 export default function PlanCard() {
+  const router = useRouter();
   const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
 
   const { data } = useSWR<SubscriptionResponse>('/api/plans/subscriptions/check', fetcher, {
@@ -62,21 +64,17 @@ export default function PlanCard() {
 
         <div className="mt-5 flex flex-col flex-wrap-reverse gap-3 sm:flex-row">
           <Button
-            onClick={() => {
-              fetch('/api/plans/subscriptions/upgrade/NORMAL', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-              });
-            }}
-            className="w-full rounded-lg bg-white text-black"
+            onClick={() => router.push('/Dashboard/plans')}
+            className="w-full cursor-pointer rounded-lg bg-white text-black duration-200 hover:text-white"
           >
             <IoBusinessOutline className="ml-2" />
             <span>اشترك بالباقة الاحترافية</span>
           </Button>
 
           <Button
+            onClick={() => router.push('/Dashboard/plans')}
             variant="outline"
-            className="w-full rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100"
+            className="w-full cursor-pointer rounded-lg border-gray-300 text-gray-700 hover:bg-gray-100"
           >
             <span>تجديد الاشتراك</span>
           </Button>

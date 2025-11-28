@@ -30,9 +30,9 @@ export async function POST(req: Request, context: { params: Promise<{ orderId: s
       },
     });
 
-    // if (!order || order.userId !== session.user.id) {
-    //   return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
-    // }
+    if (!order || order.userId !== session.user.id) {
+      return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
+    }
 
     const itemCount = order?.items.reduce((acc, item) => acc + item.quantity, 0);
 

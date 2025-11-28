@@ -19,7 +19,6 @@ export default function ProductList({ filterByCategory }: Props) {
     `/api/admin/overview/stats/products`,
     fetcher
   );
-  // if (error) return <div>حصل خطأ</div>;
   const allProducts = data ?? [];
   const [search, setSearch] = useState('');
   const [selectedStore, setSelectedStore] = useState('');
