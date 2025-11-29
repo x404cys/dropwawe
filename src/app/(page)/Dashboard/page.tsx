@@ -13,6 +13,7 @@ import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
 
 import PlanCard from './_components/PlanCard';
+import { useEffect } from 'react';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -24,13 +25,13 @@ export default function Dashboard() {
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
   );
-  // useEffect(() => {
-  //   if (status === 'loading' || loading) return;
+  useEffect(() => {
+    if (status === 'loading' || loading) return;
 
-  //   if (status === 'unauthenticated') {
-  //     router.push('https://login.sahlapp.io');
-  //   }
-  // }, [status, loading, data, router, session]);
+    if (status === 'unauthenticated') {
+      router.push('https://login.sahlapp.io');
+    }
+  }, [status, loading, data, router, session]);
 
   if (status !== 'authenticated' || loading || !data) {
     return (
@@ -46,11 +47,8 @@ export default function Dashboard() {
       </section>
     );
   }
-  // const storeSubLink = data.storeSlug?.subLink ?? null;
-  // if (storeSubLink == null) {
-  //   router.push('/Dashboard/create-store');
-  // }
-  const storeUrl = `https://${202210}.sahlapp.io`;
+
+  const storeUrl = `https://${data.storeSlug?.subLink}.matager.store`;
 
   const stats: StatCardProps[] = [
     {
