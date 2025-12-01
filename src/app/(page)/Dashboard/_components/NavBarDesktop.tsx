@@ -24,8 +24,8 @@ const navItems = [
   { label: 'المنتجات', path: '/Dashboard/ProductManagment' },
   { label: 'اضافة منتج', path: '/Dashboard/ProductManagment/add-product' },
   { label: 'الطلبات', path: '/Dashboard/OrderTrackingPage' },
-  { label: 'العوائد', path: '/Dashboard/profit' },
-  { label: 'الموردين', path: '/Dashboard/products-dropwave' },
+  { label: 'الموردين', path: '/Dashboard/supplier' },
+  { label: 'المخزن', path: '/Dashboard/products-dropwave' },
   { label: 'الاعدادات', path: '/Dashboard/setting/store' },
 ];
 const fetcher = (url: string) => fetch(url).then(res => res.json());
@@ -89,7 +89,7 @@ export default function NavBarForDesktop() {
           </div>
         </Link>
 
-        <nav className="hidden gap-6 font-stretch-90% text-gray-700 lg:flex">
+        <nav className="hidden gap-6 text-gray-700 font-stretch-90% lg:flex">
           {navItems.map((item, idx) => (
             <Link
               key={idx}
