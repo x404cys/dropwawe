@@ -27,7 +27,7 @@ const navItems = [
   { label: 'الموردين', path: '/Dashboard/supplier' },
   { label: 'المخزن', path: '/Dashboard/products-dropwave' },
   { label: 'الاعدادات', path: '/Dashboard/setting/store' },
-];
+];//
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function NavBarForDesktop() {
