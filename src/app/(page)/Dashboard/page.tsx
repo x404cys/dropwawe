@@ -25,13 +25,13 @@ export default function Dashboard() {
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
   );
-  useEffect(() => {
-    if (status === 'loading' || loading) return;
+  // useEffect(() => {
+  //   if (status === 'loading' || loading) return;
 
-    if (status === 'unauthenticated') {
-      router.push('https://login.sahlapp.io');
-    }
-  }, [status, loading, data, router, session]);
+  //   if (status === 'unauthenticated') {
+  //     router.push('https://login.sahlapp.io');
+  //   }
+  // }, [status, loading, data, router, session]);
 
   if (status !== 'authenticated' || loading || !data) {
     return (
