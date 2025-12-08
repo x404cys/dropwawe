@@ -1,35 +1,27 @@
-import axios from 'axios';
-import https from 'https';
+import fs from 'fs';
+import path from 'path';
 
 export async function uploadToServer(file: File, userId: string) {
   try {
-    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
-    const fileName = `${userId}-${Date.now()}-${cleanFileName}`;
+    const uploadsDir = path.join(process.cwd(), 'public/uploads', userId);
 
-    const formData = new FormData();
-    formData.append('file', file, fileName);
-
-    const agent = new https.Agent({
-      rejectUnauthorized: false, // تجاهل التحقق من SSL
-    });
-
-    const response = await axios.post(
-      'https://147.93.126.28:8080/uploads/uploads-sahl/',
-      formData,
-      {
-        headers: { 'Content-Type': 'multipart/form-data' },
-        httpsAgent: agent,
-      }
-    );
-
-    if (response.status === 200 && response.data?.url) {
-      return response.data.url;
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
     }
 
-    console.error('Upload failed:', response.data);
-    return null;
-  } catch (error) {
-    console.error('Unexpected Upload Error:', error);
+    const cleanFileName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
+    const fileName = `${Date.now()}-${cleanFileName}`;
+    const filePath = path.join(uploadsDir, fileName);
+
+    const arrayBuffer = await file.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+
+    fs.writeFileSync(filePath, buffer);
+
+    const url = `/uploads/${userId}/${fileName}`;
+    return url;
+  } catch (err) {
+    console.error('Upload Error:', err);
     return null;
   }
 }

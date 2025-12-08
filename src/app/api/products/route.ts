@@ -62,7 +62,6 @@ export async function POST(req: Request) {
     if (isNaN(price) || isNaN(quantity) || isNaN(discount)) {
       return NextResponse.json({ error: 'Invalid number fields' }, { status: 400 });
     }
-
     const imageUrl = await uploadToServer(file, userId);
 
     if (!imageUrl) {
@@ -81,9 +80,10 @@ export async function POST(req: Request) {
         category,
         image: imageUrl,
         userId,
-        unlimited: unlimited as boolean,
+        unlimited,
       },
     });
+
     const supplier = await prisma.supplier.findUnique({
       where: { userId: session.user.id },
     });
@@ -102,46 +102,37 @@ export async function POST(req: Request) {
       },
     });
 
-    // for (const gFile of galleryFiles) {
-    //   const gBytes = await gFile.arrayBuffer();
-    //   const gBuffer = Buffer.from(gBytes);
-    //   const gCleanName = gFile.name.replace(/[^a-zA-Z0-9.\-_]/g, '');
-    //   const gFileName = `${userId}/gallery/${Date.now()}-${gCleanName}`;
-    //   const { error: gUploadError } = await supabase.storage
-    //     .from('upload-sahl-img')
-    //     .upload(gFileName, gBuffer, { contentType: gFile.type || 'image/png' });
-    //   if (!gUploadError) {
-    //     const { data } = supabase.storage.from('upload-sahl-img').getPublicUrl(gFileName);
-    //     if (data?.publicUrl) {
-    //       await prisma.productImage.create({
-    //         data: {
-    //           url: data.publicUrl,
-    //           productId: product.id,
-    //         },
-    //       });
-    //     }
-    //   }
-    // }
+    for (const gFile of galleryFiles) {
+      const gUrl = await uploadToServer(gFile, userId);
+      if (gUrl) {
+        await prisma.productImage.create({
+          data: {
+            url: gUrl,
+            productId: product.id,
+          },
+        });
+      }
+    }
 
-    // for (const s of sizes) {
-    //   await prisma.productSize.create({
-    //     data: {
-    //       size: s.size,
-    //       stock: s.stock,
-    //       productId: product.id,
-    //     },
-    //   });
-    // }
-    // for (const c of colors) {
-    //   await prisma.productColor.create({
-    //     data: {
-    //       color: c.name,
-    //       hex: c.hex,
-    //       stock: c.stock,
-    //       productId: product.id,
-    //     },
-    //   });
-    // }
+    for (const s of sizes) {
+      await prisma.productSize.create({
+        data: {
+          size: s.size,
+          stock: s.stock,
+          productId: product.id,
+        },
+      });
+    }
+    for (const c of colors) {
+      await prisma.productColor.create({
+        data: {
+          color: c.name,
+          hex: c.hex,
+          stock: c.stock,
+          productId: product.id,
+        },
+      });
+    }
 
     return NextResponse.json(product, { status: 201 });
   } catch (error: unknown) {

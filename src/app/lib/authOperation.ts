@@ -77,7 +77,7 @@ export const authOperation: AuthOptions = {
 
     async redirect({ baseUrl }) {
       return process.env.NODE_ENV === 'production'
-        ? 'https://dashboard.matager.store/create-store'
+        ? 'https://dashboard.dropwave.cloud/create-store'
         : `${baseUrl}/Dashboard/create-store`;
     },
   },

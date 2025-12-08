@@ -1,14 +1,13 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+
 export async function middleware(req: NextRequest) {
   const url = req.nextUrl.clone();
-  const hostname = req.nextUrl.hostname;
-  const pathname = url.pathname;
-
-  const parts = hostname.split('.');
+  const host = req.headers.get('host') || '';
+  const parts = host.split('.');
   let subdomain: string | null = null;
 
-  if (hostname.includes('localhost') && parts.length > 1) {
+  if (host.includes('localhost') && parts.length > 1) {
     subdomain = parts[0];
   } else if (parts.length > 2) {
     subdomain = parts[0];
@@ -16,9 +15,6 @@ export async function middleware(req: NextRequest) {
 
   if (subdomain) {
     if (subdomain === 'admin') {
-      if (pathname.startsWith('/admin')) {
-        return NextResponse.next();
-      }
       url.pathname = '/admin';
       return NextResponse.rewrite(url);
     }
@@ -29,24 +25,16 @@ export async function middleware(req: NextRequest) {
     }
 
     if (subdomain === 'dashboard') {
-      if (pathname.startsWith('/Dashboard')) {
-        return NextResponse.next();
-      }
       url.pathname = '/Dashboard';
       return NextResponse.rewrite(url);
     }
+
     if (subdomain === 'supplier') {
-      if (pathname.startsWith('/Supplier/Dashboard')) {
-        return NextResponse.next();
-      }
       url.pathname = '/Supplier/Dashboard';
       return NextResponse.rewrite(url);
     }
 
     if (subdomain !== 'www' && subdomain !== 'sahlapp') {
-      if (pathname.startsWith('/storev2')) {
-        return NextResponse.next();
-      }
       url.pathname = '/storev2';
       return NextResponse.rewrite(url);
     }
