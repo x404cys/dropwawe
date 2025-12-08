@@ -36,7 +36,7 @@ const Page = () => {
   useTrackVisitor4landing('sahl2025');
 
   return (
-    <div dir="rtl" className="min-h-screen md:mx-10 font-sans">
+    <div dir="rtl" className="min-h-screen font-sans md:mx-10">
       <nav className="cursor-pointer">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Logo />
@@ -47,6 +47,18 @@ const Page = () => {
             <a href="" className="text-black/90 transition">
               الدعم
             </a>
+            <a href="#s2" className="text-black/90 transition">
+              المميزات
+            </a>
+            <a href="#s2" className="text-black/90 transition">
+              المميزات
+            </a>{' '}
+            <a href="#s2" className="text-black/90 transition">
+              المميزات
+            </a>{' '}
+            <a href="#s2" className="text-black/90 transition">
+              المميزات
+            </a>{' '}
             <a href="#s2" className="text-black/90 transition">
               المميزات
             </a>
