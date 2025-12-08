@@ -91,7 +91,7 @@ model Store {
   tiktokPixel     String?
   googlePixel     String?
   Order Order[]
-  theme           ThemeStore     @default(NORMAL)
+  theme           String         @default("NORMAL")
   Notification Notification[]
 
   Supplier Supplier[]
