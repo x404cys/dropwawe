@@ -15,7 +15,7 @@ export async function POST(
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-
+//
     const userId = session.user.id;
 
     const store = await prisma.store.update({
