@@ -32,7 +32,7 @@ export default function SignInPage() {
           <CardTitle className="mb-2 text-center text-3xl font-bold text-gray-900 md:text-4xl">
             تسجيل الدخول
           </CardTitle>
-          <p className="text-center text-lg text-gray-600">مرحباً بك مرة أخرى</p>
+          <p className="text-center text-lg text-gray-600"></p>
         </CardHeader>
 
         <CardContent className="px-8 pb-8 md:px-12">

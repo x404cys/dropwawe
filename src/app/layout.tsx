@@ -22,22 +22,22 @@ const myCustomFont = localFont({
 });
 
 export const metadata: Metadata = {
-  title: 'سهل | منصة المتاجر الإلكترونية',
+  title: 'Dropwave | منصة المتاجر الإلكترونية',
   description:
-    'منصة سهل لإنشاء المتاجر الإلكترونية أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة سهلة وشاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
-  keywords: ['سهل', 'متجر إلكتروني', 'إنشاء متجر', 'ecommerce', 'shop', 'store builder'],
+    'منصة Dropwave لإنشاء المتاجر الإلكترونية أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة سهلة وشاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
+  keywords: ['دروب ويف', 'متجر إلكتروني', 'إنشاء متجر', 'ecommerce', 'shop', 'store builder'],
   openGraph: {
-    title: 'سهل | منصة المتاجر الإلكترونية',
+    title: 'Dropwave | منصة المتاجر الإلكترونية',
     description:
-      'أنشئ متجرك الإلكتروني في دقائق مع منصة سهل، الحل الأسهل لنمو تجارتك عبر الإنترنت.',
-    url: 'https://www.sahlapp.io',
-    siteName: 'سهل',
+      'أنشئ متجرك الإلكتروني في دقائق مع منصة Dropwave، الحل الأسهل لنمو تجارتك عبر الإنترنت.',
+    url: 'https://www.dropwave.cloud',
+    siteName: 'Dropwave',
     images: [
       {
-        url: 'https://sahel.com/og-image.jpg',
+        url: 'https://dashboard.dropwave.cloud/_next/image?url=%2Flogo-drop.png&w=64&q=75',
         width: 1200,
         height: 630,
-        alt: 'منصة سهل للمتاجر الإلكترونية',
+        alt: 'Dropwave  للمتاجر الإلكترونية',
       },
     ],
     locale: 'ar_AR',
@@ -45,13 +45,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'سهل | منصة المتاجر الإلكترونية',
+    title: 'Dropwave | منصة المتاجر الإلكترونية',
     description:
       'منصة سهلة وسريعة لإنشاء متجرك الإلكتروني مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
     images: ['https://sahel.com/og-image.jpg'],
   },
   alternates: {
-    canonical: 'https://www.sahlapp.io',
+    canonical: 'https://www.dropwave.cloud',
   },
 };
 
@@ -66,7 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="mx-auto overflow-hidden px-2 font-bold md:px-0">
           <Providers>
             <FavoriteProvider>
-              <ProvidersContext>  
+              <ProvidersContext>
                 <UserProvider>{children}</UserProvider>
               </ProvidersContext>
             </FavoriteProvider>
