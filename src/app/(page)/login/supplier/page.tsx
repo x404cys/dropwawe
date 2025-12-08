@@ -16,9 +16,8 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn('google', {
-      callbackUrl: '/Dashboard/create-store/Supplier',
+      callbackUrl: 'https://dashboard.dropwave.cloud/Dashboard/create-store/Supplier',
     });
-
     setIsLoading(false);
   };
 
@@ -31,7 +30,7 @@ export default function SignInPage() {
           </div>
 
           <CardTitle className="mb-2 text-center text-3xl font-bold text-gray-900 md:text-4xl">
-            تسجيل الدخول
+            تسجيل دخول الموردين
           </CardTitle>
           <p className="text-center text-lg text-gray-600"></p>
         </CardHeader>

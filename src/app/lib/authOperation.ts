@@ -75,10 +75,10 @@ export const authOperation: AuthOptions = {
       return true;
     },
 
-    async redirect({ baseUrl }) {
-      return process.env.NODE_ENV === 'production'
-        ? 'https://dashboard.dropwave.cloud/Dashboard/create-store'
-        : `${baseUrl}/Dashboard/create-store`;
+    async redirect({ url, baseUrl }) {
+      if (url.startsWith('/')) return `${baseUrl}${url}`;
+      if (new URL(url).origin === baseUrl) return url;
+      return baseUrl;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

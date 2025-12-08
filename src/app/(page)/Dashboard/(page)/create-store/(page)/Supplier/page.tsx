@@ -21,6 +21,7 @@ import {
   ChevronRight,
   ChevronLeft,
 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface PaymentMethod {
   id: string;
@@ -78,7 +79,7 @@ export default function StoreSetupSupplier() {
   const [headerPreview, setHeaderPreview] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<number>(0);
-
+  const router = useRouter();
   const handleSubmit = async () => {
     if (!storeSlug || !storeName || !description || !shippingPrice || !phone) {
       toast.error('يرجى ملء جميع الحقول المطلوبة');
@@ -92,6 +93,7 @@ export default function StoreSetupSupplier() {
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       toast.success('تم الحفظ بنجاح ');
+      router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ في الحفظ');
     } finally {

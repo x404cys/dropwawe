@@ -135,7 +135,7 @@ export default function UserActions() {
             <li>
               <div
                 onClick={() => {
-                  router.push('/Dashboard/supplier-store');
+                  router.push('/Dashboard/create-store/Supplier');
                   setOpenUserMenu(false);
                 }}
                 className="flex w-full items-center gap-2 rounded-md px-4 py-2 hover:bg-gray-100"
