@@ -13,6 +13,7 @@ import MockupMobile from '@/components/utils/MockupMobile';
 import Image from 'next/image';
 
 const Page = () => {
+  //
   const { data: session } = useSession();
   const router = useRouter();
 
