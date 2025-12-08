@@ -65,7 +65,7 @@ const Page = () => {
             </a>
           </div>
           <Button
-            onClick={() => router.push('https://login.sahlapp.io')}
+            onClick={() => router.push('https://login.dropwave.cloud')}
             className="rounded-2xl border border-black bg-white text-black hover:bg-gray-950 hover:text-white"
           >
             انطلق الان
@@ -87,7 +87,7 @@ const Page = () => {
             </p>
             <div className="mt-8">
               <Button
-                onClick={() => router.push('https://login.sahlapp.io')}
+                onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-3xl border border-black bg-white text-black hover:bg-gray-950 hover:text-white md:hidden"
               >
                 سجل هسه
@@ -95,7 +95,7 @@ const Page = () => {
             </div>
             <div className="mt-4 hidden flex-col gap-2 md:flex">
               <Button
-                onClick={() => router.push('https://login.sahlapp.io')}
+                onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-xl bg-black px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
                 ابدأ الآن مجانا
@@ -167,7 +167,7 @@ const Page = () => {
               وأكثر من ذلك بكثير! اكتشف جميع المميزات
             </p>
             <button
-              onClick={() => router.push('https://login.sahlapp.io')}
+              onClick={() => router.push('https://login.dropwave.cloud')}
               className="inline-flex items-center gap-2 rounded-xl bg-black px-6 py-3 text-sm text-white shadow-md transition hover:scale-105 hover:bg-black/90 sm:text-base"
             >
               ماذا تنتظر؟ ابدأ الآن

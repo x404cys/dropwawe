@@ -25,7 +25,7 @@ export async function GET(req: Request) {
     });
 
     if (!store) {
-      return NextResponse.redirect('https://dashboard.sahlapp.io/Dashboard/create-store');
+      return NextResponse.redirect('https://dashboard.dropwave.cloud/Dashboard/create-store');
     }
 
     return NextResponse.json({

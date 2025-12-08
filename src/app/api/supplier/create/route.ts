@@ -134,6 +134,10 @@ export async function POST(req: Request) {
           methodPayment: parsed.data.selectedMethods || '',
         },
       });
+      await prisma.user.updateMany({
+        where: { role: 'SUPPLIER' },
+        data: { active: true },
+      });
     }
     await prisma.supplier.create({
       data: {

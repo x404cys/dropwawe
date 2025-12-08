@@ -263,7 +263,8 @@ export default function StoreSetupPage() {
           <>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.sahlapp.io</span>
+                رابط المتجر{' '}
+                <span className="text-xs text-gray-400">{storeSlug}.dropwave.cloud</span>
               </label>
               <div className="relative">
                 <Input
@@ -274,7 +275,7 @@ export default function StoreSetupPage() {
                       setStoreSlug(value);
                     }
                   }}
-                  placeholder="store1.sahlapp.io"
+                  placeholder="store1.dropwave.cloud"
                 />
 
                 <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />

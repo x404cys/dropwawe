@@ -26,16 +26,22 @@ export default function PlanCard() {
   const formattedStartDate = startDate ? format(startDate, 'dd/MM/yyyy') : '-';
   const formattedEndDate = endDate ? format(endDate, 'dd/MM/yyyy') : '-';
   const remainingDays = startDate && endDate ? differenceInDays(endDate, new Date()) + 1 : '-';
+  // if (!data || !data.subscription || !data.subscription.detailsSubscription)
+  //   return router.replace('/Dashboard/plans');
   return (
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
       <div className="rounded-lg bg-gradient-to-r from-gray-800 to-gray-900 p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
-          <div>
-            <p className="text-base font-semibold">{data?.subscription?.planName}</p>
-            <p className="mt-1 text-xs leading-snug text-gray-300">
-              مناسبة للتجار المبتدئين، مع مزايا ممتازة واحترافية.
-            </p>
-          </div>
+          {!data || !data.subscription || !data.subscription.detailsSubscription ? (
+            <div>انت غير مشترك حاليا يجب عليك اختيار الخطة المناسبة</div>
+          ) : (
+            <div>
+              <p className="text-base font-semibold">{data?.subscription?.planName}</p>
+              <p className="mt-1 text-xs leading-snug text-gray-300">
+                مناسبة للتجار المبتدئين، مع مزايا ممتازة واحترافية.
+              </p>
+            </div>
+          )}
           <div className="rounded-md border p-1">
             {data?.subscription?.detailsSubscription?.type === 'PENDINGROFESSIONAL' ? (
               <RiFireLine />

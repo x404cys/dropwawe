@@ -25,13 +25,17 @@ export default function Dashboard() {
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
   );
-  // useEffect(() => {
-  //   if (status === 'loading' || loading) return;
+  try {
+    useEffect(() => {
+      if (status === 'loading' || loading) return;
 
-  //   if (status === 'unauthenticated') {
-  //     router.push('https://login.sahlapp.io');
-  //   }
-  // }, [status, loading, data, router, session]);
+      if (status === 'unauthenticated') {
+        router.push('https://login.dropwave.cloud');
+      }
+    }, [status, loading, data, router, session]);
+  } catch (e) {
+    toast.error('dsaaaaaaaaaa');
+  }
 
   if (status !== 'authenticated' || loading || !data) {
     return (
@@ -48,7 +52,7 @@ export default function Dashboard() {
     );
   }
 
-  const storeUrl = `https://${data.storeSlug?.subLink}.matager.store`;
+  const storeUrl = `https://${data.storeSlug?.subLink}.dropwave.cloud`;
 
   const stats: StatCardProps[] = [
     {

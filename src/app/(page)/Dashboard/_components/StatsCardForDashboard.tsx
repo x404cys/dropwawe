@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 export default function StatsCardForDashboard() {
   const router = useRouter();
-  const storeUrl = `https://${2}.sahlapp.io`;
+  const storeUrl = `https://${2}.dropwave.cloud`;
 
   const copyToClipboard = async () => {
     try {
@@ -49,21 +49,20 @@ export default function StatsCardForDashboard() {
       </div>
 
       {/* Body */}
-    <div className="flex gap-3">
-  {itemsButton.map((e, i) => (
-    <div key={i} className="flex flex-col items-center gap-1">
-      <button
-        onClick={() => router.push(e.href)}
-        className="flex h-10 w-10 flex-col items-center justify-center rounded-full border bg-gray-50 shadow-sm transition hover:bg-gray-100"
-      >
-        <span className="text-gray-700 text-sm">{e.icon}</span>
-      </button>
-      <span className="text-[10px] font-medium text-gray-700">{e.name}</span>
-      <span className="text-xs font-bold text-[#292526]">{e.number}</span>
-    </div>
-  ))}
-</div>
-
+      <div className="flex gap-3">
+        {itemsButton.map((e, i) => (
+          <div key={i} className="flex flex-col items-center gap-1">
+            <button
+              onClick={() => router.push(e.href)}
+              className="flex h-10 w-10 flex-col items-center justify-center rounded-full border bg-gray-50 shadow-sm transition hover:bg-gray-100"
+            >
+              <span className="text-sm text-gray-700">{e.icon}</span>
+            </button>
+            <span className="text-[10px] font-medium text-gray-700">{e.name}</span>
+            <span className="text-xs font-bold text-[#292526]">{e.number}</span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

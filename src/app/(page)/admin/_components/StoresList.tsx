@@ -170,7 +170,7 @@ const StoresList = ({ stores }: { stores: StoreProps[] }) => {
                               </span>
                               {store.subLink ? (
                                 <Link
-                                  href={`https://${store.subLink}.sahlapp.io`}
+                                  href={`https://${store.subLink}.dropwave.cloud`}
                                   target="_blank"
                                   className="flex items-center gap-1 text-xs text-blue-600 transition-colors hover:text-blue-700"
                                 >

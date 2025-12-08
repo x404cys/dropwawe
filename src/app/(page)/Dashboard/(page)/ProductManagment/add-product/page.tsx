@@ -1,699 +1,612 @@
 'use client';
 
-import { useState, ChangeEvent, useEffect } from 'react';
-import { SlCloudUpload } from 'react-icons/sl';
-import { TbUpload } from 'react-icons/tb';
+import type React from 'react';
 
-import { Package, DollarSign, ImageIcon, PlusCircle, Percent, Info } from 'lucide-react';
-import { Product } from '@/types/Products';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { GoPackageDependencies } from 'react-icons/go';
-import { useUser } from '@/app/lib/context/UserIdContect';
-import CategoryDropdown from '../_components/InputForCatogery';
-import { TbTruckReturn } from 'react-icons/tb';
-import { LiaShippingFastSolid } from 'react-icons/lia';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
-import { useDashboardData } from '../../../_utils/useDashboardData';
 import { useRouter } from 'next/navigation';
-import { IoAddSharp, IoChevronBackSharp } from 'react-icons/io5';
-import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
+import Image from 'next/image';
+import {
+  Store,
+  Phone,
+  Truck,
+  Facebook,
+  Instagram,
+  Send,
+  Check,
+  Upload,
+  X,
+  Link2,
+  ChevronRight,
+  ChevronLeft,
+} from 'lucide-react';
+import axios from 'axios';
+import type { StoreProps } from '@/types/store/StoreType';
+import { useDashboardData } from '@/app/(page)/Dashboard/_utils/useDashboardData';
 
-export default function ProductAddPage() {
+type ServerErrorDetail = {
+  field: string;
+  message: string;
+};
+
+type ServerErrorResponse = {
+  error: string;
+  details?: ServerErrorDetail[];
+  field?: string;
+};
+
+interface PaymentMethod {
+  id: string;
+  nameAr: string;
+  nameEn: string;
+  logo: string;
+  alt: string;
+}
+
+const paymentMethods: PaymentMethod[] = [
+  {
+    id: 'zain-cash',
+    nameAr: 'زين كاش',
+    nameEn: 'Zain Cash',
+    logo: '/zain-cash-seeklogo.png',
+    alt: 'Zain Cash',
+  },
+  {
+    id: 'asia-pay',
+    nameAr: 'اسيا باي',
+    nameEn: 'Asia Pay',
+    logo: '/asiapay-seeklogo.png',
+    alt: 'Asia Pay',
+  },
+  {
+    id: 'master-card',
+    nameAr: 'ماستر كارد',
+    nameEn: 'Master Card',
+    logo: '/1933703_charge_credit card_debit_mastercard_payment_icon.png',
+    alt: 'Master Card',
+  },
+];
+
+const steps = [
+  { id: 'basic', label: 'المعلومات الأساسية' },
+  { id: 'shipping', label: 'التوصيل' },
+  { id: 'social', label: 'الروابط الاجتماعية' },
+  { id: 'payment', label: 'طرق الدفع' },
+];
+
+export default function StoreSetupSupplier() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
-  const [newProduct, setNewProduct] = useState<
-    Partial<Product> & { imageFile?: File; imagePreview?: string }
-  >({
-    name: '',
-    price: 0,
-    quantity: 0,
-    discount: 0,
-    category: '',
-    description: '',
-    hasReturnPolicy: '',
-    shippingType: '',
-  });
-  const { id } = useUser();
-  const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
-  const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
+  const [store, setStore] = useState<StoreProps>();
+  const [storeSlug, setStoreSlug] = useState('');
+  const [storeName, setStoreName] = useState('');
+  const [shippingPrice, setShippingPrice] = useState('');
+  const [description, setDescription] = useState('');
+  const [phone, setPhone] = useState('');
+  const [facebookLink, setFacebook] = useState('');
+  const [instaLink, setInstagram] = useState('');
+  const [telegram, setTelegram] = useState('');
   const [loading, setLoading] = useState(false);
-  const [categories, setCategories] = useState<string[]>([]);
-  const [sizes, setSizes] = useState<{ size: string; stock: number }[]>([]);
-  const [colors, setColors] = useState<{ name: string; hex: string; stock: number }[]>([]);
+  const [selectedMethods, setSelectedMethods] = useState<string[]>([]);
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [headerFile, setHeaderFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [headerPreview, setHeaderPreview] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
+  const [activeSection, setActiveSection] = useState<number>(0);
 
   useEffect(() => {
-    if (!id) return;
-
-    async function fetchCategories() {
+    const fetchInfo = async () => {
       try {
-        const res = await fetch(`/api/products/categories/${id}`);
-        if (!res.ok) throw new Error('Failed to fetch categories');
-        const data: string[] = await res.json();
-        setCategories(data);
-      } catch (error) {
-        console.error(error);
+        const res = await axios.get(`/api/storev2/info4setting/${session?.user?.id}`);
+        const storeData: StoreProps = res.data;
+
+        setStore(storeData);
+        setStoreSlug(storeData.subLink ?? '');
+        setStoreName(storeData.name ?? '');
+        setShippingPrice(storeData.shippingPrice?.toString() ?? '');
+        setDescription(storeData.description ?? '');
+        setPhone(storeData.phone ?? '');
+        setFacebook(storeData.facebookLink ?? '');
+        setInstagram(storeData.instaLink ?? '');
+        setTelegram(storeData.telegram ?? '');
+      } catch (err) {
+        console.error('Error fetching store info:', err);
       }
-    }
+    };
 
-    fetchCategories();
-  }, [id]);
+    fetchInfo();
+  }, [data?.user?.id]);
 
-  const onNewImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setNewProduct({
-      ...newProduct,
-      imageFile: file,
-      imagePreview: URL.createObjectURL(file),
-    });
-  };
-  const onGalleryChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files ? Array.from(e.target.files) : [];
-    if (files.length === 0) return;
-
-    const remaining = 3 - galleryFiles.length;
-    if (remaining <= 0) {
-      toast.error('يمكنك رفع 3 صور إضافية فقط');
+  const handleSubmit = async () => {
+    if (!storeSlug || !storeName || !description || !shippingPrice || !phone) {
+      toast.error('يرجى ملء جميع الحقول المطلوبة');
       return;
     }
-
-    const filesToAdd = files.slice(0, remaining);
-
-    setGalleryFiles(prev => [...prev, ...filesToAdd]);
-    setGalleryPreviews(prev => [...prev, ...filesToAdd.map(f => URL.createObjectURL(f))]);
-  };
-
-  const removeGalleryImage = (index: number) => {
-    setGalleryFiles(prev => prev.filter((_, i) => i !== index));
-    setGalleryPreviews(prev => {
-      URL.revokeObjectURL(prev[index]);
-      return prev.filter((_, i) => i !== index);
-    });
-  };
-
-  const updateSize = (index: number, field: 'size' | 'stock', value: string | number) => {
-    const updated = [...sizes];
-    if (field === 'size') {
-      updated[index].size = String(value);
-    } else if (field === 'stock') {
-      const numeric = Number(value);
-      updated[index].stock = isNaN(numeric) ? 0 : numeric;
-    }
-    setSizes(updated);
-  };
-
-  const addProduct = async () => {
-    const requiredFields = [
-      newProduct.name?.trim(),
-      newProduct.price,
-      newProduct.quantity,
-      newProduct.imageFile,
-      newProduct.description?.trim(),
-      newProduct.category?.trim(),
-    ];
-
-    if (requiredFields.some(f => f === undefined || f === null || f === '')) {
-      toast.error('يرجى ملء جميع الحقول المطلوبة وتحميل صورة');
-      return;
-    }
-
-    setLoading(true);
 
     try {
+      setLoading(true);
+      setFieldErrors({});
       const formData = new FormData();
-      formData.append('name', newProduct.name!);
-      formData.append('price', newProduct.price!.toString());
-      formData.append('quantity', newProduct.quantity!.toString());
-      formData.append('image', newProduct.imageFile!);
-      formData.append('description', newProduct.description!);
-      formData.append('discount', (newProduct.discount ?? 0).toString());
-      formData.append('category', newProduct.category!);
-      formData.append('shippingType', newProduct.shippingType ?? '');
-      formData.append('hasReturnPolicy', newProduct.hasReturnPolicy ?? '');
-      formData.append('sizes', JSON.stringify(sizes));
-      formData.append('colors', JSON.stringify(colors));
-      formData.append('unlimited', String(newProduct.unlimited));
-      galleryFiles.forEach(file => formData.append('gallery', file));
-      formData.append('minPrice', newProduct.pricingDetails?.minPrice?.toString() ?? '');
-      formData.append('maxPrice', newProduct.pricingDetails?.maxPrice?.toString() ?? '');
-      formData.append(
-        'wholesalePrice',
-        newProduct.pricingDetails?.wholesalePrice?.toString() ?? ''
-      );
+      formData.append('name', storeName);
+      formData.append('subLink', storeSlug);
+      formData.append('description', description);
+      formData.append('shippingPrice', shippingPrice);
+      formData.append('phone', phone);
+      formData.append('facebookLink', facebookLink);
+      formData.append('instaLink', instaLink);
+      formData.append('telegram', telegram);
+      formData.append('shippingType', 'default');
+      formData.append('hasReturnPolicy', '__');
+      formData.append('active', 'true');
+      formData.append('selectedMethods', JSON.stringify(selectedMethods));
 
-      const res = await fetch('/api/products', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error();
+      if (imageFile) formData.append('image', imageFile);
+      if (headerFile) formData.append('header', headerFile);
 
-      toast.success('تم إضافة المنتج بنجاح');
-
-      setNewProduct({
-        name: '',
-        price: 0,
-        quantity: 0,
-        discount: 0,
-        category: '',
-        description: '',
-        imageFile: undefined,
-        imagePreview: undefined,
-        shippingType: '',
-        hasReturnPolicy: '',
+      const res = await fetch('/api/supplier/create', {
+        method: 'POST',
+        body: formData,
       });
-      setGalleryFiles([]);
-      setGalleryPreviews([]);
-      setSizes([]);
-    } catch {
-      toast.error('فشل في إضافة المنتج');
+
+      const data: ServerErrorResponse = await res.json();
+
+      if (!res.ok) {
+        if (data.details) {
+          const errors: { [key: string]: string } = {};
+          data.details.forEach(err => {
+            errors[err.field] = err.message;
+          });
+          setFieldErrors(errors);
+        } else if (data.field) {
+          setFieldErrors({ [data.field]: data.error });
+        } else {
+          toast.error(data.error || 'حدث خطأ في الحفظ');
+        }
+        return;
+      }
+      toast.success('تم الحفظ بنجاح ✨');
+      router.back();
+      router.replace('/Dashboard');
+    } catch (err) {
+      toast.error('حدث خطأ في الحفظ');
     } finally {
       setLoading(false);
     }
   };
 
-  const addSize = () => {
-    setSizes([...sizes, { size: '', stock: 0 }]);
+  const toggleMethod = (methodId: string) => {
+    setSelectedMethods(prev => {
+      if (prev.includes(methodId)) {
+        return prev.filter(id => id !== methodId);
+      }
+      return [...prev, methodId];
+    });
   };
 
-  const removeSize = (index: number) => {
-    setSizes(sizes.filter((_, idx) => idx !== index));
-  };
-  const updateColor = (index: number, field: 'name' | 'hex' | 'stock', value: string | number) => {
-    const updated = [...colors];
-    if (field === 'name') updated[index].name = String(value);
-    else if (field === 'hex') updated[index].hex = String(value);
-    else if (field === 'stock') updated[index].stock = Number(value);
-    setColors(updated);
+  const handleNext = () => {
+    if (activeSection < steps.length - 1) {
+      setActiveSection(activeSection + 1);
+    }
   };
 
-  const addColor = () => setColors([...colors, { name: '', hex: '#000000', stock: 0 }]);
+  const handlePrev = () => {
+    if (activeSection > 0) {
+      setActiveSection(activeSection - 1);
+    }
+  };
 
-  const removeColor = (index: number) => setColors(colors.filter((_, i) => i !== index));
-  return (
-    <>
-      <Card dir="rtl" className="mx-auto max-w-[600px] rounded-2xl border bg-white shadow-xl">
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center justify-between gap-3 text-lg text-gray-800">
-            <div className="flex items-center gap-2">
-              <GoPackageDependencies className="h-6 w-6 text-green-600" />
-              <span>إضافة منتج جديد</span>
-            </div>
-
+  const ImageUpload = ({
+    id,
+    label,
+    preview,
+    onUpload,
+    onRemove,
+  }: {
+    id: string;
+    label: string;
+    preview: string | null;
+    onUpload: (file: File) => void;
+    onRemove: () => void;
+  }) => (
+    <div className="space-y-2">
+      <label className="text-sm font-medium text-gray-900">{label}</label>
+      <div className="group relative">
+        <input
+          id={id}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (file) onUpload(file);
+          }}
+        />
+        {preview ? (
+          <div className="relative overflow-hidden rounded-xl border-2 border-gray-200">
+            <img
+              src={preview || '/placeholder.svg'}
+              alt="Preview"
+              className="h-40 w-full object-cover"
+            />
             <button
-              onClick={() => router.back()}
-              className="flex cursor-pointer items-center gap-1 rounded-full border border-gray-300 p-1 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
+              type="button"
+              onClick={onRemove}
+              className="absolute top-2 right-2 rounded-full bg-white/90 p-1.5 shadow-lg transition hover:bg-white"
             >
-              <IoChevronBackSharp size={25} />
+              <X className="h-4 w-4 text-gray-700" />
             </button>
-          </CardTitle>
-        </CardHeader>
+          </div>
+        ) : (
+          <label
+            htmlFor={id}
+            className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 transition hover:border-gray-400 hover:bg-gray-100"
+          >
+            <Upload className="mb-2 h-8 w-8 text-gray-400" />
+            <p className="text-sm font-medium text-gray-700">اضغط لرفع الصورة</p>
+            <p className="text-xs text-gray-500">PNG, JPG, GIF</p>
+          </label>
+        )}
+      </div>
+    </div>
+  );
 
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-6">
-            <InputGroup
-              label="اسم المنتج"
-              icon={<Package className="h-4 w-4 text-gray-500" />}
-              value={newProduct.name}
-              onChange={value => setNewProduct({ ...newProduct, name: value })}
-              placeholder="مثلًا:  تيشترت لينون"
-              disabled={loading}
-              required
-            />
+  return (
+    <div dir="rtl" className="min-h-screen bg-gradient-to-b from-gray-50 to-white px-4 py-8">
+      <div className="mx-auto max-w-3xl">
+        {/* Header */}
+        <div className="mb-8 text-center">
+          <h1 className="mb-2 text-3xl font-bold text-gray-900">إعداد متجرك</h1>
+          <p className="text-balance text-gray-600">
+            انضم كمورّد الآن في دقائق، وابدأ بعرض منتجاتك للتجار والمتاجر بسهولة 🚀
+          </p>
+        </div>
 
-            <InputGroup
-              label="السعر"
-              icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-              type="number"
-              value={newProduct.price ?? ''}
-              onChange={value => {
-                setNewProduct({ ...newProduct, price: parseFloat(value) });
-              }}
-              onBlur={() => {
-                let numericValue = newProduct.price ?? 0;
+        {/* Progress Steps */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between">
+            {steps.map((step, index) => (
+              <div key={step.id} className="flex flex-1 items-center">
+                <div className="flex flex-col items-center">
+                  <button
+                    onClick={() => setActiveSection(index)}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${
+                      index <= activeSection
+                        ? 'border-black bg-black text-white'
+                        : 'border-gray-300 bg-white text-gray-400'
+                    }`}
+                  >
+                    {index < activeSection ? (
+                      <Check className="h-5 w-5" />
+                    ) : (
+                      <span className="text-sm font-semibold">{index + 1}</span>
+                    )}
+                  </button>
+                  <span className="mt-2 hidden text-xs font-medium text-gray-600 sm:block">
+                    {step.label}
+                  </span>
+                </div>
+                {index < steps.length - 1 && (
+                  <div
+                    className={`mx-2 h-0.5 flex-1 transition-all ${index < activeSection ? 'bg-black' : 'bg-gray-300'}`}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
 
-                if (numericValue > 0 && numericValue < 100) {
-                  numericValue *= 1000;
-                }
+        {/* Form Card */}
+        <div className="rounded-2xl bg-white p-6 shadow-lg sm:p-8">
+          {/* Error Summary */}
+          {Object.keys(fieldErrors).length > 0 && (
+            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+              <p className="text-sm font-medium text-red-800">يرجى تصحيح الأخطاء التالية:</p>
+              <ul className="mt-2 list-inside list-disc text-xs text-red-700">
+                {Object.values(fieldErrors).map((error, idx) => (
+                  <li key={idx}>{error}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-                if (numericValue < 240) numericValue = 240;
+          {/* Step Content */}
+          <div className="min-h-[400px]">
+            {/* Basic Information */}
+            {activeSection === 0 && (
+              <div className="space-y-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      رابط المتجر
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={storeSlug}
+                        onChange={e => {
+                          const value = e.target.value.toLowerCase();
+                          if (/^[a-z0-9]*$/.test(value)) {
+                            setStoreSlug(value);
+                          }
+                        }}
+                        placeholder="متجري"
+                        className={`pr-10 ${fieldErrors.subLink ? 'border-red-500' : ''}`}
+                      />
+                      <Link2 className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">
+                      {storeSlug || 'متجري'}.dropwave.cloud
+                    </p>
+                    {fieldErrors.subLink && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.subLink}</p>
+                    )}
+                  </div>
 
-                setNewProduct({ ...newProduct, price: numericValue });
-              }}
-              placeholder="0"
-              disabled={loading}
-              required
-            />
-            {data.supplier && (
-              <>
-                <InputGroup
-                  label="سعر الجملة"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.wholesalePrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        wholesalePrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.wholesalePrice ?? 0;
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      اسم المتجر
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={storeName}
+                        onChange={e => setStoreName(e.target.value)}
+                        placeholder="متجر الإلكترونيات"
+                        className={`pr-10 ${fieldErrors.name ? 'border-red-500' : ''}`}
+                      />
+                      <Store className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    {fieldErrors.name && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
+                    )}
+                  </div>
 
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      وصف المتجر
+                    </label>
+                    <Textarea
+                      value={description}
+                      onChange={e => setDescription(e.target.value)}
+                      placeholder="أضف وصفاً جذاباً لمتجرك..."
+                      rows={4}
+                      className={fieldErrors.description ? 'border-red-500' : ''}
+                    />
+                    {fieldErrors.description && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.description}</p>
+                    )}
+                  </div>
+                </div>
 
-                    if (numericValue < 240) numericValue = 240;
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <ImageUpload
+                    id="store-logo"
+                    label="شعار المتجر"
+                    preview={imagePreview}
+                    onUpload={file => {
+                      setImageFile(file);
+                      setImagePreview(URL.createObjectURL(file));
+                    }}
+                    onRemove={() => {
+                      setImageFile(null);
+                      setImagePreview(null);
+                    }}
+                  />
+                  <ImageUpload
+                    id="store-header"
+                    label="صورة الغلاف"
+                    preview={headerPreview}
+                    onUpload={file => {
+                      setHeaderFile(file);
+                      setHeaderPreview(URL.createObjectURL(file));
+                    }}
+                    onRemove={() => {
+                      setHeaderFile(null);
+                      setHeaderPreview(null);
+                    }}
+                  />
+                </div>
 
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        wholesalePrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-                <InputGroup
-                  label="الحد الادنى للسعر"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.minPrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        minPrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.minPrice ?? 0;
-
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
-
-                    if (numericValue < 240) numericValue = 240;
-
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        minPrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-                <InputGroup
-                  label="الحد الاعلى للسعر"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.maxPrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        maxPrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.maxPrice ?? 0;
-
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
-
-                    if (numericValue < 240) numericValue = 240;
-
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        maxPrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-              </>
+                <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
+                  <p className="text-sm text-blue-800">
+                    💡 <strong>ملاحظة:</strong> تغيير رابط المتجر لاحقاً سيؤدي إلى إعادة تعيين
+                    إحصائيات الزيارات
+                  </p>
+                </div>
+              </div>
             )}
 
-            <InputGroup
-              label="الخصم (%)"
-              icon={<Percent className="h-4 w-4 text-gray-500" />}
-              type="number"
-              value={newProduct.discount === 0 ? '' : newProduct.discount}
-              onChange={value => {
-                let discountValue = parseFloat(value) || 0;
-                if (discountValue < 0) discountValue = 0;
-                if (discountValue > 100) discountValue = 100;
-
-                setNewProduct({ ...newProduct, discount: discountValue });
-              }}
-              placeholder="مثلاً: 10"
-              disabled={loading}
-            />
-            <div className="text-sm text-gray-600">
-              السعر بعد الخصم:
-              {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)} د.ع
-            </div>
-
-            <div className="space-y-2">
-              <InputGroup
-                label="الكمية"
-                icon={<Package className="h-4 w-4 text-gray-500" />}
-                type="number"
-                value={newProduct.unlimited ? '' : newProduct.quantity}
-                onChange={value => {
-                  const parsed = parseInt(value);
-                  if (!isNaN(parsed) && parsed >= 0) {
-                    setNewProduct({ ...newProduct, quantity: parsed, unlimited: false });
-                  } else {
-                    setNewProduct({ ...newProduct, quantity: 0, unlimited: false });
-                  }
-                }}
-                placeholder="كمية غير محدودة"
-                disabled={loading || newProduct.unlimited}
-                required
-              />
-
-              <label className="flex cursor-pointer items-center gap-2 select-none">
-                <span className="text-sm text-gray-700">جعل الكمية غير محدودة</span>
-                <input
-                  type="checkbox"
-                  checked={newProduct.unlimited}
-                  onChange={e => setNewProduct({ ...newProduct, unlimited: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </label>
-              <div className="flex items-center gap-1">
-                <Info size={11} className="text-gray-600" />
-                <span className="text-xs text-gray-600">
-                  هذا الخيار مفيد في حالة المنتج لديك متكرر التجديد
-                </span>
-              </div>
-            </div>
-            <hr />
-            <div className="flex flex-col gap-2">
-              <Label className="font-medium text-gray-700">الأحجام - أو أنواع أخرى (اختياري)</Label>
-
-              {sizes.map((s, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-3 shadow-sm"
-                >
-                  <Input
-                    placeholder="المقاس - نوع"
-                    value={s.size}
-                    onChange={e => updateSize(i, 'size', e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="الكمية"
-                    value={s.stock === 0 ? '' : s.stock}
-                    onChange={e => {
-                      const val = e.target.value;
-                      updateSize(i, 'stock', val === '' ? 0 : Number(val));
-                    }}
-                    className="w-24 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="rounded-md px-3 py-1 text-sm transition hover:bg-red-600 hover:text-white"
-                    onClick={() => removeSize(i)}
-                  >
-                    حذف
-                  </Button>
-                </div>
-              ))}
-
-              <Button
-                type="button"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-black transition hover:border-green-400 hover:bg-green-50"
-                onClick={addSize}
-              >
-                <p>إضافة حجم - أو نوع</p>
-                <IoAddSharp />
-              </Button>
-            </div>
-            <div className="flex flex-col gap-2 text-xs">
-              <Label className="font-medium text-gray-700">الألوان - اختياري</Label>
-
-              {colors.map((c, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-3 shadow-sm"
-                >
-                  <Input
-                    placeholder="اسم اللون"
-                    value={c.name}
-                    onChange={e => updateColor(i, 'name', e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-                  <Input
-                    type="color"
-                    value={c.hex}
-                    onChange={e => updateColor(i, 'hex', e.target.value)}
-                    className="w-16 rounded-md border-gray-300 p-0"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="الكمية"
-                    value={c.stock === 0 ? '' : c.stock}
-                    onChange={e => updateColor(i, 'stock', e.target.value)}
-                    className="w-24 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="rounded-md px-3 py-1 text-sm transition hover:bg-red-600 hover:text-white"
-                    onClick={() => removeColor(i)}
-                  >
-                    حذف
-                  </Button>
-                </div>
-              ))}
-
-              <Button
-                type="button"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-black transition hover:border-green-400 hover:bg-green-50"
-                onClick={addColor}
-              >
-                <p>إضافة لون </p>
-                <IoAddSharp />{' '}
-              </Button>
-            </div>
-
-            <InputGroup
-              label="مدة التوصيل او تفاصيله؟"
-              icon={<LiaShippingFastSolid className="h-4 w-4 text-gray-500" />}
-              type="text"
-              value={newProduct.shippingType}
-              onChange={value => setNewProduct({ ...newProduct, shippingType: value })}
-              placeholder=""
-              disabled={loading}
-            />
-
-            <InputGroup
-              label="سياسة الاسترجاع"
-              icon={<TbTruckReturn className="h-4 w-4 text-gray-500" />}
-              type="text"
-              value={newProduct.hasReturnPolicy}
-              onChange={value => setNewProduct({ ...newProduct, hasReturnPolicy: value })}
-              placeholder="شروط الاسترجاع"
-              disabled={loading}
-            />
-
-            <CategoryDropdown
-              categories={categories}
-              value={newProduct.category as string}
-              onChange={val => setNewProduct({ ...newProduct, category: val })}
-              loading={loading}
-            />
-
-            <div dir="rtl" className="flex flex-col gap-1">
-              <label className="flex items-center gap-2 font-medium text-gray-700">
-                <Package className="h-5 w-5 text-gray-500" />
-                وصف المنتج
-              </label>
-              <textarea
-                placeholder="مثلًا: تيشيرت عالي الجودة يناسب جميع الأذواق"
-                value={newProduct.description || ''}
-                onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
-                disabled={loading}
-                rows={4}
-                className="resize-y rounded-lg border px-3 py-2 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-400 focus:outline-none"
-                dir="rtl"
-              />
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <Label className="flex items-center gap-1 text-sm text-gray-700">
-                <ImageIcon className="h-4 w-4 text-gray-500" />
-                صورة المنتج <span className="text-red-500">*</span>
-              </Label>
-              <div className="relative cursor-pointer rounded-lg border-2 border-dashed border-gray-400 p-8 text-center transition hover:border-green-300 hover:bg-green-50">
-                <label
-                  htmlFor="upload-image"
-                  className="flex cursor-pointer flex-col items-center justify-center gap-3"
-                >
-                  {newProduct.imagePreview ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <img
-                        src={newProduct.imagePreview}
-                        alt="معاينة"
-                        className="max-h-40 rounded-lg border border-gray-200 object-contain shadow-sm"
+            {/* Shipping Information */}
+            {activeSection === 1 && (
+              <div className="space-y-6">
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      رقم الهاتف
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={phone}
+                        onChange={e => setPhone(e.target.value)}
+                        placeholder="07xxxxxxxxx"
+                        className={`pr-10 ${fieldErrors.phone ? 'border-red-500' : ''}`}
                       />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setNewProduct({ ...newProduct, imagePreview: '', imageFile: undefined })
-                        }
-                        className="mt-2 rounded bg-red-500 px-3 py-1 text-sm text-white transition hover:bg-red-600"
-                        disabled={loading}
-                      >
-                        إزالة الصورة
-                      </button>
+                      <Phone className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
                     </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <TbUpload size={40} className="text-gray-400" />
-                      <p className="text-gray-500">انقر لرفع الصورة أو اسحبها هنا</p>
-                    </div>
-                  )}
-                </label>
-                <input
-                  id="upload-image"
-                  type="file"
-                  accept="image/*"
-                  onChange={onNewImageChange}
-                  className="hidden"
-                  disabled={loading}
-                />
-              </div>
-            </div>
+                    {fieldErrors.phone && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.phone}</p>
+                    )}
+                  </div>
 
-            <div>
-              <Label className="flex items-center gap-1 text-sm text-gray-700">
-                <ImageIcon className="h-4 w-4 text-gray-500" />
-                صور المنتج الإضافية (اختياري)
-              </Label>
-              <div className="relative flex gap-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={onGalleryChange}
-                  className="relative hidden"
-                  id="upload-gallery"
-                />
-                <label
-                  htmlFor="upload-gallery"
-                  className="mt-2 flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-8 text-sm text-gray-500 transition hover:border-green-500 hover:bg-green-50"
-                >
-                  <SlCloudUpload size={40} className="text-gray-400" />
-                  <p className="text-center">رفع صور إضافية</p>
-                </label>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              {galleryPreviews.map((src, i) => (
-                <div
-                  key={i}
-                  className="relative h-28 w-28 overflow-hidden rounded-xl border-2 border-dashed border-gray-300 transition hover:border-green-500"
-                >
-                  <img src={src} alt={`gallery-${i}`} className="h-full w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setGalleryFiles(files => files.filter((_, idx) => idx !== i));
-                      setGalleryPreviews(previews => previews.filter((_, idx) => idx !== i));
-                    }}
-                    className="absolute top-1 right-1 rounded-full bg-red-500 px-1 text-xs text-white shadow-md transition hover:bg-red-600"
-                  >
-                    ✕
-                  </button>
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      سعر التوصيل
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={shippingPrice}
+                        onChange={e => setShippingPrice(e.target.value)}
+                        placeholder="5000"
+                        className={`pr-10 ${fieldErrors.shippingPrice ? 'border-red-500' : ''}`}
+                      />
+                      <Truck className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    <p className="mt-1 text-xs text-gray-500">بالدينار العراقي</p>
+                    {fieldErrors.shippingPrice && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.shippingPrice}</p>
+                    )}
+                  </div>
                 </div>
-              ))}
-            </div>
-            <Button
-              onClick={addProduct}
-              disabled={loading}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-black text-white hover:bg-gray-800"
-            >
-              <PlusCircle className="h-5 w-5" />
-              {loading ? '...جاري الإضافة' : 'إضافة'}
-            </Button>
+              </div>
+            )}
+
+            {/* Social Links */}
+            {activeSection === 2 && (
+              <div className="space-y-6">
+                <p className="text-sm text-gray-600">
+                  أضف روابط حساباتك الاجتماعية لزيادة التواصل مع العملاء
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      فيسبوك (اختياري)
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={facebookLink}
+                        onChange={e => setFacebook(e.target.value)}
+                        placeholder="https://facebook.com/yourpage"
+                        className={`pr-10 ${fieldErrors.facebookLink ? 'border-red-500' : ''}`}
+                      />
+                      <Facebook className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    {fieldErrors.facebookLink && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.facebookLink}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      إنستغرام (اختياري)
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={instaLink}
+                        onChange={e => setInstagram(e.target.value)}
+                        placeholder="https://instagram.com/yourpage"
+                        className={`pr-10 ${fieldErrors.instaLink ? 'border-red-500' : ''}`}
+                      />
+                      <Instagram className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    {fieldErrors.instaLink && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.instaLink}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="mb-2 block text-sm font-medium text-gray-900">
+                      تيليجرام (اختياري)
+                    </label>
+                    <div className="relative">
+                      <Input
+                        value={telegram}
+                        onChange={e => setTelegram(e.target.value)}
+                        placeholder="https://t.me/yourpage"
+                        className={`pr-10 ${fieldErrors.telegram ? 'border-red-500' : ''}`}
+                      />
+                      <Send className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                    </div>
+                    {fieldErrors.telegram && (
+                      <p className="mt-1 text-xs text-red-600">{fieldErrors.telegram}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Payment Methods */}
+            {activeSection === 3 && (
+              <div className="space-y-6">
+                <div>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">طرق الدفع المتاحة</h3>
+                  <p className="text-sm text-gray-600">اختر طرق الدفع التي تدعمها</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {paymentMethods.map(method => (
+                    <button
+                      key={method.id}
+                      type="button"
+                      onClick={() => toggleMethod(method.id)}
+                      className={`flex items-center gap-4 rounded-xl border-2 p-4 transition-all ${
+                        selectedMethods.includes(method.id)
+                          ? 'border-black bg-gray-50'
+                          : 'border-gray-200 bg-white hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="relative h-12 w-12 shrink-0">
+                        <Image
+                          src={method.logo || '/placeholder.svg'}
+                          alt={method.alt}
+                          fill
+                          className="object-contain"
+                        />
+                      </div>
+                      <div className="flex-1 text-right">
+                        <p className="font-medium text-gray-900">{method.nameAr}</p>
+                        <p className="text-xs text-gray-500">{method.nameEn}</p>
+                      </div>
+                      <div
+                        className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
+                          selectedMethods.includes(method.id)
+                            ? 'border-black bg-black'
+                            : 'border-gray-300'
+                        }`}
+                      >
+                        {selectedMethods.includes(method.id) && (
+                          <Check className="h-4 w-4 text-white" />
+                        )}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
-        </CardContent>
-      </Card>
-      <div className="mb-20 py-5" />
-    </>
-  );
-}
-interface InputGroupProps {
-  label: string;
-  required?: boolean;
-  placeholder?: string;
-  type?: string;
-  icon?: React.ReactNode;
-  value?: string | number;
-  onChange: (value: string) => void;
-  disabled?: boolean;
-  onBlur?: () => void;
-}
 
-function InputGroup({
-  label,
-  required,
-  placeholder,
-  type = 'text',
-  icon,
-  value,
-  onChange,
-  disabled,
-  onBlur,
-}: InputGroupProps) {
-  return (
-    <div className="flex w-full flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">
-        {label} {required && <span className="text-red-500">*</span>}
-      </label>
+          {/* Navigation Buttons */}
+          <div className="mt-8 flex items-center justify-between gap-4 border-t pt-6">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handlePrev}
+              disabled={activeSection === 0}
+              className="gap-2 bg-transparent"
+            >
+              <ChevronRight className="h-4 w-4" />
+              السابق
+            </Button>
 
-      <div className="relative">
-        <Input
-          type={type}
-          value={value ?? ''}
-          onChange={e => onChange(e.target.value)}
-          onBlur={onBlur}
-          disabled={disabled}
-          placeholder={placeholder || label}
-          className="rounded-md border-gray-300 pr-3 pl-10 focus:border-green-400 focus:ring-green-400"
-        />
-        {icon && (
-          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-700">{icon}</span>
-        )}
+            {activeSection === steps.length - 1 ? (
+              <Button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="gap-2 bg-black hover:bg-gray-800"
+              >
+                {loading ? 'جاري الحفظ...' : 'حفظ المتجر'}
+                <Check className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button onClick={handleNext} className="gap-2 bg-black hover:bg-gray-800">
+                التالي
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

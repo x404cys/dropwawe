@@ -4,7 +4,7 @@ export default function DashboardMockup() {
       <div className="flex min-h-screen flex-col bg-gray-50">
         {/* Header */}
         <header className="flex items-center justify-between bg-white px-4 py-3">
-          <span className="text-sm font-semibold text-gray-800">https://darneh.sahlapp.io</span>
+          <span className="text-sm font-semibold text-gray-800">https://darneh.dropwave.cloud</span>
           <div className="flex items-center gap-3">
             <button className="rounded-full bg-gray-100 p-2">
               <svg

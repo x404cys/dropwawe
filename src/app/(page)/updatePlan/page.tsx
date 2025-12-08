@@ -150,7 +150,7 @@ export default function StoreSetupPage() {
           </Label>
           <div className="flex w-full items-center">
             <div className="flex h-10 items-center justify-center rounded-r-md border border-l-0 border-gray-200 bg-gray-50 px-3 text-sm text-gray-500 select-none">
-              {storeSlug}.sahlapp.io
+              {storeSlug}.dropwave.cloud
             </div>
             <div className="relative flex-grow">
               <Input

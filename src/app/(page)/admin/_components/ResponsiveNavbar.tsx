@@ -42,7 +42,7 @@ const ResponsiveNavbar = () => {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    window.location.href = 'https://www.sahlapp.io';
+    window.location.href = 'https://www.dropwave.cloud';
   };
 
   return (
