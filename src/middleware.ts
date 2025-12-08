@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
     if (subdomain === 'admin') {
       url.pathname = '/admin';
       return NextResponse.rewrite(url);
-    }//
+    }
 
     if (subdomain === 'login') {
       url.pathname = '/login';
