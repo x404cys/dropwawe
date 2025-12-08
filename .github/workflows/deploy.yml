@@ -21,15 +21,25 @@ jobs:
           key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
             cd /var/www/dropwave/dropwawe
-            git pull
 
-            export $(grep -v '^#' .env | xargs)
+            # Force update from GitHub
+            git fetch --all
+            git reset --hard origin/main
 
+            # Load environment variables safely
+            set -a
+            source .env
+            set +a
+
+            # Install dependencies
             npm install
 
+            # Prisma
             npx prisma generate
             npx prisma migrate deploy
-            
+
+            # Build
             npm run build
 
+            # Restart pm2
             pm2 restart all
