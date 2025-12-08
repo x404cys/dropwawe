@@ -16,7 +16,7 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn('google', {
-      callbackUrl: '/Dashboard/create-store/Supplier',
+      callbackUrl: '/Dashboard/create-store',
     });
 
     setIsLoading(false);
