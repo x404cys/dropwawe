@@ -3,14 +3,14 @@ import { getServerSession } from 'next-auth';
 import { prisma } from '@/app/lib/db';
 import { authOperation } from '@/app/lib/authOperation';
 
-export async function POST(req: Request, context: { params: { theme: string } }) {
+export async function POST(
+  req: Request,
+  context: { params: Promise<{ theme: string}> }
+) {
   try {
     const session = await getServerSession(authOperation);
-    const { theme } = context.params;
 
-    if (theme !== 'NORMAL' && theme !== 'MODERN') {
-      return NextResponse.json({ error: 'Invalid theme' }, { status: 400 });
-    }
+    const { theme } = await context.params;
 
     if (!session || !session.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -20,7 +20,9 @@ export async function POST(req: Request, context: { params: { theme: string } })
 
     const store = await prisma.store.update({
       where: { userId },
-      data: { theme },
+      data: {
+        theme: theme,
+      },
     });
 
     return NextResponse.json({

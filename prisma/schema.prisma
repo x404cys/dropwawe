@@ -26,7 +26,7 @@ model User {
   shippingType    String?
   telegram        String?
   active          Boolean?       @default(true)
-  theme           ThemeStore     @default(NORMAL)
+  theme           String         @default("NORMAL")
   Notification    Notification[]
   orders          Order[]
   Product         Product[]
