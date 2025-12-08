@@ -14,29 +14,35 @@ export async function middleware(req: NextRequest) {
   }
 
   if (subdomain) {
-    if (subdomain === 'admin') {
-      url.pathname = '/admin';
-      return NextResponse.rewrite(url);
-    }
+    switch (subdomain) {
+      case 'admin':
+        url.pathname = url.pathname.startsWith('/admin') ? url.pathname : `/admin${url.pathname}`;
+        return NextResponse.rewrite(url);
 
-    if (subdomain === 'login') {
-      url.pathname = '/login';
-      return NextResponse.rewrite(url);
-    }
+      case 'login':
+        url.pathname = url.pathname.startsWith('/login') ? url.pathname : `/login${url.pathname}`;
+        return NextResponse.rewrite(url);
 
-    if (subdomain === 'dashboard') {
-      url.pathname = '/Dashboard';
-      return NextResponse.rewrite(url);
-    }
+      case 'dashboard':
+        url.pathname = url.pathname.startsWith('/Dashboard')
+          ? url.pathname
+          : `/Dashboard${url.pathname}`;
+        return NextResponse.rewrite(url);
 
-    if (subdomain === 'supplier') {
-      url.pathname = '/Supplier/Dashboard';
-      return NextResponse.rewrite(url);
-    }
+      case 'supplier':
+        url.pathname = url.pathname.startsWith('/Supplier/Dashboard')
+          ? url.pathname
+          : `/Supplier/Dashboard${url.pathname}`;
+        return NextResponse.rewrite(url);
 
-    if (subdomain !== 'www' && subdomain !== 'sahlapp') {
-      url.pathname = '/storev2';
-      return NextResponse.rewrite(url);
+      default:
+        if (subdomain !== 'www' && subdomain !== 'sahlapp') {
+          url.pathname = url.pathname.startsWith('/storev2')
+            ? url.pathname
+            : `/storev2${url.pathname}`;
+          return NextResponse.rewrite(url);
+        }
+        break;
     }
   }
 
