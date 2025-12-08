@@ -88,7 +88,7 @@ export default function StoreSetupPage() {
         active: true,
       };
 
-      const res = await fetch('/api/supplier/create', {
+      const res = await fetch('/api/storev2/create', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
