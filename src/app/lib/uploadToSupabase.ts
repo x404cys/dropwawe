@@ -3,7 +3,7 @@ import path from 'path';
 
 export async function uploadToServer(file: File, userId: string) {
   try {
-    const uploadsDir = path.join(process.cwd(), 'public/uploads', userId);
+    const uploadsDir = path.join('/var/www/dropwave/dropwawe/public/uploads/;', userId);
 
     if (!fs.existsSync(uploadsDir)) {
       fs.mkdirSync(uploadsDir, { recursive: true });
@@ -18,7 +18,7 @@ export async function uploadToServer(file: File, userId: string) {
 
     fs.writeFileSync(filePath, buffer);
 
-    const url = `/uploads/${userId}/${fileName}`;
+    const url = `https://www.dropwave.cloud/uploads/${userId}/${fileName}`;
     return url;
   } catch (err) {
     console.error('Upload Error:', err);
