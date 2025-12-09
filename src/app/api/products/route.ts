@@ -81,6 +81,7 @@ export async function POST(req: Request) {
         image: imageUrl,
         userId,
         unlimited,
+        isFromSupplier: !wholesalePrice ? false : true,
       },
     });
 
