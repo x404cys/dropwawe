@@ -26,7 +26,7 @@ export const authOperation: AuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: isProd,
-        domain: isProd ? '.dropwave.cloud' : 'localhost',
+        domain: isProd ? '.matager.store' : 'localhost',
       },
     },
   },
@@ -75,15 +75,10 @@ export const authOperation: AuthOptions = {
       return true;
     },
 
-    async redirect({ url, baseUrl }) {
-      const parsed = new URL(url);
-      const type = parsed.searchParams.get('type');
-
-      if (type === 'SUPPLIER') {
-        return 'https://dashboard.dropwave.cloud/Dashboard/create-store/Supplier';
-      }
-
-      return parsed.toString();
+    async redirect({ baseUrl }) {
+      return process.env.NODE_ENV === 'production'
+        ? 'https://dashboard.dropwave.cloud/create-store'
+        : `${baseUrl}/Dashboard/create-store`;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

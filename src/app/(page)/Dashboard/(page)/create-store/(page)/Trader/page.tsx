@@ -45,17 +45,7 @@ export default function StoreSetupPage() {
     const fetchInfo = async () => {
       try {
         const res = await axios.get(`/api/storev2/info4setting/${session?.user?.id}`);
-        const storeData: StoreProps = res.data;
-
-        setStore(storeData);
-        setStoreSlug(storeData.subLink ?? '');
-        setStoreName(storeData.name ?? '');
-        setShippingPrice(storeData.shippingPrice?.toString() ?? '');
-        setDescription(storeData.description ?? '');
-        setPhone(storeData.phone ?? '');
-        setFacebook(storeData.facebookLink ?? '');
-        setInstagram(storeData.instaLink ?? '');
-        setTelegram(storeData.telegram ?? '');
+        if (res.data) return router.replace('/Dashboard');
       } catch (err) {
         console.error('Error fetching store info:', err);
       }

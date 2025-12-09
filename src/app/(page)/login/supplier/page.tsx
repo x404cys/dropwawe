@@ -15,9 +15,10 @@ export default function SignInPage() {
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
-    await signIn('google', {
-      callbackUrl: '/Dashboard/create-store/Supplier?type=SUPPLIER',
-    });
+   await signIn("google", {
+  callbackUrl: "/Dashboard/create-store/Supplier?type=SUPPLIER"
+});
+
 
     setIsLoading(false);
   };
