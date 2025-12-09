@@ -76,9 +76,14 @@ export const authOperation: AuthOptions = {
     },
 
     async redirect({ url, baseUrl }) {
-      if (url.startsWith('/')) return `${baseUrl}${url}`;
-      if (new URL(url).origin === baseUrl) return url;
-      return baseUrl;
+      const parsed = new URL(url);
+      const type = parsed.searchParams.get('type');
+
+      if (type === 'SUPPLIER') {
+        return 'https://dashboard.dropwave.cloud/Dashboard/create-store/Supplier';
+      }
+
+      return parsed.toString();
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

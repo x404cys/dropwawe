@@ -16,7 +16,7 @@ export default function SignInPage() {
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn('google', {
-      callbackUrl: 'https://dashboard.dropwave.cloud/Dashboard/create-store/Supplier',
+      callbackUrl: '/Dashboard/create-store/Supplier?type=SUPPLIER',
     });
 
     setIsLoading(false);
