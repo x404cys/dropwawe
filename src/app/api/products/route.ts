@@ -106,7 +106,7 @@ export async function POST(req: Request) {
           supplierId: supplier.id,
           isFromSupplier: true,
         },
-      });
+      });//
     }
 
     for (const gFile of galleryFiles) {
