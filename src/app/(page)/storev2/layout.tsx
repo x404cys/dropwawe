@@ -6,11 +6,11 @@ import ProductsProvider from './Data/context/products/ProductsContext';
 
 export default function StoreLayout2({ children }: { children: React.ReactNode }) {
   const getSubdomain = () => {
-    if (typeof window === 'undefined') return 'accseshop';
+    if (typeof window === 'undefined') return 'ali852';
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2) return parts[0];
-    return 'accseshop';
+    return 'ali852';
   };
   const subLink = getSubdomain();
 

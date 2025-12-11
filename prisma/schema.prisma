@@ -36,6 +36,8 @@ model User {
 
   UserSubscription UserSubscription[]
   merchant  Merchant? @relation("UserMerchant")
+  traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
+
 
 }
 model Supplier {
@@ -64,6 +66,8 @@ model Supplier {
   orders          Order[]
 
   ProductPricing ProductPricing[]
+  traderOrders OrderFromTrader[] @relation("SupplierOrderRelation")
+
 }
 
 model Store {
@@ -125,6 +129,8 @@ model Product {
   supplierId       String?      
   Supplier Supplier[]
   pricingDetails  ProductPricing?
+  orderFromTraderItems OrderFromTraderItem[]
+
 
 }
 model ProductPricing {
@@ -259,7 +265,8 @@ model Notification {
   product   Product? @relation(fields: [productId], references: [id])
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
-
+  orderFromTraderId String?       
+  orderFromTrader   OrderFromTrader? @relation(fields: [orderFromTraderId], references: [id])
   @@index([userId])
   @@index([orderId])
   @@index([productId])
@@ -338,3 +345,58 @@ model Merchant {
   updatedAt DateTime @updatedAt
 }
 
+
+model OrderFromTrader {
+  id           String         @id @default(cuid())
+  createdAt    DateTime       @default(now())
+  status       OrderStatus    @default(PENDING)
+  total        Float          @default(0)
+
+  traderId     String?         
+  supplierId   String?         
+
+ 
+  fullName     String?
+  location     String?
+  phone        String?
+
+  trader       User?          @relation("TraderOrderRelation", fields: [traderId], references: [id], onDelete: Cascade)
+  supplier     Supplier?      @relation("SupplierOrderRelation", fields: [supplierId], references: [id], onDelete: Cascade)
+
+  items        OrderFromTraderItem[]
+  paymentOrder OrderFromTraderPayment?
+
+  Notification Notification[]
+}
+
+model OrderFromTraderItem {
+  id             String   @id @default(cuid())
+  quantity       Int      @default(1)
+  price          Float
+  orderId        String
+  color          String?
+  size          String?
+  productId      String?
+
+  order          OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product        Product?        @relation(fields: [productId], references: [id])
+}
+model OrderFromTraderPayment {
+  id            String    @id @default(cuid())
+  orderId       String    @unique
+  cartId        String    @unique
+  tranRef       String?
+  amount        Float
+  currency      String    @default("IQD")
+  status        String     
+  respCode      String?
+  respMessage   String?
+  token         String?
+  customerEmail String?
+  signature     String?
+  createdAt     DateTime  @default(now())
+
+  order         OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([cartId])
+}
