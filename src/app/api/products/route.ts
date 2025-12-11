@@ -89,19 +89,18 @@ export async function POST(req: Request) {
       where: { userId: session.user.id },
     });
 
-    if (!supplier) {
-      return NextResponse.json({ error: 'Supplier not found for this user' }, { status: 400 });
+    if (supplier) {
+      await prisma.productPricing.create({
+        data: {
+          wholesalePrice,
+          maxPrice,
+          minPrice,
+          minQuantity: 1,
+          productId: product.id,
+          supplierId: supplier.id,
+        },
+      });
     }
-    await prisma.productPricing.create({
-      data: {
-        wholesalePrice,
-        maxPrice,
-        minPrice,
-        minQuantity: 1,
-        productId: product.id,
-        supplierId: supplier.id,
-      },
-    });
 
     for (const gFile of galleryFiles) {
       const gUrl = await uploadToServer(gFile, userId);

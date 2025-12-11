@@ -106,7 +106,6 @@ export default function Dashboard() {
               <StatCard key={idx} {...item} />
             ))}
           </div>
-          <span>{session.user.role}</span>
           <div className="grid gap-4 md:grid-cols-2">
             <UrlCard storeUrl={storeUrl} copyToClipboard={copyToClipboard} />
             <PlanCard />

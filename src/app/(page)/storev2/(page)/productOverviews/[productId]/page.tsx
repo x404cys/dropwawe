@@ -295,7 +295,7 @@ export default function ProductPage() {
                 variant="outline"
                 onClick={() => {
                   navigator.clipboard.writeText(window.location.href);
-                  toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ✨');
+                  toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ');
                 }}
               >
                 <RxShare2 />

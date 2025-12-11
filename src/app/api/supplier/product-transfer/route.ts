@@ -14,7 +14,12 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { productId, newPrice } = body;
 
-    if (!productId || newPrice) {
+    if (!productId) {
+      console.log('dsd');
+      return NextResponse.json({ message: 'productId و newPrice is  requierd' }, { status: 400 });
+    }
+    if (!newPrice) {
+      console.log('|| newPrice');
       return NextResponse.json({ message: 'productId و newPrice is  requierd' }, { status: 400 });
     }
 
@@ -25,11 +30,12 @@ export async function POST(req: Request) {
         images: true,
         colors: true,
         sizes: true,
+        Supplier: true,
       },
     });
 
     if (!product) {
-      return NextResponse.json({ message: 'product not found' }, { status: 404 });
+      return NextResponse.json({ message: 'product not found' }, { status: 409 });
     }
     const store = await prisma.store.findUnique({
       where: {
@@ -40,7 +46,7 @@ export async function POST(req: Request) {
       data: {
         name: product.name,
         description: product.description,
-        price: product.price,
+        price: Number.parseInt(newPrice),
         quantity: product.quantity,
         image: product.image,
         category: product.category,
@@ -51,6 +57,8 @@ export async function POST(req: Request) {
         userId: session.user.id,
         storeId: store?.id,
         unlimited: product.unlimited,
+        isFromSupplier: true,
+        supplierId: product?.Supplier?.[0]?.id ?? null,
         colors: {
           create: product.colors.map(c => ({
             color: c.color,

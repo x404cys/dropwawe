@@ -122,6 +122,7 @@ model Product {
   unlimited       Boolean         @default(false)
   colors ProductColor[]
   isFromSupplier   Boolean        @default(false)
+  supplierId       String?      
   Supplier Supplier[]
   pricingDetails  ProductPricing?
 
