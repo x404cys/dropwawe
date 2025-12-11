@@ -100,6 +100,13 @@ export async function POST(req: Request) {
           supplierId: supplier.id,
         },
       });
+      await prisma.product.update({
+        where: { id: product.id },
+        data: {
+          supplierId: supplier.id,
+          isFromSupplier: true,
+        },
+      });
     }
 
     for (const gFile of galleryFiles) {
