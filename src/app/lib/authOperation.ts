@@ -26,7 +26,7 @@ export const authOperation: AuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: isProd,
-        domain: isProd ? '.matager.store' : 'localhost',
+        domain: isProd ? '.dropwave.cloud' : 'localhost',
       },
     },
   },
