@@ -58,7 +58,7 @@ export async function POST(req: Request) {
         storeId: store?.id,
         unlimited: product.unlimited,
         isFromSupplier: true,
-        supplierId: product?.Supplier?.[0]?.id ?? null,
+        supplierId: product.supplierId ?? null,
         colors: {
           create: product.colors.map(c => ({
             color: c.color,

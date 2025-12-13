@@ -36,7 +36,18 @@ export default function NavBarForDesktop() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
+  const navItems = [
+    { label: 'الرئيسية', path: '/Dashboard' },
+    { label: 'المنتجات', path: '/Dashboard/ProductManagment' },
+    { label: 'اضافة منتج', path: '/Dashboard/ProductManagment/add-product' },
+    {
+      label: 'الطلبات',
+      path: `${session?.user.role === 'SUPPLIER' ? '/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage' : '/Dashboard/OrderTrackingPage'}`,
+    },
+    { label: 'الموردين', path: '/Dashboard/supplier' },
+    { label: 'المخزن', path: '/Dashboard/products-dropwave' },
+    { label: 'الاعدادات', path: '/Dashboard/setting/store' },
+  ];
   const { data: notifications, mutate } = useSWR<Notification[]>(
     session?.user?.id ? `/api/notifications?userId=${session.user.id}` : null,
     fetcher

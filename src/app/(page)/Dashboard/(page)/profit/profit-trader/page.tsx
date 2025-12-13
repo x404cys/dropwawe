@@ -33,7 +33,7 @@ export default function ProfitPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/orders/getall?userId=${userId}`);
+        const res = await axios.get(`/api/orders/getall/getall-for-supplier`);
         setData(res.data);
       } catch (err) {
         console.error(err);

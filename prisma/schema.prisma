@@ -373,6 +373,9 @@ model OrderFromTraderItem {
   id             String   @id @default(cuid())
   quantity       Int      @default(1)
   price          Float
+  wholesalePrice Float?     
+  traderProfit   Float?     
+  supplierProfit Float?     
   orderId        String
   color          String?
   size          String?

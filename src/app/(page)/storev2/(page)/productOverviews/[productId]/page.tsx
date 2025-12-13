@@ -244,14 +244,14 @@ export default function ProductPage() {
             <div className="flex gap-4">
               <Button
                 onClick={() => {
-                  if (product.sizes?.length && !selectedSize) {
-                    toast.warning('الرجاء اختيار الفئة قبل الإضافة');
-                    return;
-                  }
-                  if (product.colors?.length && !selectedColor) {
-                    toast.warning('الرجاء اختيار اللون قبل الإضافة');
-                    return;
-                  }
+                  // if (product.sizes?.length && !selectedSize) {
+                  //   toast.warning('الرجاء اختيار الفئة قبل الإضافة');
+                  //   return;
+                  // }
+                  // if (product.colors?.length && !selectedColor) {
+                  //   toast.warning('الرجاء اختيار اللون قبل الإضافة');
+                  //   return;
+                  // }
 
                   const customProduct = {
                     ...product,

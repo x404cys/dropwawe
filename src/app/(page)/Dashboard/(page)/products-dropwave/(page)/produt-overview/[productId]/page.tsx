@@ -344,14 +344,14 @@ export default function ProductPage() {
             <div className="flex flex-col flex-wrap-reverse gap-4 md:flex">
               <Button
                 onClick={() => {
-                  if (product.sizes?.length && !selectedSize) {
-                    toast.warning('الرجاء اختيار الفئة قبل الإضافة');
-                    return;
-                  }
-                  if (product.colors?.length && !selectedColor) {
-                    toast.warning('الرجاء اختيار اللون قبل الإضافة');
-                    return;
-                  }
+                  // if (product.sizes?.length && !selectedSize) {
+                  //   toast.warning('الرجاء اختيار الفئة قبل الإضافة');
+                  //   return;
+                  // }
+                  // if (product.colors?.length && !selectedColor) {
+                  //   toast.warning('الرجاء اختيار اللون قبل الإضافة');
+                  //   return;
+                  // }
 
                   const customProduct = {
                     ...product,

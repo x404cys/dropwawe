@@ -68,7 +68,11 @@ export default function FloatingNavBarForDashboard() {
 
           <button
             className={`${baseStyle} ${isActive('/Dashboard/OrderTrackingPage') ? activeStyle : inactiveStyle} relative`}
-            onClick={() => handleNavigate('/Dashboard/OrderTrackingPage')}
+            onClick={() =>
+              handleNavigate(
+                `${session?.user.role === 'SUPPLIER' ? '/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage' : '/Dashboard/OrderTrackingPage'}`
+              )
+            }
           >
             <ShoppingBag size={20} />
             {data?.pendingOrderCount > 0 && (

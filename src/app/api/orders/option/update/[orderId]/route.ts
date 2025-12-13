@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth/next';
 import { authOperation } from '@/app/lib/authOperation';
-import type { Prisma } from '@prisma/client';
 
 export async function PATCH(req: Request, context: { params: Promise<{ orderId: string }> }) {
   try {
@@ -10,24 +9,46 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
     const session = await getServerSession(authOperation);
 
     if (!orderId || !session) {
-      return NextResponse.json(
-        { error: 'Order ID and user session are required' },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: 'Order ID and session required' }, { status: 400 });
+    }
+
+    if (session.user.role === 'SUPPLIER') {
+      const existingTraderOrder = await prisma.orderFromTrader.findUnique({
+        where: { id: orderId },
+      });
+      const updated = await prisma.orderFromTrader.update({
+        where: { id: orderId },
+        data: { status: 'CONFIRMED' },
+      });
+      return NextResponse.json(updated);
+      // if (existingTraderOrder && existingTraderOrder.supplierId === session.user.id) {
+      // }
     }
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { product: true } } },
+      include: { items: true },
     });
 
     if (!order || order.userId !== session.user.id) {
       return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
     }
 
-    const supplierItems = order.items.filter(item => item.product?.supplierId);
+    const supplierItems = await Promise.all(
+      order.items.map(async item => {
+        const product = await prisma.product.findUnique({
+          where: { id: item.productId! },
+          include: {
+            pricingDetails: true,
+          },
+        });
+        return { item, product };
+      })
+    );
 
-    if (supplierItems.length === 0) {
+    const itemsFromSupplier = supplierItems.filter(p => p.product?.isFromSupplier);
+
+    if (!itemsFromSupplier.length) {
       const updatedOrder = await prisma.order.update({
         where: { id: orderId },
         data: { status: 'CONFIRMED' },
@@ -35,18 +56,17 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
       return NextResponse.json(updatedOrder);
     }
 
-    const createdOrders: Prisma.OrderFromTraderGetPayload<{ include: { items: true } }>[] = [];
-    const supplierMap: Record<string, typeof supplierItems> = {};
-
-    for (const item of supplierItems) {
-      const supplierId = item.product!.supplierId!;
+    const supplierMap: Record<string, typeof itemsFromSupplier> = {};
+    for (const pair of itemsFromSupplier) {
+      const supplierId = pair.product!.supplierId!;
       if (!supplierMap[supplierId]) supplierMap[supplierId] = [];
-      supplierMap[supplierId].push(item);
+      supplierMap[supplierId].push(pair);
     }
 
-    for (const [supplierId, items] of Object.entries(supplierMap)) {
-      const total = items.reduce((sum, i) => sum + i.price * i.quantity, 0);
+    const ordersFromTrader = [];
 
+    for (const [supplierId, items] of Object.entries(supplierMap)) {
+      const total = items.reduce((sum, p) => sum + p.item.price * p.item.quantity, 0);
       const traderOrder = await prisma.orderFromTrader.create({
         data: {
           traderId: session.user.id,
@@ -57,31 +77,26 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
           location: order.location,
           phone: order.phone,
           items: {
-            create: items.map(i => ({
-              quantity: i.quantity,
-              price: i.price,
-              color: i.color,
-              size: i.size,
-              productId: i.productId!,
+            create: items.map(p => ({
+              productId: p.item.productId,
+              quantity: p.item.quantity,
+              price: p.item.price,
+              wholesalePrice: p.product!.pricingDetails?.wholesalePrice,
+              traderProfit: p.item.price - p.product!.pricingDetails?.wholesalePrice!,
+              supplierProfit: p.product!.pricingDetails?.wholesalePrice! * p.item.quantity,
             })),
           },
         },
         include: { items: true },
       });
+      ordersFromTrader.push(traderOrder);
 
-      createdOrders.push(traderOrder);
-
-      await prisma.orderItem.deleteMany({
-        where: { id: { in: items.map(i => i.id) } },
-      });
+      await prisma.orderItem.deleteMany({ where: { id: { in: items.map(p => p.item.id) } } });
     }
 
-    return NextResponse.json({
-      message: 'Supplier products moved to OrderFromTrader successfully',
-      ordersFromTrader: createdOrders,
-    });
+    return NextResponse.json({ message: 'Supplier items moved successfully', ordersFromTrader });
   } catch (error) {
-    console.error('Error processing order:', error instanceof Error ? error.message : error);
+    console.error(error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
