@@ -81,9 +81,9 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
               productId: p.item.productId,
               quantity: p.item.quantity,
               price: p.item.price,
-              wholesalePrice: p.product!.pricingDetails?.wholesalePrice,
-              traderProfit: p.item.price - p.product!.pricingDetails?.wholesalePrice!,
-              supplierProfit: p.product!.pricingDetails?.wholesalePrice! * p.item.quantity,
+              wholesalePrice: p.product?.pricingDetails?.wholesalePrice,
+              traderProfit: p.item.price - p.product?.pricingDetails?.wholesalePrice!,
+              supplierProfit: p.product?.pricingDetails?.wholesalePrice! * p.item.quantity,
             })),
           },
         },
@@ -91,7 +91,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
       });
       ordersFromTrader.push(traderOrder);
 
-      await prisma.orderItem.deleteMany({ where: { id: { in: items.map(p => p.item.id) } } });
+      // await prisma.orderItem.deleteMany({ where: { id: { in: items.map(p => p.item.id) } } });
     }
 
     return NextResponse.json({ message: 'Supplier items moved successfully', ordersFromTrader });

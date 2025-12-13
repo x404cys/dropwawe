@@ -77,6 +77,15 @@ export async function POST(req: Request) {
             url: i.url,
           })),
         },
+        pricingDetails: {
+          create: {
+            supplierId: product.pricingDetails?.supplierId,
+            wholesalePrice: product.pricingDetails?.wholesalePrice!,
+            minPrice: product.pricingDetails?.minPrice!,
+            maxPrice: product.pricingDetails?.maxPrice!,
+            minQuantity: product.pricingDetails?.minQuantity!,
+          },
+        },
       },
     });
 
