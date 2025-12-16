@@ -72,7 +72,7 @@ const Page = () => {
             <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               اطلق مشروعك خلال دقائق فقط
             </p>
-            <p className="text-muted-foreground mt-2 hidden max-w-xl sm:text-base md:block md:text-lg lg:text-xl">
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل .{' '}
             </p>
