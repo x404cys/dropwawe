@@ -48,7 +48,7 @@ const Page = () => {
               الدعم
             </a>
             <a href="#s2" className="text-black/90 transition">
-              المميزات
+              الاسعار
             </a>
           </div>
           <Button
@@ -86,7 +86,7 @@ const Page = () => {
                 سجل هسه
               </Button>
             </div>
-            <div className="mt-4 hidden flex-col gap-2 md:flex">
+            <div className="mt-4 flex gap-2">
               <Button
                 onClick={() => router.push('https://login.sahlapp.io')}
                 className="rounded-xl bg-sky-400 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
@@ -104,8 +104,8 @@ const Page = () => {
               </Button>
             </div>
 
-            <div className="absolute top-16 left-0 -z-10 h-24 w-24 md:top-28 md:h-48 md:w-48">
-              <Image src="/bg-logo.png" alt="logo" fill className="object-contain" />
+            <div className="absolute top-32 left-0 -z-10 h-28 w-28 md:top-28 md:h-48 md:w-48">
+              <Image src="/Logo-bg-dropwave.png" alt="logo" fill className="object-contain rotate-60" />
             </div>
           </div>
 
