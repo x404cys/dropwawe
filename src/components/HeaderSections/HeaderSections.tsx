@@ -1,27 +1,28 @@
 'use client';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
 import Navbar from '../NavBar/NavBar';
 
 export default function HeroSection() {
   return (
     <>
       <Navbar />
-      <section dir="rtl" className="relative pt-32 lg:pt-36">
-        <div className="mx-auto flex w-full flex-col gap-10 px-5 sm:px-10 md:px-12 lg:max-w-7xl lg:flex-row-reverse lg:gap-12 lg:px-5">
-          <div className="absolute inset-y-0 hidden w-full lg:left-0 lg:block lg:w-1/2">
-            <span className="absolute top-24 -right-6 hidden h-24 w-24 rotate-90 skew-x-12 rounded-3xl bg-sky-400 opacity-60 blur-xl md:right-4 lg:top-28 lg:block lg:opacity-95" />
-            <span className="absolute bottom-12 left-4 h-24 w-24 rounded-3xl bg-sky-400 opacity-80 blur-xl" />
+      <section dir="rtl" className="relative h-screen pt-32 md:px-4 lg:pt-36">
+        <div className="mx-auto flex w-full flex-col gap-10 px-5 sm:px-10 md:px-12 lg:flex-row-reverse lg:gap-12 lg:px-5">
+          <div className="absolute inset-y-0 w-full lg:left-0 lg:block lg:w-1/2">
+            <span className="absolute top-48 -left-6 h-24 w-24 rotate-90 skew-x-12 rounded-3xl bg-sky-400 opacity-90 blur-2xl lg:block lg:opacity-95" />
+            <span className="absolute right-4 bottom-12 h-24 w-24 rounded-3xl bg-sky-400 opacity-80 blur-2xl" />
           </div>
-          <span className="absolute -top-5 aspect-square w-4/12 rotate-90 skew-x-12 skew-y-12 rounded-full bg-gradient-to-tr from-sky-200 to-sky-400 opacity-40 blur-3xl lg:right-0 lg:w-2/12" />
-          <div className="relative mx-auto flex flex-1">
+          <span className="absolute -top-5 aspect-square w-2/12 rotate-90 skew-x-12 skew-y-12 rounded-full bg-gradient-to-tr from-sky-200 to-sky-400 opacity-40 blur-3xl lg:right-0 lg:w-2/12" />
+
+          <div className="l relative mx-auto flex w-full max-w-md items-center justify-center md:max-w-full lg:mx-0 lg:flex-1">
             <Image
-              src="/HeroSection.png"
+              src="/Untitled-1.png"
               alt="Hero image"
-              fill  
-              // className="w-full rounded-xl object-cover"
+              fill
+              className="object-contain"
               priority
+              sizes="(max-width: 640vh) 448px, (max-width: 768vh) 512px, (max-width: 1024vh) 576px, 672"
             />
           </div>
 

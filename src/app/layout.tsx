@@ -63,7 +63,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${myCustomFont.className} antialiased`}
       >
-        <div className="mx-auto overflow-hidden px-2 font-bold md:px-0">
+        <div className="mx-auto overflow-hidden font-bold md:px-0">
           <Providers>
             <FavoriteProvider>
               <ProvidersContext>

@@ -11,10 +11,8 @@ import { useRouter } from 'next/navigation';
 import { useTrackVisitor4landing } from './lib/context/SaveVisitorId';
 import MockupMobile from '@/components/utils/MockupMobile';
 import Image from 'next/image';
-import HeroSection from '@/components/HeaderSections/HeaderSections';
 
 const Page = () => {
-  //
   const { data: session } = useSession();
   const router = useRouter();
 
@@ -38,7 +36,87 @@ const Page = () => {
   useTrackVisitor4landing('sahl2025');
 
   return (
-    <HeroSection />
+    <div dir="rtl" className="min-h-screen font-sans md:mx-10">
+      <nav className="cursor-pointer">
+        <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
+          <Logo />
+          <div className="hidden gap-6 md:flex lg:gap-8">
+            <a href="" className="text-black/90 transition">
+              الرئيسية
+            </a>
+            <a href="" className="text-black/90 transition">
+              الدعم
+            </a>
+            <a href="#s2" className="text-black/90 transition">
+              المميزات
+            </a>
+          </div>
+          <Button
+            onClick={() => router.push('https://login.sahlapp.io')}
+            className="rounded-2xl border border-sky-400 bg-white text-sky-600 hover:bg-gray-950 hover:text-white"
+          >
+            انطلق الان
+          </Button>
+        </div>
+      </nav>
+
+      <section className="relative py-8">
+        <div className="absolute top-0 right-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-300/30 blur-3xl"></div>
+
+        {/* <div className="absolute right-1/4 bottom-0 -z-20 h-80 w-80 rounded-full bg-purple-400/30 blur-2xl"></div> */}
+
+        <div className="container mx-auto flex flex-col items-center gap-10 px-4 sm:px-6 lg:flex-row lg:gap-20">
+          <div className="relative w-full flex-1 lg:w-1/2">
+            <h1 className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl">
+              ضغطة واحدة تفصلك عن <span className="text-sky-400">النجاح</span> في التجارة
+              الالكترونية{' '}
+            </h1>
+            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+              اطلق مشروعك خلال دقائق فقط
+            </p>
+            <p className="text-muted-foreground mt-2 hidden max-w-xl sm:text-base md:block md:text-lg lg:text-xl">
+              ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
+              التوصيل .{' '}
+            </p>
+            <div className="mt-8">
+              <Button
+                onClick={() => router.push('https://login.sahlapp.io')}
+                className="rounded-3xl border border-sky-400 bg-white text-sky-400 hover:bg-gray-950 hover:text-white md:hidden"
+              >
+                سجل هسه
+              </Button>
+            </div>
+            <div className="mt-4 hidden flex-col gap-2 md:flex">
+              <Button
+                onClick={() => router.push('https://login.sahlapp.io')}
+                className="rounded-xl bg-sky-400 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
+              >
+                سجل هسه{' '}
+              </Button>
+              <Button
+                onClick={() =>
+                  router.push('https://www.instagram.com/sahlappio?igsh=MWpkcGE0MWMzeHRqeg==')
+                }
+                variant="outline"
+                className="hover:bg-sky-border-sky-400/10 rounded-xl border border-sky-400 px-6 py-3 text-sm text-sky-400 sm:text-base"
+              >
+                جرب المنصة
+              </Button>
+            </div>
+
+            <div className="absolute top-16 left-0 -z-10 h-24 w-24 md:top-28 md:h-48 md:w-48">
+              <Image src="/bg-logo.png" alt="logo" fill className="object-contain" />
+            </div>
+          </div>
+
+          <div className="flex w-full flex-1 justify-center py-12 lg:w-1/2 lg:justify-end">
+            <MockupMobile />
+          </div>
+        </div>
+      </section>
+
+      <Footer />
+    </div>
   );
 };
 
