@@ -63,8 +63,6 @@ const Page = () => {
       <section className="relative py-8">
         <div className="absolute top-0 right-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-300/30 blur-3xl"></div>
 
-        {/* <div className="absolute right-1/4 bottom-0 -z-20 h-80 w-80 rounded-full bg-purple-400/30 blur-2xl"></div> */}
-
         <div className="container mx-auto flex flex-col items-center gap-10 px-4 sm:px-6 lg:flex-row lg:gap-20">
           <div className="relative w-full flex-1 lg:w-1/2">
             <h1 className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl">
@@ -78,18 +76,11 @@ const Page = () => {
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل .{' '}
             </p>
-            <div className="mt-8">
-              <Button
-                onClick={() => router.push('https://login.sahlapp.io')}
-                className="rounded-3xl border border-sky-400 bg-white text-sky-400 hover:bg-gray-950 hover:text-white md:hidden"
-              >
-                سجل هسه
-              </Button>
-            </div>
+            <div className="mt-8"></div>
             <div className="mt-4 flex gap-2">
               <Button
                 onClick={() => router.push('https://login.sahlapp.io')}
-                className="rounded-xl bg-sky-400 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
+                className="rounded-2xl bg-sky-400 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
                 سجل هسه{' '}
               </Button>
@@ -98,14 +89,19 @@ const Page = () => {
                   router.push('https://www.instagram.com/sahlappio?igsh=MWpkcGE0MWMzeHRqeg==')
                 }
                 variant="outline"
-                className="hover:bg-sky-border-sky-400/10 rounded-xl border border-sky-400 px-6 py-3 text-sm text-sky-400 sm:text-base"
+                className="hover:bg-sky-border-sky-400/10 rounded-2xl border border-sky-400 px-6 py-3 text-sm text-sky-400 sm:text-base"
               >
                 جرب المنصة
               </Button>
             </div>
 
-            <div className="absolute top-32 left-0 -z-10 h-28 w-28 md:top-28 md:h-48 md:w-48">
-              <Image src="/Logo-bg-dropwave.png" alt="logo" fill className="object-contain rotate-60" />
+            <div className="absolute top-16 left-0 -z-10 h-28 w-28 md:top-40 md:h-48 md:w-48">
+              <Image
+                src="/Logo-bg-dropwave.png"
+                alt="logo"
+                fill
+                className="rotate-60 object-contain"
+              />
             </div>
           </div>
 
