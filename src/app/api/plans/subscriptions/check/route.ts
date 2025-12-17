@@ -45,6 +45,7 @@ export async function GET() {
       subscription: {
         id: subscription.id,
         planName: subscription.plan.name,
+        type: subscription.plan.type,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
         remainingDays: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),

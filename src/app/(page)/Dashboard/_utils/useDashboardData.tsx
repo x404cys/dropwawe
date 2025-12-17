@@ -4,6 +4,7 @@ import axios from 'axios';
 import { UserProps } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
 import { Supplier } from '@/types/Supplier/SupplierType';
+import { SubscriptionResponse } from '@/types/users/User';
 
 interface DashboardData {
   productCount: number;
@@ -16,6 +17,7 @@ interface DashboardData {
   orderDone: number;
   user: UserProps | null;
   supplier: Supplier;
+  subscription: SubscriptionResponse;
 }
 
 const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
@@ -108,6 +110,15 @@ export const useDashboardData = (userId?: string) => {
     }
   );
 
+  const { data: subscription } = useSWR<SubscriptionResponse>(
+    '/api/plans/subscriptions/check',
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 5000,
+      revalidateOnMount: true,
+    }
+  );
   const data: DashboardData = {
     supplier: supplier,
     productCount: productData?.count ?? 0,
@@ -119,6 +130,7 @@ export const useDashboardData = (userId?: string) => {
     visitTotal: visitData?.count ?? null,
     pendingOrderCount: Array.isArray(pendingData) ? pendingData.length : 0,
     user: userData,
+    subscription: subscription!,
   };
 
   const loading = roleLoading;

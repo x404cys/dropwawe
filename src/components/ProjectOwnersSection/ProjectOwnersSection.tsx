@@ -1,20 +1,23 @@
 'use client';
 import Image from 'next/image';
+import { Cpu, Store, ShoppingCart } from 'lucide-react';
 
 export default function ProjectOwnersSection() {
   const sections = [
     {
       image: '/freepik__the-style-is-candid-image-photography-with-natural__53505.png',
-      title: 'لصحاب المشاريع على السوشيال ميديا',
+      title: 'لأصحاب المشاريع على السوشيال ميديا',
       description:
         'انتقل من البيع العشوائي إلى نظام متكامل بإدارة مخزون، طلبات، تحليلات، وتسويق ذكي.',
       badge: 'سوشيال ميديا',
+      icon: <Cpu className="ml-2 h-6 w-6 text-sky-500" />,
     },
     {
       image: '/fast-fashion-concept-with-full-clothing-store.jpg',
-      title: 'ألصحاب المحلات',
+      title: 'لأصحاب المحلات',
       description: 'حوّل متجرك من نطاقه المحلي إلى مساحة بيع بلا حدود.',
       badge: 'محلات',
+      icon: <Store className="ml-2 h-6 w-6 text-sky-500" />,
     },
     {
       image: '/showing-cart-trolley-shopping-online-sign-graphic.jpg',
@@ -22,6 +25,7 @@ export default function ProjectOwnersSection() {
       description:
         'ابدأ من الصفر واحصل على متجر إلكتروني جاهز، منتجات مختارة بعناية، محتوى تسويقي قابل للاستخدام مباشرة، وربط كامل ببوابات الدفع وشركات التوصيل.',
       badge: 'مبتدئ',
+      icon: <ShoppingCart className="ml-2 h-6 w-6 text-sky-500" />,
     },
   ];
 
@@ -50,18 +54,18 @@ export default function ProjectOwnersSection() {
                   fill
                   className="object-cover transition-transform duration-700"
                 />
-                <div className="from-card via-card/50 absolute inset-0 bg-gradient-to-t to-transparent" />
                 <div className="absolute top-4 right-4">
-                  <span className="bg-primary text-primary-foreground inline-block rounded-full px-4 py-1.5 text-sm font-semibold">
+                  <span className="text-primary-foreground inline-block rounded-full bg-sky-400 px-4 py-1.5 text-sm font-semibold">
                     {section.badge}
                   </span>
                 </div>
               </div>
 
-              <div className="p-8">
-                <h3 className="text-card-foreground mb-4 text-2xl font-bold text-balance">
-                  {section.title}
+              <div className="p-4">
+                <h3 className="text-card-foreground mb-4 flex items-center text-xl font-bold text-balance">
+                  <span className="">{section.title}</span>
                 </h3>
+
                 <p className="text-muted-foreground mb-6 text-base leading-relaxed text-pretty">
                   {section.description}
                 </p>

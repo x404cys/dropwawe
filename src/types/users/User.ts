@@ -68,6 +68,7 @@ export type Subscription = {
   id: string;
   planName: string;
   startDate: string;
+  type: string;
   endDate: string;
   remainingDays: number;
   detailsSubscription: SubscriptionType;
@@ -76,4 +77,5 @@ export type Subscription = {
 export type SubscriptionResponse = {
   isActive: boolean;
   subscription: Subscription;
+  type: string;
 };

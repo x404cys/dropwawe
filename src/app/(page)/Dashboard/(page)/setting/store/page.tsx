@@ -17,20 +17,12 @@ import SocialLinksSection from './(page)/social-links-section/social-links-secti
 import ThemeSection from './(page)/theme-section/theme-section';
 import PixelSection from './(page)/pixel-section/pixel-section';
 import SettingOptions from './Setting-options';
+import { SectionType } from '@/types/setting/Section';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
 
-type SectionType =
-  | 'basic'
-  | 'shipping'
-  | 'social'
-  | 'theme'
-  | 'pixel'
-  | 'subscriptions'
-  | 'about'
-  | 'profit';
-
+ 
 export default function StoreSetupPage() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);

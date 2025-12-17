@@ -12,6 +12,7 @@ import { useTrackVisitor4landing } from './lib/context/SaveVisitorId';
 import MockupMobile from '@/components/utils/MockupMobile';
 import Image from 'next/image';
 import ProjectOwnersSection from '@/components/ProjectOwnersSection/ProjectOwnersSection';
+import FeatureSection from '@/components/FeatureSection/FeatureSection';
 
 const Page = () => {
   const { data: session } = useSession();
@@ -112,6 +113,7 @@ const Page = () => {
         </div>
       </section>
       <section>
+        <FeatureSection />
         <ProjectOwnersSection />
       </section>
       <Footer />

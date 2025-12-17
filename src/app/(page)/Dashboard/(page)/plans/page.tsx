@@ -64,7 +64,7 @@ export default function Plans() {
             ]}
             buttonText="ابدأ مجانًا"
             buttonVariant="outline"
-            planType="NORMAL"
+            planType="drop-basics"
             onClick={handleSubscribe}
           />
 

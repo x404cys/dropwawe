@@ -21,9 +21,9 @@ export async function POST(
 
     const allowedTypes = ['NORMAL', 'MODREN', 'PENDINGPROFESSIONAL'];
 
-    if (!allowedTypes.includes(planType)) {
-      return NextResponse.json({ message: 'Invalid plan type' }, { status: 400 });
-    }
+    // if (!allowedTypes.includes(planType)) {
+    //   return NextResponse.json({ message: 'Invalid plan type' }, { status: 400 });
+    // }
 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planType },
