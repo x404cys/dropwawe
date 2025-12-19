@@ -13,6 +13,11 @@ import MockupMobile from '@/components/utils/MockupMobile';
 import Image from 'next/image';
 import ProjectOwnersSection from '@/components/ProjectOwnersSection/ProjectOwnersSection';
 import FeatureSection from '@/components/FeatureSection/FeatureSection';
+import PaymentSection from '@/components/PaymentSection/PaymentSection';
+import DeliveryIntegrationSection from '@/components/DeliveryIntegrationSection/DeliveryIntegrationSection';
+import UnlimitedProductsSection from '@/components/UnlimitedProductsSection/UnlimitedProductsSection';
+import SmartMarketingSection from '@/components/MarketingSection/MarketingSection';
+import PricingSection from '@/components/PricingSection/PricingSection';
 
 const Page = () => {
   const { data: session } = useSession();
@@ -38,7 +43,7 @@ const Page = () => {
   useTrackVisitor4landing('sahl2025');
 
   return (
-    <div dir="rtl" className="min-h-screen font-sans md:mx-10">
+    <div dir="rtl" className="min-h-screen bg-sky-100 font-sans">
       <nav className="cursor-pointer">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Logo />
@@ -55,7 +60,7 @@ const Page = () => {
           </div>
           <Button
             onClick={() => router.push('https://login.sahlapp.io')}
-            className="rounded-2xl border border-sky-400 bg-white text-sky-600 hover:bg-gray-950 hover:text-white"
+            className="rounded-2xl border border-sky-700 bg-sky-100 text-sky-600"
           >
             انطلق الان
           </Button>
@@ -63,18 +68,16 @@ const Page = () => {
       </nav>
 
       <section className="relative py-8">
-        <div className="absolute top-0 right-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-300/30 blur-3xl"></div>
+        <div className="absolute top-0 right-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-700/30 blur-3xl"></div>
 
-        <div className="container mx-auto flex flex-col items-center gap-10 px-4 sm:px-6 lg:flex-row lg:gap-20">
+        <div className="container mx-auto flex flex-col items-center gap-10 px-4 text-sky-900 sm:px-6 lg:flex-row lg:gap-20">
           <div className="relative w-full flex-1 lg:w-1/2">
-            <h1 className="text-3xl leading-tight font-bold sm:text-4xl md:text-5xl lg:text-6xl">
+            <h1 className="text-3xl leading-tight font-bold text-sky-900 sm:text-4xl md:text-5xl lg:text-6xl">
               ضغطة واحدة تفصلك عن <span className="text-sky-400">النجاح</span> في التجارة
               الالكترونية{' '}
             </h1>
-            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
-              اطلق مشروعك خلال دقائق فقط
-            </p>
-            <p className="text-muted-foreground mt-2 text-sm sm:text-base">
+            <p className="mt-2 text-sm text-sky-700 sm:text-base">اطلق مشروعك خلال دقائق فقط</p>
+            <p className="mt-2 text-sm text-sky-700 sm:text-base">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل .{' '}
             </p>
@@ -82,7 +85,7 @@ const Page = () => {
             <div className="mt-4 flex gap-2">
               <Button
                 onClick={() => router.push('https://login.sahlapp.io')}
-                className="rounded-2xl bg-sky-400 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
+                className="rounded-2xl bg-sky-700 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
                 سجل هسه{' '}
               </Button>
@@ -91,7 +94,7 @@ const Page = () => {
                   router.push('https://www.instagram.com/sahlappio?igsh=MWpkcGE0MWMzeHRqeg==')
                 }
                 variant="outline"
-                className="hover:bg-sky-border-sky-400/10 rounded-2xl border border-sky-400 px-6 py-3 text-sm text-sky-400 sm:text-base"
+                className="hover:bg-sky-border-sky-700/10 rounded-2xl border border-sky-700 bg-sky-100 px-6 py-3 text-sm text-sky-700 sm:text-base"
               >
                 جرب المنصة
               </Button>
@@ -115,6 +118,11 @@ const Page = () => {
       <section>
         <FeatureSection />
         <ProjectOwnersSection />
+        <PaymentSection />
+        <UnlimitedProductsSection />
+        <DeliveryIntegrationSection />
+        <SmartMarketingSection />
+        <PricingSection />
       </section>
       <Footer />
     </div>

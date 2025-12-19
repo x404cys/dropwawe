@@ -34,11 +34,11 @@ export default function FloatingNavBarForDashboard() {
 
   const baseStyle = 'flex cursor-pointer flex-col items-center justify-center transition';
   const activeStyle = `
-  text-black font-semibold relative
+  text-sky-600 font-semibold relative
   after:content-[''] after:absolute after:-bottom-1 after:left-1/2
   after:h-[2px] after:w-10 after:-translate-x-1/2
-  after:bg-black after:rounded-full
-  transition-all duration-200 ease-out scale-105
+  after:bg-sky-600 after:rounded-full
+  transition-all duration-200 ease-out 
 `;
 
   const inactiveStyle = `
@@ -63,7 +63,7 @@ export default function FloatingNavBarForDashboard() {
             onClick={() => handleNavigate('/Dashboard')}
           >
             <Home size={20} />
-            <span className="mt-1 text-xs text-gray-700">الرئيسية</span>
+            <span className="mt-1 text-xs">الرئيسية</span>
           </button>
 
           <button
@@ -80,7 +80,7 @@ export default function FloatingNavBarForDashboard() {
                 {data.pendingOrderCount}
               </span>
             )}
-            <span className="mt-1 text-xs text-gray-700">الطلبات</span>
+            <span className="mt-1 text-xs">الطلبات</span>
           </button>
 
           <button
@@ -88,7 +88,7 @@ export default function FloatingNavBarForDashboard() {
             onClick={() => handleNavigate('/Dashboard/ProductManagment')}
           >
             <AiOutlineProduct size={20} />
-            <span className="mt-1 text-xs text-gray-700">المنتجات</span>
+            <span className="mt-1 text-xs">المنتجات</span>
           </button>
 
           <button
@@ -96,14 +96,14 @@ export default function FloatingNavBarForDashboard() {
             onClick={() => handleNavigate(`/Dashboard/profit`)}
           >
             <DollarSign size={20} />
-            <span className="mt-1 text-xs text-gray-700">العوائد</span>
+            <span className="mt-1 text-xs">العوائد</span>
           </button>
           <button
             className={`${baseStyle} ${isActive(`/Dashboard/setting/store`) ? activeStyle : inactiveStyle}`}
             onClick={() => handleNavigate(`/Dashboard/setting/store`)}
           >
             <IoSettingsOutline size={20} />
-            <span className="mt-1 text-xs text-gray-700">الاعدادات</span>
+            <span className="mt-1 text-xs">الاعدادات</span>
           </button>
         </div>
       </div>

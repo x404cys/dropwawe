@@ -29,7 +29,7 @@ export default function PlanCard() {
 
   return (
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
-      <div className="rounded-lg bg-gradient-to-b from-sky-400 via-sky-500 to-sky-300 p-5 text-white shadow-md">
+      <div className="rounded-lg bg-gradient-to-b from-sky-600 via-sky-600 to-sky-700 p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
           {!data || !data.subscription || !data.subscription.detailsSubscription ? (
             <div className="text-white/90">انت غير مشترك حاليا يجب عليك اختيار الخطة المناسبة</div>

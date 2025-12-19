@@ -17,20 +17,17 @@ import { useDashboardData } from '../../../_utils/useDashboardData';
 import PlanCard from '../../../_components/PlanCard';
 import { SectionType } from '@/types/setting/Section';
 
-/* ================= PLAN TYPES (Single Source of Truth) ================= */
-
+ 
 const PLAN_TYPES = ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro'] as const;
 
 type PlanType = (typeof PLAN_TYPES)[number];
 
-/* ================= TYPE GUARD ================= */
-
+ 
 function isPlanType(value: unknown): value is PlanType {
   return typeof value === 'string' && PLAN_TYPES.includes(value as PlanType);
 }
 
-/* ================= SECTION TYPES ================= */
-
+ 
 interface Section {
   id: SectionType;
   label: string;
@@ -42,22 +39,19 @@ interface SettingOptionsProps {
   onSectionChange: (section: SectionType) => void;
 }
 
-/* ================= ACCESS RULES ================= */
-
+ 
 const SECTION_ACCESS: Record<SectionType, PlanType[]> = {
   basic: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro'],
   shipping: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro'],
   social: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro'],
   about: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro'],
 
-  // Pro only
-  theme: ['trader-pro', 'drop-pro'],
+   theme: ['trader-pro', 'drop-pro'],
   pixel: ['trader-pro', 'drop-pro'],
   profit: ['trader-pro', 'drop-pro'],
 };
 
-/* ================= COMPONENT ================= */
-
+ 
 export default function SettingOptions({ activeSection, onSectionChange }: SettingOptionsProps) {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
@@ -78,12 +72,11 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
 
   return (
     <div className="flex h-screen mb-50 w-full flex-col items-center py-2">
-      {/* كارد الخطة */}
+      
       <div dir="rtl" className="w-full max-w-xl space-y-5 rounded-lg bg-white">
         <PlanCard />
       </div>
-
-      {/* الإعدادات */}
+ 
       <div className="mt-8 w-full max-w-xl divide-y rounded-lg border">
         {sections.map(({ id, label, icon: Icon }) => {
           const isActive = activeSection === id;
@@ -103,7 +96,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
               } `}
             >
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-r from-gray-800 to-gray-900">
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-700">
                   <Icon size={18} className="text-white" />
                 </div>
 
