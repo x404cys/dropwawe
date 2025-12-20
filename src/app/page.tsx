@@ -42,7 +42,7 @@ const Page = () => {
 
   return (
     <div dir="rtl" className="min-h-screen bg-sky-100 font-sans">
-      <nav className="cursor-pointer">
+      <nav className="cursor-pointer pl-15">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
           <Logo />
           <div className="hidden gap-6 md:flex lg:gap-8">
