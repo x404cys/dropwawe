@@ -5,8 +5,11 @@ import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Package, Layers } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function UnlimitedProductsSection() {
+  const router = useRouter();
+
   useEffect(() => {
     AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
@@ -69,8 +72,11 @@ export default function UnlimitedProductsSection() {
               </div>
             </div>
           </div>
-          <div className="mt-8 flex w-full py-3 justify-start">
-            <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3">
+          <div className="mt-8 flex w-full justify-start py-3">
+            <Button
+              onClick={() => router.push('https://login.dropwave.cloud')}
+              className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
+            >
               ما تحير ويانا !
             </Button>
           </div>

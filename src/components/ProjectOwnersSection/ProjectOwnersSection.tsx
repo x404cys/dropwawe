@@ -5,8 +5,11 @@ import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Cpu, Store, ShoppingCart } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function ProjectOwnersSection() {
+  const router = useRouter();
+
   useEffect(() => {
     AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
@@ -46,7 +49,7 @@ export default function ProjectOwnersSection() {
   ];
 
   return (
-    <section dir="rtl" className="bg-gray-50 py-5 px-6 md:px-20 lg:py-24">
+    <section dir="rtl" className="bg-gray-50 px-6 py-5 md:px-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center md:mb-16" data-aos="fade-up">
           <h2 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-4xl lg:text-5xl">
@@ -93,7 +96,10 @@ export default function ProjectOwnersSection() {
         </div>
       </div>
       <div className="mt-10 flex w-full justify-center">
-        <Button className="rounded-xl bg-sky-700 px-8 py-2 text-white">
+        <Button
+          onClick={() => router.push('https://login.dropwave.cloud')}
+          className="rounded-xl bg-sky-700 px-8 py-2 text-white"
+        >
           شنو منتظر ؟ اختار باقتك وبلش
         </Button>
       </div>

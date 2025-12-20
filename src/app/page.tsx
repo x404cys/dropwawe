@@ -142,8 +142,13 @@ const Page = () => {
               نسهلها، نبسطها، نساعدك، ندعمك، وكل الي عليك تنظم ويانا
             </p>
           </div>
-          <div className="w-full flex justify-center">
-            <Button className="cursor-pointer flex items-center justify-between rounded-2xl border-sky-600 bg-sky-700 px-28 py-3">
+          <div className="flex w-full justify-center">
+            <Button
+              onClick={() => {
+                router.push('https://login.dropwave.cloud');
+              }}
+              className="flex cursor-pointer items-center justify-between rounded-2xl border-sky-600 bg-sky-700 px-28 py-3"
+            >
               <span className="">سجل</span> <LuMousePointerClick className="text-xs" />
             </Button>
           </div>

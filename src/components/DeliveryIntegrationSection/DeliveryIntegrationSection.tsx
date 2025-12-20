@@ -5,8 +5,10 @@ import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Truck, Link2 } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function DeliveryIntegrationSection() {
+  const router = useRouter();
   useEffect(() => {
     AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
@@ -56,7 +58,10 @@ export default function DeliveryIntegrationSection() {
               </div>
             </div>
             <div className="mt-8 flex w-full justify-start py-3">
-              <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3">
+              <Button
+                onClick={() => router.push('https://login.dropwave.cloud')}
+                className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
+              >
                 نسهلها عليك
               </Button>
             </div>

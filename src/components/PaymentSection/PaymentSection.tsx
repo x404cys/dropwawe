@@ -6,8 +6,11 @@ import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { CreditCard, Truck } from 'lucide-react';
 import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
 export default function PaymentSection() {
+  const router = useRouter();
+
   useEffect(() => {
     AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
@@ -55,8 +58,13 @@ export default function PaymentSection() {
                 </p>
               </div>
             </div>
-            <div className="flex justify-start mt-8">
-              <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10">جربها !</Button>
+            <div className="mt-8 flex justify-start">
+              <Button
+                onClick={() => router.push('https://login.dropwave.cloud')}
+                className="rounded-2xl border-sky-600 bg-sky-700 px-10"
+              >
+                جربها !
+              </Button>
             </div>
           </div>
         </div>
