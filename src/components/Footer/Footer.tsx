@@ -13,7 +13,7 @@ export default function Footer() {
   return (
     <footer dir="rtl" className="border-t bg-white text-gray-700">
       <div className="container mx-auto flex flex-col gap-10 px-4 py-12 sm:px-6 md:flex-row md:justify-between lg:px-8">
-        <div className="flex-1 space-y-4" data-aos="fade-up">
+        <div className="flex-1 space-y-4">
           <Logo />
           <p className="max-w-md text-sm leading-relaxed text-gray-600 sm:text-[15px]">
             منصة دروب ويف لإنشاء المتاجر الإلكترونية. أنشئ متجرك الإلكتروني في دقائق وابدأ البيع
@@ -21,11 +21,7 @@ export default function Footer() {
           </p>
         </div>
 
-        <div
-          className="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-3"
-          data-aos="fade-up"
-          data-aos-delay="100"
-        >
+        <div className="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-3" data-aos-delay="100">
           <div className="space-y-2">
             <h3 className="font-semibold text-gray-800">روابط سريعة</h3>
             <ul className="space-y-1 text-sm text-gray-600">
