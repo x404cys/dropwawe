@@ -59,6 +59,8 @@ export default function DeliveryIntegrationSection() {
             </div>
             <div className="mt-8 flex w-full justify-start py-3">
               <Button
+                data-aos="fade-up"
+                data-aos-delay="200"
                 onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
               >

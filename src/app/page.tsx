@@ -131,6 +131,8 @@ const Page = () => {
           </div>
           <div className="flex w-full justify-center">
             <Button
+              data-aos="fade-up"
+              data-aos-delay="200"
               onClick={() => {
                 router.push('https://login.dropwave.cloud');
               }}
