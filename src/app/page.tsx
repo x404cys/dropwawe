@@ -3,7 +3,16 @@ import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { Button } from '@/components/ui/button';
-import { BarChart3, Shield, Headphones, Palette, Zap, AppWindow, ZapIcon } from 'lucide-react';
+import {
+  BarChart3,
+  Shield,
+  Headphones,
+  Palette,
+  Zap,
+  AppWindow,
+  ZapIcon,
+  ClipboardCheck,
+} from 'lucide-react';
 import Footer from '@/components/Footer/Footer';
 import Logo from '@/components/utils/Logo';
 import { useSession } from 'next-auth/react';
@@ -18,6 +27,8 @@ import DeliveryIntegrationSection from '@/components/DeliveryIntegrationSection/
 import UnlimitedProductsSection from '@/components/UnlimitedProductsSection/UnlimitedProductsSection';
 import SmartMarketingSection from '@/components/MarketingSection/MarketingSection';
 import PricingSection from '@/components/PricingSection/PricingSection';
+import FAQSection from '@/components/FAQ/FAQ';
+import { LuMousePointerClick } from 'react-icons/lu';
 
 const Page = () => {
   const { data: session } = useSession();
@@ -59,7 +70,7 @@ const Page = () => {
             </a>
           </div>
           <Button
-            onClick={() => router.push('https://login.sahlapp.io')}
+            onClick={() => router.push('https://login.dropwave.cloud')}
             className="rounded-2xl border border-sky-700 bg-sky-100 text-sky-600"
           >
             انطلق الان
@@ -74,20 +85,20 @@ const Page = () => {
           <div className="relative w-full flex-1 lg:w-1/2">
             <h1 className="text-3xl leading-tight font-bold text-sky-900 sm:text-4xl md:text-5xl lg:text-6xl">
               ضغطة واحدة تفصلك عن <span className="text-sky-400">النجاح</span> في التجارة
-              الالكترونية{' '}
+              الالكترونية
             </h1>
             <p className="mt-2 text-sm text-sky-700 sm:text-base">اطلق مشروعك خلال دقائق فقط</p>
             <p className="mt-2 text-sm text-sky-700 sm:text-base">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
-              التوصيل .{' '}
+              التوصيل .
             </p>
             <div className="mt-8"></div>
             <div className="mt-4 flex gap-2">
               <Button
-                onClick={() => router.push('https://login.sahlapp.io')}
+                onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-2xl bg-sky-700 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
-                سجل هسه{' '}
+                سجل هسه
               </Button>
               <Button
                 onClick={() =>
@@ -123,6 +134,20 @@ const Page = () => {
         <DeliveryIntegrationSection />
         <SmartMarketingSection />
         <PricingSection />
+        <FAQSection />
+        <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
+          <div className="max-w-md">
+            <h1 className="mb-4 text-3xl font-bold"> سجل والباقي علينا !</h1>
+            <p className="mb-4 text-gray-600">
+              نسهلها، نبسطها، نساعدك، ندعمك، وكل الي عليك تنظم ويانا
+            </p>
+          </div>
+          <div className="w-full flex justify-center">
+            <Button className="cursor-pointer flex items-center justify-between rounded-2xl border-sky-600 bg-sky-700 px-28 py-3">
+              <span className="">سجل</span> <LuMousePointerClick className="text-xs" />
+            </Button>
+          </div>
+        </section>
       </section>
       <Footer />
     </div>

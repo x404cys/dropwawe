@@ -5,6 +5,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { CreditCard, Truck } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export default function PaymentSection() {
   useEffect(() => {
@@ -14,7 +15,6 @@ export default function PaymentSection() {
   return (
     <section dir="rtl" className="bg-gray-50 px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
-        {/* Text */}
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">عمليات دفع آمنة</h2>
@@ -55,10 +55,12 @@ export default function PaymentSection() {
                 </p>
               </div>
             </div>
+            <div className="flex justify-start mt-8">
+              <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10">جربها !</Button>
+            </div>
           </div>
         </div>
 
-        {/* Image */}
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
             src="/Citi Diamond Preferred Card Benefits_ Guide.jpg"

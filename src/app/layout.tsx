@@ -12,7 +12,7 @@ const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin']
 const myCustomFont = localFont({
   src: [
     {
-      path: '../fonts/SFArabic-Regular.ttf',
+      path: '../fonts/TheYearofHandicrafts-Regular.otf',
       weight: '400',
       style: 'normal',
     },

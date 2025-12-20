@@ -4,6 +4,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Package, Layers } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export default function UnlimitedProductsSection() {
   useEffect(() => {
@@ -13,7 +14,6 @@ export default function UnlimitedProductsSection() {
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
-        {/* Image */}
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
             src="/whole.png"
@@ -24,7 +24,6 @@ export default function UnlimitedProductsSection() {
           />
         </div>
 
-        {/* Text */}
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl leading-tight font-bold text-gray-900">
@@ -69,6 +68,11 @@ export default function UnlimitedProductsSection() {
                 </p>
               </div>
             </div>
+          </div>
+          <div className="mt-8 flex w-full py-3 justify-start">
+            <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3">
+              ما تحير ويانا !
+            </Button>
           </div>
         </div>
       </div>

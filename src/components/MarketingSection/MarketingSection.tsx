@@ -13,7 +13,6 @@ export default function SmartMarketingSection() {
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
-        {/* Image */}
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
             src="/Arabic Dashboard Cards Only.png"
@@ -25,7 +24,6 @@ export default function SmartMarketingSection() {
           />
         </div>
 
-        {/* Text */}
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">سوّق بذكاء</h2>
@@ -35,7 +33,7 @@ export default function SmartMarketingSection() {
             </p>
           </div>
 
-          <div className="space-y-1">
+          <div className="space-y-4">
             <div
               data-aos="fade-up"
               data-aos-delay="100"

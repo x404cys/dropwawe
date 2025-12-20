@@ -4,6 +4,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Cpu, Store, ShoppingCart } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export default function ProjectOwnersSection() {
   useEffect(() => {
@@ -20,10 +21,11 @@ export default function ProjectOwnersSection() {
       icon: <Cpu className="h-5 w-5 text-gray-700" />,
     },
     {
-      image: '/fast-fashion-concept-with-full-clothing-store.jpg',
-      title: 'لأصحاب المحلات',
-      description: 'حوّل متجرك من نطاقه المحلي إلى مساحة بيع بلا حدود.',
-      badge: 'محلات',
+      image: '/Global E-commerce Logos Playful Arrangement.png',
+      title: 'للدروب شيبرز',
+      description:
+        'ابدأ دروبشيبينغ بسهولة مع متجر إلكتروني جاهز، منتجات مختارة، ومحتوى تسويقي قابل للاستخدام.',
+      badge: 'دروب شيب',
       icon: <Store className="h-5 w-5 text-gray-700" />,
     },
     {
@@ -34,10 +36,17 @@ export default function ProjectOwnersSection() {
       badge: 'مبتدئ',
       icon: <ShoppingCart className="h-5 w-5 text-gray-700" />,
     },
+    {
+      image: '/fast-fashion-concept-with-full-clothing-store.jpg',
+      title: 'لأصحاب المحلات',
+      description: 'حوّل متجرك من نطاقه المحلي إلى مساحة بيع بلا حدود.',
+      badge: 'محلات',
+      icon: <Store className="h-5 w-5 text-gray-700" />,
+    },
   ];
 
   return (
-    <section dir="rtl" className="bg-gray-50 px-6 py-16 md:px-20 lg:py-24">
+    <section dir="rtl" className="bg-gray-50 py-5 px-6 md:px-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center md:mb-16" data-aos="fade-up">
           <h2 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-4xl lg:text-5xl">
@@ -48,20 +57,20 @@ export default function ProjectOwnersSection() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
           {sections.map((section, index) => (
             <div
               key={index}
               data-aos="fade-up"
               data-aos-delay={index * 100}
-              className="group overflow-hidden rounded-xl bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-md"
+              className="group overflow-hidden rounded-xl transition-all duration-300"
             >
               <div className="relative h-52 overflow-hidden md:h-60">
                 <Image
                   src={section.image || '/placeholder.svg'}
                   alt={section.title}
                   fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  className="rounded-2xl border object-cover transition-transform duration-500"
                 />
                 <div
                   className="absolute top-4 left-4"
@@ -75,13 +84,18 @@ export default function ProjectOwnersSection() {
                 </div>
               </div>
 
-              <div className="p-6" data-aos="fade-up" data-aos-delay={index * 200}>
+              <div className="py-3" data-aos-delay={index * 200}>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">{section.title}</h3>
                 <p className="text-sm leading-relaxed text-gray-600">{section.description}</p>
               </div>
             </div>
           ))}
         </div>
+      </div>
+      <div className="mt-10 flex w-full justify-center">
+        <Button className="rounded-xl bg-sky-700 px-8 py-2 text-white">
+          شنو منتظر ؟ اختار باقتك وبلش
+        </Button>
       </div>
     </section>
   );

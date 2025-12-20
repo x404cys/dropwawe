@@ -11,13 +11,13 @@ export default function Footer() {
   }, []);
 
   return (
-    <footer dir="rtl" className="bg-white text-gray-700">
+    <footer dir="rtl" className="border-t bg-white text-gray-700">
       <div className="container mx-auto flex flex-col gap-10 px-4 py-12 sm:px-6 md:flex-row md:justify-between lg:px-8">
         <div className="flex-1 space-y-4" data-aos="fade-up">
           <Logo />
           <p className="max-w-md text-sm leading-relaxed text-gray-600 sm:text-[15px]">
-            منصة سهل لإنشاء المتاجر الإلكترونية. أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً.
-            منصة شاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.
+            منصة دروب ويف لإنشاء المتاجر الإلكترونية. أنشئ متجرك الإلكتروني في دقائق وابدأ البيع
+            فوراً. منصة شاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.
           </p>
         </div>
 
@@ -91,12 +91,8 @@ export default function Footer() {
         </div>
       </div>
 
-      <div
-        className="border-t border-gray-200 py-4 text-center text-xs text-gray-500"
-        data-aos="fade-up"
-        data-aos-delay="400"
-      >
-        © 2025 سهل. جميع الحقوق محفوظة.
+      <div className="border-t border-gray-200 py-4 text-center text-xs text-gray-500">
+        جميع الحقوق محفوظة © 2025 دروب ويف.
       </div>
     </footer>
   );

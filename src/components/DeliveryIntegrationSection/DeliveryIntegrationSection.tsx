@@ -4,6 +4,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Truck, Link2 } from 'lucide-react';
+import { Button } from '../ui/button';
 
 export default function DeliveryIntegrationSection() {
   useEffect(() => {
@@ -13,7 +14,6 @@ export default function DeliveryIntegrationSection() {
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
-        {/* Text */}
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">ربط مباشر مع شركات التوصيل</h2>
@@ -55,10 +55,14 @@ export default function DeliveryIntegrationSection() {
                 </p>
               </div>
             </div>
+            <div className="mt-8 flex w-full justify-start py-3">
+              <Button className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3">
+                نسهلها عليك
+              </Button>
+            </div>
           </div>
         </div>
 
-        {/* Image */}
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
             src="/TAWSSEL_Iraqi_Flag.png"
