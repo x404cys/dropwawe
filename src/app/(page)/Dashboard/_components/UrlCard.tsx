@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { FiCopy, FiEdit2 } from 'react-icons/fi';
 import { Eye, Link, Rocket } from 'lucide-react';
-import { LuPackagePlus } from 'react-icons/lu'; // مثال لأيقونة إضافة
+import { LuPackagePlus } from 'react-icons/lu';  
 import { Button } from '@/components/ui/button';
 import { useDashboardData } from '../_utils/useDashboardData';
 import { MdOutlineStyle, MdTimeToLeave } from 'react-icons/md';

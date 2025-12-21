@@ -26,7 +26,7 @@ model User {
   shippingType    String?
   telegram        String?
   active          Boolean?       @default(true)
-  theme           String         @default("NORMAL")
+  theme           String         @default("MODERN")
   Notification    Notification[]
   orders          Order[]
   Product         Product[]
@@ -54,7 +54,7 @@ model Supplier {
   hasReturnPolicy String?
   shippingPrice   Float?
   shippingType    String?
-  theme           ThemeStore  @default(NORMAL)
+  theme           ThemeStore  @default(MODERN)
   active          Boolean     @default(true)
   address         String?
   paymentInfo     String?     
@@ -95,7 +95,7 @@ model Store {
   tiktokPixel     String?
   googlePixel     String?
   Order Order[]
-  theme           String         @default("NORMAL")
+  theme           String         @default("MODERN")
   Notification Notification[]
 
   Supplier Supplier[]
