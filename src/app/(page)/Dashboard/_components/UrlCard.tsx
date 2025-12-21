@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { FiCopy, FiEdit2 } from 'react-icons/fi';
 import { Eye, Link, Rocket } from 'lucide-react';
-import { LuPackagePlus } from 'react-icons/lu';  
+import { LuPackagePlus } from 'react-icons/lu';
 import { Button } from '@/components/ui/button';
 import { useDashboardData } from '../_utils/useDashboardData';
 import { MdOutlineStyle, MdTimeToLeave } from 'react-icons/md';
@@ -15,9 +15,11 @@ import { RiLinksFill } from 'react-icons/ri';
 interface UrlCardProps {
   storeUrl: string;
   copyToClipboard: () => void;
+  theme: string;
+  storeName: string;
 }
 
-export default function UrlCard({ storeUrl, copyToClipboard }: UrlCardProps) {
+export default function UrlCard({ storeUrl, copyToClipboard, storeName, theme }: UrlCardProps) {
   const router = useRouter();
   const { data: session } = useSession();
   const userId = session?.user?.id;
@@ -49,7 +51,7 @@ export default function UrlCard({ storeUrl, copyToClipboard }: UrlCardProps) {
           <PiSubtitles className="h-4 w-4" />
           <div className="flex flex-col items-end">
             <span className="text-gray-500">اسم المتجر</span>
-            <span className="truncate font-semibold text-gray-800">Accesrios</span>
+            <span className="truncate font-semibold text-gray-800">{storeName}</span>
           </div>
         </div>
 
@@ -57,7 +59,7 @@ export default function UrlCard({ storeUrl, copyToClipboard }: UrlCardProps) {
           <MdOutlineStyle className="h-4 w-4" />
           <div className="flex flex-col items-end">
             <span className="text-gray-500">نوع الثيم</span>
-            <span className="truncate font-semibold text-gray-800">الثيم الافتراضي</span>
+            <span className="truncate font-semibold text-gray-800">{theme === 'MODERN' ? 'الكلاسيكي' : 'العصري'}</span>
           </div>
         </div>
       </div>

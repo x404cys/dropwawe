@@ -107,7 +107,12 @@ export default function Dashboard() {
             ))}
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <UrlCard storeUrl={storeUrl} copyToClipboard={copyToClipboard} />
+            <UrlCard
+              storeUrl={storeUrl}
+              storeName={data.storeSlug?.name || 'متجري'}
+              theme={data.storeSlug?.theme || 'MODERN'}
+              copyToClipboard={copyToClipboard}
+            />
             <PlanCard />
           </div>
 
