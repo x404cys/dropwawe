@@ -120,7 +120,7 @@ const Page = () => {
         <UnlimitedProductsSection />
         <DeliveryIntegrationSection />
         <SmartMarketingSection />
-        <PricingSection />
+        {/* <PricingSection /> */}
         <FAQSection />
         <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
           <div className="max-w-md">

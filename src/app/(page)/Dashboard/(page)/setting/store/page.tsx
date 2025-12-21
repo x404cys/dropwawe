@@ -22,7 +22,6 @@ import { SectionType } from '@/types/setting/Section';
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
 
- 
 export default function StoreSetupPage() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
@@ -149,7 +148,7 @@ export default function StoreSetupPage() {
         <SheetContent
           dir="rtl"
           side="bottom"
-          className="z-50 mx-auto flex max-h-[70vh] max-w-2xl translate-y-[0] flex-col overflow-hidden rounded-2xl border p-2 px-4 shadow-xl md:max-h-[90vh] md:min-h-[90vh]"
+          className="z-50 mx-auto flex max-h-[90vh] min-h-[70vh] max-w-2xl translate-y-[0] flex-col overflow-hidden rounded-2xl border p-2 px-4 shadow-xl md:max-h-[90vh] md:min-h-[90vh]"
         >
           <div className="mx-auto mt-2 h-1 w-12 rounded-full bg-gray-300" />
 

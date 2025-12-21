@@ -31,7 +31,7 @@ export default function PlanCard() {
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
       <div className="rounded-lg bg-gradient-to-b from-sky-600 via-sky-600 to-sky-700 p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
-          {!data || !data.subscription || !data.subscription.detailsSubscription ? (
+          {/* {!data || !data.subscription || !data.subscription.detailsSubscription ? (
             <div className="text-white/90">انت غير مشترك حاليا يجب عليك اختيار الخطة المناسبة</div>
           ) : (
             <div>
@@ -40,8 +40,13 @@ export default function PlanCard() {
                 مناسبة للتجار المبتدئين، مع مزايا ممتازة واحترافية.
               </p>
             </div>
-          )}
-
+          )} */}
+          <div>
+            <p className="text-base font-semibold">الباقة المجانية - جميع الميزات مجانا</p>
+            <p className="mt-1 text-xs leading-snug text-white/80">
+              ابدأ مجانًا واستفد من جميع الميزات الاحترافية بلا استثناء.
+            </p>
+          </div>
           <div className="rounded-md border border-white/20 bg-white/10 p-1 text-white">
             {data?.subscription?.detailsSubscription?.type === 'PENDINGROFESSIONAL' ? (
               <RiFireLine />
@@ -56,21 +61,21 @@ export default function PlanCard() {
         <div className="mt-4 flex items-center justify-between border-t border-white/20 py-6 text-sm text-white/90">
           <div className="flex flex-col items-center">
             <span>بدأ</span>
-            <span className="font-medium">{formattedStartDate}</span>
+            <span className="font-medium">-</span>
           </div>
           <div className="flex flex-col items-center">
             <span>الانتهاء</span>
-            <span className="font-medium">{formattedEndDate}</span>
+            <span className="font-medium">-</span>
           </div>
           <div className="flex flex-col items-center">
             <span>المتبقي</span>
-            <span className="font-medium">{remainingDays} يوم</span>
+            <span className="font-medium">-</span>
           </div>
         </div>
 
         <div className="mt-5 flex flex-col flex-wrap-reverse gap-3 sm:flex-row">
           <Button
-            onClick={() => router.push('/Dashboard/plans')}
+            // onClick={() => router.push('/Dashboard/plans')}
             className="w-full cursor-pointer rounded-lg bg-white text-sky-700 shadow-sm hover:bg-sky-50 hover:text-sky-800"
           >
             <IoBusinessOutline className="ml-2" />
@@ -78,7 +83,7 @@ export default function PlanCard() {
           </Button>
 
           <Button
-            onClick={() => router.push('/Dashboard/plans')}
+            // onClick={() => router.push('/Dashboard/plans')}
             variant="outline"
             className="w-full cursor-pointer rounded-lg border-sky-200 text-sky-700 hover:bg-sky-100"
           >
