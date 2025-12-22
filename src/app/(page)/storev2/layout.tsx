@@ -15,7 +15,7 @@ export default function StoreLayout2({ children }: { children: React.ReactNode }
   const subLink = getSubdomain();
 
   return (
-    <section className="md:mx-10">
+    <section className="px-1 md:mx-10">
       <div>
         <ProductsProvider subLink={subLink}>
           <NavBarUnit subLink={getSubdomain()} />

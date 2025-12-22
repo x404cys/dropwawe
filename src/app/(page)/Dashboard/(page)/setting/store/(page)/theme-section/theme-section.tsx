@@ -4,10 +4,12 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Sparkles } from 'lucide-react';
 import axios from 'axios';
-import useSWR from 'swr';
+import useSWR, { mutate } from 'swr';
+
+type ThemeId = 'NORMAL' | 'MODERN';
 
 type Theme = {
-  id: 'NORMAL' | 'MODERN';
+  id: ThemeId;
   name: string;
   description: string;
   image?: string;
@@ -19,40 +21,42 @@ const themes: Theme[] = [
     id: 'MODERN',
     name: 'ثيم عصري',
     description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
-    image: '/img-theme/NORMAL-THEME.png',
+    image: '/img-theme/MODREN-THEME.PNG',
     badge: 'شائع',
   },
   {
     id: 'NORMAL',
     name: 'ثيم كلاسيكي',
     description: 'تصميم بسيط وألوان هادئة',
-    image: '/img-theme/MODREN-THEME.PNG',
+    image: '/img-theme/NORMAL-THEME.png',
   },
 ];
-type ThemeProps = {
-  theme: 'NORMAL' | 'MODREN';
+
+type ThemeResponse = {
+  theme: ThemeId;
 };
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
+
 export default function ThemeSection() {
-  const [activeTheme, setActiveTheme] = useState<'NORMAL' | 'MODERN' | null>(null);
-  const [loadingTheme, setLoadingTheme] = useState<'NORMAL' | 'MODERN' | null>(null);
-  const { data } = useSWR<ThemeProps>(
-    '/api/dashboard/setting/get-theme',
-    (url: string | URL | Request) => fetch(url).then(res => res.json()),
-    {
-      revalidateOnFocus: true,
-      refreshInterval: 1000,
-      revalidateOnMount: true,
-    }
-  );
-  const selectTheme = async (themeId: 'NORMAL' | 'MODERN') => {
+  const [loadingTheme, setLoadingTheme] = useState<ThemeId | null>(null);
+
+  const { data, isLoading } = useSWR<ThemeResponse>('/api/dashboard/setting/get-theme', fetcher, {
+    revalidateOnFocus: true,
+    revalidateOnMount: true,
+  });
+
+  const selectTheme = async (themeId: ThemeId) => {
     setLoadingTheme(themeId);
+
     try {
-      const res = await axios.post(`/api/dashboard/setting/update/${themeId}`);
-      if (res.status === 200) {
-        setActiveTheme(themeId);
-      }
-    } catch (err) {
-      console.error('حدث خطأ عند تحديث الثيم:', err);
+      await axios.post('/api/dashboard/setting/update', {
+        theme: themeId,
+      });
+
+      await mutate('/api/dashboard/setting/get-theme');
+    } catch (error) {
+      console.error('خطأ أثناء تحديث الثيم:', error);
     } finally {
       setLoadingTheme(null);
     }
@@ -66,16 +70,20 @@ export default function ThemeSection() {
           حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي
         </p>
       </div>
+
+      {/* Current Theme */}
       <div className="flex items-center gap-4">
-        <span>الثيم الحالي</span>
-        <span className="rounded-full bg-blue-200 px-3">
+        <span>الثيم الحالي:</span>
+        <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium">
           {data?.theme === 'NORMAL' ? 'ثيم كلاسيكي' : 'ثيم عصري'}
         </span>
       </div>
+
+      {/* Themes */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {themes.map(theme => {
-          const isActive = activeTheme === theme.id || data?.theme === theme.id;
-          const isLoading = loadingTheme === theme.id;
+          const isActive = data?.theme === theme.id;
+          const isLoadingBtn = loadingTheme === theme.id;
 
           return (
             <div
@@ -87,15 +95,11 @@ export default function ThemeSection() {
               }`}
             >
               {theme.image && (
-                <img
-                  src={theme.image}
-                  alt={theme.name}
-                  className="h-60 w-full object-cover transition-transform duration-500 hover:scale-105"
-                />
+                <img src={theme.image} alt={theme.name} className="h-60 w-full object-cover" />
               )}
 
               {theme.badge && (
-                <span className="bg-primary absolute top-3 left-3 rounded-full px-3 py-1 text-xs text-white shadow-md">
+                <span className="bg-primary absolute top-3 left-3 rounded-full px-3 py-1 text-xs text-white">
                   {theme.badge}
                 </span>
               )}
@@ -105,21 +109,23 @@ export default function ThemeSection() {
                 <p className="text-muted-foreground text-sm">{theme.description}</p>
 
                 <Button
-                  variant={isActive ? 'secondary' : 'default'}
-                  size="sm"
                   className="w-full"
+                  size="sm"
+                  variant={isActive ? 'secondary' : 'default'}
+                  disabled={isLoadingBtn || isLoading}
                   onClick={() => selectTheme(theme.id)}
-                  disabled={isLoading}
                 >
-                  {isLoading ? (
+                  {isLoadingBtn ? (
                     'جارٍ التحديث...'
                   ) : isActive ? (
                     <>
-                      <Check className="ml-2 h-4 w-4" /> مفعل
+                      <Check className="ml-2 h-4 w-4" />
+                      مفعل
                     </>
                   ) : (
                     <>
-                      <Sparkles className="ml-2 h-4 w-4" /> اختر الثيم
+                      <Sparkles className="ml-2 h-4 w-4" />
+                      اختر الثيم
                     </>
                   )}
                 </Button>

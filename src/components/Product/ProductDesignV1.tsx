@@ -8,16 +8,19 @@ import { useFavorite } from '@/app/lib/context/FavContext';
 import { useState } from 'react';
 import { Product } from '@/types/Products';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { Button } from '../ui/button';
+import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 
 export default function ProductCardV1({ product }: { product: Product }) {
   const { addToCartByKey } = useCart();
   const { addToFavoriteByKey, removeFromFavoriteByKey, isInFavoriteByKey } = useFavorite();
   const [isAdding, setIsAdding] = useState(false);
-
+  const [isFavorite, setIsFavorite] = useState(false);
+  const { store } = useProducts();
   return (
     <div className="group flex h-[350px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-300 hover:shadow-md">
       <Link
-        href={`/store/products/${product.id}`}
+        href={`/storev2/productOverviews/${product.id}`}
         className="relative w-full cursor-pointer overflow-hidden"
       >
         {product.discount > 0 && (
@@ -37,7 +40,7 @@ export default function ProductCardV1({ product }: { product: Product }) {
       </Link>
 
       <div className="flex flex-1 flex-col justify-between gap-2 p-3">
-        <Link href={`/store/products/${product.id}`} className="cursor-pointer space-y-1">
+        <Link href={`/storev2/productOverviews/${product.id}`} className="cursor-pointer space-y-1">
           <h2 className="line-clamp-1 h-[20px] text-xs font-semibold text-gray-800 hover:text-green-600">
             {product.name}
           </h2>
@@ -79,9 +82,18 @@ export default function ProductCardV1({ product }: { product: Product }) {
               isAdding ? 'cursor-not-allowed bg-gray-400' : 'bg-black hover:bg-green-500'
             }`}
           >
-            {isAdding ? 'جارٍ الإضافة...' : 'أضف للسلة'}
+            تفاصيل أكثر
           </button>
-          <button className="rounded-md border p-1 transition">
+          <button
+            onClick={() => {
+              addToFavoriteByKey(product, `fav/${store?.id}`);
+            }}
+            className={`h-14 w-14 rounded-xl transition-all duration-300 ${
+              isFavorite
+                ? 'border-destructive bg-destructive text-destructive-foreground'
+                : 'hover:border-destructive hover:text-destructive'
+            }`}
+          >
             <CiBookmark size={20} />
           </button>
         </div>

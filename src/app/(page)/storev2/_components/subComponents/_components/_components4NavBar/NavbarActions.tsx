@@ -5,6 +5,9 @@ import { useState } from 'react';
 import { PiShoppingCartSimple } from 'react-icons/pi';
 import { BsBookmarks } from 'react-icons/bs';
 import { useCart } from '@/app/lib/context/CartContext';
+import { useProducts } from '../../../../Data/context/products/ProductsContext';
+import { useFavorite } from '@/app/lib/context/FavContext';
+
 type NavbarActionsProps = {
   userId: string;
   storeSlug: string;
@@ -12,8 +15,10 @@ type NavbarActionsProps = {
 export default function NavbarActions({ userId, storeSlug }: NavbarActionsProps) {
   const [showCart, setShowCart] = useState(false);
   const { getCartByKey, getTotalQuantityByKey } = useCart();
-
+  const { store } = useProducts();
   const cartKey = `cart/${userId}`;
+  const { getFavoritesByKey, clearFavoritesByKey, getTotalFavoritesByKey } = useFavorite();
+  const FAVORITE_KEY = `fav/${store?.id}`;
 
   const cartItems = getCartByKey(cartKey);
   const totalQuantity = getTotalQuantityByKey(cartKey);
@@ -34,9 +39,14 @@ export default function NavbarActions({ userId, storeSlug }: NavbarActionsProps)
 
       <Link
         className="rounded-lg border border-gray-300 p-2"
-        href={userId ? `/store/favorits/${userId}` : '#'}
+        href={userId ? `/storev2/favorits/${store?.id}` : '#'}
       >
-        <BsBookmarks className="text-xl" />
+        <BsBookmarks className="text-xl" />{' '}
+        {getTotalFavoritesByKey(FAVORITE_KEY) > 0 && (
+          <span className="absolute -top-1 -left-1 rounded-full bg-red-500 px-1 py-0.5 text-xs text-white">
+            {getTotalFavoritesByKey(FAVORITE_KEY)}
+          </span>
+        )}
       </Link>
 
       {showCart && (
@@ -76,7 +86,7 @@ export default function NavbarActions({ userId, storeSlug }: NavbarActionsProps)
             <div className="space-y-4 text-center">
               <Link
                 onClick={() => setShowCart(false)}
-                href={`/store/cart/${userId}`}
+                href={`/storev2/cart/${store?.id}`}
                 className="block rounded-sm border border-gray-600 bg-gray-950 px-5 py-3 text-sm text-white transition hover:ring-1 hover:ring-gray-400"
               >
                 عرض السلة ({totalQuantity})

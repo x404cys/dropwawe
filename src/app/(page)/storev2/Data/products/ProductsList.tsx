@@ -32,7 +32,7 @@ export default function ProductsList({
         <div className="mx-auto">
           <h2 className="sr-only">Products</h2>
           <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-5">
-            {(!store?.theme || store.theme === 'NORMAL') &&
+            {(!store?.theme || store?.theme === 'NORMAL') &&
               itemsToRender.map(product => <ProductCardV1 key={product.id} product={product} />)}
 
             {store?.theme === 'MODERN' &&

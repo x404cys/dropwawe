@@ -9,7 +9,9 @@ import { MdClear } from 'react-icons/md';
 import { Product } from '@/types/Products';
 import Image from 'next/image';
 import Link from 'next/link';
- 
+import { useProducts } from '../../../Data/context/products/ProductsContext';
+import ProductCardV1 from '@/components/Product/ProductDesignV1';
+
 export default function FavoritesPage() {
   const { getFavoritesByKey, clearFavoritesByKey, getTotalFavoritesByKey } = useFavorite();
   const [favoriteItems, setFavoriteItems] = useState<Product[]>([]);
@@ -17,7 +19,7 @@ export default function FavoritesPage() {
   const params = useParams();
   const storeId = params.storeId as string;
   const FAVORITE_KEY = `fav/${storeId}`;
-
+  const { store } = useProducts();
   useEffect(() => {
     setFavoriteItems(getFavoritesByKey(FAVORITE_KEY));
   }, [getFavoritesByKey, FAVORITE_KEY]);
@@ -37,7 +39,7 @@ export default function FavoritesPage() {
         <Button
           onClick={() => router.back()}
           variant="outline"
-          className="flex items-center gap-2 rounded-lg bg-gray-950 px-6 py-2 text-sm text-white transition hover:bg-gray-800"
+          className="bg-s-950 h 0 flex cursor-pointer items-center gap-2 rounded-lg bg-sky-800 px-6 py-4 text-sm text-white transition"
         >
           متابعة التسوق <FiShoppingBag />
         </Button>
@@ -74,7 +76,7 @@ export default function FavoritesPage() {
         <div className="mx-auto">
           <h2 className="sr-only">Products</h2>
           <div className=" ">
-            {/* <ProductCard products={favoriteItems} /> */}
+            {/* {store?.theme === 'NORMAL' && <ProductCardV1 products={favoriteItems} />} */}
           </div>
         </div>
       </div>

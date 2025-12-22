@@ -11,6 +11,7 @@ import getProductsByStore from '@/app/axios/products/getProductByStore';
 import { Skeleton } from '@/components/ui/skeleton';
 import NavbarActions from './_components4NavBar/NavbarActions';
 import { useProducts } from '../../../Data/context/products/ProductsContext';
+import { useFavorite } from '@/app/lib/context/FavContext';
 
 export default function StoreNavbarV1({ slug }: { slug: string }) {
   const { getCartByKey, getTotalQuantityByKey } = useCart();
@@ -23,6 +24,8 @@ export default function StoreNavbarV1({ slug }: { slug: string }) {
   const [categories, setCategories] = useState<string[]>(['كل التصنيفات']);
   const [showFilterBox, setShowFilterBox] = useState(false);
   const [loading, setLoading] = useState(true);
+  const { getFavoritesByKey, clearFavoritesByKey, getTotalFavoritesByKey } = useFavorite();
+  const FAVORITE_KEY = `fav/${store?.id}`;
 
   const filterBoxRefMobile = useRef<HTMLDivElement>(null);
   const filterBoxRefDesktop = useRef<HTMLDivElement>(null);
