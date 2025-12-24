@@ -56,7 +56,10 @@ export default function FloatingNavBarForDashboard() {
         </div>
       )}
 
-      <div dir="rtl" className="fixed bottom-3 left-1/2 z-50 mt-20 -translate-x-1/2">
+      <div
+        dir="rtl"
+        className={`${pathname.includes('/create-store') ? 'hidden' : 'fixed'} bottom-3 left-1/2 z-50 mt-20 -translate-x-1/2`}
+      >
         <div className="flex w-72 items-center justify-between rounded-2xl border bg-[#ffffff] px-3 py-2 shadow-xl">
           <button
             className={`${baseStyle} ${isActive('/Dashboard') ? activeStyle : inactiveStyle}`}
