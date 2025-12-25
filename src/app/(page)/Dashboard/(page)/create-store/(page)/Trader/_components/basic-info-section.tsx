@@ -74,10 +74,7 @@ export function BasicInfoSection({
         )}
       </div>
 
-      <InfoAlert
-        message="في حال تغييرك لرابط المتجر لاحقا , سيتم حذف الزيارات لديك والبدء بزيارات جديدة"
-        submessage="اذا ردت ان تبقى الزيارات راسل الدعم"
-      />
+      
     </>
   );
 }

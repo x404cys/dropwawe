@@ -34,7 +34,7 @@ export function NavigationButtons({
     <>
       <div className="mt-6 flex justify-between">
         <button
-          className="rounded-lg bg-gray-300 px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className={`rounded-lg ${activeSection === 'basic' ? 'bg-white text-white' : 'block'} bg-gray-300 px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50`}
           onClick={onPrevious}
           disabled={activeSection === 'basic'}
         >
@@ -56,7 +56,7 @@ export function NavigationButtons({
               <button
                 disabled={loading}
                 onClick={() => setOpenConfirm(true)}
-                className="flex bg-gray-950 rounded-lg items-center gap-2 py-2 px-2 text-white"
+                className="flex items-center gap-2 rounded-lg bg-sky-600 px-2 py-2 text-white"
               >
                 <FaRegWindowRestore className="h-4 w-4" />
                 {loading ? 'جارٍ الانشاء...' : 'انشاء المتجر'}
@@ -80,12 +80,13 @@ export function NavigationButtons({
               إلغاء
             </Button>
             <Button
+
               disabled={loading}
               onClick={() => {
                 setOpenConfirm(false);
                 onSubmit();
               }}
-              className="px-6"
+              className="px-6 bg-sky-600"
             >
               تأكيد الإنشاء
             </Button>

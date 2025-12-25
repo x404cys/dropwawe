@@ -28,50 +28,63 @@ export function StepIndicator({ activeSection, fieldErrors, onStepChange }: Step
       return fieldErrors.facebookLink || fieldErrors.instaLink || fieldErrors.telegram;
   };
 
-  const progressWidth =
-    activeSection === 'basic' ? '33%' : activeSection === 'shipping' ? '66%' : '100%';
+  const activeIndex = steps.findIndex(s => s.id === activeSection);
 
   return (
-    <div className="w-full">
-      <div className="relative z-10 flex justify-around py-2">
-        {steps.map(step => {
-          const hasError = getStepError(step.id);
+    <div className="relative w-full">
+      {/* Progress line */}
+      <div className="absolute top-5 right-0 left-0 h-0.5 bg-sky-200">
+        <motion.div
+          className="h-0.5 bg-sky-700"
+          animate={{
+            width: `${((activeIndex + 1) / steps.length) * 100}%`,
+          }}
+          transition={{ duration: 0.3, ease: 'easeInOut' }}
+        />
+      </div>
+
+      {/* Steps */}
+      <div className="relative z-10 flex items-center justify-between">
+        {steps.map((step, index) => {
           const active = activeSection === step.id;
+          const completed = index < activeIndex;
+          const hasError = getStepError(step.id);
 
           return (
             <button
               key={step.id}
               onClick={() => onStepChange(step.id)}
-              className="flex flex-col items-center gap-2 transition"
+              className="group flex flex-col items-center gap-3 transition-all"
             >
               <motion.div
                 animate={{
-                  scale: active ? 1.12 : 1,
-                  borderColor: active ? '#000' : '#d1d5db',
-                  backgroundColor: active ? '#000' : '#fff',
+                  scale: active ? 1.08 : 1,
                 }}
-                className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition-all`}
+                className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
+                  active || completed
+                    ? 'border-sky-700 bg-sky-700'
+                    : 'border-sky-300 bg-white group-hover:border-sky-600'
+                } `}
               >
-                <span className={active ? 'text-white' : 'text-gray-600'}>{step.icon}</span>
+                <span className={active || completed ? 'text-white' : 'text-sky-600'}>
+                  {step.icon}
+                </span>
+
                 {hasError && (
-                  <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full border-2 border-white bg-red-500"></span>
+                  <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full border border-white bg-red-500" />
                 )}
               </motion.div>
 
-              <p className={`text-xs font-medium ${active ? 'text-black' : 'text-gray-500'}`}>
+              <p
+                className={`text-xs font-medium transition-colors ${
+                  active ? 'text-sky-700' : 'text-sky-600'
+                }`}
+              >
                 {step.label}
               </p>
             </button>
           );
         })}
-      </div>
-
-      <div className="relative mt-1 h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
-        <motion.div
-          className="h-1.5 rounded-full bg-black"
-          animate={{ width: progressWidth }}
-          transition={{ duration: 0.3 }}
-        />
       </div>
     </div>
   );
