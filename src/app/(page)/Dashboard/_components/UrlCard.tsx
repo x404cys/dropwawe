@@ -31,7 +31,7 @@ export default function UrlCard({ storeUrl, copyToClipboard, storeName, theme }:
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full rounded-lg border bg-white px-4 py-4 shadow-md shadow-gray-200/50 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/60"
+      className="w-full rounded-lg border border-black/20 bg-white px-4 py-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/60"
     >
       <div className="mb-2 flex items-center justify-between gap-2 py-1 font-bold text-gray-800">
         <RiLinksFill size={35} className="rounded-md border p-1" />
@@ -59,7 +59,9 @@ export default function UrlCard({ storeUrl, copyToClipboard, storeName, theme }:
           <MdOutlineStyle className="h-4 w-4" />
           <div className="flex flex-col items-end">
             <span className="text-gray-500">نوع الثيم</span>
-            <span className="truncate font-semibold text-gray-800">{theme === 'MODERN' ? 'الكلاسيكي' : 'العصري'}</span>
+            <span className="truncate font-semibold text-gray-800">
+              {theme === 'MODERN' ? 'الكلاسيكي' : 'العصري'}
+            </span>
           </div>
         </div>
       </div>

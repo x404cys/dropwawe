@@ -61,7 +61,16 @@ const steps = [
   { id: 'social', label: 'الروابط الاجتماعية' },
   { id: 'payment', label: 'طرق الدفع' },
 ];
+type ServerErrorDetail = {
+  field: string;
+  message: string;
+};
 
+type ServerErrorResponse = {
+  error: string;
+  details?: ServerErrorDetail[];
+  field?: string;
+};
 export default function StoreSetupSupplier() {
   const [storeSlug, setStoreSlug] = useState('');
   const [storeName, setStoreName] = useState('');
@@ -89,10 +98,46 @@ export default function StoreSetupSupplier() {
     try {
       setLoading(true);
       setFieldErrors({});
+      const formData = new FormData();
+      formData.append('name', storeName);
+      formData.append('subLink', storeSlug);
+      formData.append('description', description);
+      formData.append('shippingPrice', shippingPrice);
+      formData.append('phone', phone);
+      formData.append('facebookLink', facebookLink);
+      formData.append('instaLink', instaLink);
+      formData.append('telegram', telegram);
+      formData.append('shippingType', 'default');
+      formData.append('hasReturnPolicy', '__');
+      formData.append('active', 'true');
+      formData.append('selectedMethods', JSON.stringify(selectedMethods));
 
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      if (imageFile) formData.append('image', imageFile);
+      if (headerFile) formData.append('header', headerFile);
 
-      toast.success('تم الحفظ بنجاح ');
+      const res = await fetch('/api/supplier/create', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data: ServerErrorResponse = await res.json();
+
+      if (!res.ok) {
+        if (data.details) {
+          const errors: { [key: string]: string } = {};
+          data.details.forEach(err => {
+            errors[err.field] = err.message;
+          });
+          setFieldErrors(errors);
+        } else if (data.field) {
+          setFieldErrors({ [data.field]: data.error });
+        } else {
+          toast.error(data.error || 'حدث خطأ في الحفظ');
+        }
+        return;
+      }
+      toast.success('تم الحفظ بنجاح ✨');
+      router.back();
       router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ في الحفظ');
@@ -100,7 +145,6 @@ export default function StoreSetupSupplier() {
       setLoading(false);
     }
   };
-
   const toggleMethod = (methodId: string) => {
     setSelectedMethods(prev => {
       if (prev.includes(methodId)) {

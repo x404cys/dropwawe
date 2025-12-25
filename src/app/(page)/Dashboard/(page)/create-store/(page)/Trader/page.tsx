@@ -90,6 +90,7 @@ export default function StoreSetupPage() {
         shippingType: 'default',
         hasReturnPolicy: '__',
         active: true,
+        
       };
 
       const res = await fetch('/api/storev2/create', {

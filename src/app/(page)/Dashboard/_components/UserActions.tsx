@@ -96,7 +96,7 @@ export default function UserActions() {
           className="absolute top-15 right-3 z-50 w-56 rounded-xl bg-white shadow-lg ring-1 ring-gray-200 md:right-40"
         >
           <ul className="flex flex-col p-2 text-sm text-gray-700">
-            <li>
+            {/* <li>
               <div className="flex items-center justify-between">
                 <button
                   className="px- flex w-full items-center gap-2 rounded-md py-2 hover:bg-gray-100"
@@ -170,7 +170,7 @@ export default function UserActions() {
                 <span>الدعم</span>
               </div>
             </li>
-            <hr className="my-1 border-gray-200" />
+            <hr className="my-1 border-gray-200" /> */}
 
             <li>
               <div className="flex w-full cursor-pointer items-center gap-2 rounded-md py-2 hover:bg-gray-100">

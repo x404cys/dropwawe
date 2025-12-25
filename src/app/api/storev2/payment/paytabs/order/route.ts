@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: 'auth',
-      tran_class: 'moto',
+      tran_class: 'ecom',
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
       cart_currency: 'IQD',

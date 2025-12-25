@@ -4,7 +4,7 @@ import NavBarForDesktop from './_components/NavBarDesktop';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="mb-20 px-2  font-medium md:mx-10">
+    <section className="mb-20 px-2 font-medium md:mx-10">
       <UserActions />
       <NavBarForDesktop />
       <div>{children}</div>

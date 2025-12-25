@@ -34,7 +34,7 @@ export default function Dashboard() {
       }
     }, [status, loading, data, router, session]);
   } catch (e) {
-    toast.error('dsaaaaaaaaaa');
+    toast.error('unthenticated');
   }
 
   if (status !== 'authenticated' || loading || !data) {
