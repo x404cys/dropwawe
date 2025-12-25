@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
+import dotenv from 'dotenv';
 
+dotenv.config();
 type ItemInput = {
   productId: string;
   quantity: number;
@@ -104,10 +106,10 @@ export async function POST(request: NextRequest) {
       include: { items: true },
     });
 
-    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
     const PAYTABS_PROFILE_ID = 169218;
 
-    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://accseshop.matager.store';
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dropwave.cloud';
 
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
 
@@ -115,8 +117,8 @@ export async function POST(request: NextRequest) {
 
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,
-      tran_type: 'sale',
-      tran_class: 'ecom',
+      tran_type: 'auth',
+      tran_class: 'moto',
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
       cart_currency: 'IQD',
