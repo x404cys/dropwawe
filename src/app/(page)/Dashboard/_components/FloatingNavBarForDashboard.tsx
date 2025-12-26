@@ -95,8 +95,12 @@ export default function FloatingNavBarForDashboard() {
           </button>
 
           <button
-            className={`${baseStyle} ${isActive(`/Dashboard/profit`) ? activeStyle : inactiveStyle}`}
-            onClick={() => handleNavigate(`/Dashboard/profit`)}
+            className={`${baseStyle} ${isActive(`${session?.user.role === 'SUPPLIER' ? '/Dashboard/profit/profit-trader' : '/Dashboard/profit'}`) ? activeStyle : inactiveStyle}`}
+            onClick={() =>
+              handleNavigate(
+                `${session?.user.role === 'SUPPLIER' ? '/Dashboard/profit/profit-trader' : '/Dashboard/profit'}`
+              )
+            }
           >
             <DollarSign size={20} />
             <span className="mt-1 text-xs">العوائد</span>
