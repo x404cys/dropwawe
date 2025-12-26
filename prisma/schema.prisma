@@ -44,6 +44,7 @@ model Supplier {
   id              String      @id @default(cuid())
   userId          String      @unique
   user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name            String?
   image           String?
   Header          String?
   description     String?

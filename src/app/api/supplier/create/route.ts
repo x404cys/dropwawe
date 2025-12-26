@@ -142,6 +142,7 @@ export async function POST(req: Request) {
     await prisma.supplier.create({
       data: {
         shippingPrice,
+        name: parsed.data.name,
         shippingType: parsed.data.shippingType || '',
         hasReturnPolicy: parsed.data.hasReturnPolicy || '',
         facebookLink: parsed.data.facebookLink || '',
