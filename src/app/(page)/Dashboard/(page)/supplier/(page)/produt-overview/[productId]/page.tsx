@@ -25,11 +25,13 @@ import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { RxShare2 } from 'react-icons/rx';
 import axios from 'axios';
+import { useSession } from 'next-auth/react';
 
 export default function ProductPage() {
   const params = useParams();
 
   const id = params?.productId as string;
+  const session = useSession();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
@@ -230,42 +232,49 @@ export default function ProductPage() {
             <p className="text-muted-foreground leading-relaxed">{product.description}</p>
 
             <div className="flex gap-4">
-              <Button
-                onClick={() => {
-                  setOpenDailog(true);
-                }}
-                className="hover-scale h-14 flex-1 cursor-pointer rounded-xl"
-              >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                اضف الى السلة
-              </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  setOpenDailog(true);
-                }}
-                className={`h-14 w-14 rounded-xl transition-all duration-300 ${
-                  isFavorite
-                    ? 'border-destructive bg-destructive text-destructive-foreground'
-                    : 'hover:border-destructive hover:text-destructive'
-                }`}
-              >
-                <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
-              </Button>
-              <Button
-                className="h-14 w-14 rounded-xl transition-all duration-300"
-                variant="outline"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ✨');
-                }}
-              >
-                <RxShare2 />
-              </Button>
+              {session.data?.user.role !== 'SUPPLIER' && (
+                <>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setOpenDailog(true);
+                    }}
+                    className="hover-scale h-14 flex-1 cursor-pointer rounded-xl"
+                  >
+                    <ShoppingCart className="mr-2 h-5 w-5" />
+                    اضف الى متجرك الالكتروني
+                  </Button>
+
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => {
+                      setOpenDailog(true);
+                    }}
+                    className={`h-14 w-14 rounded-xl transition-all duration-300 ${
+                      isFavorite
+                        ? 'border-destructive bg-destructive text-destructive-foreground'
+                        : 'hover:border-destructive hover:text-destructive'
+                    }`}
+                  >
+                    <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
+                  </Button>
+                  <Button
+                    className="h-14 w-14 rounded-xl transition-all duration-300"
+                    variant="outline"
+                    onClick={() => {
+                      navigator.clipboard.writeText(window.location.href);
+                      toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ✨');
+                    }}
+                  >
+                    <RxShare2 />
+                  </Button>
+                </>
+              )}
             </div>
-            {openDaiolg && product.pricingDetails && (
-              <div className="bg-opacity-40 fixed inset-0 z-50 flex items-center justify-center">
+            {session.data?.user.role !== 'SUPPLIER' && openDaiolg && product.pricingDetails && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-md">
                 <div className="animate-fadeIn w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
                   <div className="flex items-center gap-3">
                     <svg
@@ -278,49 +287,64 @@ export default function ProductPage() {
                     </svg>
                     <h2 className="text-lg font-semibold text-gray-800">تحديد السعر</h2>
                   </div>
+
                   <p className="mt-3 text-sm text-gray-600">
                     أدخل السعر بين الحد الأدنى والحد الأقصى للمنتج.
                   </p>
+
                   <input
                     type="number"
                     value={newPrice}
                     onChange={e => {
-                      const value = e.target.value;
-                      const numValue = parseFloat(value);
-                      const min = product.pricingDetails?.minPrice;
-                      const max = product.pricingDetails?.maxPrice;
-
-                      setNewPrice(value);
-
-                      if (value === '' || isNaN(numValue)) return;
-
-                      if (min !== undefined && numValue < min) {
-                        toast.error(`السعر أقل من الحد الأدنى (${min})`);
-                        setError(`السعر أقل من الحد الأدنى (${min})`);
-                      } else if (max !== undefined && numValue > max) {
-                        toast.error(`السعر أكبر من الحد الأقصى (${max})`);
-                        setError(`السعر أكبر من الحد الأقصى (${max})`);
-                      } else {
-                        setError(null);
-                      }
+                      setNewPrice(e.target.value);
+                      setError(null);
                     }}
-                    placeholder={`الحد الأدنى: ${product.pricingDetails?.minPrice ?? '-'}, الحد الأقصى: ${product.pricingDetails?.maxPrice ?? '-'}`}
+                    placeholder={`الحد الأدنى: ${product.pricingDetails.minPrice} ، الحد الأقصى: ${
+                      product.pricingDetails.maxPrice
+                    }`}
                     className="mt-4 w-full rounded-md border px-3 py-2 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
-                  <div>
-                    <span className="text-sm text-red-500">{error}</span>
-                    {/* <Ban /> */}
-                  </div>
+
+                  {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
+
                   <div className="mt-5 flex justify-end gap-2">
                     <button
-                      onClick={() => setOpenDailog(false)}
+                      onClick={() => {
+                        setOpenDailog(false);
+                        setError(null);
+                        setNewPrice('');
+                      }}
                       className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200"
                     >
                       إلغاء
                     </button>
+
                     <button
-                      onClick={handleSubmit}
-                      className="cursor-pointer rounded-md bg-gray-950 px-4 py-2 text-sm font-medium text-white"
+                      onClick={() => {
+                        const price = parseFloat(newPrice as string);
+                        const min = product?.pricingDetails?.minPrice!;
+                        const max = product?.pricingDetails?.maxPrice!;
+
+                        if (isNaN(price)) {
+                          setError('الرجاء إدخال رقم صحيح');
+                          return;
+                        }
+
+                        if (price < min) {
+                          setError(`السعر أقل من الحد الأدنى (${min})`);
+                          return;
+                        }
+
+                        if (price > max) {
+                          setError(`السعر أكبر من الحد الأقصى (${max})`);
+                          return;
+                        }
+
+                        handleSubmit();
+                        setOpenDailog(false);
+                        setError(null);
+                      }}
+                      className="rounded-md bg-gray-950 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900"
                     >
                       تأكيد
                     </button>
