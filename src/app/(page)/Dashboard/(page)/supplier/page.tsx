@@ -14,9 +14,7 @@ export default function SupplierPage() {
 
   if (isLoading)
     return (
-      <p className="py-10 text-center text-lg font-medium text-gray-500">
-        ⏳ جاري تحميل الموردين...
-      </p>
+      <p className="py-10 text-center text-lg font-medium text-gray-500">جاري تحميل الموردين...</p>
     );
 
   if (error)

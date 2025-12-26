@@ -35,7 +35,6 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
       transition={{ duration: 0.25 }}
       className="group relative mx-auto flex w-full max-w-[380px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white"
     >
-      {/* Header Image */}
       <div className="relative h-40 w-full bg-gray-100">
         {isValidUrl(supplier?.Header) ? (
           <Image src={supplier.Header!} alt="Supplier Banner" fill className="object-cover" />
@@ -45,7 +44,6 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           </div>
         )}
 
-        {/* Supplier Logo */}
         <div className="absolute right-0 bottom-0 translate-x-[-10%] translate-y-[50%]">
           <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-white bg-white shadow-md">
             {isValidUrl(supplier?.image) ? (
@@ -60,7 +58,6 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
       </div>
 
       <div className="mt-10 flex flex-1 flex-col justify-between px-5 pb-4">
-        {/* Supplier Name + Description */}
         <div className="flex flex-col gap-1">
           <h2 className="text-lg font-semibold text-gray-900">
             {supplier.user?.name ?? 'اسم المورد'}
@@ -70,7 +67,6 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           </p>
         </div>
 
-        {/* Categories */}
         {uniqueCategories.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {uniqueCategories.slice(0, 4).map((category, index) => (
@@ -90,14 +86,12 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           </div>
         )}
 
-        {/* Product Count */}
         <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-gray-600">
           <div className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1">
             📦 {totalProducts ?? 0} منتج
           </div>
         </div>
 
-        {/* Social Links */}
         <div className="mt-4 flex items-center gap-3 text-gray-500">
           {supplier.facebookLink && (
             <a href={supplier.facebookLink} target="_blank" rel="noopener noreferrer">
@@ -118,7 +112,6 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           )}
         </div>
 
-        {/* Payment Methods */}
         <div className="mt-3 flex flex-wrap gap-2">
           {(() => {
             try {
@@ -137,8 +130,7 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           })()}
         </div>
 
-        {/* Buttons */}
-        <div className="mt-5 flex justify-between">
+         <div className="mt-5 flex justify-between">
           <button
             onClick={() => router.push(`/Dashboard/supplier/supplier-overview/${store}`)}
             className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
