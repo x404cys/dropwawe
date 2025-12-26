@@ -150,8 +150,8 @@ export async function POST(req: Request) {
         description: parsed.data.description,
         active: parsed.data.active ?? true,
         userId: session.user.id,
-        Header: 'headerUrl',
-        image: 'imageUrl',
+        Header: headerUrl,
+        image: imageUrl,
         methodPayment: parsed.data.selectedMethods || '',
       },
     });
