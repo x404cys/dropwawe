@@ -4,6 +4,7 @@ import { StoreProps } from '../store/StoreType';
 export type Supplier = {
   id: string;
   userId: string;
+  name?: string;
   image?: string;
   Header?: string;
   description?: string;

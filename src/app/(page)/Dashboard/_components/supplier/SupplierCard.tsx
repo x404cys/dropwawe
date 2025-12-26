@@ -12,7 +12,6 @@ type SupplierCardProps = {
   store: string;
 };
 
-// دالة تتحقق من أن الرابط URL صالح 100%
 const isValidUrl = (url: string | null | undefined) => {
   if (!url || typeof url !== 'string') return false;
   try {
@@ -59,9 +58,7 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
 
       <div className="mt-10 flex flex-1 flex-col justify-between px-5 pb-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-gray-900">
-            {supplier.user?.name ?? 'اسم المورد'}
-          </h2>
+          <h2 className="text-lg font-semibold text-gray-900">{supplier?.name ?? 'اسم المورد'}</h2>
           <p className="line-clamp-2 text-sm text-gray-500">
             {supplier.description ?? 'لا يوجد وصف حالياً'}
           </p>
@@ -130,7 +127,7 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
           })()}
         </div>
 
-         <div className="mt-5 flex justify-between">
+        <div className="mt-5 flex justify-between">
           <button
             onClick={() => router.push(`/Dashboard/supplier/supplier-overview/${store}`)}
             className="rounded-lg border border-gray-300 px-4 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
