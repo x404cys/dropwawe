@@ -235,7 +235,7 @@ export default function ProductPage() {
               {session.data?.user.role !== 'SUPPLIER' && (
                 <>
                   <Button
-                    variant="outline"
+                    variant="default"
                     size="icon"
                     onClick={() => {
                       setOpenDailog(true);
