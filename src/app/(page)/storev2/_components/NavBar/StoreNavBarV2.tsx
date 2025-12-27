@@ -270,7 +270,7 @@ export default function StoreNavBarv2() {
               <span className="sr-only">ابحث عن المنتجات</span>
             </button>
 
-            <div className="relative flex w-full overflow-hidden rounded-md border border-gray-300">
+            <div className="relative flex w-full overflow-visible rounded-md border border-gray-300">
               <input
                 onChange={e => setSearch(e.target.value)}
                 type="search"

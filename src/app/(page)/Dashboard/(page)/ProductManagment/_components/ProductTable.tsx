@@ -12,7 +12,15 @@ import { Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useDashboardData } from '../../../_utils/useDashboardData';
 import FloatingNavBarForProductManage from './FloatingNavBarForProductManage';
-import { Boxes, ChevronDown, Package, Search, Truck } from 'lucide-react';
+import {
+  BaggageClaim,
+  Boxes,
+  ChevronDown,
+  Package,
+  Search,
+  ShoppingBag,
+  Truck,
+} from 'lucide-react';
 import { MdAddShoppingCart } from 'react-icons/md';
 import { LuPackagePlus } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
@@ -123,13 +131,23 @@ export default function ProductTable() {
 
           <div className="h-8 w-px bg-gray-200" />
 
-          <button
-            onClick={() => router.push('/Dashboard/supplier')}
-            className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
-          >
-            <Truck className="h-5 w-5" />
-            <span>الموردين</span>
-          </button>
+          {session?.user?.role === 'SUPPLIER' ? (
+            <button
+              onClick={() => router.push('/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage')}
+              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
+            >
+              <ShoppingBag className="h-5 w-5" />
+              <span>الطلبات</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push('/Dashboard/supplier')}
+              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
+            >
+              <Truck className="h-5 w-5" />
+              <span>الموردين</span>
+            </button>
+          )}
         </div>
       </div>
 

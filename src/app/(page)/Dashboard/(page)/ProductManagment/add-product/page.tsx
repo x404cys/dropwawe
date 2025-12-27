@@ -95,6 +95,26 @@ export default function ProductAddPage() {
       return prev.filter((_, i) => i !== index);
     });
   };
+  const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!allowedTypes.includes(file.type)) {
+      alert('صيغة الصورة غير مدعومة. الرجاء اختيار JPG أو PNG أو WEBP');
+      e.target.value = '';
+      return;
+    }
+
+    const preview = URL.createObjectURL(file);
+
+    setNewProduct({
+      ...newProduct,
+      imageFile: file,
+      imagePreview: preview,
+    });
+  };
 
   const updateSize = (index: number, field: 'size' | 'stock', value: string | number) => {
     const updated = [...sizes];
@@ -580,16 +600,19 @@ export default function ProductAddPage() {
                     <div className="flex flex-col items-center justify-center gap-2">
                       <TbUpload size={40} className="text-gray-400" />
                       <p className="text-gray-500">انقر لرفع الصورة أو اسحبها هنا</p>
+                      <p className="text-xs text-gray-500">
+                        الصيغ المدعومة: JPG، PNG، WEBP <br />
+                        الحجم الموصى به: 500×500 بكسل
+                      </p>
                     </div>
                   )}
                 </label>
                 <input
                   id="upload-image"
                   type="file"
-                  accept="image/*"
-                  onChange={onNewImageChange}
+                  accept="image/jpeg,image/png,image/webp"
                   className="hidden"
-                  disabled={loading}
+                  onChange={handleImageChange}
                 />
               </div>
             </div>
