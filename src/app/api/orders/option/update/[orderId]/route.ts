@@ -13,11 +13,15 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
     }
 
     if (session.user.role === 'SUPPLIER') {
-      const existingTraderOrder = await prisma.orderFromTrader.findUnique({
+      await prisma.orderFromTrader.findUnique({
         where: { id: orderId },
       });
       const updated = await prisma.orderFromTrader.update({
         where: { id: orderId },
+        data: { status: 'CONFIRMED' },
+      });
+      await prisma.order.update({
+        where: { id: updated.orderId! },
         data: { status: 'CONFIRMED' },
       });
       return NextResponse.json(updated);
@@ -71,6 +75,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
         data: {
           traderId: session.user.id,
           supplierId,
+          orderId: order.id,
           status: 'PENDING',
           total,
           fullName: order.fullName,

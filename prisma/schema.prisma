@@ -353,6 +353,8 @@ model OrderFromTrader {
   status       OrderStatus    @default(PENDING)
   total        Float          @default(0)
 
+  orderId      String?        @unique
+
   traderId     String?         
   supplierId   String?         
 
