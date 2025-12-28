@@ -7,6 +7,7 @@ import React, { useEffect, useState } from 'react';
 import { useDashboardData } from '../../_utils/useDashboardData';
 import Loader from '@/components/Loader';
 import { Search, ShoppingBag } from 'lucide-react';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 interface Order {
   id: string;
@@ -300,7 +301,7 @@ export default function OrderSummaryPage() {
                             التاريخ: {new Date(e.createdAt).toLocaleDateString()}
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-300">
-                            السعر: ${e.total}
+                            السعر: {formatIQD(e.price)}
                           </div>
                           <div className="text-sm text-gray-600 dark:text-gray-300">
                             الحالة:{' '}

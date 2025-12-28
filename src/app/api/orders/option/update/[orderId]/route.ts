@@ -20,6 +20,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
         where: { id: orderId },
         data: { status: 'CONFIRMED' },
       });
+
       await prisma.order.update({
         where: { id: updated.orderId! },
         data: { status: 'CONFIRMED' },
