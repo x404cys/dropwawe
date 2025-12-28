@@ -1,6 +1,6 @@
 'use client';
 
-import { type JSX, useEffect, useState } from 'react';
+import { type JSX, use, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -32,8 +32,9 @@ import {
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import CityRegionDialog from '../../../_components/Citys_and_regions';
+import { Product } from '@/types/Products';
+import { useSession } from 'next-auth/react';
 
-type Product = { name?: string; image?: string };
 type OrderItem = {
   id: string;
   quantity: number;
@@ -51,6 +52,7 @@ export type OrderDetails = {
   status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
   total: number;
   items: OrderItem[];
+  prodcuts: Product[];
 };
 
 export default function OrderDetailsPage() {
@@ -59,7 +61,7 @@ export default function OrderDetailsPage() {
   const [order, setOrder] = useState<OrderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-
+  const session = useSession();
   const [openAccept, setOpenAccept] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
   const [cityId, setCityId] = useState('');
@@ -180,7 +182,7 @@ export default function OrderDetailsPage() {
           </div>
 
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-            <div>
+            <div className="space-y-4">
               <h1 className="text-foreground text-3xl font-bold tracking-tight">
                 الطلب #{order.id.slice(0, 8).toUpperCase()}
               </h1>
@@ -194,7 +196,14 @@ export default function OrderDetailsPage() {
                   minute: '2-digit',
                 })}
               </p>
+              {session.data?.user.role !== 'SUPPLIER' &&
+                order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
+                  <Badge className="border border-blue-500 bg-blue-50 px-4 py-2 font-medium text-blue-500">
+                    يحتوي على منتجات من مورد , بأنتظار تأكيد المورد
+                  </Badge>
+                )}
             </div>
+
             <Badge
               className={`${status.bgColor} ${status.color} flex w-fit items-center gap-2 border px-4 py-2 text-sm font-medium`}
             >
@@ -267,18 +276,30 @@ export default function OrderDetailsPage() {
 
               {order.status === 'PENDING' && (
                 <div className="flex flex-wrap-reverse gap-3">
-                  <Button
-                    size="lg"
-                    className="bg-foreground text-background hover:bg-foreground/90 flex-1"
-                    onClick={() => setOpenAccept(true)}
-                  >
-                    <CheckCircle className="ml-2 h-5 w-5" />
-                    تأكيد الطلب
-                  </Button>
+                  {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
+                    <Button
+                      size="lg"
+                      className="bg-foreground text-background hover:bg-foreground/90 flex-1"
+                      onClick={() => setOpenAccept(true)}
+                    >
+                      <CheckCircle className="ml-2 h-5 w-5" />
+                      تأكيد الطلب
+                    </Button>
+                  )}
+                  {session.data?.user.role === 'SUPPLIER' && (
+                    <Button
+                      size="lg"
+                      className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
+                      onClick={() => setOpenAccept(true)}
+                    >
+                      <CheckCircle className="ml-2 h-5 w-5" />
+                      تأكيد الطلب
+                    </Button>
+                  )}
                   <Button
                     size="lg"
                     variant="destructive"
-                    className="flex-1"
+                    className="flex-1 cursor-pointer"
                     onClick={() => setOpenCancel(true)}
                   >
                     <XCircle className="ml-2 h-5 w-5" />
@@ -302,7 +323,7 @@ export default function OrderDetailsPage() {
                   </div>
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">الشحن</span>
-                    <span className="text-foreground font-medium">مجاني</span>
+                    <span className="text-foreground font-medium">-</span>
                   </div>
                   <Separator />
                   <div className="flex items-center justify-between">

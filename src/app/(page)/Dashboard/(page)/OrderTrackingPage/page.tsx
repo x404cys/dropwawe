@@ -284,7 +284,7 @@ export default function OrderSummaryPage() {
                               </td>
                             </tr>
                           ))}
-                        </tbody>
+                        </tbody>  
                       </table>
                     </div>
 
