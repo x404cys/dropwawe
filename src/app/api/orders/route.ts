@@ -51,6 +51,9 @@ export async function POST(request: NextRequest) {
     const productIds = items.map(item => item.productId);
     const productsInDb = await prisma.product.findMany({
       where: { id: { in: productIds } },
+      include: {
+        pricingDetails: true,
+      },
     });
 
     const errors: { productId: string; type: string; message: string }[] = [];
@@ -118,6 +121,59 @@ export async function POST(request: NextRequest) {
       )
     );
 
+    if (productsInDb.find(p => p.isFromSupplier === true)) {
+      const supplierItems = items
+        .map(item => {
+          const product = productsInDb.find(p => p.id === item.productId);
+
+          if (!product || !product.isFromSupplier) return null;
+
+          const wholesalePrice = product.pricingDetails?.wholesalePrice ?? 0;
+
+          return {
+            productId: product.id,
+            quantity: item.quantity,
+            price: item.price,
+            wholesalePrice,
+            traderProfit: (item.price - wholesalePrice) * item.quantity,
+            supplierProfit: wholesalePrice * item.quantity,
+            supplierId: product.supplierId,
+          };
+        })
+        .filter(Boolean) as {
+        productId: string;
+        quantity: number;
+        price: number;
+        wholesalePrice: number;
+        traderProfit: number;
+        supplierProfit: number;
+        supplierId: string;
+      }[];
+
+      const orderFromTrader = await prisma.orderFromTrader.create({
+        data: {
+          traderId: userId,
+          supplierId: supplierItems[0].supplierId,
+          orderId: order.id,
+          status: 'PENDING',
+          total: supplierItems.reduce((sum, i) => sum + i.wholesalePrice * i.quantity, 0),
+          fullName: order.fullName,
+          location: order.location,
+          phone: order.phone,
+          items: {
+            create: supplierItems.map(i => ({
+              productId: i.productId,
+              quantity: i.quantity,
+              price: i.price,
+              wholesalePrice: i.wholesalePrice,
+              traderProfit: i.traderProfit,
+              supplierProfit: i.supplierProfit,
+            })),
+          },
+        },
+        include: { items: true },
+      });
+    }
     const notificationMessage = `وصل طلب جديد (${order.fullName}) الموقع: ${location}. الرجاء مراجعة الطلب لمعالجته.`;
 
     await prisma.notification.create({
