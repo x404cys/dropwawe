@@ -106,7 +106,7 @@ export default function Dashboard() {
       <div className="flex items-center justify-center pb-2 text-center">
         <span className="flex items-center justify-between gap-2 rounded-full border border-sky-300 bg-sky-200 px-8 py-0.5 text-xs">
           {/* <LuTestTubeDiagonal className="mr-2" /> */}
-          <Image className="" src={'/blood-test.gif'} width={18} height={18} alt="e" />
+          <Image className="" src={'/page-optimization.gif'} width={18} height={18} alt="e" />
           <span> تجريبي</span>
         </span>
       </div>
