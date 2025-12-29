@@ -25,6 +25,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
         where: { id: updated.orderId! },
         data: { status: 'CONFIRMED' },
       });
+
       return NextResponse.json(updated);
       // if (existingTraderOrder && existingTraderOrder.supplierId === session.user.id) {
       // }
@@ -88,8 +89,8 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
               quantity: p.item.quantity,
               price: p.item.price,
               wholesalePrice: p.product?.pricingDetails?.wholesalePrice,
-              traderProfit: p.item.price - p.product?.pricingDetails?.wholesalePrice!,
-              supplierProfit: p.product?.pricingDetails?.wholesalePrice! * p.item.quantity,
+              traderProfit: p.item.price - p.product?.pricingDetails?.minPrice!,
+              supplierProfit: p.product?.pricingDetails?.minPrice! * p.item.quantity,
             })),
           },
         },

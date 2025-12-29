@@ -37,6 +37,8 @@ model User {
   UserSubscription UserSubscription[]
   merchant  Merchant? @relation("UserMerchant")
   traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
+  traderProfit    TraderProfit?
+
 
 
 }
@@ -100,7 +102,7 @@ model Store {
   Notification Notification[]
 
   Supplier Supplier[]
-}
+}                                   
 
 model Product {
   id              String         @id @default(cuid())
@@ -405,4 +407,19 @@ model OrderFromTraderPayment {
   order         OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([cartId])
+}
+
+
+model TraderProfit {
+  id        String   @id @default(cuid())
+
+  traderId  String   @unique   
+  trader    User     @relation(fields: [traderId], references: [id], onDelete: Cascade)
+
+  amount    Float
+  remaining Float
+
+  withdraw  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

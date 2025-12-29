@@ -4,7 +4,7 @@ import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { FiDollarSign, FiClock } from 'react-icons/fi';
+import { TrendingUp, Calendar, Clock, Wallet, WalletIcon } from 'lucide-react';
 import Loader from '@/components/Loader';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
@@ -37,7 +37,7 @@ export default function ProfitPage() {
         setData(res.data);
       } catch (err) {
         console.error(err);
-        setError('فشل تحميل البيانات / Failed to load data');
+        setError('فشل تحميل البيانات');
       } finally {
         setLoading(false);
       }
@@ -67,65 +67,67 @@ export default function ProfitPage() {
 
   if (loading)
     return (
-      <div className="flex min-h-screen justify-center bg-white py-50">
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50">
         <Loader />
       </div>
     );
+
   if (error) return <p className="mt-6 text-center text-red-600">{error}</p>;
-  if (!data) return <p className="mt-6 text-center text-gray-600">No data available</p>;
+  if (!data) return <p className="mt-6 text-center text-neutral-600">No data</p>;
 
   const commonChartOptions = {
-    chart: { toolbar: { show: false }, zoom: { enabled: false }, foreColor: '#000000' },
+    chart: { toolbar: { show: false }, zoom: { enabled: false }, foreColor: '#525252' },
     theme: { mode: 'light' as const },
     dataLabels: { enabled: false },
-    tooltip: { theme: 'dark' as const },
+    tooltip: { theme: 'light' as const },
+    grid: { borderColor: '#e5e5e5', strokeDashArray: 3 },
+  };
+
+  const weeklyOptions = {
+    ...commonChartOptions,
+    chart: { ...commonChartOptions.chart, type: 'area' as const },
+    xaxis: { categories: weeklyFiltered.map(w => w.week) },
+    stroke: { curve: 'smooth' as const, width: 3 },
+    colors: ['#00bcff'],
+    fill: {
+      type: 'gradient',
+      gradient: {
+        opacityFrom: 0.6,
+        opacityTo: 0.15,
+      },
+    },
   };
 
   const monthlyOptions = {
     ...commonChartOptions,
     labels: monthlyFiltered.map(m => m.month),
     legend: { position: 'bottom' as const },
-    colors: [
-      '#1f2937',
-      '#4b5563',
-      '#6b7280',
-      '#9ca3af',
-      '#f472b6',
-      '#f87171',
-      '#34d399',
-      '#60a5fa',
-    ],
+    colors: ['#00bcff', '#38bdf8', '#7dd3fc', '#a5f3fc', '#e0f2fe'],
   };
-  const monthlySeries = monthlyFiltered.map(m => m.profit);
-
-  const weeklyOptions = {
-    ...commonChartOptions,
-    chart: { ...commonChartOptions.chart, type: 'line' as const },
-    xaxis: { categories: weeklyFiltered.map(w => w.week) },
-    stroke: { curve: 'smooth' as const, width: 3 },
-    markers: { size: 5 },
-    colors: ['#000000'],
-  };
-  const weeklySeries = [{ name: 'Profit', data: weeklyFiltered.map(w => w.profit) }];
 
   return (
-    <section className="min-h-screen bg-white py-4 text-black">
-      <div dir="rtl" className="mx-auto space-y-10 py-6">
-        <div className="grid grid-cols-1 gap-6">
-          <div className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-6 text-black">
-            <FiDollarSign className="text-3xl" />
-            <div>
-              <h2 className="text-lg font-semibold">العائد الكلي | Total Profit</h2>
-              <p className="mt-2 text-2xl font-bold">{formatCurrency(data.totalProfit)}</p>
+    <section className="min-h-screen bg-neutral-50 px-4 py-8 md:px-8">
+      <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
+        <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="">
+            <div className="flex items-center gap-2 text-neutral-600">
+              <TrendingUp className="h-5 w-5" />
+              <span className="text-sm font-medium">العائد الكلي</span>
             </div>
+            <p className="mt-2 text-3xl font-bold text-neutral-900">
+              {formatCurrency(data.totalProfit)}
+            </p>
+          </div>
+          <div>
+            <WalletIcon className="h-14 w-14 text-neutral-700" />
           </div>
         </div>
 
-        <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white to-gray-50/50 p-6 shadow-lg shadow-gray-200/50 backdrop-blur-sm md:flex-row md:items-center md:gap-6">
-          <div className="flex flex-1 flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">اختر الأسبوع</label>
+        <div className="grid gap-4 md:grid-cols-2">
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-700">اختر الأسبوع</label>
             <select
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
               onChange={e => setSelectedWeek(e.target.value || null)}
               value={selectedWeek || ''}
             >
@@ -138,12 +140,10 @@ export default function ProfitPage() {
             </select>
           </div>
 
-          <div className="hidden h-12 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent md:block" />
-
-          <div className="flex flex-1 flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">اختر الشهر</label>
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-medium text-neutral-700">اختر الشهر</label>
             <select
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
               onChange={e => setSelectedMonth(e.target.value || null)}
               value={selectedMonth || ''}
             >
@@ -157,33 +157,49 @@ export default function ProfitPage() {
           </div>
         </div>
 
-        <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
-          <h2 className="mb-4 font-semibold">العائد الأسبوعي | Weekly Profit</h2>
-          <ApexCharts type="line" series={weeklySeries} options={weeklyOptions} height={300} />
+        {/* Weekly */}
+        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <h2 className="mb-6 text-lg font-semibold">العائد الأسبوعي</h2>
+          <ApexCharts
+            type="area"
+            series={[{ name: 'Profit', data: weeklyFiltered.map(w => w.profit) }]}
+            options={weeklyOptions}
+            height={320}
+          />
         </div>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
-            <h2 className="mb-4 font-semibold">العائد الشهري | Monthly Profit</h2>
-            <ApexCharts type="pie" series={monthlySeries} options={monthlyOptions} height={300} />
+        {/* Monthly + Daily */}
+        <div className="grid gap-6 md:grid-cols-2">
+          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+            <h2 className="mb-6 text-lg font-semibold">العائد الشهري</h2>
+            <ApexCharts
+              type="pie"
+              series={monthlyFiltered.map(m => m.profit)}
+              options={monthlyOptions}
+              height={320}
+            />
           </div>
 
-          <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
-            <h2 className="mb-4 flex items-center gap-2 font-semibold">
-              <FiClock className="text-xl" /> العائد اليومي | Daily Profit
+          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+            <h2 className="mb-6 flex items-center gap-2 text-lg font-semibold">
+              <Clock className="h-5 w-5" /> العائد اليومي
             </h2>
-            <ul className="space-y-2 overflow-y-scroll">
+
+            <div className="max-h-[320px] space-y-1 overflow-y-auto">
               {dailyFiltered.length ? (
                 dailyFiltered.map(d => (
-                  <li key={d.day} className="flex justify-between border-b py-1">
-                    <span>{d.day}</span>
-                    <span className="font-bold">{formatCurrency(d.profit)}</span>
-                  </li>
+                  <div
+                    key={d.day}
+                    className="flex justify-between border-b border-neutral-100 py-3 text-sm"
+                  >
+                    <span className="text-neutral-700">{d.day}</span>
+                    <span className="font-semibold text-sky-900">{formatCurrency(d.profit)}</span>
+                  </div>
                 ))
               ) : (
-                <li>No daily data</li>
+                <p className="py-8 text-center text-sm text-neutral-500">No daily data</p>
               )}
-            </ul>
+            </div>
           </div>
         </div>
       </div>
