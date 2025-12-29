@@ -106,7 +106,7 @@ export default function ProfitPage() {
   };
 
   return (
-    <section className="min-h-screen bg-neutral-50 px-4 py-8 md:px-8">
+    <section className="min-h-screen  px-4 py-8 md:px-8">
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
           <div className="">

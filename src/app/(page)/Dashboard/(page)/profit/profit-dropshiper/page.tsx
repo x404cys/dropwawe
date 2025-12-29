@@ -147,7 +147,7 @@ export default function ProfitPage() {
   const weeklySeries = [{ name: 'Profit', data: weeklyFiltered.map(w => w.profit) }];
 
   return (
-    <section className="min-h-screen bg-neutral-50 px-4 py-8 md:px-8">
+    <section className="min-h-screen px-4 py-8 md:px-8">
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
           <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-6">
