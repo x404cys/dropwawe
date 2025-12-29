@@ -94,6 +94,8 @@ export default function OrderSummaryPage() {
           throw new Error(data.error || 'فشل في تحميل الطلبات');
         }
         const data = await res.json();
+        console.log(` ==== sass ====${data}`);
+
         setOrders(data);
         setFilteredOrders(data);
       } catch (err: unknown) {

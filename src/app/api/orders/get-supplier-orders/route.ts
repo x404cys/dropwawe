@@ -31,6 +31,7 @@ export async function GET(request: Request) {
       where: { supplierId: supplier.id },
       orderBy: { createdAt: 'desc' },
     });
+    console.log('Supplier Orders:', orders);
 
     return NextResponse.json(orders);
   } catch (error) {

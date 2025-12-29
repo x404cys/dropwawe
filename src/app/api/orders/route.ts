@@ -150,7 +150,7 @@ export async function POST(request: NextRequest) {
         supplierId: string;
       }[];
 
-      const orderFromTrader = await prisma.orderFromTrader.create({
+      await prisma.orderFromTrader.create({
         data: {
           traderId: userId,
           supplierId: supplierItems[0].supplierId,

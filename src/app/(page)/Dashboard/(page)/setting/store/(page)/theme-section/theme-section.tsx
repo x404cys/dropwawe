@@ -65,13 +65,22 @@ export default function ThemeSection() {
   return (
     <div className="space-y-8">
       <div className="space-y-2">
+        <div className="mb-6 flex items-center justify-center text-center">
+          <div className="flex flex-col items-center gap-2">
+            <h1 className="text-lg font-semibold text-green-400">تحت الصيانة</h1>
+
+            <p className="max-w-md text-sm text-red-500">
+              هذا القسم من الإعدادات تحت الصيانة حالياً
+            </p>
+          </div>
+        </div>
+
         <h2 className="text-2xl font-bold tracking-tight">اختر ثيم متجرك</h2>
         <p className="text-muted-foreground">
           حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي
         </p>
       </div>
 
-      {/* Current Theme */}
       <div className="flex items-center gap-4">
         <span>الثيم الحالي:</span>
         <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium">
@@ -79,7 +88,6 @@ export default function ThemeSection() {
         </span>
       </div>
 
-      {/* Themes */}
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
         {themes.map(theme => {
           const isActive = data?.theme === theme.id;
@@ -108,7 +116,7 @@ export default function ThemeSection() {
                 <h3 className="text-lg font-semibold">{theme.name}</h3>
                 <p className="text-muted-foreground text-sm">{theme.description}</p>
 
-                <Button
+                {/* <Button
                   className="w-full"
                   size="sm"
                   variant={isActive ? 'secondary' : 'default'}
@@ -128,7 +136,7 @@ export default function ThemeSection() {
                       اختر الثيم
                     </>
                   )}
-                </Button>
+                </Button> */}
               </div>
             </div>
           );
