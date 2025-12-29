@@ -41,7 +41,7 @@ export const authOperation: AuthOptions = {
         token.id = dbUser?.id ?? user.id;
         token.email = dbUser?.email ?? user.email;
         token.name = dbUser?.name ?? user.name;
-        token.role = dbUser?.role ?? 'GUEST';
+        token.role = dbUser?.role ?? 'TRADER';
       }
       return token;
     },

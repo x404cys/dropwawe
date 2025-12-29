@@ -82,6 +82,7 @@ export default function UserActions() {
           }}
         >
           <MdOutlineNotificationsNone className="text-2xl text-gray-950" />
+
           {unreadNotifications && unreadNotifications.length > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
               {unreadNotifications.length}

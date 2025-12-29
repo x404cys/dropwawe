@@ -12,11 +12,11 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
   const [loading, setLoading] = useState(true);
 
   const getSubdomain = () => {
-    if (typeof window === 'undefined') return 'default';
+    if (typeof window === 'undefined') return '22122121';
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2) return parts[0];
-    return 'default';
+    return '22122121';
   };
 
   const slug = getSubdomain();
@@ -45,8 +45,6 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
 
   return (
     <div dir="rtl" className="min-h-screen py-4">
-      <StoreNavBarV1 slug={slug} />
-
       {children}
 
       <br className="py-20" />

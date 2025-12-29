@@ -11,9 +11,10 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
-
+import Image from 'next/image';
 import PlanCard from './_components/PlanCard';
 import { useEffect } from 'react';
+import { LuTestTubeDiagonal } from 'react-icons/lu';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -102,6 +103,13 @@ export default function Dashboard() {
 
   return (
     <section>
+      <div className="flex items-center justify-center pb-2 text-center">
+        <span className="flex items-center justify-between gap-2 rounded-full border border-sky-300 bg-sky-200 px-8 py-0.5 text-xs">
+          {/* <LuTestTubeDiagonal className="mr-2" /> */}
+          <Image className="" src={'/blood-test.gif'} width={18} height={18} alt="e" />
+          <span> تجريبي</span>
+        </span>
+      </div>
       <div dir="rtl" className="flex min-h-screen flex-col">
         <main className="flex-1 space-y-4 py-1">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
