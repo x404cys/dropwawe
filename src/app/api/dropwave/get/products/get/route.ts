@@ -9,7 +9,15 @@ export async function GET() {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const products = await prisma.product.findMany();
+    const products = await prisma.product.findMany({
+      include: {
+        images: true,
+        colors: true,
+        sizes: true,
+        pricingDetails: true,
+        subInfo: true,
+      },
+    });
     return NextResponse.json(products);
   } catch (error) {
     console.error('  check error:', error);

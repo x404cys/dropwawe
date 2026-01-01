@@ -13,17 +13,14 @@ interface ProductsCardDropWaveProps {
 export default function ProductsCardDropWave({ product }: ProductsCardDropWaveProps) {
   const router = useRouter();
 
-  // السعر بعد الخصم (إن وجد)
   const hasSale = !!product.discount && product.discount > 0;
 
   const displayPrice = hasSale
     ? product.price - (product.price * product.discount) / 100
     : product.price;
 
-  // صورة المنتج
   const imageUrl = product.image || product.images?.[0]?.url || '/placeholder.svg';
 
-  // تنسيق السعر العراقي
   const formatIQD = (price: number) => {
     return new Intl.NumberFormat('ar-IQ', {
       minimumFractionDigits: 0,
@@ -31,12 +28,10 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
     }).format(price);
   };
 
-  // حالة المخزون (حسب التايب الحالي لا يوجد product_stock فنعتمد الكميات)
   const inStock = product.unlimited || (product.quantity && product.quantity > 0);
 
   return (
     <div className="group border-border/40 bg-card hover:border-border relative flex flex-col overflow-hidden rounded-2xl border transition-all duration-300 hover:shadow-sm">
-      {/* IMAGE */}
       <div className="bg-muted/20 relative aspect-square w-full overflow-hidden">
         <Image
           src={imageUrl}
@@ -46,7 +41,6 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
 
-        {/* SALE BADGE */}
         {hasSale && (
           <div className="bg-foreground/90 text-background absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm">
             تخفيض
@@ -54,13 +48,11 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
         )}
       </div>
 
-      {/* CONTENT */}
       <div className="flex flex-1 flex-col p-4" dir="rtl">
         <h3 className="text-foreground mb-3 line-clamp-2 min-h-[2.5rem] text-sm leading-snug font-medium">
           {product.name}
         </h3>
 
-        {/* PRICE + STOCK */}
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="text-foreground text-lg font-semibold">
             {formatIQD(displayPrice)} د.ع
@@ -83,7 +75,6 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
           </span>
         </div>
 
-        {/* ACTIONS */}
         <div className="mt-auto flex items-center gap-2">
           <Button
             variant="default"

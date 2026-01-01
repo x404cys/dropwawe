@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     const minPriceStr = formData.get('minPrice');
     const maxPriceStr = formData.get('maxPrice');
     const wholesalePriceStr = formData.get('wholesalePrice');
-
+    const telegramLink = formData.get('telegramLink');
     const quantityStr = formData.get('quantity');
     const discountStr = formData.get('discount');
     const category = (formData.get('category') as string) || '';
@@ -84,6 +84,12 @@ export async function POST(req: Request) {
         isFromSupplier: !wholesalePrice ? false : true,
       },
     });
+    await prisma.productSubInfo.create({
+      data: {
+        telegram: telegramLink as string,
+        productId: product.id,
+      },
+    });
 
     const supplier = await prisma.supplier.findUnique({
       where: { userId: session.user.id },
@@ -106,7 +112,7 @@ export async function POST(req: Request) {
           supplierId: supplier.id,
           isFromSupplier: true,
         },
-      });//
+      });
     }
 
     for (const gFile of galleryFiles) {
@@ -146,10 +152,10 @@ export async function POST(req: Request) {
     console.error('POST Product Error:', error);
 
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 501 });
     }
 
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json({ error: 'Something went wrong' }, { status: 502 });
   }
 }
 
@@ -183,9 +189,9 @@ export async function GET(req: Request) {
     console.error('Fetch Products Error:', error);
 
     if (error instanceof Error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+      return NextResponse.json({ error: error.message }, { status: 503 });
     }
 
-    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch products' }, { status: 504 });
   }
 }

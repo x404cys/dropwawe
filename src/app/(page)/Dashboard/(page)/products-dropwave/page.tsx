@@ -101,7 +101,7 @@ export default function ProductsPage() {
                 كل الأصناف
               </button>
 
-              {/* {categories.map(cat => (
+              {categories.map(cat => (
                 <button
                   key={cat}
                   onClick={() => setCategoryFilter(cat)}
@@ -113,7 +113,7 @@ export default function ProductsPage() {
                 >
                   {cat}
                 </button>
-              ))} */}
+              ))}
             </div>
           </div>
         </header>
@@ -122,9 +122,9 @@ export default function ProductsPage() {
           dir="rtl"
           className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         >
-          {/* {(filteredProducts.length > 0 ? filteredProducts : data).map(product => (
+          {(filteredProducts.length > 0 ? filteredProducts : data).map(product => (
             <ProductsCardDropWave key={product.id} product={product} />
-          ))} */}
+          ))}
         </div>
       </div>
     </section>

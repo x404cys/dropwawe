@@ -104,6 +104,7 @@ model Store {
   Supplier Supplier[]
 }                                   
 
+
 model Product {
   id              String         @id @default(cuid())
   name            String
@@ -127,12 +128,13 @@ model Product {
   images          ProductImage[]
   sizes           ProductSize[]
   unlimited       Boolean         @default(false)
-  colors ProductColor[]
+  colors           ProductColor[]
   isFromSupplier   Boolean        @default(false)
   supplierId       String?      
-  Supplier Supplier[]
+  Supplier         Supplier[]
   pricingDetails  ProductPricing?
   orderFromTraderItems OrderFromTraderItem[]
+  subInfo         ProductSubInfo?
 
 
 }
@@ -154,6 +156,18 @@ model ProductImage {
   url       String
   productId String
   product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+}
+model ProductSubInfo {
+  id               String   @id @default(cuid())
+  telegram         String?
+  whatsapp         String?
+  facebookLink     String?
+  instaLink        String?
+  videoLink        String?
+  returnPolicy     String?
+  shippingDetails  String?
+  productId      String   @unique
+  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductSize {
@@ -423,3 +437,5 @@ model TraderProfit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+

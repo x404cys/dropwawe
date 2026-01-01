@@ -292,6 +292,30 @@ export default function ProductPage() {
                 </div>
               </div>
             )}
+
+            {product.subInfo && (
+              <>
+                <hr />
+                <div className="text-muted-foreground space-y-2 text-sm">
+                  <h2 className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                    <span>معلومات إضافية</span>
+                  </h2>
+                  {product?.subInfo?.telegram && (
+                    <div className="flex items-center gap-2">
+                      <RxShare2 className="h-4 w-4" />
+                      <a
+                        href={product.subInfo.telegram}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-foreground underline"
+                      >
+                        تواصل عبر تيليجرام
+                      </a>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
             <hr />
             {product.colors && product.colors.length > 0 && (
               <div>

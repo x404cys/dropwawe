@@ -21,6 +21,7 @@ import { useDashboardData } from '../../../_utils/useDashboardData';
 import { useRouter } from 'next/navigation';
 import { IoAddSharp, IoChevronBackSharp } from 'react-icons/io5';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { BsTelegram } from 'react-icons/bs';
 
 export default function ProductAddPage() {
   const { data: session } = useSession();
@@ -165,7 +166,11 @@ export default function ProductAddPage() {
         'wholesalePrice',
         newProduct.pricingDetails?.wholesalePrice?.toString() ?? ''
       );
-
+      formData.append('telegramLink', newProduct.subInfo?.telegram ?? '');
+      formData.append('facebookLink', newProduct.subInfo?.facebookLink ?? '');
+      formData.append('instaLink', newProduct.subInfo?.instaLink ?? '');
+      formData.append('whasapp', newProduct.subInfo?.whasapp ?? '');
+      formData.append('videoLink', newProduct.subInfo?.videoLink ?? '');
       const res = await fetch('/api/products', { method: 'POST', body: formData });
       if (!res.ok) throw new Error();
 
@@ -567,7 +572,27 @@ export default function ProductAddPage() {
                 dir="rtl"
               />
             </div>
+            <div>
+              {/* {session?.user?.role === 'SUPPLIER' && ( */}
+              <div className="flex flex-col gap-2">
+                <InputGroup
+                  label="رابط المنتج فيديو (اختياري)"
+                  icon={<BsTelegram className="h-4 w-4 text-gray-500" />}
+                  placeholder="رابط تيليجرام"
+                  value={newProduct.subInfo?.telegram || ''}
+                  onChange={value =>
+                    setNewProduct({
+                      ...newProduct,
+                      subInfo: { ...newProduct.subInfo, telegram: value },
+                    })
+                  }
+                  disabled={loading}
+                />
+              </div>
+              {/* )} */}
 
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
+            </div>
             <div className="flex flex-col gap-2">
               <Label className="flex items-center gap-1 text-sm text-gray-700">
                 <ImageIcon className="h-4 w-4 text-gray-500" />

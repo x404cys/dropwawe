@@ -52,6 +52,9 @@ export async function POST(request: NextRequest) {
 
     const productsInDb = await prisma.product.findMany({
       where: { id: { in: productIds } },
+      include: {
+        pricingDetails: true,
+      },
     });
 
     const errors: { productId: string; type: string; message: string }[] = [];
@@ -105,9 +108,66 @@ export async function POST(request: NextRequest) {
       },
       include: { items: true },
     });
+    if (productsInDb.find(p => p.isFromSupplier === true)) {
+      const supplierItems = items
+        .map(item => {
+          const product = productsInDb.find(p => p.id === item.productId);
+
+          if (!product || !product.isFromSupplier) return null;
+
+          const wholesalePrice = product.pricingDetails?.wholesalePrice ?? 0;
+
+          return {
+            productId: product.id,
+            quantity: item.quantity,
+            price: item.price,
+            wholesalePrice,
+            traderProfit: (item.price - wholesalePrice) * item.quantity,
+            supplierProfit: wholesalePrice * item.quantity,
+            supplierId: product.supplierId,
+          };
+        })
+        .filter(Boolean) as {
+        productId: string;
+        quantity: number;
+        price: number;
+        wholesalePrice: number;
+        traderProfit: number;
+        supplierProfit: number;
+        supplierId: string;
+      }[];
+
+      await prisma.orderFromTrader.create({
+        data: {
+          traderId: userId,
+          supplierId: supplierItems[0].supplierId,
+          orderId: order.id,
+          status: 'PENDING',
+          total: supplierItems.reduce((sum, i) => sum + i.wholesalePrice * i.quantity, 0),
+          fullName: order.fullName,
+          location: order.location,
+          phone: order.phone,
+          items: {
+            create: supplierItems.map(i => ({
+              productId: i.productId,
+              quantity: i.quantity,
+              price: i.price,
+              wholesalePrice: i.wholesalePrice,
+              traderProfit: i.traderProfit,
+              supplierProfit: i.supplierProfit,
+            })),
+          },
+        },
+        include: { items: true },
+      });
+    }
+    // function iqdToUsd(amountIQD: number): number {
+    //   return Number((amountIQD / 1300).toFixed(2));
+    // }
+    // const totalInUSD = iqdToUsd(calculatedTotal);
 
     const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
-    const PAYTABS_PROFILE_ID = 169218;
+    const PAYTABS_PROFILE_ID = 144505;
 
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dropwave.cloud';
 
@@ -117,12 +177,15 @@ export async function POST(request: NextRequest) {
 
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,
-      tran_type: 'auth',
+      tran_type: 'sale',
       tran_class: 'ecom',
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
+      // cart_currency: 'USD',
+      // cart_amount: totalInUSD,
       cart_currency: 'IQD',
       cart_amount: calculatedTotal,
+
       callback: CALLBACK_URL,
       return: CALLBACK_URL,
       customer_details: {
@@ -162,6 +225,9 @@ export async function POST(request: NextRequest) {
         cartId: cart_id,
         amount: calculatedTotal,
         status: 'PENDING',
+      },
+      include: {
+        order: true,
       },
     });
 

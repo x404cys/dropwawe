@@ -32,6 +32,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
         images: true,
         sizes: true,
         colors: true,
+        
       },
     });
 

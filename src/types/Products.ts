@@ -28,6 +28,7 @@ export interface Product {
     Store?: StoreProps[];
   };
   pricingDetails?: ProductPricing;
+  subInfo?: subInfo;
 }
 export interface ProductPricing {
   id: string;
@@ -39,6 +40,14 @@ export interface ProductPricing {
   minQuantity?: number;
   createdAt: string;
 }
+export interface subInfo {
+  telegram?: string;
+  facebookLink?: string;
+  instaLink?: string;
+  whasapp?: string;
+  videoLink?: string;
+}
+
 export interface PropsProduct {
   products: Product[];
   editingId: string | null;
