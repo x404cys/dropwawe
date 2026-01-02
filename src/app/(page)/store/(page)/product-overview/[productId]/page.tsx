@@ -167,7 +167,7 @@ export default function ProductPage() {
             {product.sizes && product.sizes.length > 0 && (
               <div>
                 <h3 className="mb-3 font-semibold">اختر الفئة</h3>
-                <div className="flex   justify-center flex-wrap gap-3">
+                <div className="flex flex-wrap justify-center gap-3">
                   {product.sizes.map(sizeOption => (
                     <button
                       key={sizeOption.size}
@@ -308,13 +308,13 @@ export default function ProductPage() {
 
             <div className="grid gap-4 sm:grid-cols-2">
               {product.shippingType && (
-                <Card className="animate-scale-in p-4">
+                <Card className="animate-scale-in rounded-none p-4 font-light">
                   <div className="flex items-center gap-3">
-                    <div className="bg-success/10 rounded-full p-2">
+                    <div className="bg-success/10 rounded-none p-2">
                       <Truck className="text-success h-5 w-5" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">التوصيل</h4>
+                      <h4 className="font-light">التوصيل</h4>
                       <p className="text-muted-foreground text-sm">
                         {product.shippingType}
                         {product.user?.shippingPrice && (
@@ -329,13 +329,13 @@ export default function ProductPage() {
               )}
 
               {product.hasReturnPolicy && (
-                <Card className="animate-scale-in p-4">
+                <Card className="animate-scale-in rounded-none p-4 font-light">
                   <div className="flex items-center gap-3">
-                    <div className="bg-info/10 rounded-full p-2">
+                    <div className="bg-info/10 rounded-none p-2">
                       <RotateCcw className="text-info h-5 w-5" />
                     </div>
                     <div>
-                      <h4 className="font-semibold">سياسة الاسترجاع</h4>
+                      <h4 className="font-light">سياسة الاسترجاع</h4>
                       <p className="text-muted-foreground text-sm">{product.hasReturnPolicy}</p>
                     </div>
                   </div>
