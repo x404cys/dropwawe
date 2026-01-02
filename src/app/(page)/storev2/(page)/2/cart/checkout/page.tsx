@@ -4,6 +4,7 @@ export const dynamic = 'force-dynamic';
 
 import React from 'react';
 import { useCart } from '@/app/lib/context/CartContext';
+import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 
 import CheckoutItem from './_components/CheckoutItem';
 import OrderSummary from './_components/OrderSummary';
@@ -11,8 +12,17 @@ import OrderSubmi from './_components/OrderSubmit';
 
 const CheckoutPage = () => {
   const { getCartByKey } = useCart();
+  const { store } = useProducts();
 
-  const CART_KEY = `cart/ `;
+  if (!store?.id) {
+    return (
+      <div className="flex h-[70vh] items-center justify-center text-gray-400">
+        جاري تحميل السلة...
+      </div>
+    );
+  }
+
+  const CART_KEY = `cart/${store.id}`;
   const cartItems = getCartByKey(CART_KEY);
 
   if (!cartItems || cartItems.length === 0) {

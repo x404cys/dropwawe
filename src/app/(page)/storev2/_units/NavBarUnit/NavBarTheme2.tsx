@@ -33,7 +33,7 @@ import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useProducts } from '../../Data/context/products/ProductsContext';
 import Image from 'next/image';
 import { GoSearch } from 'react-icons/go';
- import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
+import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
 import CartPreviewDialog from '@/app/(page)/store/(page)/cart/CartPreviewDialog';
 interface NavLink {
   name: string;
