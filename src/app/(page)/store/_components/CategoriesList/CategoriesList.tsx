@@ -8,8 +8,8 @@ export default function CategoriesList() {
   const allCategories = ['الكل', ...categories];
 
   return (
-    <div dir="rtl" className="relative my-4">
-      <div className="scrollbar-hide flex gap-2 overflow-x-auto px-1 py-1 whitespace-nowrap">
+    <div dir="rtl" className="relative my-8 text-center">
+      <div className="scrollbar-hide flex gap-2 text-center justify-center overflow-x-auto px-1 py-1 whitespace-nowrap">
         {allCategories.map((name, idx) => (
           <button
             key={idx}
@@ -17,9 +17,9 @@ export default function CategoriesList() {
               setCategoryLiset(name === 'الكل' ? null : name);
               setActiveCategory(name);
             }}
-            className={`flex-shrink-0 rounded-lg border px-3 py-1.5 text-xs font-medium transition ${
+            className={`text flex-shrink-0 cursor-pointer px-3 py-1.5 font-medium transition ${
               activeCategory === name
-                ? 'border-gray-950 bg-gray-950 text-white'
+                ? 'text-[#f25933]'
                 : 'border-gray-300 text-gray-700 hover:text-gray-950'
             }`}
           >

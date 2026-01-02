@@ -1,53 +1,32 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import axios from 'axios';
-import { UserProps } from '@/types/Products';
-import Loader from '@/components/Loader';
 
-import StoreNavBarV1 from './_components/NavBar/StoreNavBarV1';
+import { UserProps } from '@/types/Products';
+import ProductsProvider from './Data/context/products/ProductsContext';
+import NavBarV2 from './_components/NavBar/NavBar-v2';
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<UserProps[]>([]);
   const [loading, setLoading] = useState(true);
 
   const getSubdomain = () => {
-    if (typeof window === 'undefined') return '22122121';
+    if (typeof window === 'undefined') return 'abdulrqhman';
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2) return parts[0];
-    return '22122121';
+    return 'abdulrqhman';
   };
-
-  const slug = getSubdomain();
-
-  useEffect(() => {
-    if (!slug) return;
-
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get<UserProps[]>(`/api/users/get/${slug}`);
-        setUsers(res.data);
-      } catch (err) {
-        console.error('Error fetching users:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [slug]);
-
-  if (loading) {
-    return <Loader />;
-  }
+  const subLink = getSubdomain();
 
   return (
-    <div dir="rtl" className="min-h-screen py-4">
-      {children}
-
-      <br className="py-20" />
-    </div>
+    <section className="md:mx-40">
+      <div>
+        <ProductsProvider subLink={subLink}>
+          <NavBarV2 />
+        </ProductsProvider>
+        <ProductsProvider subLink={subLink}>{children}</ProductsProvider>
+      </div>
+    </section>
   );
 }

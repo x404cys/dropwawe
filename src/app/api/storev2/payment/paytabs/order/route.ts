@@ -166,7 +166,7 @@ export async function POST(request: NextRequest) {
     }
     const totalInUSD = iqdToUsd(calculatedTotal);
 
-    const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
+    const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
     const PAYTABS_PROFILE_ID = 144505;
 
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dropwave.cloud';
@@ -181,18 +181,10 @@ export async function POST(request: NextRequest) {
       tran_class: 'ecom',
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
-      cart_currency: 'USD',
-      cart_amount: totalInUSD,
+      cart_currency: 'IQD',
+      cart_amount: 11000,
       callback: CALLBACK_URL,
       return: CALLBACK_URL,
-      customer_details: {
-        name: fullName,
-        email: 'no-reply@example.com',
-        phone: phone,
-        street1: location,
-        city: 'Baghdad',
-        country: 'IQ',
-      },
     };
 
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {

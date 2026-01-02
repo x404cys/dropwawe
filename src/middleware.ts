@@ -34,7 +34,9 @@ export async function middleware(req: NextRequest) {
           ? url.pathname
           : `/Supplier/Dashboard${url.pathname}`;
         return NextResponse.rewrite(url);
-
+      case 'abdulrqhman':
+        url.pathname = url.pathname.startsWith('/store') ? url.pathname : `/storev2${url.pathname}`;
+        return NextResponse.rewrite(url);
       default:
         if (subdomain !== 'www' && subdomain !== 'sahlapp') {
           url.pathname = url.pathname.startsWith('/storev2')
