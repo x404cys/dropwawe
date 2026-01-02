@@ -49,7 +49,7 @@ export default function CartPage() {
   const { storeId } = useParams();
   const { store } = useProducts();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+//
   const [locationInput, setLocationInput] = useState('');
   const [fullName, setFullName] = useState('');
   const [phone, setPhone] = useState('');
