@@ -21,14 +21,14 @@ const themes: Theme[] = [
     id: 'MODERN',
     name: 'ثيم عصري',
     description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
-    image: '/img-theme/MODREN-THEME.PNG',
+    image: '/img-theme/iPhone-13-PRO-MODREN.webp',
     badge: 'شائع',
   },
   {
     id: 'NORMAL',
     name: 'ثيم كلاسيكي',
     description: 'تصميم بسيط وألوان هادئة',
-    image: '/img-theme/NORMAL-THEME.png',
+    image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
   },
 ];
 
@@ -66,12 +66,8 @@ export default function ThemeSection() {
     <div className="space-y-8">
       <div className="space-y-2">
         <div className="mb-6 flex items-center justify-center text-center">
-          <div className="flex flex-col items-center gap-2">
-            <h1 className="text-lg font-semibold text-green-400">تحت الصيانة</h1>
-
-            <p className="max-w-md text-sm text-red-500">
-              هذا القسم من الإعدادات تحت الصيانة حالياً
-            </p>
+          <div className="flex flex-col items-center gap-2 rounded-2xl border border-green-400 bg-green-50 px-8 py-0.5">
+            <h1 className="font-light text-green-400">قالب جديد بأنتظارك</h1>
           </div>
         </div>
 
@@ -102,9 +98,7 @@ export default function ThemeSection() {
                   : 'border-border hover:border-primary/50 hover:shadow-md'
               }`}
             >
-              {theme.image && (
-                <img src={theme.image} alt={theme.name} className="h-60 w-full object-cover" />
-              )}
+              {theme.image && <img src={theme.image} alt={theme.name} className="w-full" />}
 
               {theme.badge && (
                 <span className="bg-primary absolute top-3 left-3 rounded-full px-3 py-1 text-xs text-white">
@@ -116,7 +110,7 @@ export default function ThemeSection() {
                 <h3 className="text-lg font-semibold">{theme.name}</h3>
                 <p className="text-muted-foreground text-sm">{theme.description}</p>
 
-                {/* <Button
+                <Button
                   className="w-full"
                   size="sm"
                   variant={isActive ? 'secondary' : 'default'}
@@ -136,7 +130,7 @@ export default function ThemeSection() {
                       اختر الثيم
                     </>
                   )}
-                </Button> */}
+                </Button>
               </div>
             </div>
           );

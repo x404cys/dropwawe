@@ -18,6 +18,8 @@ import ThemeSection from './(page)/theme-section/theme-section';
 import PixelSection from './(page)/pixel-section/pixel-section';
 import SettingOptions from './Setting-options';
 import { SectionType } from '@/types/setting/Section';
+import { CiBookmarkCheck } from 'react-icons/ci';
+import { IoMdCheckmark } from 'react-icons/io';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -208,9 +210,9 @@ export default function StoreSetupPage() {
               <Button
                 disabled={loading}
                 onClick={handleSubmit}
-                className="flex w-full items-center gap-2 px-2 py-5"
+                className="flex w-full cursor-pointer items-center gap-2 bg-sky-600 px-2 py-5 hover:bg-sky-400"
               >
-                <Save className="h-4 w-4" />
+                <IoMdCheckmark className="h-5 w-5" />
                 {loading ? 'جارٍ الحفظ...' : 'حفظ التغييرات'}
               </Button>
             </div>

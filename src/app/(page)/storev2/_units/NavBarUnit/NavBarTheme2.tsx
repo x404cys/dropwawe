@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import {
   Search,
   ShoppingCart,
@@ -33,15 +33,24 @@ import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useProducts } from '../../Data/context/products/ProductsContext';
 import Image from 'next/image';
 import { GoSearch } from 'react-icons/go';
-import CartPreviewDialog from '../../(page)/cart-unit/t2/cart/CartPreviewDialog';
+import CartPreviewDialog from '../../(page)/cart/cart-unit/t2/cart/CartPreviewDialog';
+import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
 interface NavLink {
   name: string;
   href: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
-export default function NavBarV2() {
-  const { store, setSearch, filteredProduct, search, categories, setCategory, selectedCategory } =
-    useProducts();
+export default function NavBarTheme2() {
+  const {
+    store,
+    setSearch,
+    filteredProduct,
+    product,
+    search,
+    categories,
+    setCategory,
+    selectedCategory,
+  } = useProducts();
   const pathname = usePathname();
 
   const [searchInput, setSearchInput] = useState('');
@@ -71,7 +80,10 @@ export default function NavBarV2() {
     { name: 'العروض', href: '/storev2/ofers', icon: Gift },
     { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
   ];
-
+  const lastProduct = useMemo(() => {
+    if (!product || product.length === 0) return null;
+    return product[product.length - 6];
+  }, [product]);
   return (
     <>
       <nav
@@ -84,9 +96,7 @@ export default function NavBarV2() {
           <div className="flex h-16 items-center justify-between">
             <div className="flex-shrink-0">
               <div className="text-navbar-foreground font-arabic text-lg font-semibold">
-                <Link href={`/`}>
-                  <Image src={'/logo.webp'} alt={'logo'} width={60} height={60} />
-                </Link>
+                <Link href={`/`}>{store?.name}</Link>
               </div>
             </div>
 
@@ -243,7 +253,7 @@ export default function NavBarV2() {
                 />
 
                 {cartItems > 0 && (
-                  <span className="bg-primary text-primary-foreground ll absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center text-xs">
+                  <span className="bg-primary text-primary-foreground ll absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center text-xs">
                     {cartItems}
                   </span>
                 )}
@@ -256,7 +266,7 @@ export default function NavBarV2() {
                   className="h-7 w-7 cursor-pointer duration-100 hover:text-rose-500"
                 />
                 {favTotal > 0 && (
-                  <span className="bg-primary text-primary-foreground ll absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center text-xs">
+                  <span className="bg-primary text-primary-foreground ll absolute -top-2 -right-2 flex h-4 w-4 items-center justify-center text-xs">
                     {favTotal}
                   </span>
                 )}
@@ -353,6 +363,16 @@ export default function NavBarV2() {
           )}
         </AnimatePresence>
       </nav>
+      {lastProduct && (
+        <HeroBanner
+          title={lastProduct.name}
+          subtitle={lastProduct.category}
+          description={lastProduct.description as string}
+          image={lastProduct.image as string}
+          ctaText="اشتري الآن"
+          ctaLink={`/storev2/products/${lastProduct.id}`}
+        />
+      )}
       <CartPreviewDialog open={cartOpen} onClose={() => setCartOpen(false)} cartKey={KEY_CART} />
     </>
   );

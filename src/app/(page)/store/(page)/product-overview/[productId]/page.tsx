@@ -1,11 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
-import { Heart, ShoppingCart, Truck, RotateCcw, Plus, Minus } from 'lucide-react';
+import { useState, useEffect, use } from 'react';
+import { Heart, ShoppingCart, Truck, RotateCcw, Plus, Minus, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Product } from '@/types/Products';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useProducts } from '../../../Data/context/products/ProductsContext';
@@ -16,7 +16,7 @@ import { HiOutlineShare } from 'react-icons/hi';
 
 export default function ProductPage() {
   const params = useParams();
-
+  const router = useRouter();
   const id = params?.productId as string;
   const { store } = useProducts();
   const [product, setProduct] = useState<Product | null>(null);
@@ -221,7 +221,7 @@ export default function ProductPage() {
 
             <div>
               <h3 className="mb-3 text-center font-semibold">حدد الكمية المطلوبة</h3>
-              <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center justify-center">
                 <Button
                   variant="outline"
                   size="icon"
@@ -303,9 +303,23 @@ export default function ProductPage() {
                 >
                   <HiOutlineShare />
                 </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    router.back();
+                  }}
+                  className={`h-14 w-14 rounded-none transition-all duration-300 ${
+                    isFavorite
+                      ? 'border-destructive bg-destructive text-destructive-foreground'
+                      : 'hover:border-destructive hover:text-destructive'
+                  }`}
+                >
+                  <ArrowLeft className={`h-6 w-6`} />
+                </Button>
               </div>
             </div>
-
+             
             <div className="grid gap-4 sm:grid-cols-2">
               {product.shippingType && (
                 <Card className="animate-scale-in rounded-none p-4 font-light">

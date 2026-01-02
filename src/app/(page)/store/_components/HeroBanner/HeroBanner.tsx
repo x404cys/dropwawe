@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import { RiScrollToBottomLine } from 'react-icons/ri';
 
 interface HeroBannerProps {
   title: string;
@@ -21,9 +22,15 @@ export default function HeroBanner({
   return (
     <section
       dir="rtl"
-      className="xs:h-[350px] relative h-[400px] w-full overflow-hidden md:h-[500px]"
+      className="xs:h-[350px] relative mb-8 h-[400px] w-full overflow-hidden md:h-[90vh]"
     >
-      <Image src={image} alt={title} fill priority className="h-full w-full object-cover" />
+      <Image
+        src={image}
+        alt={title}
+        fill
+        priority
+        className="h-full w-full object-cover blur-[2px]"
+      />
 
       <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
 

@@ -2,15 +2,16 @@
 
 import BottomBarUnit from './_components/UnitComponents/BottomBarUnit';
 import NavBarUnit from './_components/UnitComponents/NavBar';
+import NavBarUnitComponents from './_units/NavBarUnit/NavBarUnitComponents';
 import ProductsProvider from './Data/context/products/ProductsContext';
 
 export default function StoreLayout2({ children }: { children: React.ReactNode }) {
   const getSubdomain = () => {
-    if (typeof window === 'undefined') return '22122121';
+    if (typeof window === 'undefined') return 'abdulrqhman';
     const host = window.location.hostname;
     const parts = host.split('.');
     if (parts.length > 2) return parts[0];
-    return '22122121';
+    return 'abdulrqhman';
   };
   const subLink = getSubdomain();
 
@@ -18,7 +19,7 @@ export default function StoreLayout2({ children }: { children: React.ReactNode }
     <section className="px-1 md:mx-10">
       <div>
         <ProductsProvider subLink={subLink}>
-          <NavBarUnit subLink={getSubdomain()} />
+          <NavBarUnitComponents />
           {children}
           <div className="mt-20">
             <BottomBarUnit />

@@ -39,7 +39,7 @@ interface NavLink {
   href: string;
   icon?: React.ComponentType<{ className?: string }>;
 }
-export default function NavBarV2() {
+export default function NavBarTheme2() {
   const { store, setSearch, filteredProduct, search, categories, setCategory, selectedCategory } =
     useProducts();
   const pathname = usePathname();

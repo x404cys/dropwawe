@@ -4,10 +4,5 @@ import BottomNavBarV2 from '../NavBar/BottomNavBarV2';
 
 export default function BottomBarUnit() {
   const { store } = useProducts();
-  return (
-    <section>
-      {store?.theme === 'NORMAL' && <BottomNavBarV2 />}
-      {store?.theme === 'MODERN' && <StoreBottomNav />}
-    </section>
-  );
+  return <section>{store?.theme === 'NORMAL' && <StoreBottomNav />}</section>;
 }
