@@ -23,12 +23,14 @@ import { useParams, useRouter } from 'next/navigation';
 import { FiShoppingBag } from 'react-icons/fi';
 import { LiaShoppingBagSolid } from 'react-icons/lia';
 import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-import { useProducts } from '../../../Data/context/products/ProductsContext';
+
 import { MdOutlinePayments } from 'react-icons/md';
-import OrderSubmitButton from '../../../lib/Checkout/OrderSubmitButton';
+
 import { toast } from 'sonner';
 import { randomUUID } from 'crypto';
-import OrderSubmitButtonPayment from '../../../lib/Checkout/OrderSubmitPayment/OrderSubmitPayment';
+import OrderSubmitButton from '@/app/(page)/storev2/lib/Checkout/OrderSubmitButton';
+import { useProducts } from '@/app/(page)/store/Data/context/products/ProductsContext';
+import OrderSubmitButtonPayment from '@/app/(page)/storev2/lib/Checkout/OrderSubmitPayment/OrderSubmitPayment';
 
 export default function CartPage() {
   const {

@@ -4,8 +4,8 @@ import { useCart } from '@/app/lib/context/CartContext';
 import React from 'react';
 import CheckoutItem from './_components/CheckoutItem';
 import OrderSummary from './_components/OrderSummary';
-import { useProducts } from '../../../../../Data/context/products/ProductsContext';
 import OrderSubmi from './_components/OrderSubmit';
+import { useProducts } from '@/app/(page)/store/Data/context/products/ProductsContext';
 
 const CheckoutPage = () => {
   const { getCartByKey } = useCart();
