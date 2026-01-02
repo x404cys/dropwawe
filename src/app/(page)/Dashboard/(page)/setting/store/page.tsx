@@ -193,8 +193,9 @@ export default function StoreSetupPage() {
               />
             )}
 
-            {activeSection === 'theme' && <ThemeSection />}
 
+            {activeSection === 'theme' && <ThemeSection />}
+ 
             {activeSection === 'pixel' && (
               <PixelSection
                 facebookPixel={facebookPixel}
