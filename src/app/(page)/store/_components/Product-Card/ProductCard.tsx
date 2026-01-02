@@ -6,7 +6,7 @@ import { Eye, ShoppingCart, Heart } from 'lucide-react';
 
 export default function ProductCard3({ product }: { product: Product }) {
   return (
-    <Link href={`/store/product-overview/${product.id}`} className="group block">
+    <Link href={`/storev2/product-overview/${product.id}`} className="group block">
       <div className="relative overflow-hidden">
         <Image
           src={product.image ?? '/placeholder.png'}
