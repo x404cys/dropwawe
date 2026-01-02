@@ -24,7 +24,7 @@ interface OrderSubmitButtonPaymentProps {
   onSuccess?: () => void;
 }
 
-export default function OrderSubmitButtonPaymentTheme2({
+export default function OrderSubmitButtonPayment({
   storeId,
   fullName,
   phone,
