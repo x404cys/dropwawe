@@ -8,11 +8,11 @@ import { Product } from '@/types/Products';
 import { useParams, useRouter } from 'next/navigation';
 import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useCart } from '@/app/lib/context/CartContext';
-import { useProducts } from '../../../Data/context/products/ProductsContext';
 import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { RxShare2 } from 'react-icons/rx';
 import { HiOutlineShare } from 'react-icons/hi';
+import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 
 export default function ProductPage() {
   const params = useParams();
@@ -319,7 +319,7 @@ export default function ProductPage() {
                 </Button>
               </div>
             </div>
-             
+
             <div className="grid gap-4 sm:grid-cols-2">
               {product.shippingType && (
                 <Card className="animate-scale-in rounded-none p-4 font-light">

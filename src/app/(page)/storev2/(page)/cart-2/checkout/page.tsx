@@ -2,9 +2,8 @@
 
 export const dynamic = 'force-dynamic';
 
-import React from 'react';
 import { useCart } from '@/app/lib/context/CartContext';
-import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
+import { useProducts } from '../../../Data/context/products/ProductsContext';
 
 import CheckoutItem from './_components/CheckoutItem';
 import OrderSummary from './_components/OrderSummary';
@@ -22,7 +21,7 @@ const CheckoutPage = () => {
     );
   }
 
-  const CART_KEY = `cart/${store.id}`;
+  const CART_KEY = `cart/${store?.id}`;
   const cartItems = getCartByKey(CART_KEY);
 
   if (!cartItems || cartItems.length === 0) {

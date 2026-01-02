@@ -8,11 +8,13 @@ import { useCart } from '@/app/lib/context/CartContext';
 import CheckoutItem from './_components/CheckoutItem';
 import OrderSummary from './_components/OrderSummary';
 import OrderSubmi from './_components/OrderSubmit';
+import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 
 const CheckoutPage = () => {
   const { getCartByKey } = useCart();
+  const { store } = useProducts();
 
-  const CART_KEY = `cart/ `;
+  const CART_KEY = `cart/${store?.id}`;
   const cartItems = getCartByKey(CART_KEY);
 
   if (!cartItems || cartItems.length === 0) {

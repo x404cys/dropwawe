@@ -5,6 +5,7 @@ import { StoreProps } from '@/types/store/StoreType';
 import FacebookPixel from '@/app/(page)/storev2/Pixel/FacebookPixel';
 import GooglePixel from '@/app/(page)/storev2/Pixel/GooglePixel';
 import ProductCard3 from '@/app/(page)/store/_components/Product-Card/ProductCard';
+import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
 
 interface ProductsListProps {
   products: Product[];
@@ -39,42 +40,57 @@ export default function ProductsListTheme2({
       return acc;
     }, {});
   }, [remainingProducts]);
-
+  const lastProduct = useMemo(() => {
+    if (!products || products.length === 0) return null;
+    return products[products.length - 6];
+  }, [products]);
   return (
-    <div dir="rtl" className="bg-white px-2">
-      {featuredProducts.length > 0 && (
-        <div className="mb-16">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-            {featuredProducts.map(product => (
-              <ProductCard3 key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
+    <>
+      {lastProduct && (
+        <HeroBanner
+          title={lastProduct.name}
+          subtitle={lastProduct.category}
+          description={lastProduct.description as string}
+          image={lastProduct.image as string}
+          ctaText="اشتري الآن"
+          ctaLink={`/storev2/products/${lastProduct.id}`}
+        />
       )}
-
-      <div className="space-y-14">
-        {Object.entries(groupedByCategory).map(
-          ([categoryName, items]) =>
-            items.length > 0 && (
-              <div key={categoryName}>
-                <div className="mb-6 flex items-center justify-center gap-4">
-                  <span className="h-[1.5px] w-48 bg-gray-300" />
-                  <h2 className="text-lg font-bold text-gray-800">{categoryName}</h2>
-                  <span className="h-[1.5px] w-48 bg-gray-300" />
-                </div>
-
-                <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
-                  {items.map(product => (
-                    <ProductCard3 key={product.id} product={product} />
-                  ))}
-                </div>
-              </div>
-            )
+      <div dir="rtl" className="bg-white px-2">
+        {featuredProducts.length > 0 && (
+          <div className="mb-16">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+              {featuredProducts.map(product => (
+                <ProductCard3 key={product.id} product={product} />
+              ))}
+            </div>
+          </div>
         )}
-      </div>
 
-      {store?.facebookPixel && <FacebookPixel pixelId={store.facebookPixel} />}
-      {store?.googlePixel && <GooglePixel measurementId={store.googlePixel} />}
-    </div>
+        <div className="space-y-14">
+          {Object.entries(groupedByCategory).map(
+            ([categoryName, items]) =>
+              items.length > 0 && (
+                <div key={categoryName}>
+                  <div className="mb-6 flex items-center justify-center gap-4">
+                    <span className="h-[1.5px] w-48 bg-gray-300" />
+                    <h2 className="text-lg font-bold text-gray-800">{categoryName}</h2>
+                    <span className="h-[1.5px] w-48 bg-gray-300" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-4">
+                    {items.map(product => (
+                      <ProductCard3 key={product.id} product={product} />
+                    ))}
+                  </div>
+                </div>
+              )
+          )}
+        </div>
+
+        {store?.facebookPixel && <FacebookPixel pixelId={store.facebookPixel} />}
+        {store?.googlePixel && <GooglePixel measurementId={store.googlePixel} />}
+      </div>
+    </>
   );
 }

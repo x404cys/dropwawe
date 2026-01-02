@@ -15,22 +15,6 @@ export default function ProductCard3({ product }: { product: Product }) {
           height={300}
           className="aspect-square w-full border border-gray-200 bg-gray-200 object-cover transition-transform duration-500 group-hover:scale-105 xl:aspect-7/8"
         />
-
-        <div className="absolute inset-0 top-0 flex items-center justify-center gap-3 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-          <button
-            onClick={e => e.preventDefault()}
-            className="rounded-full bg-white p-3 text-gray-800 shadow hover:bg-gray-100"
-          >
-            <Eye size={18} />
-          </button>
-
-          <button
-            onClick={e => e.preventDefault()}
-            className="rounded-full bg-white p-3 text-gray-800 shadow hover:bg-gray-100"
-          >
-            <Heart size={18} />
-          </button>
-        </div>
       </div>
 
       <div className="text-center">

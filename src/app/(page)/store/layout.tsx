@@ -3,6 +3,7 @@
 import { useState } from 'react';
 
 import { UserProps } from '@/types/Products';
+import ProductsProvider from '../storev2/Data/context/products/ProductsContext';
 
 export default function StoreLayout({ children }: { children: React.ReactNode }) {
   const [users, setUsers] = useState<UserProps[]>([]);
@@ -16,5 +17,9 @@ export default function StoreLayout({ children }: { children: React.ReactNode })
     return 'abdulrqhman';
   };
 
-  return <section className="md:mx-40">{children}</section>;
+  return (
+    <section className="md:mx-40">
+      <ProductsProvider subLink={getSubdomain()}>{children}</ProductsProvider>
+    </section>
+  );
 }

@@ -80,10 +80,7 @@ export default function NavBarTheme2() {
     { name: 'العروض', href: '/storev2/ofers', icon: Gift },
     { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
   ];
-  const lastProduct = useMemo(() => {
-    if (!product || product.length === 0) return null;
-    return product[product.length - 6];
-  }, [product]);
+
   return (
     <>
       <nav
@@ -124,7 +121,7 @@ export default function NavBarTheme2() {
                         {filteredProduct.map(product => (
                           <li key={product.id}>
                             <a
-                              href={`/products/${product.id}`}
+                              href={`/store/product-overview/${product.id}`}
                               className="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
                             >
                               <img
@@ -207,7 +204,7 @@ export default function NavBarTheme2() {
                                   {filteredProduct.map(product => (
                                     <li key={product.id}>
                                       <a
-                                        href={`/products/${product.id}`}
+                                        href={`/store/product-overview/${product.id}`}
                                         onClick={() => setSearchOpen(false)}
                                         className="flex items-center gap-3 px-4 py-3"
                                       >
@@ -363,16 +360,7 @@ export default function NavBarTheme2() {
           )}
         </AnimatePresence>
       </nav>
-      {lastProduct && (
-        <HeroBanner
-          title={lastProduct.name}
-          subtitle={lastProduct.category}
-          description={lastProduct.description as string}
-          image={lastProduct.image as string}
-          ctaText="اشتري الآن"
-          ctaLink={`/storev2/products/${lastProduct.id}`}
-        />
-      )}
+
       <CartPreviewDialog open={cartOpen} onClose={() => setCartOpen(false)} cartKey={KEY_CART} />
     </>
   );
