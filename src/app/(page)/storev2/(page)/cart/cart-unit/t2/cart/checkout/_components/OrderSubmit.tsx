@@ -27,11 +27,11 @@ import { MdOutlinePayments } from 'react-icons/md';
 import { toast } from 'sonner';
 import { randomUUID } from 'crypto';
 import { useProducts } from '@/app/(page)/store/Data/context/products/ProductsContext';
-import OrderSubmitButton from '@/app/(page)/store/_utils/OrderSubmitButton';
-import OrderSubmitButtonPayment from '@/app/(page)/store/_utils/OrderSubmitButtonPayment';
+import OrderSubmitButtonTheme2 from '@/app/(page)/store/_utils/OrderSubmitButton';
+import OrderSubmitButtonPaymentTheme2 from '@/app/(page)/store/_utils/OrderSubmitButtonPayment';
 import { PiContactlessPaymentLight } from 'react-icons/pi';
 
-export default function OrderSubmi() {
+export default function OrderSubmiTheme2() {
   const {
     getCartByKey,
     addToCartByKey,
@@ -179,7 +179,7 @@ export default function OrderSubmi() {
               </div>
 
               <div className="flex flex-col items-center justify-center space-y-2">
-                <OrderSubmitButton
+                <OrderSubmitButtonTheme2
                   selectedColor={cartItems.find(item => item.selectedColor)?.selectedColor ?? ''}
                   selectedSize={cartItems.find(item => item.selectedSize)?.selectedSize ?? ''}
                   userId={store?.userId as string}
@@ -261,7 +261,7 @@ export default function OrderSubmi() {
                       >
                         إلغاء
                       </Button>
-                      <OrderSubmitButtonPayment
+                      <OrderSubmitButtonPaymentTheme2
                         selectedColor={
                           cartItems.find(item => item.selectedColor)?.selectedColor ?? ''
                         }
