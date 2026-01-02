@@ -33,7 +33,7 @@ import { HiOutlineShoppingCart } from 'react-icons/hi';
 import { useProducts } from '../../Data/context/products/ProductsContext';
 import Image from 'next/image';
 import { GoSearch } from 'react-icons/go';
-import CartPreviewDialog from '../../(page)/cart-unit/t2/cart/CartPreviewDialog';
+import CartPreviewDialog from '../../(page)/cart/CartPreviewDialog';
 interface NavLink {
   name: string;
   href: string;
