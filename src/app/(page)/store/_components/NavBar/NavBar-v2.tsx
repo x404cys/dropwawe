@@ -159,7 +159,7 @@ export default function NavBarV2() {
               <div className="md:hidden">
                 <CiSearch
                   onClick={() => setSearchOpen(!searchOpen)}
-                  className="relative h-6 w-6 cursor-pointer duration-100 hover:text-rose-500"
+                  className="relative h-7 w-7 cursor-pointer duration-100 hover:text-rose-500"
                 />
                 {searchOpen && (
                   <div className="bg-white">
@@ -243,7 +243,7 @@ export default function NavBarV2() {
               <div className="relative">
                 <PiBagLight
                   onClick={() => setCartOpen(true)}
-                  className="h-6 w-6 cursor-pointer hover:text-rose-500"
+                  className="h-7 w-7 cursor-pointer hover:text-rose-500"
                 />
 
                 {cartItems > 0 && (
@@ -257,7 +257,7 @@ export default function NavBarV2() {
                 <IoIosHeartEmpty
                   onClick={() => setFavOpen(true)}
                   size={22}
-                  className="cursor-pointer duration-100 hover:text-rose-500"
+                  className="h-7 w-7 cursor-pointer duration-100 hover:text-rose-500"
                 />
                 {favTotal > 0 && (
                   <span className="bg-primary text-primary-foreground ll absolute -top-2 -right-3 flex h-4 w-4 items-center justify-center text-xs">

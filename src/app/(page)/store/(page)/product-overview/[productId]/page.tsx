@@ -12,6 +12,7 @@ import { useProducts } from '../../../Data/context/products/ProductsContext';
 import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { RxShare2 } from 'react-icons/rx';
+import { HiOutlineShare } from 'react-icons/hi';
 
 export default function ProductPage() {
   const params = useParams();
@@ -155,7 +156,7 @@ export default function ProductPage() {
                   </span>
                 </>
               ) : (
-                <span className="text-success text-3xl font-bold">
+                <span className="text-success text-3xl font-bold text-[#f25933]">
                   {formatIQD(product.price)} د.ع
                 </span>
               )}
@@ -166,13 +167,13 @@ export default function ProductPage() {
             {product.sizes && product.sizes.length > 0 && (
               <div>
                 <h3 className="mb-3 font-semibold">اختر الفئة</h3>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex   justify-center flex-wrap gap-3">
                   {product.sizes.map(sizeOption => (
                     <button
                       key={sizeOption.size}
                       onClick={() => setSelectedSize(sizeOption.size)}
                       disabled={sizeOption.stock === 0}
-                      className={`rounded-xl border-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
+                      className={`rounded-none border-2 px-4 py-2 text-sm font-medium transition-all duration-300 ${
                         selectedSize === sizeOption.size
                           ? 'border-primary bg-primary text-primary-foreground shadow-glow'
                           : sizeOption.stock === 0
@@ -196,13 +197,13 @@ export default function ProductPage() {
             {product.colors && product.colors.length > 0 && (
               <div>
                 <h3 className="mb-3 font-semibold">اختر اللون</h3>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap items-center justify-center gap-3">
                   {product.colors.map((colorOption, index) => (
                     <button
                       key={index}
                       onClick={() => setSelectedColor(colorOption.hex)}
                       disabled={colorOption.stock === 0}
-                      className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all duration-300 ${
+                      className={`flex h-10 w-10 items-center justify-center rounded-none border-2 transition-all duration-300 ${
                         selectedColor === colorOption.hex
                           ? 'border-primary shadow-glow'
                           : colorOption.stock === 0
@@ -219,13 +220,13 @@ export default function ProductPage() {
             )}
 
             <div>
-              <h3 className="mb-3 font-semibold">حدد الكمية المطلوبة</h3>
-              <div className="flex items-center gap-3">
+              <h3 className="mb-3 text-center font-semibold">حدد الكمية المطلوبة</h3>
+              <div className="flex items-center justify-center gap-3">
                 <Button
                   variant="outline"
                   size="icon"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="h-12 w-12 rounded-xl"
+                  className="h-12 w-12 rounded-none"
                 >
                   <Minus className="h-4 w-4" />
                 </Button>
@@ -234,24 +235,24 @@ export default function ProductPage() {
                   variant="outline"
                   size="icon"
                   onClick={() => setQuantity(quantity + 1)}
-                  className="h-12 w-12 rounded-xl"
+                  className="h-12 w-12 rounded-none"
                 >
                   <Plus className="h-4 w-4" />
                 </Button>
               </div>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col items-center justify-center gap-4 text-center">
               <Button
                 onClick={() => {
-                  // if (product.sizes?.length && !selectedSize) {
-                  //   toast.warning('الرجاء اختيار الفئة قبل الإضافة');
-                  //   return;
-                  // }
-                  // if (product.colors?.length && !selectedColor) {
-                  //   toast.warning('الرجاء اختيار اللون قبل الإضافة');
-                  //   return;
-                  // }
+                  if (product.sizes?.length && !selectedSize) {
+                    toast.warning('الرجاء اختيار الفئة قبل الإضافة');
+                    return;
+                  }
+                  if (product.colors?.length && !selectedColor) {
+                    toast.warning('الرجاء اختيار اللون قبل الإضافة');
+                    return;
+                  }
 
                   const customProduct = {
                     ...product,
@@ -271,35 +272,38 @@ export default function ProductPage() {
                   );
                   toast.success(`تم اضافة ${quantity} الى السلة بنجاح`);
                 }}
-                className="hover-scale h-14 flex-1 cursor-pointer rounded-xl"
+                className="hover-scale w-72 flex-1 cursor-pointer rounded-none p-4"
               >
                 <ShoppingCart className="mr-2 h-5 w-5" />
                 اضف الى السلة
               </Button>
-              <Button
-                variant="outline"
-                size="icon"
-                onClick={() => {
-                  addToFavoriteByKey(product, `fav/${store?.id}`);
-                }}
-                className={`h-14 w-14 rounded-xl transition-all duration-300 ${
-                  isFavorite
-                    ? 'border-destructive bg-destructive text-destructive-foreground'
-                    : 'hover:border-destructive hover:text-destructive'
-                }`}
-              >
-                <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
-              </Button>
-              <Button
-                className="h-14 w-14 rounded-xl transition-all duration-300"
-                variant="outline"
-                onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
-                  toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ');
-                }}
-              >
-                <RxShare2 />
-              </Button>
+              <div className="flex items-center justify-center gap-4">
+                {' '}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => {
+                    addToFavoriteByKey(product, `fav/${store?.id}`);
+                  }}
+                  className={`h-14 w-14 rounded-none transition-all duration-300 ${
+                    isFavorite
+                      ? 'border-destructive bg-destructive text-destructive-foreground'
+                      : 'hover:border-destructive hover:text-destructive'
+                  }`}
+                >
+                  <Heart className={`h-6 w-6 ${isFavorite ? 'fill-current' : ''}`} />
+                </Button>
+                <Button
+                  className="h-14 w-14 rounded-none transition-all duration-300"
+                  variant="outline"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    toast.success('تم نسخ رابط المنتج الان يمكنك مشاركته مع من حولك ');
+                  }}
+                >
+                  <HiOutlineShare />
+                </Button>
+              </div>
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2">

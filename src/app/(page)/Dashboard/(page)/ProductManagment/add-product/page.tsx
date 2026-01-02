@@ -28,7 +28,11 @@ export default function ProductAddPage() {
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
   const [newProduct, setNewProduct] = useState<
-    Partial<Product> & { imageFile?: File; imagePreview?: string }
+    Partial<Product> & {
+      imageFile?: File;
+      imagePreview?: string;
+      unlimited: boolean;
+    }
   >({
     name: '',
     price: 0,
@@ -38,7 +42,9 @@ export default function ProductAddPage() {
     description: '',
     hasReturnPolicy: '',
     shippingType: '',
+    unlimited: false,
   });
+
   const { id } = useUser();
   const [galleryFiles, setGalleryFiles] = useState<File[]>([]);
   const [galleryPreviews, setGalleryPreviews] = useState<string[]>([]);
@@ -129,17 +135,15 @@ export default function ProductAddPage() {
   };
 
   const addProduct = async () => {
-    const requiredFields = [
-      newProduct.name?.trim(),
-      newProduct.price,
-      newProduct.quantity,
-      newProduct.imageFile,
-      newProduct.description?.trim(),
-      newProduct.category?.trim(),
-    ];
-
-    if (requiredFields.some(f => f === undefined || f === null || f === '')) {
-      toast.error('يرجى ملء جميع الحقول المطلوبة وتحميل صورة');
+    if (
+      !newProduct.name?.trim() ||
+      !newProduct.price ||
+      (!newProduct.unlimited && newProduct.quantity == null) ||
+      !newProduct.imageFile ||
+      !newProduct.description?.trim() ||
+      !newProduct.category?.trim()
+    ) {
+      toast.error('يرجى ملء جميع الحقول المطلوبة');
       return;
     }
 
@@ -147,32 +151,89 @@ export default function ProductAddPage() {
 
     try {
       const formData = new FormData();
-      formData.append('name', newProduct.name!);
-      formData.append('price', newProduct.price!.toString());
-      formData.append('quantity', newProduct.quantity!.toString());
-      formData.append('image', newProduct.imageFile!);
-      formData.append('description', newProduct.description!);
-      formData.append('discount', (newProduct.discount ?? 0).toString());
-      formData.append('category', newProduct.category!);
-      formData.append('shippingType', newProduct.shippingType ?? '');
-      formData.append('hasReturnPolicy', newProduct.hasReturnPolicy ?? '');
-      formData.append('sizes', JSON.stringify(sizes));
-      formData.append('colors', JSON.stringify(colors));
-      formData.append('unlimited', String(newProduct.unlimited));
-      galleryFiles.forEach(file => formData.append('gallery', file));
-      formData.append('minPrice', newProduct.pricingDetails?.minPrice?.toString() ?? '');
-      formData.append('maxPrice', newProduct.pricingDetails?.maxPrice?.toString() ?? '');
+
+      formData.append('name', newProduct.name.trim());
+      formData.append('price', String(newProduct.price));
+      formData.append('quantity', newProduct.unlimited ? '0' : String(newProduct.quantity));
+      formData.append('description', newProduct.description.trim());
+      formData.append('category', newProduct.category);
+      formData.append('image', newProduct.imageFile);
+
+      formData.append('unlimited', newProduct.unlimited ? 'true' : 'false');
+
       formData.append(
-        'wholesalePrice',
-        newProduct.pricingDetails?.wholesalePrice?.toString() ?? ''
+        'discount',
+        Number.isFinite(newProduct.discount) ? String(newProduct.discount) : '0'
       );
-      formData.append('telegramLink', newProduct.subInfo?.telegram ?? '');
-      formData.append('facebookLink', newProduct.subInfo?.facebookLink ?? '');
-      formData.append('instaLink', newProduct.subInfo?.instaLink ?? '');
-      formData.append('whasapp', newProduct.subInfo?.whasapp ?? '');
-      formData.append('videoLink', newProduct.subInfo?.videoLink ?? '');
-      const res = await fetch('/api/products', { method: 'POST', body: formData });
-      if (!res.ok) throw new Error();
+
+      if (newProduct.shippingType?.trim()) {
+        formData.append('shippingType', newProduct.shippingType.trim());
+      }
+
+      if (newProduct.hasReturnPolicy?.trim()) {
+        formData.append('hasReturnPolicy', newProduct.hasReturnPolicy.trim());
+      }
+
+      if (sizes.length > 0) {
+        formData.append('sizes', JSON.stringify(sizes));
+      }
+
+      if (colors.length > 0) {
+        formData.append('colors', JSON.stringify(colors));
+      }
+
+      if (newProduct.pricingDetails) {
+        const { minPrice, maxPrice, wholesalePrice } = newProduct.pricingDetails;
+
+        if (Number.isFinite(minPrice)) {
+          formData.append('minPrice', String(minPrice));
+        }
+
+        if (Number.isFinite(maxPrice)) {
+          formData.append('maxPrice', String(maxPrice));
+        }
+
+        if (Number.isFinite(wholesalePrice)) {
+          formData.append('wholesalePrice', String(wholesalePrice));
+        }
+      }
+
+      if (newProduct.subInfo?.telegram?.trim()) {
+        formData.append('telegramLink', newProduct.subInfo.telegram.trim());
+      }
+
+      if (newProduct.subInfo?.facebookLink?.trim()) {
+        formData.append('facebookLink', newProduct.subInfo.facebookLink.trim());
+      }
+
+      if (newProduct.subInfo?.instaLink?.trim()) {
+        formData.append('instaLink', newProduct.subInfo.instaLink.trim());
+      }
+
+      if (newProduct.subInfo?.whasapp?.trim()) {
+        formData.append('whasapp', newProduct.subInfo.whasapp.trim());
+      }
+
+      if (newProduct.subInfo?.videoLink?.trim()) {
+        formData.append('videoLink', newProduct.subInfo.videoLink.trim());
+      }
+
+      galleryFiles.forEach(file => {
+        formData.append('gallery', file);
+      });
+
+      for (const [key, value] of formData.entries()) {
+        console.log(key, value);
+      }
+
+      const res = await fetch('/api/products', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error('FAILED');
+      }
 
       toast.success('تم إضافة المنتج بنجاح');
 
@@ -187,11 +248,15 @@ export default function ProductAddPage() {
         imagePreview: undefined,
         shippingType: '',
         hasReturnPolicy: '',
+        unlimited: false,
       });
+
       setGalleryFiles([]);
       setGalleryPreviews([]);
       setSizes([]);
-    } catch {
+      setColors([]);
+    } catch (error) {
+      console.error(error);
       toast.error('فشل في إضافة المنتج');
     } finally {
       setLoading(false);
