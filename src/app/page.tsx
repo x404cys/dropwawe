@@ -42,9 +42,16 @@ const Page = () => {
 
   return (
     <div dir="rtl" className="min-h-screen bg-sky-100 font-sans">
-      <nav className="cursor-pointer md:pl-15">
+      <nav className="cursor-pointer md:mx-20 md:pl-15">
         <div className="container mx-auto flex items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
-          <Logo />
+          <div className="flex items-center justify-between gap-2">
+            <div className="relative h-8 w-8 md:h-12 md:w-12">
+              <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+            </div>
+            <div className="flex flex-col">
+              <h1 className="text-sm font-semibold md:text-xl">Dropwave</h1>
+            </div>
+          </div>
           <div className="hidden gap-6 md:flex lg:gap-8">
             <a href="" className="text-black/90 transition">
               الرئيسية
@@ -56,16 +63,10 @@ const Page = () => {
               الاسعار
             </a>
           </div>
-          <Button
-            onClick={() => router.push('https://login.dropwave.cloud')}
-            className="rounded-2xl border border-sky-700 bg-sky-100 text-sky-600"
-          >
-            انطلق الان
-          </Button>
         </div>
       </nav>
 
-      <section className="relative py-8">
+      <section className="relative py-8 md:mx-20">
         <div className="absolute top-0 right-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-700/30 blur-3xl"></div>
 
         <div className="container mx-auto flex flex-col items-center gap-10 px-4 text-sky-900 sm:px-6 lg:flex-row lg:gap-20">
@@ -85,7 +86,7 @@ const Page = () => {
                 onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-2xl bg-sky-700 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
-                سجل هسه
+                سجل
               </Button>
               <Button
                 onClick={() =>
@@ -120,7 +121,6 @@ const Page = () => {
         <UnlimitedProductsSection />
         <DeliveryIntegrationSection />
         <SmartMarketingSection />
-        {/* <PricingSection /> */}
         <FAQSection />
         <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
           <div className="max-w-md">

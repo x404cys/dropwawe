@@ -1,5 +1,4 @@
-// دوال التحقق وإعادة التنسيق
-export function luhnCheck(cardNumber: string) {
+ export function luhnCheck(cardNumber: string) {
   const digits = cardNumber.replace(/\D/g, '');
   let sum = 0;
   let double = false;

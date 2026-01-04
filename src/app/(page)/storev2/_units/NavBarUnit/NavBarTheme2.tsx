@@ -121,7 +121,7 @@ export default function NavBarTheme2() {
                         {filteredProduct.map(product => (
                           <li key={product.id}>
                             <a
-                              href={`/store/product-overview/${product.id}`}
+                              href={`/storev2/product-overview/${product.id}`}
                               className="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
                             >
                               <img

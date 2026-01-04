@@ -79,7 +79,7 @@ export default function UnlimitedProductsSection() {
               onClick={() => router.push('https://login.dropwave.cloud')}
               className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
             >
-              ما تحير ويانا !
+              لن تحتار !
             </Button>
           </div>
         </div>

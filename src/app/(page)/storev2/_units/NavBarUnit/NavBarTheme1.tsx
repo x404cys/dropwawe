@@ -10,14 +10,9 @@ import {
   ShoppingBag,
   SearchCheck,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useProducts } from '../../Data/context/products/ProductsContext';
-import { Command } from 'cmdk';
-import { TbFilter } from 'react-icons/tb';
-import { LuShoppingCart } from 'react-icons/lu';
-import { BsList } from 'react-icons/bs';
-import { PiListBold } from 'react-icons/pi';
+ 
 import { IoIosHeartEmpty } from 'react-icons/io';
 import { CiFilter, CiSearch } from 'react-icons/ci';
 import { usePathname, useRouter } from 'next/navigation';

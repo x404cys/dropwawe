@@ -7,7 +7,7 @@ import HeroBanner from '../store/_components/HeroBanner/HeroBanner';
 import { useMemo } from 'react';
 
 export default function Page() {
-  const { product, filteredProductsByCategory, store } = useProducts();
+  const { product, store } = useProducts();
   useTrackVisitor(store?.subLink as string);
 
   return (

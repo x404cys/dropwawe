@@ -6,6 +6,7 @@ import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { FiDollarSign, FiClock } from 'react-icons/fi';
 import Loader from '@/components/Loader';
+import { TrendingUp, WalletIcon } from 'lucide-react';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -111,13 +112,18 @@ export default function ProfitPage() {
   return (
     <section className="min-h-screen bg-white py-4 text-black">
       <div dir="rtl" className="mx-auto space-y-10 py-6">
-        <div className="grid grid-cols-1 gap-6">
-          <div className="flex w-full items-center gap-4 rounded-2xl border border-gray-200 bg-white p-6 text-black">
-            <FiDollarSign className="text-3xl" />
-            <div>
-              <h2 className="text-lg font-semibold">العائد الكلي | Total Profit</h2>
-              <p className="mt-2 text-2xl font-bold">{formatCurrency(data.totalProfit)}</p>
+        <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="">
+            <div className="flex items-center gap-2 text-neutral-600">
+              <TrendingUp className="h-5 w-5" />
+              <span className="text-sm font-medium">العائد الكلي</span>
             </div>
+            <p className="mt-2 text-3xl font-bold text-neutral-900">
+              {formatCurrency(data.totalProfit)}
+            </p>
+          </div>
+          <div>
+            <WalletIcon className="h-14 w-14 text-neutral-700" />
           </div>
         </div>
 

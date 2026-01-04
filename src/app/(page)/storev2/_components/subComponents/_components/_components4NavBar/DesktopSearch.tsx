@@ -5,7 +5,7 @@ import { Product } from '@/types/Products';
 import { useRouter } from 'next/navigation';
 import { FiSearch } from 'react-icons/fi';
 import { TbCategory } from 'react-icons/tb';
-import { AiOutlineClose, AiOutlineLoading3Quarters } from 'react-icons/ai'; // أيقونة تحميل
+import { AiOutlineClose, AiOutlineLoading3Quarters } from 'react-icons/ai';  
 
 interface DesktopSearchProps {
   searchTerm: string;

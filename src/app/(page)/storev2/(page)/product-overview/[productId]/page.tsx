@@ -1,5 +1,5 @@
 'use client';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { Heart, ShoppingCart, Truck, RotateCcw, Plus, Minus, ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -10,7 +10,6 @@ import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDi
 import { useCart } from '@/app/lib/context/CartContext';
 import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
-import { RxShare2 } from 'react-icons/rx';
 import { HiOutlineShare } from 'react-icons/hi';
 import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 

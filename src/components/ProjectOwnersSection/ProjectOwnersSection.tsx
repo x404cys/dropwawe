@@ -100,7 +100,7 @@ export default function ProjectOwnersSection() {
           onClick={() => router.push('https://login.dropwave.cloud')}
           className="rounded-xl bg-sky-700 px-8 py-2 text-white"
         >
-          شنو منتظر ؟ اختار باقتك وبلش
+          ماذا تنتظر ؟ اختر باقتك وابدا
         </Button>
       </div>
     </section>
