@@ -63,6 +63,12 @@ const Page = () => {
               الاسعار
             </a>
           </div>
+          <Button
+            onClick={() => router.push('https://login.dropwave.cloud')}
+            className="rounded-2xl border hidden md:block border-sky-700 bg-sky-100 text-sky-600"
+          >
+            انطلق الان
+          </Button>
         </div>
       </nav>
 
