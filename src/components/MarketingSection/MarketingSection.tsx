@@ -15,7 +15,7 @@ export default function SmartMarketingSection() {
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
-            src="/Arabic Dashboard Cards Only.png"
+            src="/Professional-Arabic-Dashboard-IQD.png"
             alt="Smart Marketing"
             fill
             priority

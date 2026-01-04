@@ -42,12 +42,11 @@ function PhoneMockup({
 export default function DoubleMobileMockup() {
   return (
     <div className="relative mx-auto flex items-center justify-center gap-6">
- 
       <div className="absolute -top-12 left-0 -z-20 h-48 w-48 translate-x-1/3 rounded-full bg-sky-700/30 blur-xl"></div>
-      <div className="absolute  -bottom-12 right-0 -z-20 h-48 w-48 -translate-x-1/3 rounded-full bg-sky-700/30 blur-xl"></div>
+      <div className="absolute right-0 -bottom-12 -z-20 h-48 w-48 -translate-x-1/3 rounded-full bg-sky-700/30 blur-xl"></div>
 
       <PhoneMockup
-        image="/IMG_6060.PNG"
+        image="/img-theme/IMG_6258.PNG"
         pos="-translate-x-18"
         hid="hidden"
         rotate="rotate-"
