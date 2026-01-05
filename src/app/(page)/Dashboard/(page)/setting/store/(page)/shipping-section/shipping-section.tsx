@@ -130,9 +130,9 @@ export default function ShippingSection({
         <DialogTrigger dir="rtl" asChild>
           <Button
             variant={'outline'}
-            className="w-full cursor-pointer rounded-lg border border-black"
+            className="w-full cursor-pointer rounded-md border border-black"
           >
-            ربط حساب الوسيط
+            اضغط هنا لـ ربط حساب الوسيط
           </Button>
         </DialogTrigger>
 

@@ -1,16 +1,23 @@
 'use client';
 
-import { useState, ChangeEvent, useEffect } from 'react';
+import type React from 'react';
+import { useState, type ChangeEvent, useEffect } from 'react';
 import { SlCloudUpload } from 'react-icons/sl';
 import { TbUpload } from 'react-icons/tb';
-
-import { Package, DollarSign, ImageIcon, PlusCircle, Percent, Info } from 'lucide-react';
-import { Product } from '@/types/Products';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
+import {
+  Package,
+  DollarSign,
+  ImageIcon,
+  PlusCircle,
+  Percent,
+  Info,
+  ChevronDown,
+  ChevronUp,
+  ArrowLeft,
+} from 'lucide-react';
+import { GoPackageDependencies } from 'react-icons/go';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { GoPackageDependencies } from 'react-icons/go';
 import { useUser } from '@/app/lib/context/UserIdContect';
 import CategoryDropdown from '../_components/InputForCatogery';
 import { TbTruckReturn } from 'react-icons/tb';
@@ -19,14 +26,31 @@ import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../../../context/useDashboardData';
 import { useRouter } from 'next/navigation';
-import { IoAddSharp, IoChevronBackSharp } from 'react-icons/io5';
+import { IoAddSharp } from 'react-icons/io5';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { BsTelegram } from 'react-icons/bs';
+import type { Product } from '@/types/Products';
 
 export default function ProductAddPage() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
+
+  const [expandedSections, setExpandedSections] = useState({
+    sizes: false,
+    colors: false,
+    socialMedia: false,
+    shipping: false,
+    gallery: false,
+  });
+
+  const toggleSection = (section: keyof typeof expandedSections) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [section]: !prev[section],
+    }));
+  };
+
   const [newProduct, setNewProduct] = useState<
     Partial<Product> & {
       imageFile?: File;
@@ -236,7 +260,7 @@ export default function ProductAddPage() {
       }
 
       toast.success('تم إضافة المنتج بنجاح');
-
+      router.push('/Dashboard/ProductManagment');
       setNewProduct({
         name: '',
         price: 0,
@@ -281,491 +305,533 @@ export default function ProductAddPage() {
   const addColor = () => setColors([...colors, { name: '', hex: '#000000', stock: 0 }]);
 
   const removeColor = (index: number) => setColors(colors.filter((_, i) => i !== index));
+
   return (
-    <>
-      <Card dir="rtl" className="mx-auto max-w-[600px] rounded-2xl border bg-white shadow-xl">
-        <CardHeader className="border-b">
-          <CardTitle className="flex items-center justify-between gap-3 text-lg text-gray-800">
-            <div className="flex items-center gap-2">
-              <GoPackageDependencies className="h-6 w-6 text-green-600" />
-              <span>إضافة منتج جديد</span>
-            </div>
-
-            <button
-              onClick={() => router.back()}
-              className="flex cursor-pointer items-center gap-1 rounded-full border border-gray-300 p-1 text-sm font-medium text-gray-700 transition hover:bg-gray-100"
-            >
-              <IoChevronBackSharp size={25} />
-            </button>
-          </CardTitle>
-        </CardHeader>
-
-        <CardContent className="p-6">
-          <div className="flex flex-col gap-6">
-            <InputGroup
-              label="اسم المنتج"
-              icon={<Package className="h-4 w-4 text-gray-500" />}
-              value={newProduct.name}
-              onChange={value => setNewProduct({ ...newProduct, name: value })}
-              placeholder="مثلًا:  تيشترت لينون"
-              disabled={loading}
-              required
-            />
-
-            <InputGroup
-              label="السعر"
-              icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-              type="number"
-              value={newProduct.price ?? ''}
-              onChange={value => {
-                setNewProduct({ ...newProduct, price: parseFloat(value) });
-              }}
-              onBlur={() => {
-                let numericValue = newProduct.price ?? 0;
-
-                if (numericValue > 0 && numericValue < 100) {
-                  numericValue *= 1000;
-                }
-
-                if (numericValue < 240) numericValue = 240;
-
-                setNewProduct({ ...newProduct, price: numericValue });
-              }}
-              placeholder="0"
-              disabled={loading}
-              required
-            />
-            {data.supplier && (
-              <>
-                <InputGroup
-                  label="سعر الجملة"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.wholesalePrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        wholesalePrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.wholesalePrice ?? 0;
-
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
-
-                    if (numericValue < 240) numericValue = 240;
-
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        wholesalePrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-                <InputGroup
-                  label="الحد الادنى للسعر"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.minPrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        minPrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.minPrice ?? 0;
-
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
-
-                    if (numericValue < 240) numericValue = 240;
-
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        minPrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-                <InputGroup
-                  label="الحد الاعلى للسعر"
-                  icon={<DollarSign className="h-4 w-4 text-gray-500" />}
-                  type="number"
-                  value={newProduct.pricingDetails?.maxPrice ?? ''}
-                  onChange={value => {
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        maxPrice: parseFloat(value) || 0,
-                      },
-                    });
-                  }}
-                  onBlur={() => {
-                    let numericValue = newProduct.pricingDetails?.maxPrice ?? 0;
-
-                    if (numericValue > 0 && numericValue < 100) {
-                      numericValue *= 1000;
-                    }
-
-                    if (numericValue < 240) numericValue = 240;
-
-                    setNewProduct({
-                      ...newProduct,
-                      pricingDetails: {
-                        ...newProduct.pricingDetails!,
-                        maxPrice: numericValue,
-                      },
-                    });
-                  }}
-                  placeholder="0"
-                  disabled={loading}
-                  required
-                />
-              </>
-            )}
-
-            <InputGroup
-              label="الخصم (%)"
-              icon={<Percent className="h-4 w-4 text-gray-500" />}
-              type="number"
-              value={newProduct.discount === 0 ? '' : newProduct.discount}
-              onChange={value => {
-                let discountValue = parseFloat(value) || 0;
-                if (discountValue < 0) discountValue = 0;
-                if (discountValue > 100) discountValue = 100;
-
-                setNewProduct({ ...newProduct, discount: discountValue });
-              }}
-              placeholder="مثلاً: 10"
-              disabled={loading}
-            />
-            <div className="text-sm text-gray-600">
-              السعر بعد الخصم:
-              {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)} د.ع
-            </div>
-
-            <div className="space-y-2">
-              <InputGroup
-                label="الكمية"
-                icon={<Package className="h-4 w-4 text-gray-500" />}
-                type="number"
-                value={newProduct.unlimited ? '' : newProduct.quantity}
-                onChange={value => {
-                  const parsed = parseInt(value);
-                  if (!isNaN(parsed) && parsed >= 0) {
-                    setNewProduct({ ...newProduct, quantity: parsed, unlimited: false });
-                  } else {
-                    setNewProduct({ ...newProduct, quantity: 0, unlimited: false });
-                  }
-                }}
-                placeholder="كمية غير محدودة"
-                disabled={loading || newProduct.unlimited}
-                required
-              />
-
-              <label className="flex cursor-pointer items-center gap-2 select-none">
-                <span className="text-sm text-gray-700">جعل الكمية غير محدودة</span>
-                <input
-                  type="checkbox"
-                  checked={newProduct.unlimited}
-                  onChange={e => setNewProduct({ ...newProduct, unlimited: e.target.checked })}
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-              </label>
-              <div className="flex items-center gap-1">
-                <Info size={11} className="text-gray-600" />
-                <span className="text-xs text-gray-600">
-                  هذا الخيار مفيد في حالة المنتج لديك متكرر التجديد
-                </span>
+    <div className="min-h-screen bg-white" dir="rtl">
+      <div className="mx-auto max-w-7xl py-4">
+        <div className="grid gap-6 lg:grid-cols-3">
+          <div className="space-y-6 lg:col-span-2">
+            <div className="rounded-lg border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 bg-gray-50 p-4">
+                <h3 className="flex items-center gap-2 text-base font-semibold text-black">
+                  <Package className="h-5 w-5 text-sky-500" />
+                  <span>المعلومات الأساسية</span>
+                </h3>
               </div>
-            </div>
-            <hr />
-            <div className="flex flex-col gap-2">
-              <Label className="font-medium text-gray-700">الأحجام - أو أنواع أخرى (اختياري)</Label>
-
-              {sizes.map((s, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-3 shadow-sm"
-                >
-                  <Input
-                    placeholder="المقاس - نوع"
-                    value={s.size}
-                    onChange={e => updateSize(i, 'size', e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="الكمية"
-                    value={s.stock === 0 ? '' : s.stock}
-                    onChange={e => {
-                      const val = e.target.value;
-                      updateSize(i, 'stock', val === '' ? 0 : Number(val));
-                    }}
-                    className="w-24 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
+              <div className="p-6">
+                <div className="space-y-5">
+                  <ModernInputGroup
+                    label="اسم المنتج"
+                    icon={<Package className="h-4 w-4 text-gray-400" />}
+                    value={newProduct.name}
+                    onChange={value => setNewProduct({ ...newProduct, name: value })}
+                    placeholder="أدخل اسم المنتج (مثال: تيشرت قطن)"
+                    disabled={loading}
+                    required
                   />
 
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="rounded-md px-3 py-1 text-sm transition hover:bg-red-600 hover:text-white"
-                    onClick={() => removeSize(i)}
-                  >
-                    حذف
-                  </Button>
-                </div>
-              ))}
-
-              <Button
-                type="button"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-black transition hover:border-green-400 hover:bg-green-50"
-                onClick={addSize}
-              >
-                <p>إضافة حجم - أو نوع</p>
-                <IoAddSharp />
-              </Button>
-            </div>
-            <div className="flex flex-col gap-2 text-xs">
-              <Label className="font-medium text-gray-700">الألوان - اختياري</Label>
-
-              {colors.map((c, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white p-3 shadow-sm"
-                >
-                  <Input
-                    placeholder="اسم اللون"
-                    value={c.name}
-                    onChange={e => updateColor(i, 'name', e.target.value)}
-                    className="flex-1 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-                  <Input
-                    type="color"
-                    value={c.hex}
-                    onChange={e => updateColor(i, 'hex', e.target.value)}
-                    className="w-16 rounded-md border-gray-300 p-0"
-                  />
-                  <Input
-                    type="number"
-                    placeholder="الكمية"
-                    value={c.stock === 0 ? '' : c.stock}
-                    onChange={e => updateColor(i, 'stock', e.target.value)}
-                    className="w-24 rounded-md border-gray-300 focus:border-green-400 focus:ring-1 focus:ring-green-400"
-                  />
-
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    className="rounded-md px-3 py-1 text-sm transition hover:bg-red-600 hover:text-white"
-                    onClick={() => removeColor(i)}
-                  >
-                    حذف
-                  </Button>
-                </div>
-              ))}
-
-              <Button
-                type="button"
-                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm text-black transition hover:border-green-400 hover:bg-green-50"
-                onClick={addColor}
-              >
-                <p>إضافة لون </p>
-                <IoAddSharp />{' '}
-              </Button>
-            </div>
-
-            <InputGroup
-              label="مدة التوصيل او تفاصيله؟"
-              icon={<LiaShippingFastSolid className="h-4 w-4 text-gray-500" />}
-              type="text"
-              value={newProduct.shippingType}
-              onChange={value => setNewProduct({ ...newProduct, shippingType: value })}
-              placeholder=""
-              disabled={loading}
-            />
-
-            <InputGroup
-              label="سياسة الاسترجاع"
-              icon={<TbTruckReturn className="h-4 w-4 text-gray-500" />}
-              type="text"
-              value={newProduct.hasReturnPolicy}
-              onChange={value => setNewProduct({ ...newProduct, hasReturnPolicy: value })}
-              placeholder="شروط الاسترجاع"
-              disabled={loading}
-            />
-
-            <CategoryDropdown
-              categories={categories}
-              value={newProduct.category as string}
-              onChange={val => setNewProduct({ ...newProduct, category: val })}
-              loading={loading}
-            />
-
-            <div dir="rtl" className="flex flex-col gap-1">
-              <label className="flex items-center gap-2 font-medium text-gray-700">
-                <Package className="h-5 w-5 text-gray-500" />
-                وصف المنتج
-              </label>
-              <textarea
-                placeholder="مثلًا: تيشيرت عالي الجودة يناسب جميع الأذواق"
-                value={newProduct.description || ''}
-                onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
-                disabled={loading}
-                rows={4}
-                className="resize-y rounded-lg border px-3 py-2 placeholder-gray-400 focus:border-green-400 focus:ring-2 focus:ring-green-400 focus:outline-none"
-                dir="rtl"
-              />
-            </div>
-            <div>
-              {/* {session?.user?.role === 'SUPPLIER' && ( */}
-              <div className="flex flex-col gap-2">
-                <InputGroup
-                  label="رابط المنتج فيديو (اختياري)"
-                  icon={<BsTelegram className="h-4 w-4 text-gray-500" />}
-                  placeholder="رابط تيليجرام"
-                  value={newProduct.subInfo?.telegram || ''}
-                  onChange={value =>
-                    setNewProduct({
-                      ...newProduct,
-                      subInfo: { ...newProduct.subInfo, telegram: value },
-                    })
-                  }
-                  disabled={loading}
-                />
-              </div>
-              {/* )} */}
-
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2"></div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <Label className="flex items-center gap-1 text-sm text-gray-700">
-                <ImageIcon className="h-4 w-4 text-gray-500" />
-                صورة المنتج <span className="text-red-500">*</span>
-              </Label>
-              <div className="relative cursor-pointer rounded-lg border-2 border-dashed border-gray-400 p-8 text-center transition hover:border-green-300 hover:bg-green-50">
-                <label
-                  htmlFor="upload-image"
-                  className="flex cursor-pointer flex-col items-center justify-center gap-3"
-                >
-                  {newProduct.imagePreview ? (
-                    <div className="flex flex-col items-center gap-3">
-                      <img
-                        src={newProduct.imagePreview}
-                        alt="معاينة"
-                        className="max-h-40 rounded-lg border border-gray-200 object-contain shadow-sm"
-                      />
-                      <button
-                        type="button"
-                        onClick={() =>
-                          setNewProduct({ ...newProduct, imagePreview: '', imageFile: undefined })
+                  <div className="grid gap-5 sm:grid-cols-2">
+                    <ModernInputGroup
+                      label="السعر"
+                      icon={<DollarSign className="h-4 w-4 text-gray-400" />}
+                      type="number"
+                      value={newProduct.price ?? ''}
+                      onChange={value => {
+                        setNewProduct({ ...newProduct, price: Number.parseFloat(value) });
+                      }}
+                      onBlur={() => {
+                        let numericValue = newProduct.price ?? 0;
+                        if (numericValue > 0 && numericValue < 100) {
+                          numericValue *= 1000;
                         }
-                        className="mt-2 rounded bg-red-500 px-3 py-1 text-sm text-white transition hover:bg-red-600"
-                        disabled={loading}
-                      >
-                        إزالة الصورة
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <TbUpload size={40} className="text-gray-400" />
-                      <p className="text-gray-500">انقر لرفع الصورة أو اسحبها هنا</p>
-                      <p className="text-xs text-gray-500">
-                        الصيغ المدعومة: JPG، PNG، WEBP <br />
-                        الحجم الموصى به: 500×500 بكسل
-                      </p>
+                        if (numericValue < 240) numericValue = 240;
+                        setNewProduct({ ...newProduct, price: numericValue });
+                      }}
+                      placeholder="0"
+                      disabled={loading}
+                      required
+                    />
+
+                    <ModernInputGroup
+                      label="الخصم (%)"
+                      icon={<Percent className="h-4 w-4 text-gray-400" />}
+                      type="number"
+                      value={newProduct.discount === 0 ? '' : newProduct.discount}
+                      onChange={value => {
+                        let discountValue = Number.parseFloat(value) || 0;
+                        if (discountValue < 0) discountValue = 0;
+                        if (discountValue > 100) discountValue = 100;
+                        setNewProduct({ ...newProduct, discount: discountValue });
+                      }}
+                      placeholder="10"
+                      disabled={loading}
+                    />
+                  </div>
+
+                  {newProduct.discount! > 0 && (
+                    <div className="border border-sky-500 bg-sky-50 p-3">
+                      <span className="text-sm font-medium text-black">
+                        السعر بعد الخصم:{' '}
+                        {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)}{' '}
+                        د.ع
+                      </span>
                     </div>
                   )}
+
+                  {data.supplier && (
+                    <div className="space-y-4 border border-gray-200 bg-gray-50 p-4">
+                      <h3 className="text-sm font-semibold text-black">أسعار الموردين</h3>
+                      <div className="grid gap-4 sm:grid-cols-3">
+                        <ModernInputGroup
+                          label="سعر الجملة"
+                          type="number"
+                          value={newProduct.pricingDetails?.wholesalePrice ?? ''}
+                          onChange={value => {
+                            setNewProduct({
+                              ...newProduct,
+                              pricingDetails: {
+                                ...newProduct.pricingDetails!,
+                                wholesalePrice: Number.parseFloat(value) || 0,
+                              },
+                            });
+                          }}
+                          placeholder="0"
+                          disabled={loading}
+                        />
+                        <ModernInputGroup
+                          label="الحد الأدنى"
+                          type="number"
+                          value={newProduct.pricingDetails?.minPrice ?? ''}
+                          onChange={value => {
+                            setNewProduct({
+                              ...newProduct,
+                              pricingDetails: {
+                                ...newProduct.pricingDetails!,
+                                minPrice: Number.parseFloat(value) || 0,
+                              },
+                            });
+                          }}
+                          placeholder="0"
+                          disabled={loading}
+                        />
+                        <ModernInputGroup
+                          label="الحد الأقصى"
+                          type="number"
+                          value={newProduct.pricingDetails?.maxPrice ?? ''}
+                          onChange={value => {
+                            setNewProduct({
+                              ...newProduct,
+                              pricingDetails: {
+                                ...newProduct.pricingDetails!,
+                                maxPrice: Number.parseFloat(value) || 0,
+                              },
+                            });
+                          }}
+                          placeholder="0"
+                          disabled={loading}
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-lg border bg-white">
+              <div className="border-b border-gray-200 bg-gray-50 p-4">
+                <h3 className="flex items-center gap-2 text-base font-semibold text-black">
+                  <GoPackageDependencies className="h-5 w-5 text-sky-500" />
+                  <span>المخزون والكمية</span>
+                </h3>
+              </div>
+              <div className="space-y-4 p-6">
+                <ModernInputGroup
+                  label="الكمية المتوفرة"
+                  icon={<Package className="h-4 w-4 text-gray-400" />}
+                  type="number"
+                  value={newProduct.unlimited ? '' : newProduct.quantity}
+                  onChange={value => {
+                    const parsed = Number.parseInt(value);
+                    if (!isNaN(parsed) && parsed >= 0) {
+                      setNewProduct({ ...newProduct, quantity: parsed, unlimited: false });
+                    } else {
+                      setNewProduct({ ...newProduct, quantity: 0, unlimited: false });
+                    }
+                  }}
+                  placeholder="أدخل الكمية"
+                  disabled={loading || newProduct.unlimited}
+                  required
+                />
+
+                <label className="flex cursor-pointer items-center gap-3 border border-gray-200 bg-gray-50 p-4 transition hover:bg-gray-100">
+                  <input
+                    type="checkbox"
+                    checked={newProduct.unlimited}
+                    onChange={e => setNewProduct({ ...newProduct, unlimited: e.target.checked })}
+                    className="h-4 w-4 border-gray-300 text-sky-500 focus:ring-sky-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-black">كمية غير محدودة</span>
+                    <p className="text-xs text-gray-600">مفيد للمنتجات المتجددة باستمرار</p>
+                  </div>
                 </label>
-                <input
-                  id="upload-image"
-                  type="file"
-                  accept="image/jpeg,image/png,image/webp"
-                  className="hidden"
-                  onChange={handleImageChange}
+
+                <CategoryDropdown
+                  categories={categories}
+                  value={newProduct.category as string}
+                  onChange={val => setNewProduct({ ...newProduct, category: val })}
+                  loading={loading}
                 />
               </div>
             </div>
 
-            <div>
-              <Label className="flex items-center gap-1 text-sm text-gray-700">
-                <ImageIcon className="h-4 w-4 text-gray-500" />
-                صور المنتج الإضافية (اختياري)
-              </Label>
-              <div className="relative flex gap-3">
-                <input
-                  type="file"
-                  accept="image/*"
-                  multiple
-                  onChange={onGalleryChange}
-                  className="relative hidden"
-                  id="upload-gallery"
+            <div className="rounded-lg border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 bg-gray-50 p-4">
+                <h3 className="flex items-center gap-2 text-base font-semibold text-black">
+                  <Info className="h-5 w-5 text-sky-500" />
+                  <span>وصف المنتج</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                <textarea
+                  className="min-h-[150px] w-full border border-gray-300 bg-white p-4 text-sm text-black transition placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                  placeholder="اكتب وصفاً تفصيلياً للمنتج... (مثال: قميص صيفي مصنوع من القطن الطبيعي 100%، مريح وخفيف)"
+                  value={newProduct.description}
+                  onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
+                  disabled={loading}
                 />
-                <label
-                  htmlFor="upload-gallery"
-                  className="mt-2 flex w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 px-4 py-8 text-sm text-gray-500 transition hover:border-green-500 hover:bg-green-50"
-                >
-                  <SlCloudUpload size={40} className="text-gray-400" />
-                  <p className="text-center">رفع صور إضافية</p>
-                </label>
               </div>
             </div>
-            <div className="flex gap-2">
-              {galleryPreviews.map((src, i) => (
-                <div
-                  key={i}
-                  className="relative h-28 w-28 overflow-hidden rounded-xl border-2 border-dashed border-gray-300 transition hover:border-green-500"
-                >
-                  <img src={src} alt={`gallery-${i}`} className="h-full w-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setGalleryFiles(files => files.filter((_, idx) => idx !== i));
-                      setGalleryPreviews(previews => previews.filter((_, idx) => idx !== i));
-                    }}
-                    className="absolute top-1 right-1 rounded-full bg-red-500 px-1 text-xs text-white shadow-md transition hover:bg-red-600"
+
+            <CollapsibleSection
+              title="الأحجام والأنواع"
+              subtitle="أضف خيارات متعددة للمنتج"
+              isExpanded={expandedSections.sizes}
+              onToggle={() => toggleSection('sizes')}
+            >
+              <div className="space-y-3">
+                {sizes.map((s, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 border border-gray-200 bg-white p-3"
                   >
-                    ✕
-                  </button>
+                    <Input
+                      placeholder="المقاس أو النوع"
+                      value={s.size}
+                      onChange={e => updateSize(i, 'size', e.target.value)}
+                      className="flex-1 border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="الكمية"
+                      value={s.stock === 0 ? '' : s.stock}
+                      onChange={e => {
+                        const val = e.target.value;
+                        updateSize(i, 'stock', val === '' ? 0 : Number(val));
+                      }}
+                      className="w-28 border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeSize(i)}
+                    >
+                      حذف
+                    </Button>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2 border-dashed border-gray-400 bg-transparent hover:border-sky-500 hover:bg-sky-50 hover:text-sky-500"
+                  onClick={addSize}
+                >
+                  <IoAddSharp className="h-4 w-4" />
+                  <span>إضافة حجم جديد</span>
+                </Button>
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="الألوان المتاحة"
+              subtitle="حدد الألوان والكميات"
+              isExpanded={expandedSections.colors}
+              onToggle={() => toggleSection('colors')}
+            >
+              <div className="space-y-3">
+                {colors.map((c, i) => (
+                  <div
+                    key={i}
+                    className="flex items-center gap-3 border border-gray-200 bg-white p-3"
+                  >
+                    <Input
+                      placeholder="اسم اللون"
+                      value={c.name}
+                      onChange={e => updateColor(i, 'name', e.target.value)}
+                      className="flex-1 border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    />
+                    <div className="relative">
+                      <Input
+                        type="color"
+                        value={c.hex}
+                        onChange={e => updateColor(i, 'hex', e.target.value)}
+                        className="h-10 w-16 cursor-pointer border-gray-300"
+                      />
+                    </div>
+                    <Input
+                      type="number"
+                      placeholder="الكمية"
+                      value={c.stock === 0 ? '' : c.stock}
+                      onChange={e => {
+                        const val = e.target.value;
+                        updateColor(i, 'stock', val === '' ? 0 : Number(val));
+                      }}
+                      className="w-28 border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+                    />
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="sm"
+                      onClick={() => removeColor(i)}
+                    >
+                      حذف
+                    </Button>
+                  </div>
+                ))}
+
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="w-full gap-2 border-dashed border-gray-400 bg-transparent hover:border-sky-500 hover:bg-sky-50 hover:text-sky-500"
+                  onClick={addColor}
+                >
+                  <IoAddSharp className="h-4 w-4" />
+                  <span>إضافة لون جديد</span>
+                </Button>
+              </div>
+            </CollapsibleSection>
+
+            <CollapsibleSection
+              title="معلومات الشحن والإرجاع"
+              subtitle="اختياري - أضف تفاصيل التوصيل"
+              isExpanded={expandedSections.shipping}
+              onToggle={() => toggleSection('shipping')}
+            >
+              <div className="space-y-4">
+                <ModernInputGroup
+                  label="مدة التوصيل أو تفاصيله"
+                  icon={<LiaShippingFastSolid className="h-4 w-4 text-gray-400" />}
+                  type="text"
+                  value={newProduct.shippingType}
+                  onChange={value => setNewProduct({ ...newProduct, shippingType: value })}
+                  placeholder="مثال: التوصيل خلال 3-5 أيام"
+                  disabled={loading}
+                />
+
+                <ModernInputGroup
+                  label="سياسة الاسترجاع"
+                  icon={<TbTruckReturn className="h-4 w-4 text-gray-400" />}
+                  type="text"
+                  value={newProduct.hasReturnPolicy}
+                  onChange={value => setNewProduct({ ...newProduct, hasReturnPolicy: value })}
+                  placeholder="مثال: إرجاع مجاني خلال 14 يوم"
+                  disabled={loading}
+                />
+              </div>
+            </CollapsibleSection>
+
+            {data.supplier && (
+              <CollapsibleSection
+                title="روابط التواصل الاجتماعي"
+                subtitle="اختياري - أضف روابط للمنتج"
+                isExpanded={expandedSections.socialMedia}
+                onToggle={() => toggleSection('socialMedia')}
+              >
+                <div className="space-y-4">
+                  <ModernInputGroup
+                    label="رابط تيليجرام"
+                    icon={<BsTelegram className="h-4 w-4 text-sky-500" />}
+                    value={newProduct.subInfo?.telegram || ''}
+                    onChange={value =>
+                      setNewProduct({
+                        ...newProduct,
+                        subInfo: { ...newProduct.subInfo, telegram: value },
+                      })
+                    }
+                    placeholder="https://t.me/..."
+                    disabled={loading}
+                  />
+
+                  <ModernInputGroup
+                    label="رابط الفيديو"
+                    icon={<ImageIcon className="h-4 w-4 text-gray-400" />}
+                    value={newProduct.subInfo?.videoLink || ''}
+                    onChange={value =>
+                      setNewProduct({
+                        ...newProduct,
+                        subInfo: { ...newProduct.subInfo, videoLink: value },
+                      })
+                    }
+                    placeholder="https://youtube.com/..."
+                    disabled={loading}
+                  />
                 </div>
-              ))}
+              </CollapsibleSection>
+            )}
+          </div>
+
+          <div className="space-y-6 rounded-lg">
+            <div className="sticky top-24 rounded-lg border border-gray-200 bg-white">
+              <div className="border-b border-gray-200 bg-gray-50 p-4">
+                <h3 className="flex items-center gap-2 text-base font-semibold text-black">
+                  <ImageIcon className="h-5 w-5 text-sky-500" />
+                  <span>الصورة الرئيسية</span>
+                </h3>
+              </div>
+              <div className="p-6">
+                {newProduct.imagePreview ? (
+                  <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-gray-300 bg-gray-50">
+                    <img
+                      src={newProduct.imagePreview || '/placeholder.svg'}
+                      alt="Preview"
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setNewProduct({
+                          ...newProduct,
+                          imageFile: undefined,
+                          imagePreview: undefined,
+                        })
+                      }
+                      className="absolute top-3 right-3 bg-black p-2 text-white transition hover:bg-gray-800"
+                      disabled={loading}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ) : (
+                  <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
+                    <div className="rounded-lg bg-sky-100 p-4">
+                      <SlCloudUpload size={32} className="text-sky-500" />
+                    </div>
+                    <div className="text-center">
+                      <span className="block text-sm font-semibold text-black">
+                        اضغط لرفع الصورة
+                      </span>
+                      <span className="mt-1 block text-xs text-gray-600">JPG, PNG, أو WEBP</span>
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageChange}
+                      className="hidden"
+                      disabled={loading}
+                    />
+                  </label>
+                )}
+              </div>
             </div>
+
+            <CollapsibleSection
+              title="صور إضافية"
+              subtitle={`${galleryFiles.length}/3 صور`}
+              isExpanded={expandedSections.gallery}
+              onToggle={() => toggleSection('gallery')}
+            >
+              <div className="grid grid-cols-3 gap-3">
+                {galleryPreviews.map((preview, idx) => (
+                  <div
+                    key={idx}
+                    className="relative aspect-square overflow-hidden border border-gray-300"
+                  >
+                    <img
+                      src={preview || '/placeholder.svg'}
+                      alt={`Gallery ${idx + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeGalleryImage(idx)}
+                      className="absolute top-1 right-1 bg-black p-1 text-white transition hover:bg-gray-800"
+                      disabled={loading}
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                  </div>
+                ))}
+
+                {galleryFiles.length < 3 && (
+                  <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
+                    <TbUpload size={24} className="text-sky-500" />
+                    <span className="text-xs font-medium">رفع صورة</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      multiple
+                      onChange={onGalleryChange}
+                      className="hidden"
+                      disabled={loading}
+                    />
+                  </label>
+                )}
+              </div>
+            </CollapsibleSection>
+
             <Button
               onClick={addProduct}
               disabled={loading}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-black text-white hover:bg-gray-800"
+              className="w-full gap-2 bg-sky-500 py-6 text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <PlusCircle className="h-5 w-5" />
-              {loading ? '...جاري الإضافة' : 'إضافة'}
+              {loading ? (
+                <>
+                  <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <span className="font-semibold">جاري الإضافة...</span>
+                </>
+              ) : (
+                <>
+                  <PlusCircle className="h-5 w-5" />
+                  <span className="font-semibold">إضافة المنتج</span>
+                </>
+              )}
             </Button>
           </div>
-        </CardContent>
-      </Card>
-      <div className="mb-20 py-5" />
-    </>
+        </div>
+      </div>
+    </div>
   );
 }
-interface InputGroupProps {
+
+interface ModernInputGroupProps {
   label: string;
   required?: boolean;
   placeholder?: string;
@@ -777,7 +843,7 @@ interface InputGroupProps {
   onBlur?: () => void;
 }
 
-function InputGroup({
+function ModernInputGroup({
   label,
   required,
   placeholder,
@@ -787,10 +853,10 @@ function InputGroup({
   onChange,
   disabled,
   onBlur,
-}: InputGroupProps) {
+}: ModernInputGroupProps) {
   return (
-    <div className="flex w-full flex-col gap-1">
-      <label className="text-sm font-medium text-gray-700">
+    <div className="flex w-full flex-col gap-2">
+      <label className="text-sm font-medium text-black">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
 
@@ -802,12 +868,50 @@ function InputGroup({
           onBlur={onBlur}
           disabled={disabled}
           placeholder={placeholder || label}
-          className="rounded-md border-gray-300 pr-3 pl-10 focus:border-green-400 focus:ring-green-400"
+          className="border-gray-300 bg-white pr-3 pl-10 transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
         />
-        {icon && (
-          <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-700">{icon}</span>
-        )}
+        {icon && <span className="absolute top-1/2 left-3 -translate-y-1/2">{icon}</span>}
       </div>
+    </div>
+  );
+}
+
+interface CollapsibleSectionProps {
+  title: string;
+  subtitle?: string;
+  isExpanded: boolean;
+  onToggle: () => void;
+  children: React.ReactNode;
+}
+
+function CollapsibleSection({
+  title,
+  subtitle,
+  isExpanded,
+  onToggle,
+  children,
+}: CollapsibleSectionProps) {
+  return (
+    <div className="rounded-lg border border-gray-200 bg-white">
+      <button
+        type="button"
+        onClick={onToggle}
+        className="flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 p-4 text-right transition hover:bg-gray-100"
+      >
+        <div>
+          <h3 className="text-sm font-semibold text-black">{title}</h3>
+          {subtitle && <p className="mt-0.5 text-xs text-gray-600">{subtitle}</p>}
+        </div>
+        {isExpanded ? (
+          <ChevronUp className="h-5 w-5 text-gray-500" />
+        ) : (
+          <ChevronDown className="h-5 w-5 text-gray-500" />
+        )}
+      </button>
+
+      {isExpanded && (
+        <div className="animate-in slide-in-from-top-2 p-6 duration-200">{children}</div>
+      )}
     </div>
   );
 }
