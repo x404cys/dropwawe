@@ -90,7 +90,6 @@ export default function StoreSetupPage() {
         shippingType: 'default',
         hasReturnPolicy: '__',
         active: true,
-        
       };
 
       const res = await fetch('/api/storev2/create', {
@@ -117,7 +116,7 @@ export default function StoreSetupPage() {
       }
       toast.success('تم الحفظ بنجاح ✨');
 
-      router.replace('/Dashboard');
+      router.replace('/Dashboard/plans');
     } catch (err) {
       toast.error('حدث خطأ في الحفظ');
     } finally {
@@ -197,7 +196,7 @@ export default function StoreSetupPage() {
 
   return (
     <div dir="rtl" className="bg-background min-h-screen">
-      <div className="mx-auto max-w-3xl  py-12">
+      <div className="mx-auto max-w-3xl py-12">
         <div className="mb-12 space-y-3 text-center">
           <h1 className="text-foreground text-4xl font-semibold tracking-tight text-balance">
             أنشئ متجرك الآن
@@ -231,7 +230,7 @@ export default function StoreSetupPage() {
                 <div className="border-border bg-card overflow-hidden rounded-2xl border shadow-lg">
                   <div className="border-border bg-muted/30 border-b px-8 py-6">
                     <div className="flex items-center gap-4">
-                      <div className="bg-sky-600 text-primary-foreground flex h-14 w-14 items-center justify-center rounded-xl">
+                      <div className="text-primary-foreground flex h-14 w-14 items-center justify-center rounded-xl bg-sky-600">
                         {step.icon}
                       </div>
                       <div>
@@ -243,7 +242,7 @@ export default function StoreSetupPage() {
                     </div>
                   </div>
 
-                  <div className="py-4 px-2">
+                  <div className="px-2 py-4">
                     <div className="min-h-[320px]">
                       {step.id === 'basic' && (
                         <BasicInfoSection

@@ -53,19 +53,37 @@ const Page = () => {
             </div>
           </div>
           <div className="hidden gap-6 md:flex lg:gap-8">
-            <a href="" className="text-black/90 transition">
+            <a href="/" className="text-black/90 transition">
               الرئيسية
             </a>
-            <a href="" className="text-black/90 transition">
+            <a
+              onClick={() => {
+                const checkoutSection = document.getElementById('Footer');
+                if (checkoutSection) {
+                  checkoutSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              href="#support"
+              className="text-black/90 transition"
+            >
               الدعم
             </a>
-            <a href="#s2" className="text-black/90 transition">
+            <a
+              onClick={() => {
+                const checkoutSection = document.getElementById('PricingSection');
+                if (checkoutSection) {
+                  checkoutSection.scrollIntoView({ behavior: 'smooth' });
+                }
+              }}
+              href="#pricing"
+              className="text-black/90 transition"
+            >
               الاسعار
             </a>
           </div>
           <Button
             onClick={() => router.push('https://login.dropwave.cloud')}
-            className="rounded-2xl border hidden md:block border-sky-700 bg-sky-100 text-sky-600"
+            className="hidden rounded-2xl border border-sky-700 bg-sky-100 text-sky-600 md:block"
           >
             انطلق الان
           </Button>
@@ -127,6 +145,7 @@ const Page = () => {
         <UnlimitedProductsSection />
         <DeliveryIntegrationSection />
         <SmartMarketingSection />
+        <PricingSection />
         <FAQSection />
         <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
           <div className="max-w-md">

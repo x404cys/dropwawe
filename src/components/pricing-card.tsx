@@ -101,12 +101,7 @@ export function PricingCard({
           <Button
             onClick={handleOpenDialog}
             variant={buttonVariant}
-            className={cn(
-              'w-full',
-              recommended &&
-                buttonVariant === 'default' &&
-                'bg-primary text-primary-foreground hover:bg-primary/90'
-            )}
+            className={'w-full cursor-pointer hover:bg-sky-600 bg-sky-500 text-white'}
           >
             {buttonText}
           </Button>
@@ -119,19 +114,29 @@ export function PricingCard({
             <CheckCircle2 className="h-16 w-16 text-green-500" />
           </div>
           <DialogHeader>
-            <DialogTitle>تأكيد الاشتراك</DialogTitle>
-            <DialogDescription className="mt-2">
-              هل أنت متأكد من الاشتراك في خطة <strong>{name}</strong>؟
-            </DialogDescription>
+            <div className="flex justify-center">تأكيد الاشتراك</div>
+            <div className="text-center">
+              هل أنت متأكد من الاشتراك في خطة
+              <br />
+              <span className="text-green-400">{name}</span>؟
+            </div>
           </DialogHeader>
-          <DialogFooter className="justify-center gap-4">
-            <Button variant="outline" onClick={() => setDialogOpen(false)}>
-              إلغاء
-            </Button>
-            <Button onClick={handleConfirmSubscription} disabled={loading}>
+          <div className="flex flex-col justify-center gap-4">
+            <Button
+              className="cursor-pointer bg-sky-600 text-white hover:bg-sky-500"
+              onClick={handleConfirmSubscription}
+              disabled={loading}
+            >
               {loading ? 'جارٍ الاشتراك...' : 'تأكيد الاشتراك'}
             </Button>
-          </DialogFooter>
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              onClick={() => setDialogOpen(false)}
+            >
+              إلغاء
+            </Button>
+          </div>
         </DialogContent>
       </Dialog>
     </>

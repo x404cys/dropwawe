@@ -1,94 +1,118 @@
-'use client';
-
-import { useEffect } from 'react';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
-import Logo from '../utils/Logo';
-
+import Link from 'next/link';
+import { Facebook, Instagram, Send, Mail, Phone } from 'lucide-react';
+import { BsTelegram } from 'react-icons/bs';
+import Image from 'next/image';
 export default function Footer() {
-  useEffect(() => {
-    AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
-  }, []);
-
   return (
-    <footer dir="rtl" className="border-t bg-white text-gray-700">
-      <div className="container mx-auto flex flex-col gap-10 px-4 py-12 sm:px-6 md:flex-row md:justify-between lg:px-8">
-        <div className="flex-1 space-y-4">
-          <Logo />
-          <p className="max-w-md text-sm leading-relaxed text-gray-600 sm:text-[15px]">
-            منصة دروب ويف لإنشاء المتاجر الإلكترونية. أنشئ متجرك الإلكتروني في دقائق وابدأ البيع
-            فوراً. منصة شاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.
+    <footer className="bg-background border-border/50 border-t">
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 sm:py-20">
+        <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-12 md:gap-16">
+          <div className="text-center md:col-span-5 md:text-start">
+            <div className="flex items-center">
+              <div className="relative h-8 w-8 md:h-8 md:w-12">
+                <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-sm font-semibold md:text-xl">Dropwave</h1>
+              </div>
+            </div>{' '}
+            <p className="text-muted-foreground text-base leading-relaxed sm:text-lg">
+              منصة التجارة الإلكترونية الحديثة التي توفر تجربة تسوق سلسة وآمنة
+            </p>
+            <div className="mt-6 flex justify-center gap-3 md:justify-start">
+              <ul className="flex items-center justify-center gap-2">
+                <li>
+                  <a
+                    href="https://www.facebook.com/profile.php?id=61555593490086&mibextid=ZbWKwL"
+                    className="bg-muted/50 text-muted-foreground flex h-11 w-11 items-center justify-center rounded-lg transition-all hover:bg-sky-600 hover:text-sky-100"
+                  >
+                    <Facebook />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="bg-muted/50 text-muted-foreground flex h-11 w-11 items-center justify-center rounded-lg transition-all hover:bg-sky-600 hover:text-sky-100"
+                    href="https://www.instagram.com/drop_wave_/"
+                  >
+                    <Instagram />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    className="bg-muted/50 text-muted-foreground flex h-11 w-11 items-center justify-center rounded-lg transition-all hover:bg-sky-600 hover:text-sky-100"
+                    href="https://t.me/Dropwaveiq"
+                  >
+                    <BsTelegram className="h-6 w-6" />
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="text-center md:col-span-3 md:text-start">
+            <h4 className="mb-4 text-base font-semibold">روابط سريعة</h4>
+            <nav className="flex flex-col items-center gap-3 md:items-start">
+              <a href="/" className="footer-a">
+                الرئيسية
+              </a>
+              <a
+                onClick={() => {
+                  const checkoutSection = document.getElementById('PricingSection');
+                  if (checkoutSection) {
+                    checkoutSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                href="#pricing"
+                className="footer-a"
+              >
+                الأسعار
+              </a>
+              <a
+                onClick={() => {
+                  const checkoutSection = document.getElementById('FAQ');
+                  if (checkoutSection) {
+                    checkoutSection.scrollIntoView({ behavior: 'smooth' });
+                  }
+                }}
+                href="#about"
+                className="footer-a"
+              >
+                الاسئلة الشائعة
+              </a>
+            </nav>
+          </div>
+
+          <div className="text-center md:col-span-4 md:text-start">
+            <h4 className="mb-4 text-base font-semibold">تواصل معنا</h4>
+            <div className="flex flex-col items-center gap-4 md:items-start">
+              <a
+                href="mailto:support@dropwave.online"
+                className="group text-muted-foreground hover:text-foreground flex items-center gap-3"
+              >
+                <div className="bg-muted/30 group-hover:bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+                  <Mail className="h-4 w-4" />
+                </div>
+                <span>support@dropwave.online</span>
+              </a>
+
+              <a
+                href="tel:+1234567890"
+                className="group text-muted-foreground hover:text-foreground flex items-center gap-3"
+              >
+                <div className="bg-muted/30 group-hover:bg-muted flex h-10 w-10 items-center justify-center rounded-lg">
+                  <Phone className="h-4 w-4" />
+                </div>
+                <span dir="ltr">+123 456 7890</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-border/50 border-t pt-6">
+          <p className="text-muted-foreground text-center text-sm">
+            © 2025 Drop Wave. جميع الحقوق محفوظة
           </p>
         </div>
-
-        <div className="grid flex-1 grid-cols-2 gap-6 sm:grid-cols-3" data-aos-delay="100">
-          <div className="space-y-2">
-            <h3 className="font-semibold text-gray-800">روابط سريعة</h3>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  الرئيسية
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  الدعم
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  المميزات
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="font-semibold text-gray-800">الدعم</h3>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  اتصل بنا
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  الأسئلة الشائعة
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  الشروط والأحكام
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-2">
-            <h3 className="font-semibold text-gray-800">متابعة</h3>
-            <ul className="space-y-1 text-sm text-gray-600">
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  فيسبوك
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  إنستغرام
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-primary transition">
-                  تويتر
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <div className="border-t border-gray-200 py-4 text-center text-xs text-gray-500">
-        جميع الحقوق محفوظة © 2025 دروب ويف.
       </div>
     </footer>
   );

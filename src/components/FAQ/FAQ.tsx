@@ -31,7 +31,7 @@ const faqs = [
 
 export default function FAQSection() {
   return (
-    <section dir="rtl" className="bg-white px-5 md:px-20">
+    <section id="FAQ" dir="rtl" className="bg-white px-5 md:px-20">
       <div className="mx-auto max-w-3xl">
         <h2 className="mb-10 text-center text-3xl font-bold text-gray-900">
           الأسئلة الأكثر شيوعًا

@@ -17,7 +17,7 @@ import { TbTruckReturn } from 'react-icons/tb';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { toast } from 'sonner';
 import { useSession } from 'next-auth/react';
-import { useDashboardData } from '../../../_utils/useDashboardData';
+import { useDashboardData } from '../../../context/useDashboardData';
 import { useRouter } from 'next/navigation';
 import { IoAddSharp, IoChevronBackSharp } from 'react-icons/io5';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';

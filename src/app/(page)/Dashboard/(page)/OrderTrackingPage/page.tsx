@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
-import { useDashboardData } from '../../_utils/useDashboardData';
+import { useDashboardData } from '../../context/useDashboardData';
 import Loader from '@/components/Loader';
 import { Search, ShoppingBag } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
@@ -284,7 +284,7 @@ export default function OrderSummaryPage() {
                               </td>
                             </tr>
                           ))}
-                        </tbody>  
+                        </tbody>
                       </table>
                     </div>
 

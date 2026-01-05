@@ -10,7 +10,7 @@ import ProductCard from './ProductCard';
 import EditProductRow from './EditProductRow';
 import { Product } from '@/types/Products';
 import { toast } from 'sonner';
-import { useDashboardData } from '../../../_utils/useDashboardData';
+import { useDashboardData } from '../../../context/useDashboardData';
 import FloatingNavBarForProductManage from './FloatingNavBarForProductManage';
 import {
   BaggageClaim,

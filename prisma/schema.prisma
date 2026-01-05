@@ -328,7 +328,7 @@ model SubscriptionPlan {
   maxStores         Int?     
   maxSuppliers      Int?      
   features          Json?     
-
+  description        String?
   createdAt         DateTime @default(now())
   subscriptions     UserSubscription[]
 }

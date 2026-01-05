@@ -8,7 +8,7 @@ import { useRouter } from 'next/navigation';
 import { Save } from 'lucide-react';
 import axios from 'axios';
 import type { StoreProps } from '@/types/store/StoreType';
-import { useDashboardData } from '../../../_utils/useDashboardData';
+import { useDashboardData } from '../../../context/useDashboardData';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import BasicInfoSection from './(page)/basic-info-section/basic-info-section';
@@ -193,9 +193,8 @@ export default function StoreSetupPage() {
               />
             )}
 
-
             {activeSection === 'theme' && <ThemeSection />}
- 
+
             {activeSection === 'pixel' && (
               <PixelSection
                 facebookPixel={facebookPixel}

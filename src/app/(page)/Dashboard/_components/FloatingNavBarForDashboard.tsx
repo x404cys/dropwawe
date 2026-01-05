@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { AiOutlineProduct } from 'react-icons/ai';
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { useDashboardData } from '../_utils/useDashboardData';
+import { useDashboardData } from '../context/useDashboardData';
 import Loader from '@/components/Loader';
 import { IoSettingsOutline } from 'react-icons/io5';
 

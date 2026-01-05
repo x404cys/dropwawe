@@ -28,6 +28,7 @@ export interface SubscriptionPlan {
   id: string;
   planName: string;
   price: number;
+  description: string;
   remainingDays: number;
   maxProducts?: number | null;
   maxTemplates?: number | null;
@@ -55,6 +56,7 @@ export type SubscriptionType = {
   type: string;
   price: number;
   durationDays: number;
+  description: string;
   maxProducts: number;
   maxTemplates: number;
   templateCategory: string;

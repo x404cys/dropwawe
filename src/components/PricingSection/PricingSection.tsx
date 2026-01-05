@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { CheckIcon } from '@heroicons/react/24/solid';
+import { Check, Sparkles } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { signIn } from 'next-auth/react';
 import {
@@ -14,148 +14,148 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
+import { cn } from '@/lib/utils';
 import { FaGoogle } from 'react-icons/fa';
-
-interface Feature {
-  text: string;
-}
 
 interface Plan {
   title: string;
   price: number;
-  features: Feature[];
+  features: string[];
   popular?: boolean;
 }
-
 const plans: Plan[] = [
   {
     title: 'الأساسية - تطوير المتاجر',
     price: 39000,
     features: [
-      { text: 'متجر إلكتروني' },
-      { text: 'عدد منتجات غير محدود' },
-      { text: 'عدد طلبات غير محدود' },
-      { text: 'ادارة الطلبات' },
-      { text: 'ادارة المخزون' },
-      { text: 'تحقق من هاتف العميل' },
-      { text: 'ثيمات متجر عدد 1' },
-      { text: 'محتوى خاص بمتجرك (رسوم إضافية)' },
-      { text: 'ربط ميتا وتيك توك وسناب بكسل' },
-      { text: 'صلاحية إدارة المتجر لشخص واحد' },
+      'متجر إلكتروني',
+      'عدد منتجات غير محدود',
+      'عدد طلبات غير محدود',
+      'ادارة الطلبات',
+      'ادارة المخزون',
+      'تحقق من هاتف العميل',
+      'ثيمات متجر عدد 1',
+      'محتوى خاص بمتجرك (رسوم إضافية)',
+      'ربط ميتا وتيك توك وسناب بكسل',
+      'صلاحية إدارة المتجر لشخص واحد',
     ],
   },
   {
     title: 'الاحترافية - تطوير المتاجر',
     price: 69000,
-    features: [
-      { text: 'متجر إلكتروني احترافي' },
-      { text: 'عدد منتجات غير محدود' },
-      { text: 'عدد طلبات غير محدود' },
-      { text: 'ادارة الطلبات' },
-      { text: 'ادارة المخزون' },
-      { text: 'تحقق من هاتف العميل' },
-      { text: 'إشعارات الواتساب للعميل' },
-      { text: 'استشارة تسويقية' },
-      { text: 'محتوى خاص بمتجرك عدد 2 (مجاني)' },
-      { text: 'تفعيل كوبونات خصم' },
-      { text: 'ربط ميتا وتيك توك وسناب بكسل' },
-      { text: 'الربط مع شركات التوصيل' },
-    ],
     popular: true,
+    features: [
+      'متجر إلكتروني احترافي',
+      'عدد منتجات غير محدود',
+      'عدد طلبات غير محدود',
+      'ادارة الطلبات',
+      'ادارة المخزون',
+      'تحقق من هاتف العميل',
+      'إشعارات الواتساب للعميل',
+      'استشارة تسويقية',
+      'محتوى خاص بمتجرك عدد 2 (مجاني)',
+      'تفعيل كوبونات خصم',
+      'ربط ميتا وتيك توك وسناب بكسل',
+      'الربط مع شركات التوصيل',
+      'ثيمات متحر عدد 2 ',
+      'صلاحية ادارة المتجر لـ 3 اشخاص',
+      'اولوية الدعم 24/7',
+    ],
   },
   {
     title: 'الأساسية - دروبشيبينغ',
     price: 39000,
     features: [
-      { text: 'متجر إلكتروني عدد 1' },
-      { text: 'منتجات جاهزة للرفع عدد 5' },
-      { text: 'محتوى جاهز للمنتجات' },
-      { text: 'حد الطلبات 125 شهرياً' },
-      { text: 'تحقق من هاتف العميل' },
-      { text: 'إشعارات الواتساب للعميل' },
-      { text: 'الربط مع شركات التوصيل' },
-      { text: 'ثيمات متجر عدد 1' },
-      { text: 'محتوى خاص بمتجرك (رسوم إضافية)' },
-      { text: 'صلاحية إدارة المتجر لشخص واحد' },
+      'متجر إلكتروني عدد 1',
+      'منتجات جاهزة للرفع عدد 5',
+      'محتوى جاهز للمنتجات',
+      'حد الطلبات 125 شهرياً',
+      'تحقق من هاتف العميل',
+      'إشعارات الواتساب للعميل',
+      'الربط مع شركات التوصيل',
+      'ثيمات متجر عدد 1',
+      'محتوى خاص بمتجرك (رسوم إضافية)',
+      'صلاحية إدارة المتجر لشخص واحد',
     ],
   },
   {
     title: 'الاحترافية - دروبشيبينغ',
     price: 69000,
-    features: [
-      { text: 'متجر إلكتروني عدد 2' },
-      { text: 'عدد منتجات غير محدود' },
-      { text: 'عدد طلبات غير محدود' },
-      { text: 'تحقق من هاتف العميل' },
-      { text: 'إشعارات الواتساب للعميل' },
-      { text: 'محتوى خاص بمتجرك عدد 2 (مجاني)' },
-      { text: 'خصومات ومكافآت' },
-      { text: 'ربط ميتا وتيك توك وسناب بكسل' },
-      { text: 'الربط مع شركات التوصيل' },
-      { text: 'ثيمات متجر عدد 2' },
-      { text: 'صلاحية إدارة المتجر 3 أشخاص' },
-      { text: 'أولوية الدعم 24/7' },
-    ],
     popular: true,
+    features: [
+      'متجر إلكتروني عدد 2',
+      'عدد منتجات غير محدود',
+      'عدد طلبات غير محدود',
+      'تحقق من هاتف العميل',
+      'إشعارات الواتساب للعميل',
+      'محتوى خاص بمتجرك عدد 2 (مجاني)',
+      'خصومات ومكافآت',
+      'ربط ميتا وتيك توك وسناب بكسل',
+      'الربط مع شركات التوصيل',
+      'ثيمات متجر عدد 2',
+      'صلاحية إدارة المتجر 3 أشخاص',
+      'أولوية الدعم 24/7',
+    ],
   },
 ];
 
 export default function PricingSection() {
-  const [openDialog, setOpenDialog] = useState(false);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
-    AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
+    AOS.init({ duration: 700, once: true });
   }, []);
 
-  const handleGoogleSignIn = async () => {
-    await signIn('google', {
-      callbackUrl: '/Dashboard/create-store',
-    });
-  };
-
   return (
-    <section dir="rtl" className="bg-gray-50 py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-900">باقات تطوير المتاجر والدروبشيبينغ</h2>
-          <p className="mt-4 text-gray-600">
-            جاهز تبدأ رحلتك مع الشريك المثالي لتجارتك الإلكترونية؟ صممت الباقات لتناسب ميزانيتك
-            وتسهل بدايتك.
+    <section id="PricingSection" dir="rtl" className="bg-gray-50 py-20">
+      <div className="mx-auto max-w-7xl px-6">
+        <div className="mb-14 text-center">
+          <h2 className="text-4xl font-bold text-gray-900">باقات مرنة تناسب نمو متجرك</h2>
+          <p className="mx-auto mt-4 max-w-2xl text-gray-600">
+            اختر الباقة المناسبة وابدأ بناء متجرك الإلكتروني باحترافية
           </p>
         </div>
 
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan, index) => (
+          {plans.map((plan, i) => (
             <div
-              key={index}
+              key={i}
               data-aos="fade-up"
-              data-aos-delay={index * 100}
-              className={`flex flex-col rounded-2xl border p-6 shadow-md sm:px-8 lg:p-10 ${
-                plan.popular ? 'border-sky-700 bg-indigo-50' : 'border-gray-200 bg-white'
-              }`}
+              data-aos-delay={i * 80}
+              className={cn(
+                'relative flex flex-col rounded-2xl border bg-white p-8 transition-all duration-300',
+                'hover:-translate-y-1 hover:border-sky-500 hover:duration-200',
+                plan.popular ? 'border-sky-500 ring-1 ring-sky-500/20' : 'border-gray-200'
+              )}
             >
-              <div className="mb-6 text-center">
-                <h3 className="text-lg font-semibold text-gray-900">{plan.title}</h3>
-                <p className="mt-2">
-                  <strong className="text-3xl font-bold text-gray-900">
-                    {formatIQD(plan.price)}
-                  </strong>
-                </p>
+              {plan.popular && (
+                <span className="absolute -top-4 right-6 flex items-center gap-1 rounded-full bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white">
+                  <Sparkles className="h-4 w-4" />
+                  الأكثر شيوعاً
+                </span>
+              )}
+
+              <h3 className="text-lg font-bold text-gray-900">{plan.title}</h3>
+
+              <div className="mt-4 mb-6">
+                <span className="text-3xl font-bold text-gray-900">{formatIQD(plan.price)}</span>
               </div>
 
-              <ul className="mb-6 flex-1 space-y-2">
-                {plan.features.map((feature, i) => (
-                  <li key={i} className="flex items-center gap-2 text-gray-700">
-                    <CheckIcon className="h-5 w-5 flex-shrink-0 text-indigo-700" />
-                    {feature.text}
+              <ul className="flex-1 space-y-3 text-sm text-gray-600">
+                {plan.features.map(f => (
+                  <li key={f} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-sky-600" />
+                    <span>{f}</span>
                   </li>
                 ))}
               </ul>
 
               <Button
-                onClick={() => setOpenDialog(true)}
-                className={`mt-auto w-full ${plan.popular ? 'bg-sky-700 hover:bg-sky-800' : 'border border-gray-300 bg-white text-gray-900 hover:bg-gray-100'}`}
+                onClick={() => setOpen(true)}
+                className={cn(
+                  'mt-8 w-full rounded-xl',
+                  plan.popular ? 'bg-sky-600 hover:bg-sky-700' : 'bg-gray-900 hover:bg-gray-800'
+                )}
               >
                 اختر هذه الباقة
               </Button>
@@ -164,24 +164,24 @@ export default function PricingSection() {
         </div>
       </div>
 
-      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent dir="rtl" className="rounded-2xl p-6 sm:max-w-[400px]">
-          <DialogHeader dir="rtl">
-            <DialogTitle className="text-xs">Sign In / Sign up</DialogTitle>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent dir="rtl" className="rounded-2xl">
+          <DialogHeader>
+            <DialogTitle>تسجيل الدخول</DialogTitle>
           </DialogHeader>
-          <p className="mt-2 text-sm text-gray-600">
-            يجب عليك تسجيل الدخول أو إنشاء حساب جديد للمتابعة واختيار الباقة المناسبة لك.
-          </p>
-          <DialogFooter className="mt-4 gap-3">
-            <div className="flex w-full flex-col gap-2">
-              <Button variant={'outline'} onClick={handleGoogleSignIn} className="flex-1">
-                <FaGoogle className="h-5 w-5" />
-                <span>متابعة مع </span>
-              </Button>
-              <Button variant="destructive" onClick={() => setOpenDialog(false)} className="flex-1">
-                إلغاء
-              </Button>
-            </div>
+          <p className="text-sm text-gray-600">يجب تسجيل الدخول لإكمال اختيار الباقة</p>
+          <DialogFooter className="mt-4 flex-col gap-2">
+            <Button
+              variant="outline"
+              onClick={() => signIn('google', { callbackUrl: '/Dashboard/create-store' })}
+              className="gap-2"
+            >
+              <FaGoogle />
+              المتابعة مع Google
+            </Button>
+            <Button variant="ghost" onClick={() => setOpen(false)}>
+              إلغاء
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

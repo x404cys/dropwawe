@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import React, { useEffect, useState } from 'react';
 import Loader from '@/components/Loader';
 import { Search, ShoppingBag } from 'lucide-react';
-import { useDashboardData } from '../../../_utils/useDashboardData';
+import { useDashboardData } from '../../../context/useDashboardData';
 
 interface Order {
   id: string;
