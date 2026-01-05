@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
- 
+
 async function handlePayment(
   cartId: string,
   tranRef: string,
@@ -68,7 +68,7 @@ async function handlePayment(
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOperation);
-
+  if (!session) return NextResponse.json('userId not found');
   const contentType = req.headers.get('content-type') || '';
   let data: Record<string, string> = {};
 
@@ -92,8 +92,13 @@ export async function POST(req: Request) {
       const details = await prisma.payment.findUnique({
         where: { userId: session?.user.id },
       });
-      const plan = await prisma.subscriptionPlan.findFirst({
-        where: { type: '' },
+      const plan = await prisma.userSubscription.update({
+        where: {
+          userId: session?.user?.id,
+        },
+        data: {
+          isActive: true,
+        },
       });
       if (!plan) {
         throw new Error('Plan not found');

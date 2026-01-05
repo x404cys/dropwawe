@@ -252,8 +252,8 @@ model Payment {
   customerEmail String?
   signature     String?
   createdAt     DateTime  @default(now())
-  userId        String?    @unique
-  planId        String?    @unique
+  userId        String    @unique
+  planId        String    @unique
  
   @@index([cartId])
 }
@@ -336,7 +336,7 @@ model SubscriptionPlan {
 
 model UserSubscription {
   id              String   @id @default(cuid())
-  userId          String
+  userId          String   @unique
   planId          String
   startDate       DateTime @default(now())
   endDate         DateTime

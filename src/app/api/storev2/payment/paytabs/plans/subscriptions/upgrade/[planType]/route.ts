@@ -74,7 +74,7 @@ export async function POST(
 
       subscription = await prisma.userSubscription.create({
         data: {
-          userId: session.user.id,
+          userId: session?.user.id,
           planId: plan.id,
           startDate,
           endDate,
@@ -84,20 +84,22 @@ export async function POST(
       });
     }
     const uuid = crypto.randomUUID();
+    const cartId = `${session.user.id}-${uuid}`;
+
     await prisma.payment.create({
       data: {
-        cartId: uuid,
+        cartId,
         userId: session.user.id,
         planId: plan.id,
         tranRef: '',
         respCode: '',
         respMessage: '',
-        customerEmail: '',
+        customerEmail: session.user.email,
         signature: '',
         token: '',
-        status: '',
-        currency: '',
-        amount: plan.price,
+        status: 'PENDING',
+        currency: 'IQD',
+        amount: plan.price || 0,
       },
     });
 
