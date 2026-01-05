@@ -21,9 +21,9 @@ async function handlePayment(
 
   const order = paymentOrder.order;
 
-  let paymentRecord = await prisma.paymentOrder.findUnique({ where: { cartId } });
+  let paymentRecord = await prisma.payment.findUnique({ where: { cartId } });
   if (paymentRecord) {
-    paymentRecord = await prisma.paymentOrder.update({
+    paymentRecord = await prisma.payment.update({
       where: { cartId },
       data: {
         tranRef,
@@ -36,7 +36,7 @@ async function handlePayment(
       },
     });
   } else {
-    paymentRecord = await prisma.paymentOrder.create({
+    paymentRecord = await prisma.payment.create({
       data: {
         cartId,
         tranRef,
@@ -47,9 +47,6 @@ async function handlePayment(
         token,
         amount: order.total || 0,
         status: respStatus === 'A' ? 'Success' : 'Failed',
-        order: {
-          connect: { id: order.id },
-        },
       },
     });
   }
