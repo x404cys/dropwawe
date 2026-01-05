@@ -69,7 +69,7 @@ export default function Plans() {
             ]}
             buttonText="ابدأ "
             buttonVariant="outline"
-            planType="trader-basics"
+            planType="trader-basic"
             onClick={handleSubscribe}
           />
 

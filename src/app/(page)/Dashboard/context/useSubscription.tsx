@@ -54,7 +54,8 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
   const value = useMemo<SubscriptionContextValue>(() => {
     const sorted = plansData ? sortPlans(plansData) : [];
-    const userPlanType = userSubscription?.subscription.type ?? null;
+
+    const userPlanType: PlanType | null = userSubscription?.subscription?.type ?? null;
 
     const ACCESS_MAP: Record<PlanType, PlanType[]> = {
       'trader-basic': ['trader-basic'],
@@ -79,8 +80,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
 
       hasAccess: (requiredPlan: PlanType) => {
         if (!userPlanType) return false;
-        const allowedPlans = ACCESS_MAP[userPlanType] ?? [];
-        return allowedPlans.includes(requiredPlan);
+        return ACCESS_MAP[userPlanType]?.includes(requiredPlan) ?? false;
       },
 
       loading: plansLoading,

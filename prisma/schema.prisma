@@ -252,7 +252,8 @@ model Payment {
   customerEmail String?
   signature     String?
   createdAt     DateTime  @default(now())
-
+  userId        String    @unique
+  planId        String    @unique
  
   @@index([cartId])
 }

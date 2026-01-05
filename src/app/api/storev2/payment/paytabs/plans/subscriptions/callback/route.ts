@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
+const session = await getServerSession(authOperation);
+
 async function handlePayment(
   cartId: string,
   tranRef: string,
@@ -38,19 +40,6 @@ async function handlePayment(
       },
     });
   } else {
-    paymentRecord = await prisma.payment.create({
-      data: {
-        cartId,
-        tranRef,
-        respCode: respStatus,
-        respMessage,
-        customerEmail,
-        signature,
-        token,
-        amount: order.total || 0,
-        status: respStatus === 'A' ? 'Success' : 'Failed',
-      },
-    });
   }
 
   if (respStatus === 'A') {
@@ -78,29 +67,6 @@ async function handlePayment(
   return paymentRecord;
 }
 
-// export async function GET(req: Request) {
-//   const params = new URL(req.url).searchParams;
-
-//   const cartId = params.get('cartId') ?? '';
-//   const tranRef = params.get('tranRef') ?? '';
-//   const respStatus = params.get('respStatus') ?? '';
-//   const respMessage = params.get('respMessage') ?? '';
-//   const customerEmail = params.get('customerEmail') ?? '';
-//   const signature = params.get('signature') ?? '';
-//   const token = params.get('token') ?? '';
-
-//   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
-
-//   const returnUrl =
-//     `${new URL(req.url).origin}/storev2/payment-result` +
-//     `?tranRef=${encodeURIComponent(tranRef)}` +
-//     `&respStatus=${encodeURIComponent(respStatus)}` +
-//     `&respMessage=${encodeURIComponent(respMessage)}` +
-//     `&cartId=${encodeURIComponent(cartId)}`;
-
-//   return NextResponse.redirect(returnUrl, { status: 303 });
-// }
-
 export async function POST(req: Request) {
   const session = await getServerSession(authOperation);
 
@@ -124,24 +90,27 @@ export async function POST(req: Request) {
 
   if (data.respStatus === 'A') {
     try {
+      const details = await prisma.payment.findUnique({
+        where: { userId: session?.user.id },
+      });
       const plan = await prisma.subscriptionPlan.findFirst({
-        where: { type: 'MODREN' },
+        where: { type: '' },
       });
       if (!plan) {
         throw new Error('Plan not found');
       }
 
-      await prisma.payment.create({
+      await prisma.payment.update({
+        where: { userId: details?.userId, planId: details?.planId },
         data: {
-          cartId: data.cartId ?? '',
-          tranRef: data.tranRef ?? '',
-          respCode: data.respStatus ?? '',
-          respMessage: data.respMessage ?? '',
-          customerEmail: data.customerEmail ?? '',
-          signature: data.signature ?? '',
-          token: data.token ?? '',
-          amount: plan?.price,
-          status: data.respStatus,
+          tranRef: data.tranRef,
+          respCode: data.respCode,
+          respMessage: data.respMessage,
+          customerEmail: data.customerEmail,
+          signature: data.signature,
+          token: data.token,
+          status: data.status,
+          currency: data.currency,
         },
       });
     } catch (e) {

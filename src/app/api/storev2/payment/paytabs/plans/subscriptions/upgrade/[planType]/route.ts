@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
+import crypto from 'crypto';
 
 export async function POST(
   request: NextRequest,
@@ -14,43 +15,66 @@ export async function POST(
     }
 
     const { planType } = await context.params;
-
     if (!planType) {
-      return NextResponse.json({ error: 'Plan does not selected' }, { status: 401 });
+      return NextResponse.json({ message: 'Plan type is required' }, { status: 400 });
     }
-
-    const allowedTypes = ['NORMAL', 'MODREN', 'PENDINGPROFESSIONAL'];
-
-    // if (!allowedTypes.includes(planType)) {
-    //   return NextResponse.json({ message: 'Invalid plan type' }, { status: 400 });
-    // }
 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planType },
     });
+
     if (!plan) {
       return NextResponse.json({ message: 'Plan not found' }, { status: 404 });
     }
 
-    const existing = await prisma.userSubscription.findFirst({
+    const currentSubscription = await prisma.userSubscription.findFirst({
       where: {
         userId: session.user.id,
-        planId: plan.id,
+        isActive: true,
       },
     });
 
-    if (existing) {
-      return NextResponse.json(
-        { message: 'User already subscribed to this plan' },
-        { status: 401 }
-      );
+    let startDate: Date;
+    let endDate: Date;
+    let subscription;
+
+    if (currentSubscription) {
+      if (currentSubscription.planId === plan.id) {
+        startDate = currentSubscription.startDate;
+        endDate = new Date(currentSubscription.endDate);
+        endDate.setDate(endDate.getDate() + plan.durationDays);
+
+        subscription = await prisma.userSubscription.update({
+          where: { id: currentSubscription.id },
+          data: {
+            endDate,
+            isActive: false,
+          },
+        });
+      } else {
+        startDate = new Date();
+        endDate = new Date();
+        endDate.setDate(endDate.getDate() + plan.durationDays);
+
+        subscription = await prisma.userSubscription.update({
+          where: { id: currentSubscription.id },
+          data: {
+            planId: plan.id,
+            startDate,
+            endDate,
+            limitProducts: plan.maxProducts ?? null,
+            isActive: false,
+          },
+        });
+      }
     } else {
-      const startDate = new Date();
-      const endDate = new Date();
+      startDate = new Date();
+      endDate = new Date();
       endDate.setDate(endDate.getDate() + plan.durationDays);
-      await prisma.userSubscription.create({
+
+      subscription = await prisma.userSubscription.create({
         data: {
-          userId: session?.user.id,
+          userId: session.user.id,
           planId: plan.id,
           startDate,
           endDate,
@@ -58,62 +82,78 @@ export async function POST(
           limitProducts: plan.maxProducts ?? null,
         },
       });
-      const uuid = crypto.randomUUID();
+    }
+    const uuid = crypto.randomUUID();
+    await prisma.payment.create({
+      data: {
+        cartId: uuid,
+        userId: session.user.id,
+        planId: plan.id,
+        tranRef: '',
+        respCode: '',
+        respMessage: '',
+        customerEmail: '',
+        signature: '',
+        token: '',
+        status: '',
+        currency: '',
+        amount: plan.price,
+      },
+    });
 
-      const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-      const PAYTABS_PROFILE_ID = 169218;
+    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_PROFILE_ID = 169218;
+    const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dashboard.dropwave.cloud';
 
-      const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dashboard.matager.store';
+    const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
 
-      const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
+    const payload = {
+      profile_id: PAYTABS_PROFILE_ID,
+      tran_type: 'sale',
+      tran_class: 'ecom',
+      cart_id: `${session.user.id}-${uuid}`,
+      cart_description: `دفع اشتراك (${planType}) للمستخدم ${session.user.email}`,
+      cart_currency: 'IQD',
+      cart_amount: plan.price,
+      callback: CALLBACK_URL,
+      return: CALLBACK_URL,
+      customer_details: {
+        email: session.user.email,
+        city: 'Baghdad',
+        country: 'IQ',
+      },
+    };
 
-      const payload = {
-        profile_id: PAYTABS_PROFILE_ID,
-        tran_type: 'sale',
-        tran_class: 'ecom',
-        cart_id: `${session.user.id}-${uuid}`,
-        cart_description: `دفع خطة (${planType}) للمستخدم ${session.user.email}`,
-        cart_currency: 'IQD',
-        cart_amount: plan.price,
-        callback: CALLBACK_URL,
-        return: CALLBACK_URL,
-        customer_details: {
-          email: session.user.email,
-          city: 'Baghdad',
-          country: 'IQ',
-        },
-      };
+    const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: PAYTABS_SERVER_KEY,
+      },
+      body: JSON.stringify(payload),
+    });
 
-      const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: PAYTABS_SERVER_KEY,
-        },
-        body: JSON.stringify(payload),
-      });
+    const paytabsResponse = await response.json();
 
-      const paytabsResponse = await response.json();
-
-      if (!response.ok || !paytabsResponse.redirect_url) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: paytabsResponse.message || 'Failed to create payment',
-          },
-          { status: 400 }
-        );
-      }
+    if (!response.ok || !paytabsResponse.redirect_url) {
       return NextResponse.json(
         {
-          success: true,
-          redirect_url: paytabsResponse.redirect_url,
+          success: false,
+          message: paytabsResponse.message || 'Payment failed',
         },
-        { status: 201 }
+        { status: 400 }
       );
     }
+
+    return NextResponse.json(
+      {
+        success: true,
+        redirect_url: paytabsResponse.redirect_url,
+      },
+      { status: 201 }
+    );
   } catch (error) {
-    console.error('Upgrade Subscription Error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    console.error('Subscription Error:', error);
+    return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
