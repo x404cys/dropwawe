@@ -166,9 +166,10 @@ export async function POST(request: NextRequest) {
     }
     const totalInUSD = iqdToUsd(calculatedTotal);
 
-    const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
-    const PAYTABS_PROFILE_ID = 144505;
-
+    // const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
+    // const PAYTABS_PROFILE_ID = 144505;
+    const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
+    const PAYTABS_PROFILE_ID = 144504;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dropwave.cloud';
 
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;

@@ -10,6 +10,7 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const products = await prisma.product.findMany({
+      where: { supplierId: 'cmk13dh7a000dkn7r9g9cqvpi' },
       include: {
         images: true,
         colors: true,
