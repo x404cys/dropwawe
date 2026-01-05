@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
-const session = await getServerSession(authOperation);
-
+ 
 async function handlePayment(
   cartId: string,
   tranRef: string,
