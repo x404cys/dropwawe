@@ -350,7 +350,7 @@ export default function ProductAddPage() {
                       placeholder="0"
                       disabled={loading}
                       required
-                    />
+                    />{/*  */}
 
                     <ModernInputGroup
                       label="الخصم (%)"
