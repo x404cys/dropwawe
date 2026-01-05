@@ -162,13 +162,12 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
-    const PAYTABS_PROFILE_ID = 144505;
+    // const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
+    // const PAYTABS_PROFILE_ID = 144505;
     // const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
     // const PAYTABS_PROFILE_ID = 144504;
-
-    // const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-    // const PAYTABS_PROFILE_ID = 169218;
+    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_PROFILE_ID = 169218;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.dropwave.cloud';
 
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
@@ -182,7 +181,7 @@ export async function POST(request: NextRequest) {
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
       cart_currency: 'IQD',
-      cart_amount: calculatedTotal,
+      cart_amount: 11000,
       callback: CALLBACK_URL,
       return: CALLBACK_URL,
     };
@@ -210,12 +209,13 @@ export async function POST(request: NextRequest) {
 
     await prisma.paymentOrder.create({
       data: {
+        orderId: order.id,
         cartId: cart_id,
         amount: calculatedTotal,
         status: 'PENDING',
-        order: {
-          connect: { id: order.id },
-        },
+      },
+      include: {
+        order: true,
       },
     });
 
@@ -227,8 +227,8 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error: any) {
-    console.error('PAYMENT ORDER ERROR:', error?.message, error);
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 });
+  } catch (error) {
+    console.error('Failed to create order + payment:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -205,8 +205,7 @@ export default function PaymentResultClient() {
         {order && (
           <div className="space-y-6">
             <div className="rounded-2xl border bg-white p-6 shadow-md">
-              {/* العنوان */}
-              <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-800">
+               <h2 className="mb-6 flex items-center gap-2 text-xl font-bold text-gray-800">
                 <User className="h-6 w-6 text-gray-700" />
                 معلومات العميل
               </h2>
