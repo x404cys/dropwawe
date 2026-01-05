@@ -51,4 +51,4 @@ next-env.d.ts
 # /src/app/api/plans/subscriptions/upgrade/[type]/rouet.ts
 
 # /src/app/(page)/admin/
-/src/app/api/storev2/payment/paytabs/callback/route.ts
+./src/app/api/storev2/payment/paytabs/callback/route.ts
