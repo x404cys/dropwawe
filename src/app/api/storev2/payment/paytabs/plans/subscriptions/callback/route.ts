@@ -101,7 +101,7 @@ export async function POST(req: Request) {
       }
 
       await prisma.payment.update({
-        where: { userId: details?.userId, planId: details?.planId },
+        where: { userId: details?.userId!, planId: details?.planId! },
         data: {
           tranRef: data.tranRef,
           respCode: data.respCode,
