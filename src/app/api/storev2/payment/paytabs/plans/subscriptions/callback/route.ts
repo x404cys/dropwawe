@@ -94,7 +94,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Payment record not found' }, { status: 404 });
 
     try {
-      await prisma.userSubscription.updateMany({
+      await prisma.userSubscription.update({
         where: {
           userId: paymentRecord.userId,
         },
