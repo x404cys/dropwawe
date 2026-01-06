@@ -84,25 +84,22 @@ export async function POST(req: Request) {
   } else {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
-  const userId = await prisma.payment.findUnique({
-    where: {
-      cartId: data.cartId,
-    },
-  });
-  if (!userId) return NextResponse.json('userId not found');
+
   if (data.respStatus === 'A') {
+    const paymentRecord = await prisma.payment.findUnique({
+      where: { cartId: data.cartId },
+    });
+
+    if (!paymentRecord)
+      return NextResponse.json({ error: 'Payment record not found' }, { status: 404 });
+
     try {
-      const plan = await prisma.userSubscription.update({
+      await prisma.userSubscription.updateMany({
         where: {
-          userId: userId.id,
+          userId: paymentRecord.userId,
         },
-        data: {
-          isActive: true,
-        },
+        data: { isActive: true },
       });
-      if (!plan) {
-        throw new Error('Plan not found');
-      }
 
       await prisma.payment.update({
         where: { cartId: data.cartId },
