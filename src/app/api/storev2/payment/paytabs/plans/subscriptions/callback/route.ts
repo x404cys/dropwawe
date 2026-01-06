@@ -84,13 +84,17 @@ export async function POST(req: Request) {
   } else {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
-  const session = await getServerSession(authOperation);
-  if (!session) return NextResponse.json('userId not found');
+  const userId = await prisma.payment.findUnique({
+    where: {
+      cartId: data.cartId,
+    },
+  });
+  if (!userId) return NextResponse.json('userId not found');
   if (data.respStatus === 'A') {
     try {
       const plan = await prisma.userSubscription.update({
         where: {
-          userId: session?.user?.id,
+          userId: userId.id,
         },
         data: {
           isActive: true,
