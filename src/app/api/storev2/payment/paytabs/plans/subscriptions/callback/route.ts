@@ -67,8 +67,6 @@ async function handlePayment(
 }
 
 export async function POST(req: Request) {
-  const session = await getServerSession(authOperation);
-  if (!session) return NextResponse.json('userId not found');
   const contentType = req.headers.get('content-type') || '';
   let data: Record<string, string> = {};
 
@@ -86,7 +84,8 @@ export async function POST(req: Request) {
   } else {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
-
+  const session = await getServerSession(authOperation);
+  if (!session) return NextResponse.json('userId not found');
   if (data.respStatus === 'A') {
     try {
       const plan = await prisma.userSubscription.update({
