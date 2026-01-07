@@ -11,7 +11,6 @@ import EditProductRow from './EditProductRow';
 import { Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useDashboardData } from '../../../context/useDashboardData';
-import FloatingNavBarForProductManage from './FloatingNavBarForProductManage';
 import {
   BaggageClaim,
   Boxes,
@@ -144,9 +143,7 @@ export default function ProductTable() {
               // onClick={() => router.push('/Dashboard/supplier')}
               className="group relative flex flex-1 flex-col items-center gap-1 overflow-hidden transition-colors hover:text-blue-600"
             >
-              <span className="pointer-events-none absolute -right-5 rotate-45 bg-sky-500 px-10 py-2 text-[10px] font-bold text-white shadow-md">
-                قريباً
-              </span>
+              
 
               <span className="absolute top-0 left-0 h-full w-1 -skew-x-12 bg-blue-600 opacity-0 transition-opacity group-hover:opacity-100" />
 
