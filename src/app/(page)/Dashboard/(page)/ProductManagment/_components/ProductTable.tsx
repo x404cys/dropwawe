@@ -140,7 +140,7 @@ export default function ProductTable() {
             </button>
           ) : (
             <button
-              // onClick={() => router.push('/Dashboard/supplier')}
+              onClick={() => router.push('/Dashboard/supplier')}
               className="group relative flex flex-1 flex-col items-center gap-1 overflow-hidden transition-colors hover:text-blue-600"
             >
               
