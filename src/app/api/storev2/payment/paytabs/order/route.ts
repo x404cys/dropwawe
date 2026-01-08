@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       cart_id: cart_id,
       cart_description: `دفع طلب رقم ${order.id}`,
       cart_currency: 'IQD',
-      cart_amount: 11000,
+      cart_amount: calculatedTotal,
       callback: CALLBACK_URL,
       return: CALLBACK_URL,
     };
@@ -249,7 +249,7 @@ export async function POST(request: NextRequest) {
         data: {
           orderId: traderOrder?.id!,
           cartId: cart_id,
-          amount: calculatedTotal,
+          amount: traderOrder?.total!,
           status: 'PENDING',
         },
         include: {

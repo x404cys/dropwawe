@@ -6,27 +6,45 @@ import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
 import { FiDollarSign, FiClock } from 'react-icons/fi';
 import Loader from '@/components/Loader';
-import { TrendingUp, WalletIcon } from 'lucide-react';
+import { Nfc, TrendingUp, WalletIcon } from 'lucide-react';
+import { MdPayments } from 'react-icons/md';
+import { RiSecurePaymentFill } from 'react-icons/ri';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
-
-interface ProfitDataItem {
-  createdAt: string;
-  total: number;
-}
-
-interface PaymentDataItem {
-  createdAt: string;
+export type PaymentOrder = {
+  id: string;
+  orderId: string;
+  cartId: string;
+  tranRef: string | null;
   amount: number;
-}
+  currency: string;
+  status: string;
+  respCode: string | null;
+  respMessage: string | null;
+  token: string | null;
+  customerEmail: string | null;
+  signature: string | null;
+  createdAt: string;
+};
+
+export type orderFromTraderPayment = {
+  paymentOrder: PaymentOrder | null;
+};
+
+export type SupplierProfitResponse = {
+  totalProfit: number;
+  daily: { day: string; profit: number }[];
+  weekly: { week: string; profit: number }[];
+  monthly: { month: string; profit: number }[];
+  orderFromTraderPayment: orderFromTraderPayment[];
+};
 
 interface ProfitData {
   totalProfit: number;
   daily: { day: string; profit: number }[];
   weekly: { week: string; profit: number }[];
   monthly: { month: string; profit: number }[];
-  orders: ProfitDataItem[];
-  payments: PaymentDataItem[];
+  orderFromTraderPayment: orderFromTraderPayment[];
 }
 
 export default function ProfitPage() {
@@ -47,51 +65,7 @@ export default function ProfitPage() {
       setLoading(true);
       try {
         const res = await axios.get(`/api/orders/getall/getall-for-supplier`);
-        const { orders, payments } = res.data;
-
-        // دمج العوائد
-        const allData = [
-          ...orders.map((o: ProfitDataItem) => ({ createdAt: o.createdAt, total: o.total })),
-          ...payments.map((p: PaymentDataItem) => ({ createdAt: p.createdAt, total: p.amount })),
-        ];
-
-        // حساب الـ charts
-        const dailyMap: Record<string, number> = {};
-        const weeklyMap: Record<string, number> = {};
-        const monthlyMap: Record<string, number> = {};
-
-        const getWeekKey = (date: Date) => {
-          const startOfYear = new Date(date.getFullYear(), 0, 1);
-          const days = Math.floor((+date - +startOfYear) / (1000 * 60 * 60 * 24));
-          const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
-          return `${date.getFullYear()}-W${week}`;
-        };
-
-        allData.forEach(item => {
-          const date = new Date(item.createdAt);
-          const dayKey = date.toISOString().split('T')[0];
-          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-          const weekKey = getWeekKey(date);
-
-          dailyMap[dayKey] = (dailyMap[dayKey] || 0) + item.total;
-          weeklyMap[weekKey] = (weeklyMap[weekKey] || 0) + item.total;
-          monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + item.total;
-        });
-
-        const daily = Object.entries(dailyMap).map(([day, profit]) => ({ day, profit }));
-        const weekly = Object.entries(weeklyMap).map(([week, profit]) => ({ week, profit }));
-        const monthly = Object.entries(monthlyMap).map(([month, profit]) => ({ month, profit }));
-
-        const totalProfit = allData.reduce((sum, item) => sum + item.total, 0);
-
-        setData({
-          totalProfit,
-          daily,
-          weekly,
-          monthly,
-          orders,
-          payments,
-        });
+        setData(res.data);
       } catch (err) {
         console.error(err);
         setError('فشل تحميل البيانات / Failed to load data');
@@ -168,18 +142,45 @@ export default function ProfitPage() {
   return (
     <section className="min-h-screen bg-white py-4 text-black">
       <div dir="rtl" className="mx-auto space-y-10 py-6">
-        <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
-          <div className="">
-            <div className="flex items-center gap-2 text-neutral-600">
-              <TrendingUp className="h-5 w-5" />
-              <span className="text-sm font-medium">العائد الكلي</span>
+        <div className="flex w-full justify-between gap-4">
+          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+            <div className="flex flex-col md:flex-row">
+              <div className="">
+                <div className="flex items-center gap-2 text-neutral-600">
+                  <TrendingUp className="h-5 w-5" />
+                  <span className="text-sm font-medium">العائد الكلي</span>
+                </div>
+                <p className="mt-2 text-3xl font-bold text-neutral-900">
+                  {formatCurrency(data.totalProfit)}
+                </p>
+              </div>
             </div>
-            <p className="mt-2 text-3xl font-bold text-neutral-900">
-              {formatCurrency(data.totalProfit)}
-            </p>
+
+            <div>
+              <WalletIcon className="h-14 w-14 text-neutral-700" />
+            </div>
           </div>
-          <div>
-            <WalletIcon className="h-14 w-14 text-neutral-700" />
+          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+            <div className="flex flex-col md:flex-row">
+              <div className="">
+                <div className="flex items-center gap-2 text-neutral-600">
+                  <MdPayments className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    العائد الكلي - من بوابة الدفع الالكتروني
+                  </span>
+                </div>
+                <p className="mt-2 text-3xl font-bold text-neutral-900">
+                  {formatCurrency(
+                    data?.orderFromTraderPayment?.find(o => o.paymentOrder?.amount)?.paymentOrder
+                      ?.amount ?? 0
+                  )}
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Nfc className="h-14 w-14 text-neutral-700" />
+            </div>
           </div>
         </div>
 

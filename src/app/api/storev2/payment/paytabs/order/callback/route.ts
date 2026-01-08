@@ -22,7 +22,14 @@ async function handlePayment(data: {
       },
     },
   });
-
+  const paymentOrderFromTrader = await prisma.orderFromTraderPayment.findUnique({
+    where: { cartId },
+    include: {
+      order: {
+        include: { items: true },
+      },
+    },
+  });
   if (!paymentOrder || !paymentOrder.order) return null;
 
   if (paymentOrder.status === 'Success') {
@@ -30,6 +37,19 @@ async function handlePayment(data: {
   }
 
   await prisma.paymentOrder.update({
+    where: { cartId },
+    data: {
+      tranRef,
+      respCode: respStatus,
+      respMessage,
+      customerEmail,
+      signature,
+      token,
+      status: respStatus === 'A' ? 'Success' : 'Failed',
+    },
+  });
+
+  await prisma.orderFromTraderPayment.update({
     where: { cartId },
     data: {
       tranRef,
