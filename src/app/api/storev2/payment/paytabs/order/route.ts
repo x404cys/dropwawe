@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import dotenv from 'dotenv';
+import { Order } from '@/types/Products';
 
 dotenv.config();
 type ItemInput = {
@@ -9,6 +10,28 @@ type ItemInput = {
   price: number;
   selectedColor: string;
   selectedSize: string;
+};
+type TraderOrderItem = {
+  id: string;
+  productId: string | null;
+  quantity: number;
+  price: number;
+  wholesalePrice: number | null;
+  traderProfit: number | null;
+  supplierProfit: number | null;
+};
+type TraderOrder = {
+  id: string;
+  orderId: string;
+  traderId: string;
+  supplierId: string;
+  status: string;
+  total: number;
+  fullName: string;
+  location: string;
+  phone: string;
+  items: TraderOrderItem[];
+  createdAt: string;
 };
 
 export async function POST(request: NextRequest) {
@@ -108,6 +131,9 @@ export async function POST(request: NextRequest) {
       },
       include: { items: true },
     });
+
+    let traderOrder: TraderOrder | null = null;
+
     if (productsInDb.find(p => p.isFromSupplier === true)) {
       const supplierItems = items
         .map(item => {
@@ -137,7 +163,7 @@ export async function POST(request: NextRequest) {
         supplierId: string;
       }[];
 
-      await prisma.orderFromTrader.create({
+      const orderFromTrader = await prisma.orderFromTrader.create({
         data: {
           traderId: userId,
           supplierId: supplierItems[0].supplierId,
@@ -160,6 +186,18 @@ export async function POST(request: NextRequest) {
         },
         include: { items: true },
       });
+
+      traderOrder = {
+        ...orderFromTrader,
+        traderId: orderFromTrader.traderId!,
+        orderId: orderFromTrader.orderId!,
+        supplierId: orderFromTrader.supplierId!,
+        status: orderFromTrader.status || 'PENDING',
+        createdAt: orderFromTrader.createdAt.toISOString(),
+        fullName: orderFromTrader.fullName!,
+        location: orderFromTrader.location!,
+        phone: orderFromTrader.phone!,
+      };
     }
 
     // const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
@@ -209,7 +247,7 @@ export async function POST(request: NextRequest) {
     if (productsInDb.find(p => p.isFromSupplier === true)) {
       await prisma.orderFromTraderPayment.create({
         data: {
-          orderId: order.id,
+          orderId: traderOrder?.id!,
           cartId: cart_id,
           amount: calculatedTotal,
           status: 'PENDING',
