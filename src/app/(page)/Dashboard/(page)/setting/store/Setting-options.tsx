@@ -42,7 +42,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     'drop-pro': dropPro?.name || 'Drop Pro',
     'multi-basics': '',
     'multi-pro': 'الباقة الاحترافية',
-    'multi-drop': 'متاح للدروب شيبر فقط',
+    'multi-drop': ' للدروب شيبر فقط',
     'multi-trader': '',
   };
 
@@ -57,7 +57,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
       // requiredPlan: 'multi-basics',
     },
     { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin, requiredPlan: 'multi-pro' },
-    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign, requiredPlan: 'multi-drop' },
+    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign },
   ];
 
   return (
@@ -71,7 +71,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
           const isActive = activeSection === id;
           const allowed: boolean = requiredPlan ? hasAccess(requiredPlan) : true;
 
-          const badgeLabel = requiredPlan ? `متاح في ${planNames[requiredPlan]}` : '';
+          const badgeLabel = requiredPlan ? `متاح  ${planNames[requiredPlan]}` : '';
 
           return (
             <button

@@ -44,7 +44,7 @@ export default function Stores() {
     );
   }
 
- /*  if (error) {
+  /*  if (error) {
     return (
       <div className="p-8">
         <div className="bg-destructive/10 border-destructive/20 rounded-lg border p-6 text-center">
@@ -67,15 +67,15 @@ export default function Stores() {
 
   return (
     <section className="space-y-5 p-4">
-      <div className="grid gap-2 grid-cols-2 md:grid-cols-5">
-        <StatCard label="اليوم" value={data.todayCount} trend="up" />
-        <StatCard label="هذا الأسبوع" value={data.weekCount} trend="up" />
-        <StatCard label="هذا الشهر" value={data.monthCount} trend="neutral" />
-        <StatCard label="إجمالي المتاجر" value={data.totalStores} trend="neutral" />
-        <StatCard label="المتاجر المفعلة" value={data.totalStoreActived} trend="neutral" />
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-5">
+        <StatCard label="اليوم" value={data?.todayCount} trend="up" />
+        <StatCard label="هذا الأسبوع" value={data?.weekCount} trend="up" />
+        <StatCard label="هذا الشهر" value={data?.monthCount} trend="neutral" />
+        <StatCard label="إجمالي المتاجر" value={data?.totalStores} trend="neutral" />
+        <StatCard label="المتاجر المفعلة" value={data?.totalStoreActived} trend="neutral" />
       </div>
 
-      <StoresList stores={data.stores} />
+      <StoresList stores={data?.stores} />
     </section>
   );
 }
@@ -102,7 +102,7 @@ function StatCard({
           <p className="text-muted-foreground group-hover:text-foreground text-sm font-medium transition-colors">
             {label}
           </p>
-          <p className="text-3xl font-bold tracking-tight">{value.toLocaleString()}</p>
+          <p className="text-3xl font-bold tracking-tight">{value}</p>
         </div>
 
         {trend !== 'neutral' && (

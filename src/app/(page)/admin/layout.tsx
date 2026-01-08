@@ -7,8 +7,8 @@ import { SidebarProvider } from './context/SideBarContext';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div dir="rtl " className="font-medium">
-      <div className="mx-auto mb-4 flex flex-row gap-6">
+    <div dir="rtl" className="font-medium">
+      <div className="mx-auto my-2 flex flex-row gap-6">
         <div className="flex-1">
           <AdminProvider>
             <SidebarProvider>

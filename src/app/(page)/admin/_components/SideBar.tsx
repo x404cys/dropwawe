@@ -12,11 +12,13 @@ import {
   X,
   DollarSignIcon,
 } from 'lucide-react';
+import Image from 'next/image';
 import Logo from '@/components/utils/Logo';
 import { useSession } from 'next-auth/react';
 import { useSidebar } from '../context/SideBarContext';
 import { useRouter } from 'next/navigation';
 import { MdLeaderboard, MdPayment } from 'react-icons/md';
+import { FaMoneyBillTransfer } from 'react-icons/fa6';
 
 export default function Sidebar() {
   const { activeSection, setActiveSection } = useSidebar();
@@ -26,10 +28,11 @@ export default function Sidebar() {
 
   const menuItems: { name: string; key: string; icon: React.ElementType }[] = [
     { name: 'الرئيسية', key: '/admin', icon: Home },
-    { name: 'المتجر', key: '/admin/stores', icon: Store },
+    { name: 'المتاجر', key: '/admin/stores', icon: Store },
     { name: 'المستخدمين', key: '/admin/users', icon: Users },
     { name: 'الطلبات', key: '/admin/orders', icon: ShoppingCart },
     { name: 'عمليات الدفع', key: '/admin/payment', icon: DollarSignIcon },
+    { name: 'كشف حساب', key: '/admin/trader-profit', icon: FaMoneyBillTransfer },
     { name: 'الاشتراكات', key: '/admin/subscriptions', icon: MdPayment },
     { name: 'المنتجات', key: '/admin/products', icon: Package },
     { name: 'التقارير', key: '/admin/stats', icon: BarChart2 },
@@ -44,7 +47,14 @@ export default function Sidebar() {
         <div className="flex h-full flex-col justify-between px-4">
           <div>
             <div className="mb-5">
-              <Logo />
+              <div className="flex items-center gap-2">
+                <div className="relative h-8 w-8 md:h-8 md:w-8">
+                  <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+                </div>
+                <div className="flex flex-col">
+                  <h1 className="text-sm font-semibold md:text-xl">Dropwave</h1>
+                </div>
+              </div>
             </div>
             <ul className="space-y-2">
               {menuItems.map(item => {

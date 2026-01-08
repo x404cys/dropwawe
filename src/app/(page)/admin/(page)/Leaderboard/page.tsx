@@ -16,7 +16,7 @@ export default function TopStoresList() {
     return (
       <div className="flex min-h-[400px] items-center justify-center">
         <div className="text-center">
-          <div className="text-destructive mb-4 text-4xl">⚠️</div>
+          <div className="text-destructive mb-4 text-4xl"></div>
           <p className="text-destructive">{err}</p>
         </div>
       </div>
@@ -76,7 +76,6 @@ export default function TopStoresList() {
                 </div>
               </div>
 
-              {/* Right side - Profit Display */}
               <div className="text-right">
                 <div className="text-primary text-lg font-bold">
                   د.ع{store.totalProfit.toLocaleString()}
@@ -87,8 +86,6 @@ export default function TopStoresList() {
           </div>
         ))}
       </div>
-
-      {/* Footer stats */}
     </div>
   );
 }

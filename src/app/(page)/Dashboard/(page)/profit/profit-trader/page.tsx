@@ -10,11 +10,23 @@ import { TrendingUp, WalletIcon } from 'lucide-react';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
+interface ProfitDataItem {
+  createdAt: string;
+  total: number;
+}
+
+interface PaymentDataItem {
+  createdAt: string;
+  amount: number;
+}
+
 interface ProfitData {
   totalProfit: number;
   daily: { day: string; profit: number }[];
   weekly: { week: string; profit: number }[];
   monthly: { month: string; profit: number }[];
+  orders: ProfitDataItem[];
+  payments: PaymentDataItem[];
 }
 
 export default function ProfitPage() {
@@ -35,7 +47,51 @@ export default function ProfitPage() {
       setLoading(true);
       try {
         const res = await axios.get(`/api/orders/getall/getall-for-supplier`);
-        setData(res.data);
+        const { orders, payments } = res.data;
+
+        // دمج العوائد
+        const allData = [
+          ...orders.map((o: ProfitDataItem) => ({ createdAt: o.createdAt, total: o.total })),
+          ...payments.map((p: PaymentDataItem) => ({ createdAt: p.createdAt, total: p.amount })),
+        ];
+
+        // حساب الـ charts
+        const dailyMap: Record<string, number> = {};
+        const weeklyMap: Record<string, number> = {};
+        const monthlyMap: Record<string, number> = {};
+
+        const getWeekKey = (date: Date) => {
+          const startOfYear = new Date(date.getFullYear(), 0, 1);
+          const days = Math.floor((+date - +startOfYear) / (1000 * 60 * 60 * 24));
+          const week = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+          return `${date.getFullYear()}-W${week}`;
+        };
+
+        allData.forEach(item => {
+          const date = new Date(item.createdAt);
+          const dayKey = date.toISOString().split('T')[0];
+          const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
+          const weekKey = getWeekKey(date);
+
+          dailyMap[dayKey] = (dailyMap[dayKey] || 0) + item.total;
+          weeklyMap[weekKey] = (weeklyMap[weekKey] || 0) + item.total;
+          monthlyMap[monthKey] = (monthlyMap[monthKey] || 0) + item.total;
+        });
+
+        const daily = Object.entries(dailyMap).map(([day, profit]) => ({ day, profit }));
+        const weekly = Object.entries(weeklyMap).map(([week, profit]) => ({ week, profit }));
+        const monthly = Object.entries(monthlyMap).map(([month, profit]) => ({ month, profit }));
+
+        const totalProfit = allData.reduce((sum, item) => sum + item.total, 0);
+
+        setData({
+          totalProfit,
+          daily,
+          weekly,
+          monthly,
+          orders,
+          payments,
+        });
       } catch (err) {
         console.error(err);
         setError('فشل تحميل البيانات / Failed to load data');

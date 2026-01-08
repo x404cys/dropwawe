@@ -14,12 +14,15 @@ import {
   ShoppingCart,
   Settings,
   Store,
+  DollarSignIcon,
+  BarChart2,
 } from 'lucide-react';
 import { useSession, signOut } from 'next-auth/react';
-import { MdOutlineLeaderboard } from 'react-icons/md';
+import { MdLeaderboard, MdOutlineLeaderboard, MdPayment } from 'react-icons/md';
 import { useSidebar } from '../context/SideBarContext';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { FaMoneyBillTransfer } from 'react-icons/fa6';
 const ResponsiveNavbar = () => {
   const { activeSection, setActiveSection } = useSidebar();
   const router = useRouter();
@@ -27,12 +30,16 @@ const ResponsiveNavbar = () => {
   const { data: session } = useSession();
 
   const navItems: { name: string; key: string; icon: React.ElementType }[] = [
-    { name: 'الرئيسية', key: '/', icon: Home },
-    { name: 'الإحصائيات', key: '/admin/stats', icon: BarChart3 },
+    { name: 'الرئيسية', key: '/admin', icon: Home },
+    { name: 'المتاجر', key: '/admin/stores', icon: Store },
     { name: 'المستخدمين', key: '/admin/users', icon: Users },
-    { name: 'المنتجات', key: '/admin/products', icon: Package },
     { name: 'الطلبات', key: '/admin/orders', icon: ShoppingCart },
-    { name: 'متاجر', key: '/admin/stores', icon: Store },
+    { name: 'عمليات الدفع', key: '/admin/payment', icon: DollarSignIcon },
+    { name: 'كشف حساب', key: '/admin/trader-profit', icon: FaMoneyBillTransfer },
+    { name: 'الاشتراكات', key: '/admin/subscriptions', icon: MdPayment },
+    { name: 'المنتجات', key: '/admin/products', icon: Package },
+    { name: 'التقارير', key: '/admin/stats', icon: BarChart2 },
+    { name: 'Leaderboard', key: '/admin/Leaderboard', icon: MdLeaderboard },
     {
       name: 'ليدر بورد',
       key: 'Leaderboard',
@@ -48,20 +55,18 @@ const ResponsiveNavbar = () => {
   return (
     <nav
       dir="rtl"
-      className="sticky top-0 z-50 border-b-2 border-gray-200/60 bg-white/80 backdrop-blur-md md:hidden"
+      className="sticky top-0 z-50 mx-2 border-b-2 border-gray-200/60 bg-white/80 backdrop-blur-md md:hidden"
     >
       <div className="mx-auto max-w-7xl">
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <Image
-              src="/IMG_3549.PNG"
-              alt="Sahl"
-              width={50}
-              height={50}
-              className="h-10 w-10 md:h-16 md:w-16"
-            />
-            <div className="flex flex-col">
-              <h1 className="text-lg font-bold md:text-2xl">داشبورد</h1>
+          <div className="my-2">
+            <div className="flex items-center gap-2">
+              <div className="relative h-6 w-6 md:h-8 md:w-8">
+                <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+              </div>
+              <div className="flex flex-col">
+                <h1 className="text-sm font-semibold md:text-xl">Dashboard - Dropwave</h1>
+              </div>
             </div>
           </div>
           <div className="hidden md:block">

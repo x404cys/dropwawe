@@ -23,6 +23,8 @@ const StoresList = ({ stores }: { stores: StoreProps[] }) => {
   ];
 
   const filteredStores = useMemo(() => {
+    if (!stores) return [];
+
     return stores.filter(store => {
       const matchSearch =
         store.subLink?.toLowerCase().includes(search.toLowerCase()) ||
@@ -180,6 +182,14 @@ const StoresList = ({ stores }: { stores: StoreProps[] }) => {
                               ) : (
                                 <span className="text-muted-foreground text-xs">—</span>
                               )}
+                            </div>
+                            <div className='flex  justify-between items-center'> 
+                              <span className='text-xs'>تاريخ الانشاء</span>
+                              <span className="text-xs">
+                                {store.createdAt
+                                  ? new Date(store.createdAt).toLocaleDateString('en')
+                                  : '—'}
+                              </span>
                             </div>
                           </div>
                         </motion.div>
