@@ -219,7 +219,7 @@ export async function POST(request: NextRequest) {
       },
     });
     if (productsInDb.find(p => p.isFromSupplier === true)) {
-      await prisma.orderFromTraderPayment.create({
+      await prisma.paymentOrder.create({
         data: {
           orderId: order.id,
           cartId: cart_id,

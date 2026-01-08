@@ -89,7 +89,7 @@ export async function GET(req: Request) {
 
   await handlePayment(cartId, tranRef, respStatus, respMessage, customerEmail, signature, token);
 
-  const returnUrl = `lu.dropwave.cloud/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
+  const returnUrl = `www.dropwave.cloud/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${respMessage}&cartId=${cartId}`;
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
 
