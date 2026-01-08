@@ -218,19 +218,7 @@ export async function POST(request: NextRequest) {
         order: true,
       },
     });
-    if (productsInDb.find(p => p.isFromSupplier === true)) {
-      await prisma.orderFromTraderPayment.create({
-        data: {
-          orderId: order.id,
-          cartId: cart_id,
-          amount: calculatedTotal,
-          status: 'PENDING',
-        },
-        include: {
-          order: true,
-        },
-      });
-    }
+
     return NextResponse.json(
       {
         success: true,

@@ -94,7 +94,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
             })),
           },
         },
-        include: { items: true },
+        include: { items: true, paymentOrder: true },
       });
       ordersFromTrader.push(traderOrder);
 
