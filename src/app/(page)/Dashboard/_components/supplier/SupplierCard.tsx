@@ -23,8 +23,10 @@ const isValidUrl = (url: string | null | undefined) => {
 };
 
 export default function SupplierCard({ supplier, totalProducts, store }: SupplierCardProps) {
-  const categories = supplier.user?.Product.find(p => p.category)?.category;
+  const categories = supplier.user?.Product?.map(p => p.category).filter(Boolean) ?? [];
+
   const uniqueCategories = Array.from(new Set(categories));
+
   const router = useRouter();
 
   return (
@@ -66,12 +68,12 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
 
         {uniqueCategories.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {uniqueCategories.slice(0, 4).map((category, index) => (
+            {uniqueCategories.map((cat, i) => (
               <span
-                key={index}
+                key={i}
                 className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs text-gray-700"
               >
-                {category}
+                {cat}
               </span>
             ))}
 

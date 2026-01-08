@@ -25,7 +25,7 @@ export default function SupplierPage() {
     );
 
   if (!data || data.length === 0)
-    return <div className="py-20 text-center text-lg text-gray-400">💤 لا يوجد موردين بعد</div>;
+    return <div className="py-20 text-center text-lg text-gray-400"> لا يوجد موردين بعد</div>;
 
   return (
     <section className="w-full">
@@ -34,9 +34,9 @@ export default function SupplierPage() {
           dir="rtl"
           className="mb-8 flex flex-col items-center justify-between gap-2 border-b border-gray-200 pt-12 pb-3"
         >
-          <div className="flex items-center gap-1">
+          <div className="flex text-xs items-center gap-1 bg-sky-100 border border-sky-200 rounded-4xl px-4 py-1">
             <span>تصفح الموردين</span>
-            <PiShippingContainerLight size={25} />
+            <PiShippingContainerLight size={18} />
           </div>
         </header>
 

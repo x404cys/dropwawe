@@ -144,7 +144,6 @@ export default function ProductTable() {
               className="group relative flex flex-1 flex-col items-center gap-1 overflow-hidden transition-colors hover:text-blue-600"
             >
               
-
               <span className="absolute top-0 left-0 h-full w-1 -skew-x-12 bg-blue-600 opacity-0 transition-opacity group-hover:opacity-100" />
 
               <Truck className="h-5 w-5" />

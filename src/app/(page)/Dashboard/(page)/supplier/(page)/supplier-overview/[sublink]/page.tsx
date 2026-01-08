@@ -13,6 +13,8 @@ import ProductsCardSupplier from '@/components/Supplier/ProductsCard';
 
 export default function SupplierPageOverview() {
   const [subLink, setSubLink] = useState<string>('');
+  const [search, setSearch] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
 
   useEffect(() => {
     const pathParts = window.location.pathname.split('/');
@@ -43,6 +45,16 @@ export default function SupplierPageOverview() {
       return '/placeholder.svg';
     }
   }
+  const categories = Array.from(new Set(data?.products?.map(p => p.category).filter(Boolean)));
+  const filteredProducts = data?.products.filter(product => {
+    const matchSearch =
+      product.name.toLowerCase().includes(search.toLowerCase()) ||
+      product.description?.toLowerCase().includes(search.toLowerCase());
+
+    const matchCategory = selectedCategory === 'all' || product.category === selectedCategory;
+
+    return matchSearch && matchCategory;
+  });
 
   if (isLoading)
     return (
@@ -195,7 +207,42 @@ export default function SupplierPageOverview() {
       </div>
 
       <div className="px-4 sm:px-6 md:px-8 lg:px-12">
-        <ProductsCardSupplier products={data.products} />
+        <div className="mb-6 flex w-full flex-col gap-4 md:flex-row">
+          <input
+            type="text"
+            placeholder=" ابحث عن منتج..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="border-border focus:ring-primary w-full rounded-lg border px-4 py-2 text-sm outline-none focus:ring-2 sm:max-w-sm"
+          />
+          <div className="mb-6 flex flex-wrap gap-2">
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                selectedCategory === 'all'
+                  ? 'bg-gray-900 text-white'
+                  : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+              }`}
+            >
+              الكل
+            </button>
+
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
+                  selectedCategory === cat
+                    ? 'bg-gray-900 text-white'
+                    : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        </div>
+        <ProductsCardSupplier products={filteredProducts || []} />
       </div>
     </section>
   );
