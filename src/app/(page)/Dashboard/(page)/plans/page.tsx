@@ -6,17 +6,19 @@ import { useState } from 'react';
 import { subscribePlan } from '../../_utils/subscribePlan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
+import { useSession } from 'next-auth/react';
 
 export default function Plans() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { update } = useSession();
 
   const handleSubscribe = async (type: string) => {
     setLoading(true);
 
     try {
       const result = await subscribePlan(type);
-
+      await update();
       if (result.redirect_url) {
         window.location.href = result.redirect_url;
         return;

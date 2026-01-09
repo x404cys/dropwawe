@@ -54,10 +54,10 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
       id: 'theme',
       label: 'إعدادات القالب والمظهر',
       icon: MdOutlineStyle,
-      // requiredPlan: 'multi-basics',
+      requiredPlan: 'multi-basics',
     },
     { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin, requiredPlan: 'multi-pro' },
-    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign },
+    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign, requiredPlan: 'multi-drop' },
   ];
 
   return (

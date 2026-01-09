@@ -7,6 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
+
 import {
   Store,
   Phone,
@@ -72,6 +74,8 @@ type ServerErrorResponse = {
   field?: string;
 };
 export default function StoreSetupSupplier() {
+  const { update } = useSession();
+
   const [storeSlug, setStoreSlug] = useState('');
   const [storeName, setStoreName] = useState('');
   const [shippingPrice, setShippingPrice] = useState('');
@@ -136,6 +140,7 @@ export default function StoreSetupSupplier() {
         }
         return;
       }
+      await update();
       toast.success('تم الحفظ بنجاح ✨');
       router.back();
       router.replace('/Dashboard');

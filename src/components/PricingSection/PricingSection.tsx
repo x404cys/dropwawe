@@ -45,12 +45,8 @@ const plans: Plan[] = [
     price: 69000,
     popular: true,
     features: [
+      'كل مميزات الباقة الاساسية',
       'متجر إلكتروني احترافي',
-      'عدد منتجات غير محدود',
-      'عدد طلبات غير محدود',
-      'ادارة الطلبات',
-      'ادارة المخزون',
-      'تحقق من هاتف العميل',
       'إشعارات الواتساب للعميل',
       'استشارة تسويقية',
       'محتوى خاص بمتجرك عدد 2 (مجاني)',
@@ -83,6 +79,7 @@ const plans: Plan[] = [
     price: 69000,
     popular: true,
     features: [
+      'كل مميزات الباقة الاساسية',
       'متجر إلكتروني عدد 2',
       'عدد منتجات غير محدود',
       'عدد طلبات غير محدود',
@@ -177,6 +174,9 @@ export default function PricingSection() {
               className="gap-2"
             >
               <FaGoogle />
+
+
+              
               المتابعة مع Google
             </Button>
             <Button variant="ghost" onClick={() => setOpen(false)}>

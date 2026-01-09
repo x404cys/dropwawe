@@ -142,9 +142,9 @@ export default function ProfitPage() {
   return (
     <section className="min-h-screen bg-white py-4 text-black">
       <div dir="rtl" className="mx-auto space-y-10 py-6">
-        <div className="flex w-full justify-between gap-4">
-          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
-            <div className="flex flex-col md:flex-row">
+        <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
+          <div className="flex w-full justify-between rounded-xl border border-neutral-200 bg-white p-6 md:flex-row">
+            <div className="">
               <div className="">
                 <div className="flex items-center gap-2 text-neutral-600">
                   <TrendingUp className="h-5 w-5" />

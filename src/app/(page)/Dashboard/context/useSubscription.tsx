@@ -60,7 +60,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     const ACCESS_MAP: Record<PlanType, PlanType[]> = {
       'trader-basic': ['trader-basic'],
       'trader-pro': ['trader-basic', 'trader-pro'],
-      'drop-basics': ['drop-basics'],
+      'drop-basics': ['drop-basics', 'drop-pro'],
       'drop-pro': ['drop-basics', 'drop-pro'],
       'multi-basics': ['drop-basics', 'trader-basic'],
       'multi-pro': ['drop-pro', 'trader-pro', 'drop-basics', 'trader-basic'],

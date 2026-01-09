@@ -107,9 +107,9 @@ export async function POST(req: Request) {
           methodPayment: parsed.data.selectedMethods || '',
         },
       });
-      await prisma.user.updateMany({
-        where: { role: 'SUPPLIER' },
-        data: { active: true },
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { active: true, role: 'SUPPLIER' },
       });
     } else {
       store = await prisma.store.create({
@@ -134,9 +134,9 @@ export async function POST(req: Request) {
           methodPayment: parsed.data.selectedMethods || '',
         },
       });
-      await prisma.user.updateMany({
-        where: { role: 'SUPPLIER' },
-        data: { active: true },
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { active: true, role: 'SUPPLIER' },
       });
     }
     await prisma.supplier.create({
@@ -156,9 +156,9 @@ export async function POST(req: Request) {
         methodPayment: parsed.data.selectedMethods || '',
       },
     });
-    await prisma.user.updateMany({
-      where: { role: 'SUPPLIER' },
-      data: { active: true },
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { active: true, role: 'SUPPLIER' },
     });
 
     return NextResponse.json(store, {

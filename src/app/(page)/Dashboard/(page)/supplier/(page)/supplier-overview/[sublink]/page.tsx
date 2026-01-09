@@ -207,13 +207,13 @@ export default function SupplierPageOverview() {
       </div>
 
       <div className="px-4 sm:px-6 md:px-8 lg:px-12">
-        <div className="mb-6 flex w-full flex-col gap-4 md:flex-row">
+        <div className="mb-6 flex w-full flex-col gap-4">
           <input
             type="text"
             placeholder=" ابحث عن منتج..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="border-border focus:ring-primary w-full rounded-lg border px-4 py-2 text-sm outline-none focus:ring-2 sm:max-w-sm"
+            className="border-border focus:ring-primary w-full rounded-lg border px-4 py-2 text-sm outline-none focus:ring-2"
           />
           <div className="mb-6 flex flex-wrap gap-2">
             <button

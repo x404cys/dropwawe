@@ -3,6 +3,7 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import crypto from 'crypto';
+import { planRoleMap } from '@/app/lib/planRoleMap';
 
 export async function POST(
   request: NextRequest,
@@ -18,7 +19,11 @@ export async function POST(
     if (!planType) {
       return NextResponse.json({ message: 'Plan type is required' }, { status: 400 });
     }
-
+    const role = planRoleMap[planType];
+    await prisma.user.update({
+      where: { id: session.user.id },
+      data: { role },
+    });
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planType },
     });
@@ -159,4 +164,3 @@ export async function POST(
     return NextResponse.json({ message: 'Internal server error' }, { status: 500 });
   }
 }
-//شلونكم

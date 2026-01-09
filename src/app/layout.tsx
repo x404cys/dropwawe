@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { IBM_Plex_Sans_Arabic } from 'next/font/google';
+
 import { Geist, Geist_Mono } from 'next/font/google';
 import localFont from 'next/font/local';
 import Providers from './providers';
@@ -18,6 +20,12 @@ const myCustomFont = localFont({
     },
   ],
   variable: '--font-custom',
+  display: 'swap',
+});
+const ibmPlexArabic = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic'],
+  weight: ['100', '200', '300', '400', '500', '600', '700'],
+  variable: '--font-ibm-arabic',
   display: 'swap',
 });
 
@@ -61,7 +69,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${myCustomFont.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.className} antialiased`}
       >
         <div className="mx-auto overflow-hidden font-bold md:px-0">
           <Providers>

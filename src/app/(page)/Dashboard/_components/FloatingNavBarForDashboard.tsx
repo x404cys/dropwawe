@@ -31,6 +31,12 @@ export default function FloatingNavBarForDashboard() {
       setLoading(false);
     }
   }, [pathname]);
+  const path =
+    session?.user.role === 'SUPPLIER'
+      ? '/Dashboard/profit/profit-trader'
+      : session?.user.role === 'DROPSHIPPER'
+        ? '/Dashboard/profit/profit-dropshiper'
+        : '/Dashboard/profit';
 
   const baseStyle = 'flex cursor-pointer flex-col items-center justify-center transition';
   const activeStyle = `
@@ -96,11 +102,7 @@ export default function FloatingNavBarForDashboard() {
 
           <button
             className={`${baseStyle} ${isActive(`${session?.user.role === 'SUPPLIER' ? '/Dashboard/profit/profit-trader' : '/Dashboard/profit'}`) ? activeStyle : inactiveStyle}`}
-            onClick={() =>
-              handleNavigate(
-                `${session?.user.role === 'SUPPLIER' ? '/Dashboard/profit/profit-trader' : '/Dashboard/profit'}`
-              )
-            }
+            onClick={() => handleNavigate(`${path}`)}
           >
             <DollarSign size={20} />
             <span className="mt-1 text-xs">العوائد</span>

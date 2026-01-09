@@ -20,6 +20,7 @@ import SettingOptions from './Setting-options';
 import { SectionType } from '@/types/setting/Section';
 import { CiBookmarkCheck } from 'react-icons/ci';
 import { IoMdCheckmark } from 'react-icons/io';
+import { MdOutlinePayments } from 'react-icons/md';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -131,6 +132,12 @@ export default function StoreSetupPage() {
   };
 
   const hasErrors = Object.keys(fieldErrors).length > 0;
+  const path =
+    session?.user.role === 'SUPPLIER'
+      ? '/Dashboard/profit/profit-trader'
+      : session?.user.role === 'DROPSHIPPER'
+        ? '/Dashboard/profit/profit-dropshiper'
+        : '/Dashboard/profit';
 
   return (
     <div dir="rtl" className="mx-auto max-w-4xl space-y-4">
@@ -194,7 +201,24 @@ export default function StoreSetupPage() {
             )}
 
             {activeSection === 'theme' && <ThemeSection />}
-
+            {activeSection === 'withdraw' && (
+              <div className="my-12 flex w-full flex-col items-center space-y-11">
+                <div>
+                  <span className="flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100 px-4 text-xs">
+                    لسحب الارياح اذهب صفحة العوائد
+                    <MdOutlinePayments />
+                  </span>
+                </div>
+                <div>
+                  <button
+                    onClick={() => router.push(`${path}`)}
+                    className="w-full cursor-pointer rounded-xl border bg-sky-500 bg-conic-270 px-24 py-2 text-white hover:bg-sky-100"
+                  >
+                    صفحة العوائد
+                  </button>
+                </div>
+              </div>
+            )}
             {activeSection === 'pixel' && (
               <PixelSection
                 facebookPixel={facebookPixel}
@@ -206,9 +230,11 @@ export default function StoreSetupPage() {
               />
             )}
 
-            <div className="mt-4 flex justify-center">
+            <div
+              className={`mt-4 flex justify-center ${activeSection === 'withdraw' ? 'hidden' : 'block'}`}
+            >
               <Button
-                disabled={loading}
+                disabled={loading && activeSection === 'withdraw'}
                 onClick={handleSubmit}
                 className="flex w-full cursor-pointer items-center gap-2 bg-sky-600 px-2 py-5 hover:bg-sky-400"
               >
