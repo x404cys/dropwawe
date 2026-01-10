@@ -14,10 +14,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ userId:
   }
 
   try {
-    const data = await prisma.store.findFirst({
-      where: { userId: userId },
+    const storeUser = await prisma.storeUser.findFirst({
+      where: { userId },
+      include: { store: true },
     });
-    return NextResponse.json(data);
+
+    const store = storeUser?.store ?? null;
+    return NextResponse.json(store);
   } catch (error) {
     return NextResponse.json({ error: 'error get Data ' }, { status: 500 });
   }

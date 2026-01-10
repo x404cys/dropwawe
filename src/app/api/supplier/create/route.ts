@@ -68,9 +68,17 @@ export async function POST(req: Request) {
       ? Math.max(0, parseFloat(parsed.data.shippingPrice))
       : null;
 
-    const existingStore = await prisma.store.findFirst({
-      where: { userId: session.user.id },
+    const storeUser = await prisma.storeUser.findFirst({
+      where: {
+        userId: session.user.id,
+        isOwner: true,
+      },
+      include: {
+        store: true,
+      },
     });
+
+    const existingStore = storeUser?.store;
 
     const imageUrl = await uploadToServer(data.imageUrl as File, userId!);
 
@@ -125,7 +133,7 @@ export async function POST(req: Request) {
           telegram: parsed.data.telegram,
           description: parsed.data.description,
           active: parsed.data.active ?? true,
-          userId: session.user.id,
+          // userId: session.user.id,
           facebookPixel: parsed.data.facebookPixel || '',
           tiktokPixel: parsed.data.tiktokPixel || '',
           googlePixel: parsed.data.googlePixel || '',

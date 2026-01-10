@@ -37,11 +37,18 @@ export async function POST(req: Request) {
     if (!product) {
       return NextResponse.json({ message: 'product not found' }, { status: 409 });
     }
-    const store = await prisma.store.findUnique({
+    const storeUser = await prisma.storeUser.findFirst({
       where: {
         userId: session.user.id,
+        isOwner: true,
+      },
+      include: {
+        store: true,
       },
     });
+
+    const existingStore = storeUser?.store;
+
     const newProduct = await prisma.product.create({
       data: {
         name: product.name,
@@ -55,7 +62,7 @@ export async function POST(req: Request) {
         shippingPrice: product.shippingPrice,
         shippingType: product.shippingType,
         userId: session.user.id,
-        storeId: store?.id,
+        storeId: storeUser?.userId,
         unlimited: product.unlimited,
         isFromSupplier: true,
         supplierId: product.supplierId ?? null,

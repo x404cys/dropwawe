@@ -23,16 +23,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Product not found' }, { status: 404 });
   }
 
-  const store = await prisma.store.findUnique({
-    where: {
-      userId: session.user.id,
-    },
+  const storeUser = await prisma.storeUser.findFirst({
+    where: { userId: session.user.id },
+    include: { store: true },
   });
 
-  if (!store) {
+  if (!storeUser?.store) {
     return NextResponse.json({ error: 'Store not found for user' }, { status: 404 });
   }
-  
+
   const addProduct = await prisma.product.create({
     data: {
       name: product.name,
@@ -41,7 +40,7 @@ export async function POST(req: NextRequest) {
       image: product.image,
       userId: session.user.id,
       category: category,
-      storeId: store.id,
+      storeId: storeUser.store.id,
       isFromSupplier: true,
     },
   });

@@ -67,7 +67,11 @@ export async function POST(req: Request) {
     if (!imageUrl) {
       return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
     }
-
+    const store = await prisma.storeUser.findFirst({
+      where: {
+        userId: userId,
+      },
+    });
     const product = await prisma.product.create({
       data: {
         name,
@@ -81,6 +85,8 @@ export async function POST(req: Request) {
         image: imageUrl,
         userId,
         unlimited,
+        storeId: store?.id,
+
         isFromSupplier: !wholesalePrice ? false : true,
       },
     });

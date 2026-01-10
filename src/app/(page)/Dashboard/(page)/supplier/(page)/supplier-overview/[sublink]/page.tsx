@@ -76,6 +76,7 @@ export default function SupplierPageOverview() {
         <div className="bg-destructive/10 border-destructive/20 text-destructive rounded-xl border p-6 text-center sm:p-8">
           <p className="text-sm font-medium sm:text-base">حدث خطأ أثناء جلب البيانات</p>
           <p className="text-muted-foreground mt-2 text-xs sm:text-sm">يرجى المحاولة مرة أخرى</p>
+          {error.message}
         </div>
       </div>
     );
@@ -93,9 +94,9 @@ export default function SupplierPageOverview() {
     <section dir="rtl" className="pb-8 sm:pb-12 lg:pb-16">
       <header className="relative mb-12 sm:mb-16 md:mb-20 lg:mb-24">
         <div className="bg-muted relative h-32 w-full overflow-hidden sm:h-40 md:h-48 lg:h-56 xl:h-64">
-          {data.supplier.Header ? (
+          {data.supplier?.Header ? (
             <Image
-              src={safeImage(data.supplier.Header)}
+              src={safeImage(data.supplier?.Header)}
               alt="Supplier Banner"
               fill
               className="object-cover"
@@ -112,9 +113,9 @@ export default function SupplierPageOverview() {
 
         <div className="absolute right-4 bottom-0 translate-y-1/2 sm:right-6 md:right-8 lg:right-12">
           <div className="bg-background relative h-20 w-20 overflow-hidden rounded-full border-4 border-white shadow-xl transition-transform hover:scale-105 sm:h-24 sm:w-24 md:h-28 md:w-28 lg:h-32 lg:w-32">
-            {data.supplier.image ? (
+            {data.supplier?.image ? (
               <Image
-                src={safeImage(data.supplier.image)}
+                src={safeImage(data.supplier?.image)}
                 alt="Supplier Logo"
                 fill
                 className="object-cover"
@@ -122,7 +123,7 @@ export default function SupplierPageOverview() {
               />
             ) : (
               <div className="bg-muted flex h-full w-full items-center justify-center text-xl font-bold text-gray-500 sm:text-2xl md:text-3xl lg:text-4xl">
-                {data.supplier.user?.name?.charAt(0) ?? 'م'}
+                {data.supplier?.user?.name?.charAt(0) ?? 'م'}
               </div>
             )}
           </div>
@@ -134,7 +135,7 @@ export default function SupplierPageOverview() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h1 className="text-foreground text-2xl leading-tight font-bold sm:text-3xl md:text-4xl lg:text-5xl">
-                {data.store.name}
+                {data.store?.name}
               </h1>
               <div className="mt-2 flex items-center gap-2">
                 <div className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs font-medium sm:px-4 sm:py-1.5 sm:text-sm">
@@ -145,9 +146,9 @@ export default function SupplierPageOverview() {
 
             <div dir="ltr" className="flex flex-col justify-start">
               <div className="flex items-center gap-5">
-                {data.supplier.facebookLink && (
+                {data.supplier?.facebookLink && (
                   <a
-                    href={data.supplier.facebookLink}
+                    href={data.supplier?.facebookLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground transition-colors duration-200 hover:text-[#1877F2]"
@@ -155,9 +156,9 @@ export default function SupplierPageOverview() {
                     <FaFacebook className="h-5 w-5 sm:h-6 sm:w-6" />
                   </a>
                 )}
-                {data.supplier.instaLink && (
+                {data.supplier?.instaLink && (
                   <a
-                    href={data.supplier.instaLink}
+                    href={data.supplier?.instaLink}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-muted-foreground transition-colors duration-200 hover:text-[#E4405F]"
@@ -165,7 +166,7 @@ export default function SupplierPageOverview() {
                     <FaInstagram className="h-5 w-5 sm:h-6 sm:w-6" />
                   </a>
                 )}
-                {data.supplier.telegram && (
+                {data.supplier?.telegram && (
                   <a
                     href={data.supplier.telegram}
                     target="_blank"
@@ -179,7 +180,7 @@ export default function SupplierPageOverview() {
               <div className="mt-3 flex flex-wrap items-center gap-2">
                 {(() => {
                   try {
-                    const methods = JSON.parse(data.supplier.methodPayment || '[]');
+                    const methods = JSON.parse(data.supplier?.methodPayment || '[]');
                     return methods.length
                       ? methods.map((method: string, i: number) => (
                           <span
@@ -198,9 +199,9 @@ export default function SupplierPageOverview() {
             </div>
           </div>
 
-          {data.supplier.description && (
+          {data.supplier?.description && (
             <p className="text-muted-foreground mt-2 line-clamp-3 text-sm leading-relaxed sm:text-base">
-              {data.supplier.description}
+              {data.supplier?.description}
             </p>
           )}
         </div>

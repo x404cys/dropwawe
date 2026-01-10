@@ -69,7 +69,12 @@ export async function POST(req: Request) {
       ? Math.max(0, parseFloat(parsed.data.shippingPrice))
       : null;
 
-    const store = await prisma.store.findFirst({ where: { userId: user.id } });
+    const storeUser = await prisma.storeUser.findFirst({
+      where: { userId: user.id },
+      include: { store: true },
+    });
+
+    const store = storeUser?.store;
 
     if (store) {
       if (store.subLink !== parsed.data.subLink) {
@@ -112,14 +117,20 @@ export async function POST(req: Request) {
           subLink: parsed.data.subLink,
           shippingPrice,
           shippingType: parsed.data.shippingType,
-          hasReturnPolicy: '',
+          hasReturnPolicy: parsed.data.hasReturnPolicy ?? '',
           facebookLink: parsed.data.facebookLink,
           instaLink: parsed.data.instaLink,
           phone: parsed.data.phone,
           telegram: parsed.data.telegram,
           description: parsed.data.description,
           active: parsed.data.active ?? true,
-          userId: user.id,
+          users: {
+            create: {
+              userId: user.id,
+              role: 'OWNER',
+              isOwner: true,
+            },
+          },
         },
       });
 

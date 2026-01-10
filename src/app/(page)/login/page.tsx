@@ -7,15 +7,18 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
-import { LuMousePointerClick } from 'react-icons/lu';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const callbackUrl =
+    process.env.NODE_ENV === 'production'
+      ? 'https://dashboard.dropwave.cloud/Dashboard/create-store'
+      : `http://localhost:3000/Dashboard`;
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
     await signIn('google', {
-      callbackUrl: '/Dashboard/create-store',
+      callbackUrl,
     });
     setIsLoading(false);
   };

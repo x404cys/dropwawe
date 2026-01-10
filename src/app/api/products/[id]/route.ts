@@ -22,9 +22,13 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
             storeName: true,
             storeSlug: true,
             shippingPrice: true,
-            Store: {
+            stores: {
               select: {
-                shippingPrice: true,
+                store: {
+                  select: {
+                    shippingPrice: true,
+                  },
+                },
               },
             },
           },
@@ -32,7 +36,6 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
         images: true,
         sizes: true,
         colors: true,
-        
       },
     });
 

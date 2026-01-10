@@ -11,16 +11,22 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
   try {
     const store = await prisma.store.findFirst({
       where: { subLink },
-      select: { id: true, userId: true },
+      include: {
+        users: {
+          select: { userId: true },
+        },
+      },
     });
 
     if (!store) {
       return NextResponse.json({ error: 'Store not found' }, { status: 404 });
     }
 
+    const ownerUserId = store.users.find(u => u.userId)?.userId;
+
     const products = await prisma.product.findMany({
       where: {
-        OR: [{ storeId: store.id }, { userId: store.userId }],
+        OR: [{ storeId: store.id }, { userId: ownerUserId }],
       },
     });
 

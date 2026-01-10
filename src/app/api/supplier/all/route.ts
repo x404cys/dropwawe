@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
         user: {
           include: {
             Product: true,
-            Store: true,
+            stores: true,
           },
         },
       },

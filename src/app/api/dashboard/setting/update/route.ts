@@ -16,9 +16,14 @@ export async function POST(req: Request) {
     if (!['NORMAL', 'MODERN'].includes(theme)) {
       return NextResponse.json({ error: 'Invalid theme value' }, { status: 400 });
     }
-
     await prisma.store.updateMany({
-      where: { userId: session?.user?.id },
+      where: {
+        users: {
+          some: {
+            userId: session.user.id,
+          },
+        },
+      },
       data: { theme },
     });
 

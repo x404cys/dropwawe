@@ -30,7 +30,7 @@ model User {
   Notification    Notification[]
   orders          Order[]
   Product         Product[]
-  Store           Store[]
+  stores StoreUser[]
 
   Supplier Supplier[]
 
@@ -38,7 +38,7 @@ model User {
   merchant  Merchant? @relation("UserMerchant")
   traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
   traderProfit    TraderProfit?
-
+  invitesSent Invite[] @relation("InviteOwner")
 
 
 }
@@ -90,9 +90,9 @@ model Store {
   telegram        String?
   description     String?
   createdAt       DateTime  @default(now())
-  userId          String?   @unique
   products        Product[]
-  user            User?     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  users     StoreUser[]
+
   facebookPixel   String?
   instagramPixel  String?
   tiktokPixel     String?
@@ -100,9 +100,42 @@ model Store {
   Order Order[]
   theme           String         @default("MODERN")
   Notification Notification[]
-
+  invites Invite[]
   Supplier Supplier[]
 }                                   
+model StoreUser {
+  id        String   @id @default(cuid())
+  storeId  String
+  userId   String
+
+  role     StoreUserRole @default(OWNER)
+  isOwner  Boolean       @default(false)
+
+  createdAt DateTime @default(now())
+
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([storeId, userId])
+}
+enum StoreUserRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+model Invite {
+  id        String   @id @default(cuid())
+  code      String   @unique
+  storeId   String
+  ownerId   String
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  expiresAt DateTime?
+
+  store Store @relation(fields: [storeId], references: [id])
+  owner User  @relation("InviteOwner", fields: [ownerId], references: [id])
+}
 
 
 model Product {

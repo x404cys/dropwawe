@@ -20,7 +20,7 @@ export default function SupplierPage() {
   if (error)
     return (
       <p className="text-center text-lg font-semibold text-red-500">
-        حدث خطأ أثناء تحميل البيانات {error.message}
+        حدث خطأ أثناء تحميل البيانات {error.message}  
       </p>
     );
 
@@ -51,7 +51,7 @@ export default function SupplierPage() {
                   ...supplier,
                 }}
                 totalProducts={totalProducts}
-                store={supplier.user?.Store?.find(s => s.subLink)?.subLink as string}
+                store={supplier.id}
               />
             );
           })}

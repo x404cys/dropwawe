@@ -14,6 +14,7 @@ import UrlCard from './_components/UrlCard';
 import Image from 'next/image';
 import PlanCard from './_components/PlanCard';
 import { useEffect } from 'react';
+import CreateInviteButton from './_components/CreateInviteButton';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -102,9 +103,7 @@ export default function Dashboard() {
 
   return (
     <section>
-      <div className="flex items-center justify-center pb-2 text-center">
-        
-      </div>
+      {/* <div className="flex items-center justify-center pb-2 text-center"></div> */}
       <div dir="rtl" className="flex min-h-screen flex-col">
         <main className="flex-1 space-y-4 py-1">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

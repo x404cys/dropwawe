@@ -9,29 +9,47 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
   }
 
   try {
-    const store = await prisma.store.findFirst({
-      where: { subLink },
-      select: { id: true, userId: true },
-    });
+    // const storeWithOwner = await prisma.store.findFirst({
+    //   where: { subLink },
+    //   include: {
+    //     users: {
+    //       // where: { isOwner: true },
+    //       select: { userId: true },
+    //     },
+    //   },
+    // });
+    // const ownerUserId = storeWithOwner?.users[0]?.userId;
 
-    if (!store) {
-      return NextResponse.json({ error: 'Store not found' }, { status: 404 });
-    }
+    // const supplier = await prisma.supplier.findUnique({
+    //   where: {
+    //     userId: ownerUserId!,
+    //   },
+    // });
+    // const products = await prisma.product.findMany({
+    //   where: {
+    //     OR: [{ storeId: storeWithOwner?.id }, { userId: ownerUserId }],
+    //   },
+    //   include: {
+    //     pricingDetails: true,
+    //   },
+    // });
+
     const supplier = await prisma.supplier.findUnique({
       where: {
-        userId: store.userId!,
+        id: subLink,
       },
     });
+
     const products = await prisma.product.findMany({
       where: {
-        OR: [{ storeId: store.id }, { userId: store.userId }],
+        OR: [{ userId: supplier?.userId }],
       },
       include: {
         pricingDetails: true,
       },
     });
 
-    return NextResponse.json({ products, store, supplier }, { status: 200 });
+    return NextResponse.json({ products, supplier }, { status: 200 });
   } catch (err) {
     console.error('Error fetching products:', err);
     return NextResponse.json({ error: 'Error getting products' }, { status: 500 });

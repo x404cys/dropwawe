@@ -11,7 +11,11 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
   try {
     const store = await prisma.store.findFirst({
       where: { subLink },
-      select: { id: true, userId: true },
+      include: {
+        users: {
+          select: { userId: true },
+        },
+      },
     });
 
     if (!store) {
@@ -20,7 +24,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
 
     const products = await prisma.product.findMany({
       where: {
-        OR: [{ storeId: store.id }, { userId: store.userId }],
+        OR: [{ storeId: store.id }, { userId: store.users.find(u => u.userId)?.userId }],
         discount: {
           gt: 0,
         },

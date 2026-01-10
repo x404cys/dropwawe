@@ -13,12 +13,17 @@ export async function GET() {
     const userId = session.user.id;
     const theme = await prisma.store.findFirst({
       where: {
-        userId: userId,
+        users: {
+          some: {
+            userId: userId,
+          },
+        },
       },
       select: {
         theme: true,
       },
     });
+
     return NextResponse.json(theme);
   } catch (error) {
     console.error('  check error:', error);

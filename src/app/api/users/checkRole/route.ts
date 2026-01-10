@@ -18,11 +18,16 @@ export async function GET(req: Request) {
     if (!user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
-
-    const store = await prisma.store.findUnique({
+    const storeUser = await prisma.storeUser.findFirst({
       where: { userId: userId },
-      select: { subLink: true },
+      include: { store: true },
     });
+
+    const store = storeUser?.store;
+
+    if (!store) {
+      return NextResponse.json({ error: 'Store not found' }, { status: 404 });
+    }
 
     if (!store) {
       return NextResponse.redirect('https://dashboard.dropwave.cloud/Dashboard/create-store');
