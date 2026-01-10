@@ -19,7 +19,7 @@ export async function GET() {
       include: {
         trader: {
           include: {
-            Store: true,
+            stores: true,
             UserSubscription: {
               include: {
                 plan: true,

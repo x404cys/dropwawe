@@ -19,7 +19,7 @@ export async function GET() {
       include: {
         user: {
           include: {
-            Store: true,
+            stores: true,
           },
         },
       },
