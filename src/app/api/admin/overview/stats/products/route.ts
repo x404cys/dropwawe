@@ -17,15 +17,7 @@ export async function GET() {
         store: true,
         user: {
           select: {
-            stores: {
-              select: {
-                store: {
-                  select: {
-                    shippingPrice: true,
-                  },
-                },
-              },
-            },
+            stores: true,
           },
         },
       },
