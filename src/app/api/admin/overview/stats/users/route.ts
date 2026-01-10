@@ -18,13 +18,13 @@ export async function GET() {
       },
 
       include: {
-        Store: true,
+        stores: true,
       },
     });
     const totalUsers = await prisma.user.count();
     const totalUsersHaveStores = await prisma.user.count({
       where: {
-        Store: {
+        stores: {
           some: {},
         },
       },
