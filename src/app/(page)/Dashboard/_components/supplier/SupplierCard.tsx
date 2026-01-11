@@ -46,9 +46,9 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
         )}
 
         <div className="absolute right-0 bottom-0 translate-x-[-10%] translate-y-[50%]">
-          <div className="relative h-16 w-16 overflow-hidden rounded-full border-2 border-white bg-white shadow-md">
+          <div className="relative h-18 w-18 overflow-hidden rounded-full border-2 border-white bg-white shadow-md">
             {isValidUrl(supplier?.image) ? (
-              <Image src={supplier.image!} alt="Supplier Logo" fill className="object-cover" />
+              <Image src={supplier.image!} alt="Supplier Logo" fill className="object-fill" />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-lg font-bold text-gray-500">
                 {supplier.user?.name?.charAt(0) ?? 'م'}
@@ -137,9 +137,15 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
             عرض المنتجات
           </button>
 
-          <button className="rounded-lg bg-gray-800 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-orange-600">
-            تواصل الآن
-          </button>
+          <a
+            href={`https://wa.me/${supplier.phone?.replace(/\D/g, '')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <button className="rounded-lg bg-gray-800 px-4 py-1.5 text-sm font-medium text-white transition hover:bg-orange-600">
+              تواصل الآن
+            </button>
+          </a>
         </div>
       </div>
     </motion.div>

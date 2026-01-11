@@ -63,7 +63,7 @@ model Supplier {
   paymentInfo     String?     
   rating          Float?      @default(0)
   commission      Float?      @default(0)  
-
+  phone           String?
   stores          Store[]
   products        Product[]
   orders          Order[]

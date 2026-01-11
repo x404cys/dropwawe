@@ -19,6 +19,7 @@ export type Supplier = {
   active?: boolean;
   address?: string;
   paymentInfo?: string;
+  phone?: string;
   rating?: number;
   commission?: number;
   user?: {

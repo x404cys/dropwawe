@@ -22,5 +22,10 @@
   "editor.bracketPairColorization.enabled": true,
   "editor.matchBrackets": "always",
   "WillLuke.nextjs.addTypesOnSave": true,
-  "WillLuke.nextjs.hasPrompted": true
+  "WillLuke.nextjs.hasPrompted": true,
+
+  "editor.cursorBlinking": "smooth",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.cursorWidth": 3,
+  "editor.cursorStyle": "line"
 }

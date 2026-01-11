@@ -41,7 +41,7 @@ type ServerErrorResponse = {
 
 export default function StoreSetupPage() {
   const { data: session } = useSession();
-
+  
   const router = useRouter();
   const [store, setStore] = useState<StoreProps>();
   const [storeSlug, setStoreSlug] = useState('');
@@ -86,7 +86,7 @@ export default function StoreSetupPage() {
       formData.append('hasReturnPolicy', '__');
       formData.append('active', 'true');
       formData.append('selectedMethods', JSON.stringify(selectedMethods));
-
+      
       if (imageFile) formData.append('image', imageFile);
       if (headerFile) formData.append('header', headerFile);
 
