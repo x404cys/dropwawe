@@ -10,10 +10,7 @@ import Image from 'next/image';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const callbackUrl =
-    process.env.NODE_ENV === 'production'
-      ? 'https://dashboard.dropwave.cloud/Dashboard/create-store'
-      : `http://localhost:3000/Dashboard`;
+  const callbackUrl = 'https://dashboard.dropwave.cloud/Dashboard/create-store';
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
