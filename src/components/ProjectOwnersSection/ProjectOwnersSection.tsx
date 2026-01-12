@@ -53,7 +53,7 @@ export default function ProjectOwnersSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center md:mb-16" data-aos="fade-up">
           <h2 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-4xl lg:text-5xl">
-            لمن هذه المنصة؟
+            لمن صُمّمت دروب ويڤ؟{' '}
           </h2>
           <p className="mx-auto max-w-2xl text-base text-gray-600 md:text-lg">
             سواء كنت صاحب مشروع على السوشيال ميديا، محل تقليدي، أو مبتدئ في التجارة الإلكترونية

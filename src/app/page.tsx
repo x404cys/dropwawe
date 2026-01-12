@@ -139,11 +139,11 @@ const Page = () => {
         </div>
       </section>
       <section>
-        <FeatureSection />
         <ProjectOwnersSection />
+        <FeatureSection />
         <PaymentSection />
-        <UnlimitedProductsSection />
         <DeliveryIntegrationSection />
+        <UnlimitedProductsSection />
         <SmartMarketingSection />
         <PricingSection />
         <FAQSection />

@@ -32,46 +32,11 @@ export default function UnlimitedProductsSection() {
             <h2 className="mb-4 text-4xl leading-tight font-bold text-gray-900">
               منتجات غير محدودة
             </h2>
-            <p className="text-lg leading-relaxed text-gray-700">
-              حتى لو لم يكن لديك منتجات بعد،{' '}
-              <span className="font-semibold text-sky-700">دروب ويف</span> تزودك بمجموعة متنوعة من
-              المنتجات بسعر الجملة، جاهزة للرفع على متجرك مباشرة.
-            </p>
+            حتى لو لم يكن لديك منتجات بعد, دروب ويف تزودك بمجموعة متنوعة من المنتجات بسعر الجملة
+            جاهزة لرفعها على متجرك
           </div>
 
-          <div className="space-y-4">
-            <div
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Package className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 text-base font-semibold text-gray-900">منتجات جاهزة للبيع</h3>
-                <p className="text-sm text-gray-700">
-                  لا حاجة للتخزين أو البحث عن موردين، كل شيء متوفر داخل المنصة.
-                </p>
-              </div>
-            </div>
-
-            <div
-              data-aos="fade-up"
-              data-aos-delay="200"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Layers className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 text-base font-semibold text-gray-900">تنوع كبير في الأصناف</h3>
-                <p className="text-sm text-gray-700">
-                  اختر من عدة فئات ومنتجات تناسب جمهورك وسوقك.
-                </p>
-              </div>
-            </div>
-          </div>
+           
           <div className="mt-8 flex w-full justify-start py-3">
             <Button
               data-aos="fade-up"

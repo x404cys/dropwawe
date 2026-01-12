@@ -4,6 +4,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Megaphone, FileText, Star, CreditCard, BarChart2 } from 'lucide-react';
+import { SiSocialblade } from 'react-icons/si';
 
 export default function SmartMarketingSection() {
   useEffect(() => {
@@ -27,90 +28,89 @@ export default function SmartMarketingSection() {
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">سوّق بذكاء</h2>
-            <p className="text-lg leading-relaxed text-gray-700">
-              احصل على محتوى جاهز وقابل للاستخدام، استشارات تسويقية، وربط كامل مع أدوات التحليل
-              لتحسين أداء حملاتك الإعلانية.
-            </p>
+            
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div
               data-aos="fade-up"
               data-aos-delay="100"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-700">
                 <Megaphone className="h-5 w-5 text-white" />
               </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">محتوى جاهز للاستخدام</h3>
-                <p className="text-sm text-gray-700">
-                  محتوى تسويقي مُصمم لمنتجات دروب ويف جاهز للرفع مباشرة على متجرك.
-                </p>
+              <div className="">
+                <h3 className="font-semibold text-gray-900">
+                  محتوى جاهز للاستخدام لمنتجات دروب ويڤ
+                </h3>
               </div>
             </div>
 
             <div
               data-aos="fade-up"
               data-aos-delay="200"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
                 <FileText className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">محتوى خاص لمتجرك</h3>
-                <p className="text-sm text-gray-700">
-                  نصوص، صور، وتصاميم مخصصة لمنتجاتك لجذب عملائك بشكل أفضل.
-                </p>
+                <h3 className="mb-1 font-semibold text-gray-900">محتوى خاص لمتجرك ومنتجاتك</h3>
               </div>
             </div>
 
             <div
               data-aos="fade-up"
               data-aos-delay="300"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
                 <Star className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
                 <h3 className="mb-1 font-semibold text-gray-900">استشارات تسويقية متخصصة</h3>
-                <p className="text-sm text-gray-700">
-                  نصائح وخطط تسويقية لزيادة مبيعاتك وتحقيق أفضل النتائج.
-                </p>
               </div>
             </div>
 
             <div
               data-aos="fade-up"
               data-aos-delay="400"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
                 <CreditCard className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">كوبونات خصم مميزة</h3>
-                <p className="text-sm text-gray-700">
-                  قدم عروضًا وحوافز لعملائك لزيادة معدل الشراء.
-                </p>
+                <h3 className="mb-1 font-semibold text-gray-900">كوبونات خصم مميزة لعملائك</h3>
               </div>
             </div>
-
+            <div
+              data-aos="fade-up"
+              data-aos-delay="400"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
+            >
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
+                <SiSocialblade className="h-5 w-5 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="mb-1 font-semibold text-gray-900">
+                  ربط كامل مع فيسبوك بكسل لتحسين اداء حملاتك الاعلانية
+                </h3>
+              </div>
+            </div>
             <div
               data-aos="fade-up"
               data-aos-delay="500"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
             >
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
                 <BarChart2 className="h-5 w-5 text-white" />
               </div>
               <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">تحليلات وتحسين مستمر</h3>
-                <p className="text-sm text-gray-700">
-                  لوحة تحكم ذكية لمتابعة الأداء وتحسين حملاتك الإعلانية بشكل مستمر.
-                </p>
+                <h3 className="mb-1 font-semibold text-gray-900">
+                  تحليلات وتحسين مستمر من خلال لوحة تحكم ذكية
+                </h3>
               </div>
             </div>
           </div>

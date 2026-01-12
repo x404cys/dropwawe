@@ -20,43 +20,12 @@ export default function DeliveryIntegrationSection() {
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">ربط مباشر مع شركات التوصيل</h2>
             <p className="text-lg leading-relaxed text-gray-700">
-              سهّل عمليات الشحن وإدارة الطلبات من خلال الربط المباشر مع شركات التوصيل المحلية، وتابع
-              حالة الطلبات بكل وضوح.
+              وفّر وقت اكثر وركّز على تطوير مشروعك بدلاً من كتابة الوصولات مجموعة كبيرة من شركات
+              التوصيل في العراق في خدمة منتجاتك ومتجرك.
             </p>
           </div>
 
           <div className="space-y-4">
-            <div
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Truck className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">تكامل مع شركات التوصيل</h3>
-                <p className="text-sm text-gray-700">
-                  إرسال الطلبات مباشرة لشركات التوصيل لتقليل الأخطاء وتسريع التنفيذ.
-                </p>
-              </div>
-            </div>
-
-            <div
-              data-aos="fade-up"
-              data-aos-delay="200"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Link2 className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">متابعة الشحنات</h3>
-                <p className="text-sm text-gray-700">
-                  متابعة حالة الطلبات خطوة بخطوة من داخل لوحة التحكم.
-                </p>
-              </div>
-            </div>
             <div className="mt-8 flex w-full justify-start py-3">
               <Button
                 data-aos="fade-up"

@@ -20,54 +20,27 @@ export default function PaymentSection() {
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
-            <h2 className="mb-4 text-4xl font-bold text-gray-900">عمليات دفع آمنة</h2>
+            <h2 className="mb-4 text-4xl font-bold text-gray-900">مدفوعات آمنة وسريعة</h2>
             <p className="text-lg leading-relaxed text-gray-700">
-              نوفر لك خيارات دفع مرنة وآمنة تناسب عملاءك وتزيد من معدل إتمام الطلبات.
+              مكّن زبائنك من الدفع مباشرة عبر الموقع بكل سهولة، مع أعلى معايير الحماية وتشفير
+              البيانات
             </p>
           </div>
 
-          <div className="space-y-4">
-            <div
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Truck className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">الدفع عند الاستلام</h3>
-                <p className="text-sm text-gray-700">
-                  يتيح لعملائك الدفع عند استلام المنتج بكل ثقة وراحة.
-                </p>
-              </div>
-            </div>
-
-            <div
+          <div>
+            <p className="text-lg leading-relaxed text-gray-700">
+              استلم أموالك بسرعة، ووفّر تجربة شراء آمنة تزيد ثقة الزبون بمتجرك.
+            </p>
+          </div>
+          <div className="mt-8 flex justify-start">
+            <Button
               data-aos="fade-up"
               data-aos-delay="200"
-              className="flex items-start gap-4 rounded-xl bg-gray-50 p-0.5"
+              onClick={() => router.push('https://login.dropwave.cloud')}
+              className="rounded-2xl border-sky-600 bg-sky-700 px-10"
             >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <CreditCard className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">الدفع الإلكتروني</h3>
-                <p className="text-sm text-gray-700">
-                  دفع إلكتروني آمن عبر البطاقات المصرفية وبوابات الدفع المعتمدة.
-                </p>
-              </div>
-            </div>
-            <div className="mt-8 flex justify-start">
-              <Button
-                data-aos="fade-up"
-                data-aos-delay="200"
-                onClick={() => router.push('https://login.dropwave.cloud')}
-                className="rounded-2xl border-sky-600 bg-sky-700 px-10"
-              >
-                جربها !
-              </Button>
-            </div>
+              جربها !
+            </Button>
           </div>
         </div>
 
