@@ -17,8 +17,8 @@ interface Notification {
 
 const fakeUser = {
   id: 'user_1',
-  name: 'عبدالرحمن أحمد',
-  email: 'abdulrahman@email.com',
+  name: 'عبدالرحمن مناف',
+  email: '0xabdulrahmanmanaf@gmail.com',
   image: '/IMG_6311.JPG',
 };
 
