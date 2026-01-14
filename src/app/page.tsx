@@ -113,9 +113,7 @@ const Page = () => {
                 سجل
               </Button>
               <Button
-                onClick={() =>
-                  router.push('https://www.instagram.com/sahlappio?igsh=MWpkcGE0MWMzeHRqeg==')
-                }
+                onClick={() => router.push('/Test-Mode/Dashboard')}
                 variant="outline"
                 className="hover:bg-sky-border-sky-700/10 rounded-2xl border border-sky-700 bg-sky-100 px-6 py-3 text-sm text-sky-700 sm:text-base"
               >
