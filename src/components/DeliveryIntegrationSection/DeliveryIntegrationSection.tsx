@@ -33,7 +33,7 @@ export default function DeliveryIntegrationSection() {
                 onClick={() => router.push('https://login.dropwave.cloud')}
                 className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
               >
-                نسهلها عليك
+                ابدأ الربط الآن 
               </Button>
             </div>
           </div>

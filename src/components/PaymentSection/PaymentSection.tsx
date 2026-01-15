@@ -18,6 +18,16 @@ export default function PaymentSection() {
   return (
     <section dir="rtl" className="bg-gray-50 px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
+        <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
+          <Image
+            src="/Citi Diamond Preferred Card Benefits_ Guide.jpg"
+            alt="Secure Payment"
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 50vw"
+            className="rounded-xl object-cover shadow"
+          />
+        </div>
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">مدفوعات آمنة وسريعة</h2>
@@ -42,17 +52,6 @@ export default function PaymentSection() {
               جربها !
             </Button>
           </div>
-        </div>
-
-        <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
-          <Image
-            src="/Citi Diamond Preferred Card Benefits_ Guide.jpg"
-            alt="Secure Payment"
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 50vw"
-            className="rounded-xl object-cover shadow"
-          />
         </div>
       </div>
     </section>

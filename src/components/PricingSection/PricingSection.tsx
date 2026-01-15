@@ -22,6 +22,7 @@ interface Plan {
   price: number;
   features: string[];
   popular?: boolean;
+  r?: string[];
 }
 const plans: Plan[] = [
   {
@@ -39,6 +40,7 @@ const plans: Plan[] = [
       'ربط ميتا وتيك توك وسناب بكسل',
       'صلاحية إدارة المتجر لشخص واحد',
     ],
+    r: ['499 IQD + 3.25%', 'لكل معاملة ناجحة', '499 دينار؟ تغطية كلف الرسائل و االشعارات'],
   },
   {
     title: 'الاحترافية - تطوير المتاجر',
@@ -57,6 +59,7 @@ const plans: Plan[] = [
       'صلاحية ادارة المتجر لـ 3 اشخاص',
       'اولوية الدعم 24/7',
     ],
+    r: ['399 IQD + 2.75% , لكل معاملة ناجحة', '399 دينار؟ تغطية كلف الرسائل و االشعارات'],
   },
   {
     title: 'الأساسية - دروبشيبينغ',
@@ -73,6 +76,7 @@ const plans: Plan[] = [
       'محتوى خاص بمتجرك (رسوم إضافية)',
       'صلاحية إدارة المتجر لشخص واحد',
     ],
+    r: ['199 IQD + 3.25% , لكل معاملة ناجحة', '199 دينار؟ تغطية كلف الرسائل و االشعارات'],
   },
   {
     title: 'الاحترافية - دروبشيبينغ',
@@ -93,15 +97,26 @@ const plans: Plan[] = [
       'صلاحية إدارة المتجر 3 أشخاص',
       'أولوية الدعم 24/7',
     ],
+    r: ['99 IQD + 2.75%  , لكل معاملة ناجحة', '99 دينار؟ تغطية كلف الرسائل و االشعارات'],
   },
 ];
 
 export default function PricingSection() {
+  type PlanFilter = 'all' | 'store' | 'dropship';
+
+  const [filter, setFilter] = useState<PlanFilter>('all');
+
   const [open, setOpen] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
   }, []);
+  const filteredPlans = plans.filter(plan => {
+    if (filter === 'all') return true;
+    if (filter === 'store') return plan.title.includes('المتاجر');
+    if (filter === 'dropship') return plan.title.includes('دروبشيبينغ');
+    return true;
+  });
 
   return (
     <section id="PricingSection" dir="rtl" className="bg-gray-50 py-20">
@@ -111,10 +126,55 @@ export default function PricingSection() {
           <p className="mx-auto mt-4 max-w-2xl text-gray-600">
             اختر الباقة المناسبة وابدأ بناء متجرك الإلكتروني باحترافية
           </p>
+          <div className="mt-8 flex justify-center">
+            <div className="flex rounded-xl border border-gray-200 bg-white p-1 shadow-sm">
+              <button
+                onClick={() => setFilter('all')}
+                className={cn(
+                  'rounded-lg px-6 py-2 text-sm font-medium transition-all',
+                  filter === 'all'
+                    ? 'bg-sky-50 text-sky-500 shadow'
+                    : 'text-gray-700 hover:bg-gray-100'
+                )}
+              >
+                الكل
+              </button>
+              <button
+                onClick={() => setFilter('store')}
+                className={cn(
+                  'rounded-lg px-6 py-2 text-sm font-medium transition-all',
+                  filter === 'store'
+                    ? 'bg-sky-50 text-sky-500 shadow'
+                    : 'text-gray-700 hover:bg-gray-100'
+                )}
+              >
+                متاجر
+              </button>
+
+              <button
+                onClick={() => setFilter('dropship')}
+                className={cn(
+                  'rounded-lg px-6 py-2 text-sm font-medium transition-all',
+                  filter === 'dropship'
+                    ? 'bg-sky-50 text-sky-500 shadow'
+                    : 'text-gray-700 hover:bg-gray-100'
+                )}
+              >
+                دروبشيبينغ
+              </button>
+            </div>
+          </div>
         </div>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {plans.map((plan, i) => (
+        <div
+          className={cn(
+            'grid gap-6 sm:grid-cols-2',
+            filteredPlans.length === 2
+              ? 'max-w-[100vh] justify-center lg:grid-cols-2'
+              : 'lg:grid-cols-4'
+          )}
+        >
+          {filteredPlans.map((plan, i) => (
             <div
               key={i}
               data-aos="fade-up"
@@ -146,7 +206,15 @@ export default function PricingSection() {
                   </li>
                 ))}
               </ul>
-
+              <p className="my-2 p-1"> رسوم المعاملات : </p>
+              <ul className="flex-1 space-y-3 text-sm text-gray-600">
+                {plan.r?.map(f => (
+                  <li key={f} className="flex items-start gap-2">
+                    <Check className="h-5 w-5 text-sky-600" />
+                    <span>{f}</span>
+                  </li>
+                ))}
+              </ul>
               <Button
                 onClick={() => setOpen(true)}
                 className={cn(
@@ -174,9 +242,6 @@ export default function PricingSection() {
               className="gap-2"
             >
               <FaGoogle />
-
-
-              
               المتابعة مع Google
             </Button>
             <Button variant="ghost" onClick={() => setOpen(false)}>

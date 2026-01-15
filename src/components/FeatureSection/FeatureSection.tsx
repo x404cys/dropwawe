@@ -3,76 +3,51 @@
 import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { Code, Package, Store, Zap } from 'lucide-react';
 import Image from 'next/image';
+import { CreditCard, Truck } from 'lucide-react';
+import { Button } from '../ui/button';
+import { useRouter } from 'next/navigation';
 
-export default function FeatureSection() {
+export default function PaymentSection() {
+  const router = useRouter();
+
   useEffect(() => {
-    AOS.init({ duration: 800, easing: 'ease-in-out', once: true });
+    AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
 
   return (
-    <section dir="rtl" className="px-6 py-16 md:px-16 md:py-24 lg:px-20">
-      <h2 className="mb-12 text-right text-3xl leading-snug font-bold text-gray-900 md:mb-16 md:text-center md:text-5xl">
-        صُمّمت دروب ويف لتغطية <br /> كافة احتياجاتك في التجارة الالكترونية{' '}
+    <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
+      <h2 className="mb-4 text-center text-4xl font-bold text-gray-900">
+        صُمّمت دروب ويف لتغطية كافة احتياجاتك <br /> في التجارة الالكترونية
       </h2>
-      <div className="mx-auto flex max-w-7xl flex-col items-center gap-12 md:flex-row md:gap-16">
-        <div data-aos="fade-up" className="w-full text-right md:w-1/2">
-          <ul className="space-y-6 text-lg font-medium md:text-xl">
-            <li
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-center gap-4 text-gray-700"
-            >
-              <Code size={28} className="flex-shrink-0 text-sky-600" />
-              <span>متجر إلكتروني بدون خبرة برمجية</span>
-            </li>
-            <li
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-center gap-4 text-gray-700"
-            >
-              <Store size={28} className="flex-shrink-0 text-sky-600" />
-              <span>متجر إلكتروني مع ثيمات جاهزة</span>
-            </li>
+      <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
+        <div data-aos="fade-up" className="flex-1 space-y-8">
+          <h1 className="text-3xl">متجر الكتروني بدون خبرة برمجية</h1>
+          <div>
+            <p className="text-lg leading-relaxed text-gray-700">
+              افتح متجرك الإلكتروني بدون أي تعقيدات تقنية بخطوات سهلة وسريعة متجرك جاهز للأستخدام
+            </p>
+          </div>
 
-            <li
+          <div className="mt-8 flex justify-start">
+            <Button
               data-aos="fade-up"
               data-aos-delay="200"
-              className="flex items-center gap-4 text-gray-700"
+              onClick={() => router.push('https://login.dropwave.cloud')}
+              className="cursor-pointer rounded-2xl border-sky-600 bg-sky-700 px-10"
             >
-              <Package size={28} className="flex-shrink-0 text-sky-600" />
-              <span>إدارة المخزن والطلبات بسهولة</span>
-            </li>
-
-            <li
-              data-aos="fade-up"
-              data-aos-delay="300"
-              className="flex items-center gap-4 text-gray-700"
-            >
-              <Zap size={28} className="flex-shrink-0 text-sky-600" />
-              <span>تشغيل سريع بدون إعدادات معقدة</span>
-            </li>
-          </ul>
+              انشأ متجرك !
+            </Button>
+          </div>
         </div>
-
-        <div data-aos="fade-up" className="relative h-72 w-full sm:h-96 md:h-[480px] md:w-1/2">
-          <div className="absolute top-2 right-4 z-10 flex items-center gap-3 rounded-full border border-sky-300 bg-sky-700/80 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur md:top-8 md:right-8">
-            <Package size={20} className="flex-shrink-0" />
-            <span>إدارة المخزن والطلبات</span>
-          </div>
-
-          <div className="absolute bottom-2 left-4 z-10 flex items-center gap-3 rounded-full border border-sky-300 bg-sky-700/80 px-4 py-2 text-sm font-medium text-white shadow-lg backdrop-blur md:bottom-8 md:left-8">
-            <Store size={20} className="flex-shrink-0" />
-            <span>متجر إلكتروني مع ثيمات</span>
-          </div>
-
+        <div className="relative flex aspect-[16/10] w-full flex-1 items-center justify-center overflow-hidden rounded-2xl shadow">
           <Image
-            src="/Untitled-1.png"
-            alt="Feature Image"
+            src="/image.png"
+            alt="Secure Payment"
             fill
-            className="rounded-xl object-contain"
             priority
+            sizes="(max-width: 770px) 100vw, 50vw"
+            className="scale-105 rounded-xl object-contain object-center shadow transition-transform duration-300"
           />
         </div>
       </div>

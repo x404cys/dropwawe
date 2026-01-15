@@ -23,14 +23,7 @@ export default function ProjectOwnersSection() {
       badge: 'سوشيال ميديا',
       icon: <Cpu className="h-5 w-5 text-gray-700" />,
     },
-    {
-      image: '/Global E-commerce Logos Playful Arrangement.png',
-      title: 'للدروب شيبرز',
-      description:
-        'ابدأ دروبشيبينغ بسهولة مع متجر إلكتروني جاهز، منتجات مختارة، ومحتوى تسويقي قابل للاستخدام.',
-      badge: 'دروب شيب',
-      icon: <Store className="h-5 w-5 text-gray-700" />,
-    },
+
     {
       image: '/showing-cart-trolley-shopping-online-sign-graphic.jpg',
       title: 'لكل شخص مهتم بالتجارة الإلكترونية',
@@ -55,12 +48,9 @@ export default function ProjectOwnersSection() {
           <h2 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-4xl lg:text-5xl">
             لمن صُمّمت دروب ويڤ؟{' '}
           </h2>
-          <p className="mx-auto max-w-2xl text-base text-gray-600 md:text-lg">
-            سواء كنت صاحب مشروع على السوشيال ميديا، محل تقليدي، أو مبتدئ في التجارة الإلكترونية
-          </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-3">
           {sections.map((section, index) => (
             <div
               key={index}

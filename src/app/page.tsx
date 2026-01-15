@@ -108,16 +108,16 @@ const Page = () => {
             <div className="mt-4 flex gap-2">
               <Button
                 onClick={() => router.push('https://login.dropwave.cloud')}
-                className="rounded-2xl bg-sky-700 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
+                className="rounded-2xl cursor-pointer bg-sky-700 px-6 py-3 text-sm text-white hover:bg-black/90 sm:text-base"
               >
-                سجل
+                ابدأ تجربتك
               </Button>
               <Button
                 onClick={() => router.push('/Test-Mode/Dashboard')}
                 variant="outline"
-                className="hover:bg-sky-border-sky-700/10 rounded-2xl border border-sky-700 bg-sky-100 px-6 py-3 text-sm text-sky-700 sm:text-base"
+                className="hover:bg-sky-border-sky-700/10 cursor-pointer rounded-2xl border border-sky-700 bg-sky-100 px-6 py-3 text-sm text-sky-700 sm:text-base"
               >
-                جرب المنصة
+                جولة داخل المنصة{' '}
               </Button>
             </div>
 
