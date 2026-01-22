@@ -8,14 +8,14 @@ import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import { MdOutlineStyle } from 'react-icons/md';
 import { PiShootingStarThin } from 'react-icons/pi';
-import { FaCrown } from 'react-icons/fa';
+import { FaCrown, FaUsersCog } from 'react-icons/fa';
 
 import { useDashboardData } from '../../../context/useDashboardData';
 import PlanCard from '../../../_components/PlanCard';
 import { useSubscriptions } from '../../../context/useSubscription';
 import { PlanType } from '@/types/plans/Plans';
 
-type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw';
+type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw' | 'users';
 
 interface Section {
   id: SectionType;
@@ -50,6 +50,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     { id: 'basic', label: 'الإعدادات الأساسية', icon: LuUserRoundPen },
     { id: 'shipping', label: 'إعدادات التوصيل', icon: LiaShippingFastSolid },
     { id: 'social', label: 'الروابط ووسائل التواصل', icon: IoShareSocialOutline },
+    { id: 'users', label: 'اضافة حساب اخر للمتجر', icon: FaUsersCog },
     {
       id: 'theme',
       label: 'إعدادات القالب والمظهر',

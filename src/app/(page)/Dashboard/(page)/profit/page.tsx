@@ -4,9 +4,27 @@ import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { TrendingUp, Calendar, Clock, Wallet, WalletIcon } from 'lucide-react';
+import {
+  TrendingUp,
+  Calendar,
+  Clock,
+  Wallet,
+  WalletIcon,
+  Nfc,
+  ArrowDownToLine,
+} from 'lucide-react';
 import Loader from '@/components/Loader';
-
+import { MdPayments } from 'react-icons/md';
+import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface ProfitData {
@@ -14,6 +32,7 @@ interface ProfitData {
   daily: { day: string; profit: number }[];
   weekly: { week: string; profit: number }[];
   monthly: { month: string; profit: number }[];
+  orderPayment: number;
 }
 
 export default function ProfitPage() {
@@ -45,7 +64,31 @@ export default function ProfitPage() {
 
     fetchData();
   }, [userId]);
-
+  const handleWithdraw = async () => {
+    if (!userId) return;
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await axios.post('/api/dashboard/profit/withdraw-trader');
+      if (res.data) {
+        setData((prev: any) =>
+          prev
+            ? {
+                ...prev,
+                totalProfit: res.data.totalProfit,
+                remaining: res.data.remaining,
+                withdrawn: res.data.withdrawn,
+              }
+            : prev
+        );
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to withdraw');
+    } finally {
+      setLoading(false);
+    }
+  };
   const formatCurrency = (num: number) =>
     new Intl.NumberFormat('en-IQ', {
       style: 'currency',
@@ -106,23 +149,79 @@ export default function ProfitPage() {
   };
 
   return (
-    <section className="min-h-screen  px-4 py-8 md:px-8">
+    <section className="min-h-screen px-4 py-8 md:px-8">
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
-        <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
-          <div className="">
-            <div className="flex items-center gap-2 text-neutral-600">
-              <TrendingUp className="h-5 w-5" />
-              <span className="text-sm font-medium">العائد الكلي</span>
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+            <div className="flex flex-col md:flex-row">
+              <div className="">
+                <div className="flex items-center gap-2 text-neutral-600">
+                  <MdPayments className="h-5 w-5" />
+                  <span className="text-sm font-medium">
+                    العائد الكلي - من بوابة الدفع الالكتروني
+                  </span>
+                </div>
+                <p className="mt-2 text-3xl font-bold text-neutral-900">
+                  {formatCurrency(data.orderPayment)}
+                </p>
+              </div>
             </div>
-            <p className="mt-2 text-3xl font-bold text-neutral-900">
-              {formatCurrency(data.totalProfit)}
-            </p>
+
+            <div>
+              <Nfc className="h-14 w-14 text-neutral-700" />
+            </div>
           </div>
-          <div>
-            <WalletIcon className="h-14 w-14 text-neutral-700" />
+          <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+            <div className="">
+              <div className="flex items-center gap-2 text-neutral-600">
+                <TrendingUp className="h-5 w-5" />
+                <span className="text-sm font-medium">العائد الكلي</span>
+              </div>
+              <p className="mt-2 text-3xl font-bold text-neutral-900">
+                {formatCurrency(data.totalProfit)}
+              </p>
+            </div>
+            <div>
+              <WalletIcon className="h-14 w-14 text-neutral-700" />
+            </div>
           </div>
         </div>
-
+        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100">
+              <ArrowDownToLine className="h-5 w-5 text-neutral-600" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-neutral-900">سحب الأرباح</h3>
+              <p className="text-xs text-neutral-500">اعلام المنصة بسحب ارباحك</p>
+            </div>
+          </div>
+          {error && <p className="text-sm text-red-600">{error}</p>}
+          <Dialog>
+            <DialogTrigger dir="rtl" asChild>
+              <Button size="lg" className="mr-auto w-full cursor-pointer bg-sky-600 md:w-40">
+                سحب الأرباح
+              </Button>
+            </DialogTrigger>
+            <DialogContent dir="rtl" className="sm:max-w-[400px]">
+              <DialogHeader>
+                <DialogTitle>تأكيد السحب</DialogTitle>
+                <DialogDescription>
+                  هل أنت متأكد أنك تريد سحب الأرباح؟ سيتم تحديث الرصيد المتبقي والمسحوب بعد العملية.
+                </DialogDescription>
+              </DialogHeader>
+              {error && <p className="mt-2 text-red-500">{error}</p>}
+              <DialogFooter className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setError(null)}>
+                  إلغاء
+                </Button>
+                <Button onClick={handleWithdraw} disabled={loading}>
+                  {loading ? 'Processing...' : 'تأكيد السحب '}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-neutral-700">اختر الأسبوع</label>

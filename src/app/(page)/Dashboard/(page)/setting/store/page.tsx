@@ -21,6 +21,7 @@ import { SectionType } from '@/types/setting/Section';
 import { CiBookmarkCheck } from 'react-icons/ci';
 import { IoMdCheckmark } from 'react-icons/io';
 import { MdOutlinePayments } from 'react-icons/md';
+import CreateInviteButton from '../../../_components/CreateInviteButton';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -45,7 +46,7 @@ export default function StoreSetupPage() {
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
-
+  const hiddenButton: string[] = ['users', 'withdraw'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   useEffect(() => {
     const fetchInfo = async () => {
@@ -199,7 +200,11 @@ export default function StoreSetupPage() {
                 onTelegramChange={setTelegram}
               />
             )}
-
+            {activeSection === 'users' && (
+              <div className="my-12 flex w-full flex-col items-center space-y-11">
+                <CreateInviteButton />
+              </div>
+            )}
             {activeSection === 'theme' && <ThemeSection />}
             {activeSection === 'withdraw' && (
               <div className="my-12 flex w-full flex-col items-center space-y-11">
@@ -231,7 +236,9 @@ export default function StoreSetupPage() {
             )}
 
             <div
-              className={`mt-4 flex justify-center ${activeSection === 'withdraw' ? 'hidden' : 'block'}`}
+              className={`mt-4 flex justify-center ${
+                hiddenButton.includes(activeSection) ? 'hidden' : 'block'
+              }`}
             >
               <Button
                 disabled={loading && activeSection === 'withdraw'}

@@ -2,11 +2,15 @@
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
+import { Copy, Link2, Loader2 } from 'lucide-react';
 
-export default function CreateInviteButton() {
+export default function CreateInvitePage() {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+
+  const inviteLink = inviteCode && `${window.location.origin}/login/invite/${inviteCode}`;
 
   const handleCreateInvite = async () => {
     setLoading(true);
@@ -19,44 +23,76 @@ export default function CreateInviteButton() {
       const data = await res.json();
 
       if (!res.ok) {
-        toast.error(data.error || 'Failed to create invite');
-        setLoading(false);
+        toast.error(data.error || 'فشل إنشاء رابط الدعوة');
         return;
       }
 
       setInviteCode(data.invite.code);
-      toast.success('Invite created successfully!');
+      toast.success('تم إنشاء رابط الدعوة بنجاح');
     } catch (err) {
-      console.error(err);
-      toast.error('Server error');
+      toast.error('حدث خطأ في الخادم');
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <div>
-      <Button onClick={handleCreateInvite} disabled={loading}>
-        {loading ? 'Creating...' : 'Create Invite'}
-      </Button>
+  const copyToClipboard = () => {
+    if (!inviteLink) return;
+    navigator.clipboard.writeText(inviteLink);
+    toast.success('تم نسخ الرابط');
+  };
 
-      {inviteCode && (
-        <div className="mt-2">
-          <p>
-            Invite Code: <strong>{inviteCode}</strong>
-          </p>
-          <p>
-            Share this link:{' '}
-            <a
-              href={`/login/invite/${inviteCode}`}
-              target="_blank"
-              className="text-blue-600 underline"
-            >
-              {`${window.location.origin}/login/invite/{inviteCode}`}
-            </a>
-          </p>
-        </div>
-      )}
+  return (
+    <div dir="rtl" className="mx-auto max-w-xl space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold">دعوة مستخدمين</h1>
+        <p className="text-muted-foreground text-sm">
+          أنشئ رابط دعوة للسماح لمستخدمين جدد بالانضمام إلى المنصة. وادراة متجرك بسهولة مع فريقك.
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>إنشاء دعوة جديدة</CardTitle>
+        </CardHeader>
+
+        <CardContent className="space-y-4">
+          <Button
+            onClick={handleCreateInvite}
+            disabled={loading}
+            className="w-full cursor-pointer bg-sky-600 hover:bg-sky-700"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="ml-2 h-4 w-4 animate-spin" />
+                جارٍ الإنشاء...
+              </>
+            ) : (
+              'إنشاء رابط دعوة'
+            )}
+          </Button>
+
+          {inviteCode && (
+            <div className="bg-muted/40 space-y-3 rounded-lg border p-4">
+              <div className="text-sm">
+                <span className="text-muted-foreground">كود الدعوة</span>
+                <p className="font-mono font-semibold">{inviteCode}</p>
+              </div>
+
+              <div className="bg-background flex items-center justify-between gap-2 rounded-md border p-2">
+                <div className="flex items-center gap-2 truncate text-sm">
+                  <Link2 className="text-muted-foreground h-4 w-4" />
+                  <span className="truncate">{inviteLink}</span>
+                </div>
+
+                <Button size="icon" variant="ghost" onClick={copyToClipboard}>
+                  <Copy className="h-4 w-4 cursor-pointer" />
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }

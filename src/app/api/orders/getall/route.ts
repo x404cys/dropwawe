@@ -33,6 +33,19 @@ export async function GET(req: Request) {
         createdAt: 'asc',
       },
     });
+    const orderPayment = await prisma.paymentOrder.aggregate({
+      _sum: {
+        amount: true,
+      },
+      where: {
+        status: 'Success',
+        order: {
+          userId: userId,
+        },
+      },
+    });
+
+    console.log(orderPayment._sum.amount ?? 0);
 
     const dailyMap: Record<string, number> = {};
     const weeklyMap: Record<string, number> = {};
@@ -77,6 +90,7 @@ export async function GET(req: Request) {
       daily,
       weekly,
       monthly,
+      orderPayment: orderPayment._sum.amount ?? 0,
     });
   } catch (error) {
     return NextResponse.json({ error: 'err to get profit' }, { status: 500 });
