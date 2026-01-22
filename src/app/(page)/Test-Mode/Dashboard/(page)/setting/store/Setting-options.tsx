@@ -15,7 +15,7 @@ import PlanCard from '../../../_components/PlanCard';
 import { useSubscriptions } from '../../../context/useSubscription';
 import { PlanType } from '@/types/plans/Plans';
 
-type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw';
+type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw' | 'users';
 
 interface Section {
   id: SectionType;

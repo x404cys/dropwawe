@@ -12,8 +12,7 @@ import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
 import Image from 'next/image';
 import PlanCard from './_components/PlanCard';
-import { useEffect } from 'react';
-import CreateInviteButton from './_components/CreateInviteButton';
+
 export type OrderStatus = 'CONFIRMED' | 'PENDING' | 'CANCELLED';
 
 export interface OrderDetails {

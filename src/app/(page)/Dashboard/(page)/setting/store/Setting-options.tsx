@@ -14,8 +14,7 @@ import { useDashboardData } from '../../../context/useDashboardData';
 import PlanCard from '../../../_components/PlanCard';
 import { useSubscriptions } from '../../../context/useSubscription';
 import { PlanType } from '@/types/plans/Plans';
-
-type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw' | 'users';
+import { SectionType } from '@/types/setting/Section';
 
 interface Section {
   id: SectionType;
