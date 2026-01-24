@@ -84,7 +84,7 @@ export async function POST(req: Request) {
         category,
         image: imageUrl,
         userId,
-        unlimited,
+        unlimited,//
         storeId: store?.id,
 
         isFromSupplier: !wholesalePrice ? false : true,
