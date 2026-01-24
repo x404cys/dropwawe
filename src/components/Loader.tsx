@@ -27,7 +27,7 @@ const StyledWrapper = styled.div`
     height: 10px;
     border-radius: 50%;
     margin: 0 10px;
-    background-color: #333;
+    background-color: #00a6f4 ;
     animation: circle1 1s ease-in-out infinite;
   }
 

@@ -80,13 +80,13 @@ export default function NavBarForDesktop() {
     >
       <div className="flex items-center gap-8">
         <Link href="/">
-          <div className="flex cursor-pointer items-center gap-2">
-            <h1 className="text-xl font-bold text-gray-900">Dropwave</h1>
+          <div className="flex cursor-pointer items-center gap-1">
+            <h1 className="text-xl font-bold text-gray-900">Matager</h1>
             <Image
-              src="/logo-drop.png"
-              alt="Sahl"
-              width={25}
-              height={25}
+              src="/Matager-logo1.PNG"
+              alt="Matager - متاجر"
+              width={50}
+              height={50}
               className="rounded-full"
             />
           </div>

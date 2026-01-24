@@ -5,6 +5,7 @@ import { Boxes, Package, Search } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import ProductsCardDropWave from '../ProductManagment/_components/ProductsCard-dropwave';
 import { Product } from '@/types/Products';
+import Loader from '@/components/Loader';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
@@ -28,12 +29,9 @@ export default function ProductsPage() {
 
   if (isLoading)
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="border-border border-t-foreground mx-auto mb-4 h-8 w-8 animate-spin rounded-full border-2" />
-          <p className="text-muted-foreground text-sm">تحميل المنتجات...</p>
-        </div>
-      </div>
+      <section className="flex h-screen items-center justify-center">
+        <Loader />
+      </section>
     );
 
   if (error)

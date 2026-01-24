@@ -87,7 +87,7 @@ export default function OrderSummaryPage() {
   useEffect(() => {
     async function fetchOrders() {
       if (!session?.user?.id) return;
-      
+
       try {
         const res = await fetch(`/api/orders/get/${session.user.id}`);
         if (!res.ok) {
@@ -172,7 +172,9 @@ export default function OrderSummaryPage() {
   return (
     <>
       {loading ? (
-        <Loader />
+        <section className="flex h-screen items-center justify-center">
+          <Loader />
+        </section>
       ) : orders.length === 0 ? (
         <section className="flex min-h-screen flex-col items-center justify-center gap-4 dark:bg-gray-900">
           <ShoppingBag className="h-24 w-24 text-gray-400 dark:text-gray-600" />
