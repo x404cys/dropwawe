@@ -67,11 +67,23 @@ export async function POST(req: Request) {
     if (!imageUrl) {
       return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
     }
+    const storeId = formData.get('storeId') as string;
+    if (!storeId) {
+      return NextResponse.json({ error: 'Store ID is required' }, { status: 400 });
+    }
+
     const store = await prisma.storeUser.findFirst({
       where: {
         userId: userId,
       },
     });
+    if (!store) {
+      return NextResponse.json(
+        { error: 'User does not have an associated store' },
+        { status: 400 }
+      );
+    }
+
     const product = await prisma.product.create({
       data: {
         name,
@@ -84,8 +96,8 @@ export async function POST(req: Request) {
         category,
         image: imageUrl,
         userId,
-        unlimited,//
-        storeId: store?.id,
+        unlimited,
+        storeId: storeId,
 
         isFromSupplier: !wholesalePrice ? false : true,
       },
