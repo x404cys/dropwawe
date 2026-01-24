@@ -184,6 +184,14 @@ export default function EditProductPage() {
 
             <hr />
             <CustomInput
+              label="السعر"
+              type="number"
+              icon={<FaPercent />}
+              value={product.price || ''}
+              onChange={e => setProduct({ ...product, price: Number(e.target.value) })}
+              placeholder="السعر"
+            />
+            <CustomInput
               label="الخصم"
               type="number"
               icon={<FaPercent />}

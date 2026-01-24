@@ -5,7 +5,7 @@ import { ChevronLeft, DollarSign } from 'lucide-react';
 import type { ElementType } from 'react';
 import { LuUserRoundPen } from 'react-icons/lu';
 import { LiaShippingFastSolid } from 'react-icons/lia';
-import { IoShareSocialOutline } from 'react-icons/io5';
+import { IoShareSocialOutline, IoStorefrontOutline } from 'react-icons/io5';
 import { MdOutlineStyle } from 'react-icons/md';
 import { PiShootingStarThin } from 'react-icons/pi';
 import { FaCrown, FaUsersCog } from 'react-icons/fa';
@@ -50,14 +50,15 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     { id: 'shipping', label: 'إعدادات التوصيل', icon: LiaShippingFastSolid },
     { id: 'social', label: 'الروابط ووسائل التواصل', icon: IoShareSocialOutline },
     { id: 'users', label: 'اضافة حساب اخر للمتجر', icon: FaUsersCog },
+    { id: 'create-another', label: 'انشاء متجر اخر', icon: IoStorefrontOutline },
     {
       id: 'theme',
       label: 'إعدادات القالب والمظهر',
       icon: MdOutlineStyle,
-      requiredPlan: 'multi-basics',
+      /* requiredPlan: 'multi-basics', */
     },
-    { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin, requiredPlan: 'multi-pro' },
-    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign, requiredPlan: 'multi-drop' },
+    { id: 'pixel', label: 'بيكسل والتتبع', icon: PiShootingStarThin, /* requiredPlan: 'multi-pro' */ },
+    { id: 'withdraw', label: 'سحب الارباح', icon: DollarSign, /* requiredPlan: 'multi-drop'  */},
   ];
 
   return (

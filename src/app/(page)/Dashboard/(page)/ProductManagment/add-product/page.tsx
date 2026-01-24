@@ -14,6 +14,7 @@ import {
   ChevronDown,
   ChevronUp,
   ArrowLeft,
+  Store,
 } from 'lucide-react';
 import { GoPackageDependencies } from 'react-icons/go';
 import { Button } from '@/components/ui/button';
@@ -76,7 +77,7 @@ export default function ProductAddPage() {
   const [categories, setCategories] = useState<string[]>([]);
   const [sizes, setSizes] = useState<{ size: string; stock: number }[]>([]);
   const [colors, setColors] = useState<{ name: string; hex: string; stock: number }[]>([]);
-
+  const [storeId, setStoreId] = useState<string>('');
   useEffect(() => {
     if (!id) return;
 
@@ -184,11 +185,16 @@ export default function ProductAddPage() {
       formData.append('image', newProduct.imageFile);
 
       formData.append('unlimited', newProduct.unlimited ? 'true' : 'false');
-
       formData.append(
         'discount',
         Number.isFinite(newProduct.discount) ? String(newProduct.discount) : '0'
       );
+      if (!storeId) {
+        toast.error('يرجى اختيار المتجر');
+        return;
+      }
+
+      formData.append('storeId', storeId);
 
       if (newProduct.shippingType?.trim()) {
         formData.append('shippingType', newProduct.shippingType.trim());
@@ -350,8 +356,7 @@ export default function ProductAddPage() {
                       placeholder="0"
                       disabled={loading}
                       required
-                    />{/*  */}
-
+                    />
                     <ModernInputGroup
                       label="الخصم (%)"
                       icon={<Percent className="h-4 w-4 text-gray-400" />}
@@ -482,6 +487,24 @@ export default function ProductAddPage() {
                   onChange={val => setNewProduct({ ...newProduct, category: val })}
                   loading={loading}
                 />
+                <div>
+                  <label className="flex items-center text-gray-600">
+                    <Store className="h-4 w-4" />
+                    <span>اختر المتجر</span>
+                  </label>
+                  <select
+                    className="mt-2 w-full rounded-md border border-gray-300 bg-white p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+                    value={storeId || ''}
+                    onChange={e => setStoreId(e.target.value)}
+                  >
+                    <option value="">الافتراضي</option>
+                    {data.Stores?.map(store => (
+                      <option key={store.id} value={store.id}>
+                        {store.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 

@@ -9,6 +9,7 @@ import { Save } from 'lucide-react';
 import axios from 'axios';
 import type { StoreProps } from '@/types/store/StoreType';
 import { useDashboardData } from '../../../context/useDashboardData';
+import { Store, Layers, TrendingUp } from 'lucide-react';
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import BasicInfoSection from './(page)/basic-info-section/basic-info-section';
@@ -46,7 +47,7 @@ export default function StoreSetupPage() {
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
-  const hiddenButton: string[] = ['users', 'withdraw'];
+  const hiddenButton: string[] = ['users', 'withdraw', 'create-another'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   useEffect(() => {
     const fetchInfo = async () => {
@@ -141,7 +142,7 @@ export default function StoreSetupPage() {
         : '/Dashboard/profit';
 
   return (
-    <div dir="rtl" className="mx-auto max-w-4xl space-y-4">
+    <section dir="rtl" className="mx-auto pb-10 max-w-4xl space-y-4">
       {hasErrors && (
         <div className="text-xs text-red-500">لديك أخطاء بالحقول راجع النقاط الحمراء</div>
       )}
@@ -207,21 +208,26 @@ export default function StoreSetupPage() {
             )}
             {activeSection === 'theme' && <ThemeSection />}
             {activeSection === 'withdraw' && (
-              <div className="my-12 flex w-full flex-col items-center space-y-11">
+              <div className="my-12 flex w-full flex-col items-center space-y-8 px-4 sm:px-0">
                 <div>
-                  <span className="flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100 px-4 text-xs">
-                    لسحب الارياح اذهب صفحة العوائد
-                    <MdOutlinePayments />
+                  <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100 px-4 py-1 text-xs font-medium text-sky-700">
+                    لسحب الأرباح، انتقل إلى صفحة العوائد
+                    <MdOutlinePayments className="h-4 w-4" />
                   </span>
                 </div>
-                <div>
+
+                <div className="w-full max-w-sm">
                   <button
                     onClick={() => router.push(`${path}`)}
-                    className="w-full cursor-pointer rounded-xl border bg-sky-500 bg-conic-270 px-24 py-2 text-white hover:bg-sky-100"
+                    className="w-full rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:text-base"
                   >
-                    صفحة العوائد
+                    الانتقال إلى صفحة العوائد
                   </button>
                 </div>
+
+                <p className="text-muted-foreground max-w-xs text-center text-xs sm:text-sm">
+                  يمكنك متابعة أرباحك وسحبها مباشرة من هذه الصفحة، مع سجل كامل لكل العمليات.
+                </p>
               </div>
             )}
             {activeSection === 'pixel' && (
@@ -234,7 +240,40 @@ export default function StoreSetupPage() {
                 onTiktokPixelChange={setTiktokPixel}
               />
             )}
+            {activeSection === 'create-another' && (
+              <div className="my-16 flex w-full flex-col items-center space-y-10 text-center">
+                <div className="max-w-xl space-y-3">
+                  <h2 className="text-2xl font-bold tracking-tight">أنشئ متجرًا آخر بكل سهولة</h2>
+                  <p className="text-muted-foreground text-sm leading-relaxed">
+                    الآن يمكنك إدارة أكثر من متجر من حساب واحد، لتوسّع أعمالك وتزيد إنتاجيتك بدون أي
+                    تعقيد.
+                  </p>
+                </div>
 
+                <div className="grid w-full max-w-2xl gap-4 sm:grid-cols-2">
+                  <div className="bg-background flex flex-col items-center gap-2 rounded-xl border p-4">
+                    <Store className="h-6 w-6 text-sky-600" />
+                    <p className="text-sm font-medium">متاجر متعددة</p>
+                    <span className="text-muted-foreground text-xs">
+                      أنشئ أكثر من متجر حسب نشاطك
+                    </span>
+                  </div>
+
+                  <div className="bg-background flex flex-col items-center gap-2 rounded-xl border p-4">
+                    <TrendingUp className="h-6 w-6 text-sky-600" />
+                    <p className="text-sm font-medium">نمو أسرع</p>
+                    <span className="text-muted-foreground text-xs">وسّع تجارتك وزد أرباحك</span>
+                  </div>
+                </div>
+
+                <button
+                  onClick={() => router.push('/Dashboard/create-store/create-another')}
+                  className="rounded-lg bg-gradient-to-l from-sky-600 to-blue-600 px-20 py-3 text-base font-semibold text-white shadow-lg transition hover:opacity-90"
+                >
+                  إنشاء متجر جديد
+                </button>
+              </div>
+            )}
             <div
               className={`mt-4 flex justify-center ${
                 hiddenButton.includes(activeSection) ? 'hidden' : 'block'
@@ -252,6 +291,6 @@ export default function StoreSetupPage() {
           </div>
         </SheetContent>
       </Sheet>
-    </div>
+    </section>
   );
 }

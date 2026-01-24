@@ -87,7 +87,7 @@ export default function OrderSummaryPage() {
   useEffect(() => {
     async function fetchOrders() {
       if (!session?.user?.id) return;
-
+      
       try {
         const res = await fetch(`/api/orders/get/${session.user.id}`);
         if (!res.ok) {

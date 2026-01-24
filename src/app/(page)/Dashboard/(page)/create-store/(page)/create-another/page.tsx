@@ -9,13 +9,14 @@ import { useRouter } from 'next/navigation';
 import axios from 'axios';
 import { motion } from 'framer-motion';
 import type { StoreProps } from '@/types/store/StoreType';
-import { BasicInfoSection } from './_components/basic-info-section';
-import { ShippingSection } from './_components/shipping-section';
-import { SocialLinksSection } from './_components/social-links-section';
-import { NavigationButtons } from './_components/navigation-buttons';
+
 import { PiStorefront } from 'react-icons/pi';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline } from 'react-icons/io5';
+import { BasicInfoSection } from '../Trader/_components/basic-info-section';
+import { ShippingSection } from '../Trader/_components/shipping-section';
+import { SocialLinksSection } from '../Trader/_components/social-links-section';
+import { NavigationButtons } from '../Trader/_components/navigation-buttons';
 
 type ServerErrorDetail = {
   field: string;
@@ -92,7 +93,7 @@ export default function StoreSetupPage() {
         active: true,
       };
 
-      const res = await fetch('/api/storev2/create', {
+      const res = await fetch('/api/storev2/create/create-another', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload),
@@ -199,10 +200,10 @@ export default function StoreSetupPage() {
       <div className="mx-auto max-w-3xl py-12">
         <div className="mb-12 space-y-3 text-center">
           <h1 className="text-foreground text-4xl font-semibold tracking-tight text-balance">
-            أنشئ متجرك الآن
+            أنشئ متجرك الثاني
           </h1>
           <p className="text-muted-foreground text-base leading-relaxed text-pretty">
-            احصل على رابط باسم متجرك في دقائق وابدأ بزيادة مبيعاتك
+            انشاء متجرك الثاني بكل سهولة في خطوات بسيطة
           </p>
         </div>
 

@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody } from '@/components/ui/table';
 import { useSession } from 'next-auth/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useProducts } from '../_hooks/useProducts';
 import Loader from '@/components/Loader';
 import ProductRow from './ProductRow';
@@ -11,7 +11,7 @@ import EditProductRow from './EditProductRow';
 import { Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useDashboardData } from '../../../context/useDashboardData';
-import { Boxes, ChevronDown, Package, Search, ShoppingBag, Truck } from 'lucide-react';
+import { Boxes, ChevronDown, Package, Search, ShoppingBag, Store, Truck } from 'lucide-react';
 import { LuPackagePlus } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
 
@@ -21,7 +21,7 @@ export default function ProductTable() {
   const { products, setProducts, loading } = useProducts(session?.user?.id);
   const router = useRouter();
   const [open, setOpen] = useState(false);
-
+  const [storeId, setStoreId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<
     Partial<Product> & { imageFile?: File; imagePreview?: string }
@@ -30,6 +30,21 @@ export default function ProductTable() {
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
 
+  if (!data?.Stores || data?.Stores.length > 0) {
+    useEffect(() => {
+      const fetchProducts = async () => {
+        try {
+          const res = await fetch(`/api/products/store/${storeId}`);
+          if (!res.ok) throw new Error();
+          const data = await res.json();
+          setProducts(data);
+        } catch {
+          toast.success('فشل في جلب المنتجات');
+        }
+      };
+      fetchProducts();
+    }, []);
+  }
   const startEditing = (product: Product) => {
     setEditingId(product.id);
     setEditData({ ...product, imagePreview: product.image });
@@ -86,7 +101,7 @@ export default function ProductTable() {
   }, [products, search, categoryFilter]);
 
   return (
-    <>
+    <section className="">
       <div className="my-3 block rounded-xl border bg-white px-4 py-3 transition-all duration-200 hover:shadow-md md:hidden">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium text-gray-600">العدد الكلي للمنتجات</h3>
@@ -142,58 +157,97 @@ export default function ProductTable() {
           )}
         </div>
       </div>
+      <div className="">
+        <div dir="rtl" className="mb-6 rounded-lg border bg-white">
+          <div className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                <Store className="h-5 w-5" />
+              </div>
 
-      <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
-        <div className="relative flex w-full md:w-[100%]">
-          <div className="relative">
-            <button
-              onClick={() => setOpen(!open)}
-              className="flex h-full items-center justify-between rounded-r-lg border border-gray-200 px-4 text-sm font-medium transition-all hover:bg-gray-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-            >
-              {categoryFilter || 'كل الأصناف'}
-              <ChevronDown size={18} className="ml-1 text-gray-500" />
-            </button>
+              <div>
+                <p className="text-sm font-semibold">المتجر الحالي</p>
+                <p className="text-muted-foreground text-xs">اختر المتجر لعرض منتجاته</p>
+              </div>
+            </div>
 
-            {open && (
-              <div className="absolute right-0 z-10 mt-2 w-40 rounded-lg border bg-white">
-                <ul className="max-h-60 overflow-auto p-1 text-sm">
-                  <li
-                    onClick={() => {
-                      setCategoryFilter('');
-                      setOpen(false);
-                    }}
-                    className="cursor-pointer rounded-md px-3 py-2 hover:bg-gray-100"
-                  >
-                    كل الأصناف
-                  </li>
-                  {categories.map(cat => (
+            <div>
+              <div className="flex w-full justify-center gap-2 md:max-w-72">
+                <select
+                  value={storeId ?? ''}
+                  onChange={e => setStoreId(e.target.value)}
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+                >
+                  <option value="" disabled>
+                    اختر المتجر
+                  </option>
+
+                  {data?.Stores?.map(store => (
+                    <option key={store.id} value={store.id}>
+                      {store.name}
+                    </option>
+                  ))}
+                </select>
+
+                {storeId && (
+                  <span className="text-xs text-blue-600">يتم عرض منتجات المتجر المحدد</span>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+        <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
+          <div className="relative flex w-full md:w-[100%]">
+            <div className="relative">
+              <button
+                onClick={() => setOpen(!open)}
+                className="flex h-full items-center justify-between rounded-r-lg border border-gray-200 px-4 text-sm font-medium transition-all hover:bg-gray-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+              >
+                {categoryFilter || 'كل الأصناف'}
+                <ChevronDown size={18} className="ml-1 text-gray-500" />
+              </button>
+
+              {open && (
+                <div className="absolute right-0 z-10 mt-2 w-40 rounded-lg border bg-white">
+                  <ul className="max-h-60 overflow-auto p-1 text-sm">
                     <li
-                      key={cat}
                       onClick={() => {
-                        setCategoryFilter(cat);
+                        setCategoryFilter('');
                         setOpen(false);
                       }}
                       className="cursor-pointer rounded-md px-3 py-2 hover:bg-gray-100"
                     >
-                      {cat}
+                      كل الأصناف
                     </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-          </div>
+                    {categories.map(cat => (
+                      <li
+                        key={cat}
+                        onClick={() => {
+                          setCategoryFilter(cat);
+                          setOpen(false);
+                        }}
+                        className="cursor-pointer rounded-md px-3 py-2 hover:bg-gray-100"
+                      >
+                        {cat}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
 
-          <div className="relative w-full flex-1">
-            <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
-              <Search size={16} />
-            </span>
-            <input
-              type="text"
-              placeholder="ابحث عن منتج..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              className="w-full rounded-l-lg border border-gray-200 p-3 font-medium transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-            />
+            <div className="relative w-full flex-1">
+              <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
+                <Search size={16} />
+              </span>
+              <input
+                type="text"
+                placeholder="ابحث عن منتج..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="w-full rounded-l-lg border border-gray-200 p-3 font-medium transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -291,6 +345,6 @@ export default function ProductTable() {
           )}
         </>
       )}
-    </>
+    </section>
   );
 }

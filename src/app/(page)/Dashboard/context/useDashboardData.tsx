@@ -18,6 +18,7 @@ interface DashboardData {
   user: UserProps | null;
   supplier: Supplier;
   subscription: SubscriptionResponse;
+  Stores?: StoreProps[];
 }
 
 const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
@@ -119,6 +120,11 @@ export const useDashboardData = (userId?: string) => {
       revalidateOnMount: true,
     }
   );
+  const { data: stores } = useSWR<StoreProps[]>('/api/dashboard/store/get-stores', fetcher, {
+    revalidateOnFocus: true,
+    refreshInterval: 5000,
+    revalidateOnMount: true,
+  });
   const data: DashboardData = {
     supplier: supplier,
     productCount: productData?.count ?? 0,
@@ -131,6 +137,7 @@ export const useDashboardData = (userId?: string) => {
     pendingOrderCount: Array.isArray(pendingData) ? pendingData.length : 0,
     user: userData,
     subscription: subscription!,
+    Stores: stores,
   };
 
   const loading = roleLoading;
