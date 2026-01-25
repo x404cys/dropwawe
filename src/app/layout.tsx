@@ -68,7 +68,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${myCustomFont.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.className} antialiased`}
       >
         <div className="mx-auto overflow-hidden font-bold md:px-0">
           <Providers>

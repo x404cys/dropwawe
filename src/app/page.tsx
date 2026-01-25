@@ -43,7 +43,7 @@ const Page = () => {
   useTrackVisitor4landing('sahl2025');
 
   return (
-    <div dir="rtl" className="min-h-screen bg-sky-100 font-sans">
+    <div dir="rtl" className="min-h-screen   bg-sky-100 font-sans">
       <Navbar />
       <HeroSection />
       <section>
