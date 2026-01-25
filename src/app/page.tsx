@@ -48,7 +48,7 @@ const Page = () => {
       <HeroSection />
       <section>
         <ProjectOwnersSection />
-        <FeatureSection />
+        <FeatureSection />  
         <PaymentSection />
         <DeliveryIntegrationSection />
         <UnlimitedProductsSection />

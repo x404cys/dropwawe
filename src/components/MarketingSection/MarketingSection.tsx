@@ -1,10 +1,44 @@
 'use client';
+
 import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
 import { Megaphone, FileText, Star, CreditCard, BarChart2 } from 'lucide-react';
 import { SiSocialblade } from 'react-icons/si';
+
+const features = [
+  {
+    icon: Megaphone,
+    text: 'محتوى جاهز للاستخدام لمنتجات دروب ويڤ',
+    delay: 100,
+  },
+  {
+    icon: FileText,
+    text: 'محتوى خاص لمتجرك ومنتجاتك',
+    delay: 200,
+  },
+  {
+    icon: Star,
+    text: 'استشارات تسويقية متخصصة',
+    delay: 300,
+  },
+  {
+    icon: CreditCard,
+    text: 'كوبونات خصم مميزة لعملائك',
+    delay: 400,
+  },
+  {
+    icon: SiSocialblade,
+    text: 'ربط كامل مع فيسبوك بكسل لتحسين اداء حملاتك الاعلانية',
+    delay: 450,
+  },
+  {
+    icon: BarChart2,
+    text: 'تحليلات وتحسين مستمر من خلال لوحة تحكم ذكية',
+    delay: 500,
+  },
+];
 
 export default function SmartMarketingSection() {
   useEffect(() => {
@@ -16,7 +50,7 @@ export default function SmartMarketingSection() {
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
-            src="/Professional-Arabic-Dashboard-IQD.png"
+            src="/img-landing-page/8-.png"
             alt="Smart Marketing"
             fill
             priority
@@ -26,93 +60,27 @@ export default function SmartMarketingSection() {
         </div>
 
         <div data-aos="fade-up" className="flex-1 space-y-8">
-          <div>
-            <h2 className="mb-4 text-4xl font-bold text-gray-900">سوّق بذكاء</h2>
-            
-          </div>
+          <h2 className="text-4xl font-bold text-gray-900">سوّق بذكاء</h2>
 
-          <div className="space-y-2">
-            <div
-              data-aos="fade-up"
-              data-aos-delay="100"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-sky-700">
-                <Megaphone className="h-5 w-5 text-white" />
-              </div>
-              <div className="">
-                <h3 className="font-semibold text-gray-900">
-                  محتوى جاهز للاستخدام لمنتجات دروب ويڤ
-                </h3>
-              </div>
-            </div>
+          <div className="flex flex-col">
+            {features.map((item, index) => {
+              const Icon = item.icon;
 
-            <div
-              data-aos="fade-up"
-              data-aos-delay="200"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <FileText className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">محتوى خاص لمتجرك ومنتجاتك</h3>
-              </div>
-            </div>
+              return (
+                <div
+                  key={index}
+                  data-aos="fade-up"
+                  data-aos-delay={item.delay}
+                  className="flex items-center gap-4 rounded-xl bg-gray-50 p-3 transition hover:bg-gray-100"
+                >
+                  <div className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-4 py-3 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_3px_10px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+                    <Icon className="h-5 w-5 text-sky-700" />
+                  </div>
 
-            <div
-              data-aos="fade-up"
-              data-aos-delay="300"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <Star className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">استشارات تسويقية متخصصة</h3>
-              </div>
-            </div>
-
-            <div
-              data-aos="fade-up"
-              data-aos-delay="400"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <CreditCard className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">كوبونات خصم مميزة لعملائك</h3>
-              </div>
-            </div>
-            <div
-              data-aos="fade-up"
-              data-aos-delay="400"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <SiSocialblade className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">
-                  ربط كامل مع فيسبوك بكسل لتحسين اداء حملاتك الاعلانية
-                </h3>
-              </div>
-            </div>
-            <div
-              data-aos="fade-up"
-              data-aos-delay="500"
-              className="flex items-center gap-4 rounded-xl bg-gray-50 p-0.5"
-            >
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-sky-700">
-                <BarChart2 className="h-5 w-5 text-white" />
-              </div>
-              <div className="flex-1">
-                <h3 className="mb-1 font-semibold text-gray-900">
-                  تحليلات وتحسين مستمر من خلال لوحة تحكم ذكية
-                </h3>
-              </div>
-            </div>
+                  <h3 className="font-semibold text-gray-900">{item.text}</h3>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>

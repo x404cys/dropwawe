@@ -16,7 +16,7 @@ export default function ProjectOwnersSection() {
 
   const sections = [
     {
-      image: '/freepik__the-style-is-candid-image-photography-with-natural__53505.png',
+      image: '/img-landing-page/2.png',
       title: 'لأصحاب المشاريع على السوشيال ميديا',
       description:
         'انتقل من البيع العشوائي إلى نظام متكامل بإدارة مخزون، طلبات، تحليلات، وتسويق ذكي.',
@@ -25,7 +25,7 @@ export default function ProjectOwnersSection() {
     },
 
     {
-      image: '/showing-cart-trolley-shopping-online-sign-graphic.jpg',
+      image: '/img-landing-page/4.png',
       title: 'لكل شخص مهتم بالتجارة الإلكترونية',
       description:
         'ابدأ من الصفر واحصل على متجر إلكتروني جاهز، منتجات مختارة بعناية، محتوى تسويقي قابل للاستخدام مباشرة، وربط كامل ببوابات الدفع وشركات التوصيل.',
@@ -33,7 +33,7 @@ export default function ProjectOwnersSection() {
       icon: <ShoppingCart className="h-5 w-5 text-gray-700" />,
     },
     {
-      image: '/fast-fashion-concept-with-full-clothing-store.jpg',
+      image: '/img-landing-page/6.png',
       title: 'لأصحاب المحلات',
       description: 'حوّل متجرك من نطاقه المحلي إلى مساحة بيع بلا حدود.',
       badge: 'محلات',
@@ -58,7 +58,7 @@ export default function ProjectOwnersSection() {
               data-aos-delay={index * 100}
               className="group overflow-hidden rounded-xl transition-all duration-300"
             >
-              <div className="relative h-52 overflow-hidden md:h-60">
+              <div className="relative h-60 overflow-hidden md:h-64 lg:h-72">
                 <Image
                   src={section.image || '/placeholder.svg'}
                   alt={section.title}
@@ -70,10 +70,7 @@ export default function ProjectOwnersSection() {
                   data-aos="fade-up"
                   data-aos-delay={index * 150}
                 >
-                  <div className="flex items-center gap-2 rounded-full bg-white/80 px-3 py-1.5 shadow-sm backdrop-blur-sm">
-                    {section.icon}
-                    <span className="text-sm font-medium text-gray-800">{section.badge}</span>
-                  </div>
+                  {' '}
                 </div>
               </div>
 
@@ -86,12 +83,13 @@ export default function ProjectOwnersSection() {
         </div>
       </div>
       <div className="mt-10 flex w-full justify-center">
-        <Button
+        <button
           onClick={() => router.push('https://login.dropwave.cloud')}
-          className="rounded-xl bg-sky-700 px-8 py-2 text-white"
+          className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_3px_10px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
         >
-          ماذا تنتظر ؟ اختر باقتك وابدا
-        </Button>
+          جرب ماذا تنتظر ؟ اختر باقتك وابدا
+          <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+        </button>
       </div>
     </section>
   );

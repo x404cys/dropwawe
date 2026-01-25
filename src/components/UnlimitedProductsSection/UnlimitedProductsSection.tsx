@@ -19,7 +19,7 @@ export default function UnlimitedProductsSection() {
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
-            src="/whole.png"
+            src="/img-landing-page/5 -.png"
             alt="Unlimited Products"
             fill
             sizes="(max-width: 768px) 100vw, 50vw"
@@ -37,14 +37,13 @@ export default function UnlimitedProductsSection() {
           </div>
 
           <div className="mt-8 flex w-full justify-start py-3">
-            <Button
-              data-aos="fade-up"
-              data-aos-delay="200"
+            <button
               onClick={() => router.push('https://login.dropwave.cloud')}
-              className="rounded-2xl border-sky-600 bg-sky-700 px-10 py-3"
+              className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_3px_10px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
             >
-              تصفح المنتجات{' '}
-            </Button>
+              تصفح المنتجات
+              <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+            </button>
           </div>
         </div>
       </div>

@@ -20,7 +20,7 @@ export default function PaymentSection() {
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
           <Image
-            src="/Citi Diamond Preferred Card Benefits_ Guide.jpg"
+            src="/img-landing-page/7.png"
             alt="Secure Payment"
             fill
             priority
@@ -43,14 +43,13 @@ export default function PaymentSection() {
             </p>
           </div>
           <div className="mt-8 flex justify-start">
-            <Button
-              data-aos="fade-up"
-              data-aos-delay="200"
+            <button
               onClick={() => router.push('https://login.dropwave.cloud')}
-              className="rounded-2xl border-sky-600 bg-sky-700 px-10"
+              className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_3px_10px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
             >
               جربها !
-            </Button>
+              <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+            </button>
           </div>
         </div>
       </div>
