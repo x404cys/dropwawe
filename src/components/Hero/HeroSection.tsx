@@ -1,132 +1,175 @@
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Play, ShoppingBag, Users, TrendingUp, Sparkles, ArrowLeft } from 'lucide-react';
+import Image from 'next/image';
 
-const Hero = () => {
+export default function HeroSection() {
   return (
-    <section className="bg-gradient-hero relative min-h-screen overflow-hidden text-white">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="animate-float absolute top-20 left-10 h-20 w-20 rounded-full bg-white/5 blur-xl"></div>
-        <div
-          className="bg-accent-emerald/10 animate-float absolute top-40 right-20 h-32 w-32 rounded-full blur-2xl"
-          style={{ animationDelay: '1s' }}
-        ></div>
-        <div
-          className="bg-accent-purple/10 animate-float absolute bottom-40 left-20 h-24 w-24 rounded-full blur-xl"
-          style={{ animationDelay: '2s' }}
-        ></div>
-      </div>
+    <section className="relative min-h-screen overflow-hidden bg-gradient-to-br from-sky-400 via-sky-500 to-cyan-400">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.25),transparent_60%)]" />
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6 pt-32 pb-20">
-        <div className="text-center">
-          {/* Enhanced Badge */}
-          <Badge
-            variant="secondary"
-            className="glass group mb-8 cursor-pointer border-white/20 px-6 py-3 text-sm font-semibold text-white transition-transform duration-300 hover:scale-105"
-          >
-            <Sparkles className="text-accent-orange ml-2 h-4 w-4" />
-            <span>أكثر من 1000+ متجر نشط</span>
-          </Badge>
+      <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center gap-8 pt-28 text-center text-white md:gap-10">
+        <div className="mt-8 flex flex-col items-center gap-2 space-y-6 md:space-y-0">
+          <h1 className="text-4xl md:text-5xl md:leading-snug">
+            ضغطة واحدة تفصلك <br /> عن النجاح في التجارة الالكترونية
+          </h1>
 
-          {/* Enhanced Main heading */}
-          <div className="animate-fade-up mb-8">
-            <h1 className="font-arabic mb-4 text-6xl leading-none font-bold md:text-7xl lg:text-8xl">
-              <span className="block text-balance">منصة</span>
-              <span className="via-accent-emerald-light block bg-gradient-to-r from-white to-white bg-clip-text text-transparent">
-                سهل
-              </span>
-            </h1>
-            <p className="font-arabic text-3xl font-semibold text-white/90 md:text-4xl">
-              لإنشاء المتاجر الإلكترونية
-            </p>
-          </div>
-
-          {/* Enhanced Description */}
-          <p
-            className="font-arabic animate-fade-up mx-auto mb-12 max-w-4xl text-xl leading-relaxed text-balance text-white/80 md:text-2xl"
-            style={{ animationDelay: '0.2s' }}
-          >
-            أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة شاملة وسهلة الاستخدام مع جميع
-            الأدوات التي تحتاجها لنمو تجارتك الإلكترونية.
+          <p className="max-w-xl text-xl leading-relaxed text-sky-800">
+            ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
+            التوصيل.
           </p>
+        </div>
 
-          {/* Enhanced CTA Buttons */}
-          <div
-            className="animate-fade-up mb-20 flex flex-col items-center justify-center gap-4 sm:flex-row"
-            style={{ animationDelay: '0.4s' }}
-          >
-            <Button
-              size="lg"
-              className="text-primary group bg-white px-10 py-6 text-xl font-bold shadow-xl transition-all duration-300 hover:scale-105 hover:bg-white/95 hover:shadow-2xl"
-            >
-              <span>ابدأ متجرك مجاناً</span>
-              <ArrowLeft className="mr-3 h-5 w-5 transition-transform group-hover:translate-x-1" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="lg"
-              className="glass group border border-white/20 px-10 py-6 text-xl font-semibold text-white transition-all duration-300 hover:scale-105 hover:bg-white/10"
-            >
-              <Play className="ml-3 h-5 w-5 transition-transform group-hover:scale-110" />
-              <span>شاهد العرض التوضيحي</span>
-            </Button>
+        <div className="mt-4 flex w-full items-center justify-center gap-4">
+          <button className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-800/80 from-5% via-sky-800/80 via-60% to-sky-800/90 to-80% px-8 py-2 font-bold text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+            سجل
+            <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+          </button>
+
+          <button className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+            جرب المنصة
+            <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+          </button>
+        </div>
+
+        <div className="relative mt-5 flex items-end justify-center gap-8 md:gap-20">
+          <div className="floating-slow glass-card floating-slow relative rotate-6 rounded-3xl border border-white/30 bg-white/15 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.15)] backdrop-blur-2xl">
+            <Image
+              className="absolute -top-12 -rotate-12 md:-top-4 md:left-1/1 md:-translate-x-1/2 md:rotate-12"
+              src="/Logo-Matager/star-struck_1f929.png"
+              alt="star"
+              width={45}
+              height={45}
+            />
+
+            <div className="rounded-2xl bg-white/90 p-3">
+              <Image
+                src="/img-landing-page/9.png"
+                alt="product"
+                width={100}
+                height={100}
+                className="rounded-xl"
+              />
+            </div>
+
+            <button className="relative mt-3 w-full rounded-full bg-sky-800 py-2 text-sm text-white">
+              أضف للسلة
+              <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+            </button>
           </div>
 
-          {/* Enhanced Statistics */}
-          <div
-            className="animate-fade-up mx-auto grid max-w-5xl grid-cols-1 gap-8 md:grid-cols-3"
-            style={{ animationDelay: '0.6s' }}
-          >
-            {[
-              {
-                icon: ShoppingBag,
-                number: '+1000',
-                label: 'متجر نشط',
-                color: 'text-accent-emerald-light',
-              },
-              { icon: Users, number: '+50K', label: 'عميل راضي', color: 'text-accent-orange' },
-              {
-                icon: TrendingUp,
-                number: '99.9%',
-                label: 'وقت التشغيل',
-                color: 'text-accent-purple',
-              },
-            ].map((stat, index) => (
-              <div
-                key={index}
-                className="group cursor-pointer transition-all duration-300 hover:scale-105"
-              >
-                <div className="glass rounded-2xl border border-white/10 p-8 transition-all duration-300 hover:border-white/20">
-                  <div className="mb-4 flex items-center justify-center">
-                    <div
-                      className={`rounded-xl bg-white/10 p-3 ${stat.color} transition-transform duration-300 group-hover:scale-110`}
-                    >
-                      <stat.icon className="h-8 w-8" />
-                    </div>
-                  </div>
-                  <div className="mb-2 text-5xl font-bold transition-transform duration-300 group-hover:scale-105 md:text-6xl">
-                    {stat.number}
-                  </div>
-                  <p className="text-lg font-semibold text-white/70">{stat.label}</p>
-                </div>
-              </div>
-            ))}
+          <div className="floating-fast glass-card relative -rotate-6 rounded-3xl border border-white/30 bg-white/15 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.15)] ring-1 ring-white/20 backdrop-blur-2xl">
+            <Image
+              className="absolute -top-6 -left-2 -rotate-6"
+              src="/Logo-Matager/money-with-wings_1f4b8.png"
+              alt="money"
+              width={56}
+              height={56}
+            />
+
+            <div className="rounded-2xl bg-white/90 p-3">
+              <Image
+                src="/img-landing-page/10.png"
+                alt="product"
+                width={120}
+                height={90}
+                className="rounded-xl"
+              />
+            </div>
+
+            <button className="relative mt-3 w-full rounded-full bg-sky-800 py-2 text-sm text-white">
+              أضف للسلة
+              <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+            </button>
           </div>
         </div>
       </div>
 
-      {/* Enhanced Bottom curve */}
-      <div className="absolute right-0 bottom-0 left-0">
-        <svg viewBox="0 0 1440 320" className="text-background h-32 w-full">
-          <path
-            fill="currentColor"
-            d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,133.3C960,128,1056,96,1152,90.7C1248,85,1344,107,1392,117.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"
-          ></path>
-        </svg>
-      </div>
+      <style jsx>{`
+        @keyframes float {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-16px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        .floating-slow {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-fast {
+          animation: float 4.5s ease-in-out infinite;
+        }
+      `}</style>
+      <style jsx>{`
+        .glass-card {
+          position: relative;
+          border-radius: 1.75rem;
+          padding: 1rem;
+
+          /* Glass base */
+          background: rgba(255, 255, 255, 0.18);
+          backdrop-filter: blur(22px);
+          -webkit-backdrop-filter: blur(22px);
+
+          /* Border */
+          border: 1px solid rgba(255, 255, 255, 0.35);
+
+          /* Shadow depth */
+          box-shadow:
+            0 20px 40px rgba(0, 0, 0, 0.15),
+            inset 0 1px 1px rgba(255, 255, 255, 0.4);
+        }
+
+        /* Inner light (top highlight) */
+        .glass-card::before {
+          content: '';
+          position: absolute;
+          inset: 0;
+          border-radius: inherit;
+          background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.35),
+            rgba(255, 255, 255, 0.05) 40%,
+            transparent 70%
+          );
+          pointer-events: none;
+        }
+
+        /* Outer glow */
+        .glass-card::after {
+          content: '';
+          position: absolute;
+          inset: -12px;
+          border-radius: inherit;
+          background: radial-gradient(circle at top, rgba(255, 255, 255, 0.35), transparent 60%);
+          filter: blur(25px);
+          z-index: -1;
+        }
+
+        /* Floating animation */
+        @keyframes float {
+          0% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-18px);
+          }
+          100% {
+            transform: translateY(0);
+          }
+        }
+
+        .floating-slow {
+          animation: float 6s ease-in-out infinite;
+        }
+
+        .floating-fast {
+          animation: float 4.5s ease-in-out infinite;
+        }
+      `}</style>
     </section>
   );
-};
-
-export default Hero;
+}

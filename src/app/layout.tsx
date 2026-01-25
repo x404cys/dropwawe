@@ -8,13 +8,14 @@ import Providers from './providers';
 import { FavoriteProvider } from './lib/context/FavContext';
 import { ProvidersContext } from './providersContext';
 import { UserProvider } from './lib/context/UserIdContect';
+import { Toaster } from 'sonner';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
 const myCustomFont = localFont({
   src: [
     {
-      path: '../fonts/TheYearofHandicrafts-Regular.otf',
+      path: '../fonts/lyon-arabic-display-bold.otf',
       weight: '400',
       style: 'normal',
     },
@@ -63,13 +64,11 @@ export const metadata: Metadata = {
   },
 };
 
-import { Toaster } from 'sonner';
-
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ar">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.className} antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${myCustomFont.className} antialiased`}
       >
         <div className="mx-auto overflow-hidden font-bold md:px-0">
           <Providers>

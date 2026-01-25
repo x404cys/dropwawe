@@ -158,46 +158,28 @@ export default function ProductTable() {
         </div>
       </div>
       <div className="">
-        <div dir="rtl" className="mb-6 rounded-lg border bg-white">
-          <div className="flex flex-col gap-4 p-4 md:flex-row md:items-center md:justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
-                <Store className="h-5 w-5" />
-              </div>
-
-              <div>
-                <p className="text-sm font-semibold">المتجر الحالي</p>
-                <p className="text-muted-foreground text-xs">اختر المتجر لعرض منتجاته</p>
-              </div>
-            </div>
-
-            <div>
-              <div className="flex w-full justify-center gap-2 md:max-w-72">
-                <select
-                  value={storeId ?? ''}
-                  onChange={e => setStoreId(e.target.value)}
-                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium focus:border-blue-500 focus:ring-2 focus:ring-blue-300 focus:outline-none"
-                >
-                  <option value="" disabled>
-                    اختر المتجر
-                  </option>
-
-                  {data?.Stores?.map(store => (
-                    <option key={store.id} value={store.id}>
+        <div className="my-1 w-full block md:hidden">
+          <select dir="rtl" className="w-full rounded-lg border-2 p-3" name="store" id="store">
+            {data?.Stores?.map(store => (
+              <option key={store.id} onChange={() => setStoreId(store.id)} value={store.id}>
+                {store.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
+          <div className="relative flex w-full md:w-[100%]">
+            {data?.Stores && data.Stores.length > 1 && (
+              <div className="relative hidden md:block">
+                <select className="mx-1 rounded-lg border-2 p-3" name="store" id="store">
+                  {data.Stores.map(store => (
+                    <option key={store.id} onChange={() => setStoreId(store.id)} value={store.id}>
                       {store.name}
                     </option>
                   ))}
                 </select>
-
-                {storeId && (
-                  <span className="text-xs text-blue-600">يتم عرض منتجات المتجر المحدد</span>
-                )}
               </div>
-            </div>
-          </div>
-        </div>
-        <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
-          <div className="relative flex w-full md:w-[100%]">
+            )}
             <div className="relative">
               <button
                 onClick={() => setOpen(!open)}

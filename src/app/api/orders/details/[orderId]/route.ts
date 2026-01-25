@@ -13,8 +13,8 @@ export async function GET(req: Request, context: { params: Promise<{ orderId: st
     }
 
     const order = await prisma.order.findUnique({
-      where: { id: orderId, userId: session?.user.id },
-      include: { items: { include: { product: true } }  },
+      where: { id: orderId },
+      include: { items: { include: { product: true } } },
     });
 
     if (order) return NextResponse.json(order);

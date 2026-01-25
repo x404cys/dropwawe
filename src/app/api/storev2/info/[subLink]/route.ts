@@ -14,7 +14,7 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
   }
 
   try {
-    const data = await prisma.store.findFirst({
+    const data = await prisma.store.findUnique({
       where: { subLink: subLink },
     });
     return NextResponse.json(data);
