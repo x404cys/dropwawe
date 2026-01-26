@@ -31,22 +31,22 @@ const ibmPlexArabic = IBM_Plex_Sans_Arabic({
 });
 
 export const metadata: Metadata = {
-  title: 'Dropwave | منصة المتاجر الإلكترونية',
+  title: 'Matager | منصة المتاجر الإلكترونية',
   description:
-    'منصة Dropwave لإنشاء المتاجر الإلكترونية أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة سهلة وشاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
+    'منصة Matager - متاجر لإنشاء المتاجر الإلكترونية أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة سهلة وشاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
   keywords: ['دروب ويف', 'متجر إلكتروني', 'إنشاء متجر', 'ecommerce', 'shop', 'store builder'],
   openGraph: {
-    title: 'Dropwave | منصة المتاجر الإلكترونية',
+    title: 'Matager - متاجر | منصة المتاجر الإلكترونية',
     description:
-      'أنشئ متجرك الإلكتروني في دقائق مع منصة Dropwave، الحل الأسهل لنمو تجارتك عبر الإنترنت.',
-    url: 'https://www.dropwave.cloud',
-    siteName: 'Dropwave',
+      'أنشئ متجرك الإلكتروني في دقائق مع منصة Matager، الحل الأسهل لنمو تجارتك عبر الإنترنت.',
+    url: 'https://www.matager.store',
+    siteName: 'Matager - متاجر',
     images: [
       {
-        url: 'https://dashboard.dropwave.cloud/_next/image?url=%2Flogo-drop.png&w=64&q=75',
+        url: 'https://dashboard.matager.store/_next/image?url=%2Flogo-drop.png&w=64&q=75',
         width: 1200,
         height: 630,
-        alt: 'Dropwave  للمتاجر الإلكترونية',
+        alt: 'Matager - متاجر  للمتاجر الإلكترونية',
       },
     ],
     locale: 'ar_AR',
@@ -54,13 +54,13 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Dropwave | منصة المتاجر الإلكترونية',
+    title: 'Matager - متاجر | منصة المتاجر الإلكترونية',
     description:
       'منصة سهلة وسريعة لإنشاء متجرك الإلكتروني مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
     images: ['https://sahel.com/og-image.jpg'],
   },
   alternates: {
-    canonical: 'https://www.dropwave.cloud',
+    canonical: 'https://www.matager.store',
   },
 };
 

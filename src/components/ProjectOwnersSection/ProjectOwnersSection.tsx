@@ -74,9 +74,11 @@ export default function ProjectOwnersSection() {
                 </div>
               </div>
 
-              <div className="py-3" data-aos-delay={index * 200}>
+              <div className="py-3 font-normal" data-aos-delay={index * 200}>
                 <h3 className="mb-2 text-lg font-semibold text-gray-900">{section.title}</h3>
-                <p className="text-sm leading-relaxed text-gray-600">{section.description}</p>
+                <p className="text-sm leading-relaxed font-semibold text-gray-600">
+                  {section.description}
+                </p>
               </div>
             </div>
           ))}

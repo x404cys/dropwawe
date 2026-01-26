@@ -18,16 +18,8 @@ import HeroSection from '@/components/Hero/HeroSection';
 import Navbar from '@/components/NavBar/NavBar';
 import ScrollToTopButton from '@/components/Scroll-To-Top';
 import localFont from 'next/font/local';
-const landingFont = localFont({
-  src: [
-    {
-      path: '../fonts/lyon-arabic-display-bold.otf',
-      weight: '400',
-      style: 'normal',
-    },
-  ],
-  display: 'swap',
-});
+import { landingFont } from '@/fonts/Export-Font';
+
 const Page = () => {
   const router = useRouter();
 

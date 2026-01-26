@@ -31,7 +31,7 @@ export default function PaymentSection() {
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">مدفوعات آمنة وسريعة</h2>
-            <p className="text-lg leading-relaxed text-gray-700">
+            <p className="text-lg leading-relaxed font-semibold text-gray-700">
               مكّن زبائنك من الدفع مباشرة عبر الموقع بكل سهولة، مع أعلى معايير الحماية وتشفير
               البيانات
             </p>
