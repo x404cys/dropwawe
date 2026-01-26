@@ -7,7 +7,7 @@ import { IoExitOutline } from 'react-icons/io5';
 export default function SignOutGoogle() {
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    window.location.href = 'https://www.dropwave.cloud';
+    window.location.href = 'https://www.matager.store';
   };
 
   return (

@@ -302,7 +302,7 @@ export default function StoreSetupSupplier() {
                       <Link2 className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
                     </div>
                     <p className="mt-1 text-xs text-gray-500">
-                      {storeSlug || 'متجري'}.dropwave.cloud
+                      {storeSlug || 'متجري'}.matager.store
                     </p>
                     {fieldErrors.subLink && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.subLink}</p>

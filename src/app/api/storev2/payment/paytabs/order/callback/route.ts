@@ -110,7 +110,7 @@ export async function GET(req: Request) {
       token,
     });
 
-    const returnUrl = `https://www.dropwave.cloud/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${encodeURIComponent(
+    const returnUrl = `https://www.matager.store/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${encodeURIComponent(
       respMessage
     )}&cartId=${cartId}`;
 
@@ -142,7 +142,7 @@ export async function POST(req: Request) {
       token: data.token ?? '',
     });
 
-    const returnUrl = `https://www.dropwave.cloud/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${encodeURIComponent(
+    const returnUrl = `https://www.matager.store/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${encodeURIComponent(
       data.respMessage
     )}&cartId=${cartId}`;
 

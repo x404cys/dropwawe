@@ -26,7 +26,7 @@ export const authOperation: AuthOptions = {
         sameSite: 'lax',
         path: '/',
         secure: isProd,
-        domain: isProd ? '.dropwave.cloud' : 'localhost',
+        domain: isProd ? '.matager.store' : 'localhost',
       },
     },
   },
@@ -77,7 +77,7 @@ export const authOperation: AuthOptions = {
 
     async redirect({ baseUrl }) {
       return process.env.NODE_ENV === 'production'
-        ? 'https://dashboard.dropwave.cloud/create-store'
+        ? 'https://dashboard.matager.store/create-store'
         : `${baseUrl}/Dashboard/create-store`;
     },
   },

@@ -28,7 +28,7 @@ export function BasicInfoSection({
     <>
       <div className="space-y-2">
         <label className="text-sm font-medium text-gray-700">
-          رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.dropwave.cloud</span>
+          رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.matager.store</span>
         </label>
         <div className="relative">
           <Input
@@ -39,7 +39,7 @@ export function BasicInfoSection({
                 onStoreSlugChange(value);
               }
             }}
-            placeholder="store1.dropwave.cloud"
+            placeholder="store1.matager.store"
           />
           <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
         </div>
@@ -73,8 +73,6 @@ export function BasicInfoSection({
           <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
         )}
       </div>
-
-      
     </>
   );
 }

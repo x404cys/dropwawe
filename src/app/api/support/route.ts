@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const { name, email, message, type, phone, subject } = await req.json();
 
     const data = await resend.emails.send({
-      from: 'Support <support@dropwave.cloud>',
+      from: 'Support <support@matager.store>',
       to: '0xabdulrahmanmanaf@gmail.com',
       subject: `رسالة دعم من ${name}`,
       react: SupportEmail({ name, email, message, type, phone, subject }),

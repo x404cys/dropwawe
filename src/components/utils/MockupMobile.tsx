@@ -21,7 +21,7 @@ function PhoneMockup({
       <div
         className={`${hid} absolute -top-7 -right-7 z-50 flex gap-1 rounded-full border bg-gradient-to-b from-sky-700 via-sky-700 to-sky-300 px-4 py-2 text-xs text-white shadow-lg`}
       >
-        <p>store.dropwave.cloud</p>
+        <p>store.matager.store</p>
         <Link size={12} />
       </div>
 

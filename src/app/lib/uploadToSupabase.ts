@@ -18,7 +18,7 @@ export async function uploadToServer(file: File, userId: string) {
 
     fs.writeFileSync(filePath, buffer);
 
-    return `https://www.dropwave.cloud/uploads/${userId}/${fileName}`;
+    return `https://www.matager.store/uploads/${userId}/${fileName}`;
   } catch (err) {
     console.error('Upload Error:', err);
     return null;

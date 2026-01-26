@@ -31,7 +31,7 @@ export default function Dashboard() {
       if (status === 'loading' || loading) return;
 
       if (status === 'unauthenticated') {
-        router.push('https://login.dropwave.cloud');
+        router.push('https://login.matager.store');
       }
     }, [status, loading, data, router, session]);
   } catch (e) {
@@ -56,7 +56,7 @@ export default function Dashboard() {
     router.push('/Dashboard/create-store');
   }
 
-  const storeUrl = `https://${data.storeSlug?.subLink}.dropwave.cloud`;
+  const storeUrl = `https://${data.storeSlug?.subLink}.matager.store`;
 
   const stats: StatCardProps[] = [
     {

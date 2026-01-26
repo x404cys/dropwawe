@@ -5,7 +5,7 @@ const nextConfig = {
       'lh3.googleusercontent.com',
       'ihdkfonxtrohbetdllyt.supabase.co',
       'uat.dropwave.online',
-      'www.dropwave.cloud',
+      'www.matager.store',
       'images.remotePatterns',
     ],
   },

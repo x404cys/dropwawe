@@ -41,7 +41,7 @@ type ServerErrorResponse = {
 
 export default function StoreSetupPage() {
   const { data: session } = useSession();
-  
+
   const router = useRouter();
   const [store, setStore] = useState<StoreProps>();
   const [storeSlug, setStoreSlug] = useState('');
@@ -86,7 +86,7 @@ export default function StoreSetupPage() {
       formData.append('hasReturnPolicy', '__');
       formData.append('active', 'true');
       formData.append('selectedMethods', JSON.stringify(selectedMethods));
-      
+
       if (imageFile) formData.append('image', imageFile);
       if (headerFile) formData.append('header', headerFile);
 
@@ -263,8 +263,7 @@ export default function StoreSetupPage() {
           <>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">
-                رابط المتجر{' '}
-                <span className="text-xs text-gray-400">{storeSlug}.dropwave.cloud</span>
+                رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.matager.store</span>
               </label>
               <div className="relative">
                 <Input
@@ -275,7 +274,7 @@ export default function StoreSetupPage() {
                       setStoreSlug(value);
                     }
                   }}
-                  placeholder="store1.dropwave.cloud"
+                  placeholder="store1.matager.store"
                 />
 
                 <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />

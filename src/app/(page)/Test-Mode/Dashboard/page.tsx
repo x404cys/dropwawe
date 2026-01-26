@@ -72,7 +72,7 @@ export default function Dashboard() {
     },
   ];
 
-  const storeUrl = `https://dropwave1.dropwave.cloud`;
+  const storeUrl = `https://dropwave1.matager.store`;
 
   const stats: StatCardProps[] = [
     {

@@ -53,7 +53,7 @@ export default function SupportEmail({
 
           <Section>
             <Text style={{ fontSize: '12px', color: '#9ca3af' }}>
-              🚀 أُرسلت من منصتك - dropwave.cloud
+              🚀 أُرسلت من منصتك - matager.store
             </Text>
           </Section>
         </Container>

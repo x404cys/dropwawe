@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 export default function StatsCardForDashboard() {
   const router = useRouter();
-  const storeUrl = `https://${2}.dropwave.cloud`;
+  const storeUrl = `https://${2}.matager.store`;
 
   const copyToClipboard = async () => {
     try {

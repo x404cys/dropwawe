@@ -10,7 +10,7 @@ import Image from 'next/image';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const callbackUrl = 'https://dashboard.dropwave.cloud/Dashboard/create-store';
+  const callbackUrl = 'https://dashboard.matager.store/Dashboard/create-store';
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -26,16 +26,21 @@ export default function SignInPage() {
         <CardHeader className="items-center space-y-6 px-8 text-center md:px-12">
           <div className="flex flex-col items-center gap-4">
             <div className="relative h-10 w-10 md:h-12 md:w-12">
-              <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+              <Image
+                src="/Logo-Matager/Matager-logo2.PNG"
+                alt="Dropwave"
+                fill
+                className="object-contain"
+              />
             </div>
-          </div>
+          </div>  
 
           <CardTitle className="text-3xl font-extrabold text-gray-900 md:text-4xl">
             تسجيل الدخول
           </CardTitle>
 
           <p className="text-base text-gray-600">
-            <span> مرحبًا بك في دروب ويف</span>
+            <span> مرحبًا بك في منصة متاجر</span>
             <br />
             <div className="items-center gap-3 text-center text-xs">
               <span> خطوة واحدة تفصلك عن النجاح في التجارة الإلكترونية</span>{' '}

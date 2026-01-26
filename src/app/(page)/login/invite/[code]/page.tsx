@@ -38,7 +38,7 @@ export default function InviteRegisterPage() {
 
   const callbackUrl =
     process.env.NODE_ENV === 'production'
-      ? 'https://dashboard.dropwave.cloud/'
+      ? 'https://dashboard.matager.store/'
       : 'http://localhost:3000/Dashboard/';
 
   const handleGoogleSignIn = async () => {
