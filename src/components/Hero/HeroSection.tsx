@@ -3,7 +3,9 @@ import Image from 'next/image';
 import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import { useRouter } from 'next/navigation';
 export default function HeroSection() {
+  const router = useRouter();
   useEffect(() => {
     AOS.init({ duration: 800, easing: 'ease-in-out', once: false });
   }, []);
@@ -18,7 +20,7 @@ export default function HeroSection() {
           data-aos-delay="100"
           className="mt-8 flex flex-col items-center gap-2 space-y-6 md:space-y-0"
         >
-          <h1 className="text-4xl md:text-5xl md:leading-snug">
+          <h1 className="font-landing text-4xl md:text-5xl md:leading-snug">
             ضغطة واحدة تفصلك <br /> عن النجاح في التجارة الالكترونية
           </h1>
 
@@ -34,12 +36,18 @@ export default function HeroSection() {
           data-aos-delay="200"
           className="mt-4 flex w-full items-center justify-center gap-4"
         >
-          <button className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-800/80 from-5% via-sky-800/80 via-60% to-sky-800/90 to-80% px-8 py-2 font-bold text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+          <button
+            onClick={() => router.push('https://login.matager.store')}
+            className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-800/80 from-5% via-sky-800/80 via-60% to-sky-800/90 to-80% px-8 py-2 font-bold text-white shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
+          >
             سجل
             <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
           </button>
 
-          <button className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+          <button
+            onClick={() => router.push('/Test-Mode/Dashboard')}
+            className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
+          >
             جرب المنصة
             <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
           </button>
