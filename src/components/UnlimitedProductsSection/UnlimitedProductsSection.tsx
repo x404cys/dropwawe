@@ -32,8 +32,11 @@ export default function UnlimitedProductsSection() {
             <h2 className="mb-4 text-4xl leading-tight font-bold text-gray-900">
               منتجات غير محدودة
             </h2>
-            حتى لو لم يكن لديك منتجات بعد, دروب ويف تزودك بمجموعة متنوعة من المنتجات بسعر الجملة
-            جاهزة لرفعها على متجرك
+            <span className="font-medium">
+              {' '}
+              حتى لو لم يكن لديك منتجات بعد, دروب ويف تزودك بمجموعة متنوعة من المنتجات بسعر الجملة
+              جاهزة لرفعها على متجرك
+            </span>
           </div>
 
           <div className="mt-8 flex w-full justify-start py-3">

@@ -20,11 +20,11 @@ export default function PaymentSection() {
       <h2 className="mb-4 text-center text-4xl font-bold text-gray-900">
         صُمّمت دروب ويف لتغطية كافة احتياجاتك <br /> في التجارة الالكترونية
       </h2>
-      <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
-        <div data-aos="fade-up" className="flex-1 space-y-8">
+      <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-14 md:flex-row">
+        <div data-aos="fade-up" className="flex-1 space-y-3">
           <h1 className="text-3xl">متجر الكتروني بدون خبرة برمجية</h1>
           <div>
-            <p className="text-lg leading-relaxed text-gray-700">
+            <p className="text-lg leading-relaxed font-medium text-gray-700">
               افتح متجرك الإلكتروني بدون أي تعقيدات تقنية بخطوات سهلة وسريعة متجرك جاهز للأستخدام
             </p>
           </div>

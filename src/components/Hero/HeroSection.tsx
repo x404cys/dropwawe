@@ -23,11 +23,15 @@ export default function HeroSection() {
           <h1 className="font-landing text-4xl md:text-5xl md:leading-snug">
             ضغطة واحدة تفصلك <br /> عن النجاح في التجارة الالكترونية
           </h1>
-
-          <p className="max-w-xl text-xl leading-relaxed text-sky-800">
-            ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
-            التوصيل.
-          </p>
+          <div className="mt-4">
+            <p className="max-w-xl text-xl leading-relaxed text-sky-800">
+              اطلق مشروعك خلال دقائق فقط،
+            </p>
+            <p className="max-w-xl text-lg leading-relaxed text-sky-800">
+              ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
+              التوصيل.
+            </p>
+          </div>
         </div>
 
         <div
@@ -53,7 +57,7 @@ export default function HeroSection() {
           </button>
         </div>
 
-        <div className="relative mt-5 flex items-end justify-center gap-8 md:gap-20">
+        <div className="relative flex items-end justify-center gap-8 md:gap-20">
           <div
             data-aos="fade-up"
             data-aos-anchor-placement="bottom-bottom"
@@ -72,8 +76,8 @@ export default function HeroSection() {
               <Image
                 src="/img-landing-page/9.png"
                 alt="product"
-                width={100}
-                height={100}
+                width={80}
+                height={80}
                 className="rounded-xl"
               />
             </div>
@@ -102,7 +106,7 @@ export default function HeroSection() {
               <Image
                 src="/img-landing-page/10.png"
                 alt="product"
-                width={120}
+                width={90}
                 height={90}
                 className="rounded-xl"
               />
@@ -115,95 +119,6 @@ export default function HeroSection() {
           </div>
         </div>
       </div>
-
-      <style jsx>{`
-        @keyframes float {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-16px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        .floating-slow {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-fast {
-          animation: float 4.5s ease-in-out infinite;
-        }
-      `}</style>
-      <style jsx>{`
-        .glass-card {
-          position: relative;
-          border-radius: 1.75rem;
-          padding: 1rem;
-
-          /* Glass base */
-          background: rgba(255, 255, 255, 0.18);
-          backdrop-filter: blur(22px);
-          -webkit-backdrop-filter: blur(22px);
-
-          /* Border */
-          border: 1px solid rgba(255, 255, 255, 0.35);
-
-          /* Shadow depth */
-          box-shadow:
-            0 20px 40px rgba(0, 0, 0, 0.15),
-            inset 0 1px 1px rgba(255, 255, 255, 0.4);
-        }
-
-        /* Inner light (top highlight) */
-        .glass-card::before {
-          content: '';
-          position: absolute;
-          inset: 0;
-          border-radius: inherit;
-          background: linear-gradient(
-            to bottom,
-            rgba(255, 255, 255, 0.35),
-            rgba(255, 255, 255, 0.05) 40%,
-            transparent 70%
-          );
-          pointer-events: none;
-        }
-
-        /* Outer glow */
-        .glass-card::after {
-          content: '';
-          position: absolute;
-          inset: -12px;
-          border-radius: inherit;
-          background: radial-gradient(circle at top, rgba(255, 255, 255, 0.35), transparent 60%);
-          filter: blur(25px);
-          z-index: -1;
-        }
-
-        /* Floating animation */
-        @keyframes float {
-          0% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-18px);
-          }
-          100% {
-            transform: translateY(0);
-          }
-        }
-
-        .floating-slow {
-          animation: float 6s ease-in-out infinite;
-        }
-
-        .floating-fast {
-          animation: float 4.5s ease-in-out infinite;
-        }
-      `}</style>
     </section>
   );
 }

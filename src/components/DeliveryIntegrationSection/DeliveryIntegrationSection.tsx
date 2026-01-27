@@ -19,7 +19,7 @@ export default function DeliveryIntegrationSection() {
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
             <h2 className="mb-4 text-4xl font-bold text-gray-900">ربط مباشر مع شركات التوصيل</h2>
-            <p className="text-lg leading-relaxed text-gray-700">
+            <p className="text-lg font-medium leading-relaxed text-gray-700">
               وفّر وقت اكثر وركّز على تطوير مشروعك بدلاً من كتابة الوصولات مجموعة كبيرة من شركات
               التوصيل في العراق في خدمة منتجاتك ومتجرك.
             </p>

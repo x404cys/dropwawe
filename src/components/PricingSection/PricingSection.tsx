@@ -199,8 +199,8 @@ export default function PricingSection() {
               className={`relative flex h-full flex-col rounded-[28px] bg-sky-100/90 p-6 text-center shadow-xl backdrop-blur transition duration-700`}
             >
               <span className="absolute -top-10 left-1/2 mx-auto inline-flex h-16 w-[85%] max-w-[220px] -translate-x-1/2 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
-                <span className="text-xs leading-tight">{plan.title}</span>
-                <span className="text-sm font-extrabold">{formatIQD(plan.price)}</span>
+                <span className="text-lg leading-tight">{plan.title}</span>
+                <span className="font-extrabold">{formatIQD(plan.price)}</span>
               </span>
 
               <ul className="mt-4 flex-1 space-y-3 text-right text-sm text-sky-900">
