@@ -34,7 +34,7 @@ model User {
 
   Supplier Supplier[]
 
-  UserSubscription UserSubscription[]
+  UserSubscription UserSubscription?
   subscriptionHistory SubscriptionHistory[]
   merchant  Merchant? @relation("UserMerchant")
   traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
