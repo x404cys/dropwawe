@@ -16,7 +16,7 @@ import { NavigationButtons } from './_components/navigation-buttons';
 import { PiStorefront } from 'react-icons/pi';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline } from 'react-icons/io5';
-
+import Image from 'next/image';
 type ServerErrorDetail = {
   field: string;
   message: string;
@@ -59,7 +59,7 @@ export default function StoreSetupPage() {
     const fetchInfo = async () => {
       try {
         const res = await axios.get(`/api/storev2/info4setting/${session?.user?.id}`);
-        // if (res.data) return router.replace('/Dashboard');
+        if (res.data) return router.replace('/Dashboard');
       } catch (err) {
         console.error('Error fetching store info:', err);
       }
@@ -123,8 +123,72 @@ export default function StoreSetupPage() {
       setLoading(false);
     }
   };
+  const validateBasicStep = () => {
+    const errors: { [key: string]: string } = {};
+
+    if (!storeSlug.trim()) {
+      errors.subLink = 'رابط المتجر مطلوب';
+    } else if (storeSlug.length < 3) {
+      errors.subLink = 'الرابط يجب أن يكون 3 أحرف على الأقل';
+    }
+
+    if (!storeName.trim()) {
+      errors.name = 'اسم المتجر مطلوب';
+    }
+
+    if (!description.trim()) {
+      errors.description = 'الوصف مطلوب';
+    } else if (description.length < 10) {
+      errors.description = 'الوصف قصير جداً';
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
+  const validateShippingStep = () => {
+    const errors: { [key: string]: string } = {};
+
+    const phoneRegex = /^(077|078|075)\d{8}$/;
+
+    if (!phone.trim()) {
+      errors.phone = 'رقم الهاتف مطلوب';
+    } else if (!phoneRegex.test(phone)) {
+      errors.phone = 'رقم الهاتف يجب أن يكون 11 رقم ويبدأ بـ 077 أو 078 أو 075';
+    }
+
+    if (!shippingPrice.trim()) {
+      errors.shippingPrice = 'سعر التوصيل مطلوب';
+    } else {
+      const price = Number(shippingPrice);
+
+      if (isNaN(price)) {
+        errors.shippingPrice = 'سعر التوصيل يجب أن يكون رقم';
+      } else if (price < 1000) {
+        errors.shippingPrice = 'أقل سعر توصيل هو 1000';
+      } else if (price % 500 !== 0) {
+        errors.shippingPrice =
+          'يجب ان يكون بترتيب الكامل او النصف  والكامل (مثال: 1500 ،  4500 , 5000 ,2000)';
+      }
+    }
+
+    setFieldErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
 
   const handleNext = () => {
+    let isValid = false;
+
+    if (activeSection === 'basic') {
+      isValid = validateBasicStep();
+    }
+
+    if (activeSection === 'shipping') {
+      isValid = validateShippingStep();
+    }
+
+    if (!isValid) return;
+
     const currentIndex = steps.findIndex(s => s.id === activeSection);
     if (currentIndex < steps.length - 1) {
       setDirection(1);
@@ -198,7 +262,16 @@ export default function StoreSetupPage() {
     <div dir="rtl" className="bg-background min-h-screen">
       <div className="mx-auto max-w-3xl py-12">
         <div className="mb-12 space-y-3 text-center">
-          <h1 className="text-foreground text-4xl font-semibold tracking-tight text-balance">
+          <div>
+            <Image
+              src="/Logo-Matager/Matager-logo2.png"
+              alt="Matager Logo"
+              width={45}
+              height={45}
+              className="mx-auto rounded-xl object-contain"
+            />
+          </div>
+          <h1 className="text-foreground text-3xl font-semibold tracking-tight text-balance md:text-4xl">
             أنشئ متجرك الآن
           </h1>
           <p className="text-muted-foreground text-base leading-relaxed text-pretty">

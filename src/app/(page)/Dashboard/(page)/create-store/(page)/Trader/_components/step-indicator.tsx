@@ -32,7 +32,6 @@ export function StepIndicator({ activeSection, fieldErrors, onStepChange }: Step
 
   return (
     <div className="relative w-full">
-      {/* Progress line */}
       <div className="absolute top-5 right-0 left-0 h-0.5 bg-sky-200">
         <motion.div
           className="h-0.5 bg-sky-700"
@@ -43,7 +42,6 @@ export function StepIndicator({ activeSection, fieldErrors, onStepChange }: Step
         />
       </div>
 
-      {/* Steps */}
       <div className="relative z-10 flex items-center justify-between">
         {steps.map((step, index) => {
           const active = activeSection === step.id;
