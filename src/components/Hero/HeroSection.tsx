@@ -20,14 +20,14 @@ export default function HeroSection() {
           data-aos-delay="100"
           className="mt-8 flex flex-col items-center gap-2 space-y-6 md:space-y-0"
         >
-          <h1 className="font-landing text-4xl md:text-5xl md:leading-snug">
+          <h1 className="font-landing px-1 text-4xl md:text-5xl md:leading-snug">
             ضغطة واحدة تفصلك <br /> عن النجاح في التجارة الالكترونية
           </h1>
           <div className="mt-4">
-            <p className="max-w-xl text-xl leading-relaxed text-sky-800">
+            <p className="max-w-xl text-xl leading-relaxed text-sky-900">
               اطلق مشروعك خلال دقائق فقط،
             </p>
-            <p className="max-w-xl text-lg leading-relaxed text-sky-800">
+            <p className="max-w-xl px-2 text-lg leading-relaxed text-sky-900">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل.
             </p>
@@ -65,11 +65,11 @@ export default function HeroSection() {
             className="floating-slow glass-card floating-slow relative rotate-6 rounded-3xl border border-white/30 bg-white/15 p-4 shadow-[0_8px_32px_rgba(0,0,0,0.15)] backdrop-blur-2xl"
           >
             <Image
-              className="absolute -top-12 -rotate-12 md:-top-4 md:left-1/1 md:-translate-x-1/2 md:rotate-12"
+              className="absolute -top-8 -rotate-12 md:-top-4 md:left-1/1 md:-translate-x-1/2 md:rotate-12"
               src="/Logo-Matager/star-struck_1f929.png"
               alt="star"
-              width={45}
-              height={45}
+              width={35}
+              height={35}
             />
 
             <div className="rounded-2xl bg-white/90 p-3">
@@ -98,8 +98,8 @@ export default function HeroSection() {
               className="absolute -top-6 -left-2 -rotate-6"
               src="/Logo-Matager/money-with-wings_1f4b8.png"
               alt="money"
-              width={56}
-              height={56}
+              width={45}
+              height={45}
             />
 
             <div className="rounded-2xl bg-white/90 p-3">

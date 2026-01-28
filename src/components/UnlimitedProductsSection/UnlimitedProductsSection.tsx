@@ -29,10 +29,10 @@ export default function UnlimitedProductsSection() {
 
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
-            <h2 className="mb-4 text-4xl leading-tight font-bold text-gray-900">
+            <h2 className="mb-4 text-4xl leading-tight font-bold text-sky-900">
               منتجات غير محدودة
             </h2>
-            <span className="font-medium">
+            <span className="font-medium text-sky-800">
               {' '}
               حتى لو لم يكن لديك منتجات بعد, دروب ويف تزودك بمجموعة متنوعة من المنتجات بسعر الجملة
               جاهزة لرفعها على متجرك

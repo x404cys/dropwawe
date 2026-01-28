@@ -51,7 +51,7 @@ export function SocialLinksSection({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-800">
+      <div className="flex items-start gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sky-900">
         <div className="mt-0.5">
           <Info className="h-5 w-5" />
         </div>

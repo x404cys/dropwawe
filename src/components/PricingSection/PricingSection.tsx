@@ -212,7 +212,7 @@ export default function PricingSection() {
                 ))}
               </ul>
 
-              <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-800">
+              <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-900">
                 <p className="mb-2 font-bold">رسوم المعاملات</p>
                 {plan.r?.map(r => (
                   <div key={r} className="flex gap-2">

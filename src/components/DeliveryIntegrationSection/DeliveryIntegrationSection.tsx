@@ -18,8 +18,8 @@ export default function DeliveryIntegrationSection() {
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-16 md:flex-row">
         <div data-aos="fade-up" className="flex-1 space-y-8">
           <div>
-            <h2 className="mb-4 text-4xl font-bold text-gray-900">ربط مباشر مع شركات التوصيل</h2>
-            <p className="text-lg font-medium leading-relaxed text-gray-700">
+            <h2 className="mb-4 text-4xl font-bold text-sky-900">ربط مباشر مع شركات التوصيل</h2>
+            <p className="text-lg leading-relaxed font-medium text-sky-800">
               وفّر وقت اكثر وركّز على تطوير مشروعك بدلاً من كتابة الوصولات مجموعة كبيرة من شركات
               التوصيل في العراق في خدمة منتجاتك ومتجرك.
             </p>

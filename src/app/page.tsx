@@ -44,7 +44,7 @@ const Page = () => {
         <PricingSection />
         <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
           <div className="max-w-md">
-            <h1 className="mb-4 text-2xl font-bold md:text-3xl">سجّل معنا ودع الباقي علينا!</h1>
+            <h1 className="mb-4 text-2xl font-bold text-sky-400 md:text-3xl">سجّل معنا ودع الباقي علينا!</h1>
             <p className="mb-4 text-gray-600">
               نسعى لتسهيل تجربتك، تبسيط الإجراءات، تقديم الدعم الكامل، وكل ما عليك هو الانضمام
               إلينا.

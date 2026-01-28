@@ -71,7 +71,7 @@ export default function PlanCard() {
         <div className="mt-5 flex flex-col flex-wrap-reverse gap-3 sm:flex-row">
           <Button
             onClick={() => router.push('/Dashboard/plans')}
-            className="w-full cursor-pointer rounded-lg bg-white text-sky-700 shadow-sm hover:bg-sky-50 hover:text-sky-800"
+            className="w-full cursor-pointer rounded-lg bg-white text-sky-700 shadow-sm hover:bg-sky-50 hover:text-sky-900"
           >
             <IoBusinessOutline className="ml-2" />
             <span>اشترك بالباقة الاحترافية</span>

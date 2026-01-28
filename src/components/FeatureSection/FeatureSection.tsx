@@ -4,8 +4,6 @@ import { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import Image from 'next/image';
-import { CreditCard, Truck } from 'lucide-react';
-import { Button } from '../ui/button';
 import { useRouter } from 'next/navigation';
 
 export default function PaymentSection() {
@@ -17,14 +15,14 @@ export default function PaymentSection() {
 
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
-      <h2 className="mb-4 text-center text-4xl font-bold text-gray-900">
+      <h2 className="mb-4 text-center text-4xl font-bold text-sky-400">
         صُمّمت دروب ويف لتغطية كافة احتياجاتك <br /> في التجارة الالكترونية
       </h2>
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-14 md:flex-row">
         <div data-aos="fade-up" className="flex-1 space-y-3">
-          <h1 className="text-3xl">متجر الكتروني بدون خبرة برمجية</h1>
+          <h1 className="text-3xl text-sky-900">متجر الكتروني بدون خبرة برمجية</h1>
           <div>
-            <p className="text-lg leading-relaxed font-medium text-gray-700">
+            <p className="text-lg leading-relaxed font-medium text-sky-800">
               افتح متجرك الإلكتروني بدون أي تعقيدات تقنية بخطوات سهلة وسريعة متجرك جاهز للأستخدام
             </p>
           </div>

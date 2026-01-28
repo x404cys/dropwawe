@@ -60,7 +60,7 @@ export default function SmartMarketingSection() {
         </div>
 
         <div data-aos="fade-up" className="flex-1 space-y-8">
-          <h2 className="text-4xl font-bold text-gray-900">سوّق بذكاء</h2>
+          <h2 className="text-4xl font-bold text-sky-900">سوّق بذكاء</h2>
 
           <div className="flex flex-col">
             {features.map((item, index) => {
@@ -77,7 +77,7 @@ export default function SmartMarketingSection() {
                     <Icon className="h-5 w-5 text-sky-700" />
                   </div>
 
-                  <h3 className="font-semibold text-gray-900">{item.text}</h3>
+                  <h3 className="font-semibold text-sky-900">{item.text}</h3>
                 </div>
               );
             })}

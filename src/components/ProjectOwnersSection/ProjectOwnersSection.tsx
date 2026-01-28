@@ -45,7 +45,7 @@ export default function ProjectOwnersSection() {
     <section dir="rtl" className="bg-gray-50 px-6 py-5 md:px-20 lg:py-24">
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center md:mb-16" data-aos="fade-up">
-          <h2 className="mb-4 text-3xl font-extrabold text-gray-900 md:text-4xl lg:text-5xl">
+          <h2 className="mb-4 text-3xl font-extrabold text-sky-400 md:text-4xl lg:text-5xl">
             لمن صُمّمت دروب ويڤ؟{' '}
           </h2>
         </div>
@@ -75,7 +75,7 @@ export default function ProjectOwnersSection() {
               </div>
 
               <div className="py-3 font-normal" data-aos-delay={index * 200}>
-                <h3 className="mb-2 text-lg font-semibold text-gray-900">{section.title}</h3>
+                <h3 className="mb-2 text-lg font-semibold text-sky-900">{section.title}</h3>
                 <p className="text-sm leading-relaxed font-semibold text-gray-600">
                   {section.description}
                 </p>
