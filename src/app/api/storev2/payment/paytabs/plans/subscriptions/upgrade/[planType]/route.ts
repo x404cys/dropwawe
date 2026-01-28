@@ -19,11 +19,13 @@ export async function POST(
     if (!planType) {
       return NextResponse.json({ message: 'Plan type is required' }, { status: 400 });
     }
+
     const role = planRoleMap[planType];
     await prisma.user.update({
       where: { id: session.user.id },
       data: { role },
     });
+
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planType },
     });
@@ -39,64 +41,52 @@ export async function POST(
       },
     });
 
-    let startDate: Date;
-    let endDate: Date;
+    let startDate: Date = new Date();
+    let endDate: Date = new Date();
+    endDate.setDate(endDate.getDate() + plan.durationDays);
     let subscription;
 
     if (currentSubscription) {
-      if (currentSubscription.planId === plan.id) {
-        startDate = currentSubscription.startDate;
-        endDate = new Date(currentSubscription.endDate);
-        endDate.setDate(endDate.getDate() + plan.durationDays);
-
-        subscription = await prisma.userSubscription.update({
-          where: { id: currentSubscription.id },
-          data: {
-            endDate,
-            isActive: false,
-          },
-        });
-      } else {
-        startDate = new Date();
-        endDate = new Date();
-        endDate.setDate(endDate.getDate() + plan.durationDays);
-
-        subscription = await prisma.userSubscription.update({
-          where: { id: currentSubscription.id },
-          data: {
-            planId: plan.id,
-            startDate,
-            endDate,
-            isActive: false,
-          },
-        });
-      }
-    } else {
-      startDate = new Date();
-      endDate = new Date();
-      endDate.setDate(endDate.getDate() + plan.durationDays);
-
-      subscription = await prisma.userSubscription.create({
-        data: {
-          userId: session?.user.id,
-          planId: plan.id,
-          startDate,
-          endDate,
-          isActive: false,
-        },
-      });
       await prisma.subscriptionHistory.create({
         data: {
           userId: session.user.id,
-          planId: plan.id,
-          subscriptionId: subscription.id,
-          startDate,
-          endDate,
+          planId: currentSubscription.planId,
+          subscriptionId: currentSubscription.id,
+          startDate: currentSubscription.startDate,
+          endDate: currentSubscription.endDate,
           price: plan.price,
-          status: 'ACTIVE',
+          status: 'EXPIRED',
         },
       });
+
+      await prisma.userSubscription.update({
+        where: { id: currentSubscription.id },
+        data: { isActive: false },
+      });
     }
+
+    subscription = await prisma.userSubscription.create({
+      data: {
+        userId: session.user.id,
+        planId: plan.id,
+        startDate,
+        endDate,
+        isActive: true,
+      },
+    });
+
+    await prisma.subscriptionHistory.create({
+      data: {
+        userId: session.user.id,
+        planId: plan.id,
+        subscriptionId: subscription.id,
+        startDate,
+        endDate,
+        price: plan.price,
+        status: 'ACTIVE',
+      },
+    });
+
     const uuid = crypto.randomUUID();
     const cartId = `${session.user.id}-${uuid}`;
 
@@ -120,7 +110,6 @@ export async function POST(
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
     const PAYTABS_PROFILE_ID = 169218;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dashboard.matager.store';
-
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
 
     const payload = {
