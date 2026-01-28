@@ -17,7 +17,6 @@ import { LuMousePointerClick } from 'react-icons/lu';
 import HeroSection from '@/components/Hero/HeroSection';
 import Navbar from '@/components/NavBar/NavBar';
 import ScrollToTopButton from '@/components/Scroll-To-Top';
-import localFont from 'next/font/local';
 import { landingFont } from '@/fonts/Export-Font';
 
 const Page = () => {
@@ -44,7 +43,9 @@ const Page = () => {
         <PricingSection />
         <section className="flex flex-col items-center justify-center gap-6 bg-white p-10 text-center">
           <div className="max-w-md">
-            <h1 className="mb-4 text-2xl font-bold text-sky-400 md:text-3xl">سجّل معنا ودع الباقي علينا!</h1>
+            <h1 className="mb-4 text-2xl font-bold text-sky-400 md:text-3xl">
+              سجّل معنا ودع الباقي علينا!
+            </h1>
             <p className="mb-4 text-gray-600">
               نسعى لتسهيل تجربتك، تبسيط الإجراءات، تقديم الدعم الكامل، وكل ما عليك هو الانضمام
               إلينا.
@@ -67,4 +68,3 @@ const Page = () => {
 };
 
 export default Page;
-//

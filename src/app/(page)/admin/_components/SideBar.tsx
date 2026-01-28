@@ -40,19 +40,24 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside dir="rtl" className="z-50 hidden md:block">
+    <aside dir="rtl" className="hidden w-64 shrink-0 md:block">
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-64 transform border-e border-gray-200 bg-white transition-transform duration-300 ease-in-out md:static md:flex md:translate-x-0 md:flex-col ${isOpen ? 'translate-x-0' : '-translate-x-full'} `}
+        className={`fixed inset-y-0 right-0 z-50 h-full w-64 border-e border-gray-200 bg-white transition-transform duration-300 ease-in-out md:static md:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
       >
         <div className="flex h-full flex-col justify-between px-4">
           <div>
-            <div className="mb-5">
+            <div className="mt-5 mb-5">
               <div className="flex items-center gap-2">
-                <div className="relative h-8 w-8 md:h-8 md:w-8">
-                  <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+                <div className="relative h-10 w-10 rounded-2xl md:h-8 md:w-8">
+                  <Image
+                    src="/Logo-Matager/Matager-logo2.PNG"
+                    alt="Matager Logo"
+                    fill
+                    className="rounded-xl object-contain"
+                  />
                 </div>
                 <div className="flex flex-col">
-                  <h1 className="text-sm font-semibold md:text-xl">Dropwave</h1>
+                  <h1 className="text-sm font-semibold md:text-xl">Matager</h1>
                 </div>
               </div>
             </div>

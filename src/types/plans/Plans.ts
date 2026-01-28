@@ -4,15 +4,24 @@ export enum TypePlan {
   PENDINGROFESSIONAL = 'PENDINGROFESSIONAL',
 }
 
-export type PlanType = 'trader-basic' | 'trader-pro' | 'drop-basics' | 'drop-pro' | 'multi-basics' | 'multi-pro' | 'multi-drop' | 'multi-trader';
+export type PlanType =
+  | 'trader-basic'
+  | 'trader-pro'
+  | 'drop-basics'
+  | 'drop-pro'
+  | 'multi-basics'
+  | 'multi-pro'
+  | 'multi-drop'
+  | 'multi-trader'
+  | 'free-trial';
 
 export interface Plan {
   id: string;
   name: string;
   type: PlanType;
 
-  price: number; 
-  durationDays: number;  
+  price: number;
+  durationDays: number;
 
   maxProducts: number | null;
   maxTemplates: number;

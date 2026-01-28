@@ -66,6 +66,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       'multi-pro': ['drop-pro', 'trader-pro', 'drop-basics', 'trader-basic'],
       'multi-trader': ['trader-basic', 'trader-pro'],
       'multi-drop': ['drop-basics', 'drop-pro'],
+      'free-trial': [
+        'multi-basics',
+        'multi-pro',
+        'multi-drop',
+        'multi-trader',
+        'drop-basics',
+        'drop-pro',
+        'trader-basic',
+        'trader-pro',
+      ],
     };
 
     return {
@@ -73,7 +83,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       traderPro: getPlanByType(sorted, 'trader-pro'),
       dropBasic: getPlanByType(sorted, 'drop-basics'),
       dropPro: getPlanByType(sorted, 'drop-pro'),
-
+      free: getPlanByType(sorted, 'free-trial'),
       userPlanType,
 
       isUserOnPlan: (type: PlanType) => userPlanType === type,

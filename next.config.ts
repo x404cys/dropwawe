@@ -6,6 +6,7 @@ const nextConfig = {
       'ihdkfonxtrohbetdllyt.supabase.co',
       'uat.dropwave.online',
       'www.matager.store',
+      'www.dropwave.cloud',
       'images.remotePatterns',
     ],
   },

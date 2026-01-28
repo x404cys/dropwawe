@@ -9,6 +9,8 @@ import { LuCopy } from 'react-icons/lu';
 import { CiShare1 } from 'react-icons/ci';
 import { toast } from 'sonner';
 import type { PaymentResult } from '@/types/api/PaymentRes';
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import { PaymentPDF } from '../../_utils/PaymentPDFProps';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -106,6 +108,20 @@ export default function PaymentResultClient() {
             >
               <span>نسخ</span> <LuCopy className="mr-2" />
             </Button>
+            {!isLoading && payment && (
+              <div className="">
+                <PDFDownloadLink
+                  document={<PaymentPDF payment={payment!} />}
+                  fileName={`payment-${payment.payment.tranRef}.pdf`}
+                >
+                  {({ loading }) => (
+                    <Button className="cursor-pointer rounded-lg bg-sky-600 text-white hover:bg-blue-700">
+                      {loading ? 'جارٍ التحضير...' : 'تحميل PDF'}
+                    </Button>
+                  )}
+                </PDFDownloadLink>
+              </div>
+            )}
           </div>
         </div>
 
@@ -292,9 +308,15 @@ export default function PaymentResultClient() {
                   <div className="col-span-1 mt-2 sm:col-span-2">
                     <span className="mb-1 block text-[14px] text-[#555]">الميزات</span>
                     <ul className="list-disc space-y-1 pl-5 text-[15px] text-[#111]">
-                      {payment.userSubscription.plan.features.map((feature, idx) => (
-                        <li key={idx}>{feature}</li>
-                      ))}
+                      {payment.userSubscription.plan.features?.length ? (
+                        <ul className="list-disc space-y-1 pl-5 text-[15px] text-[#111]">
+                          {payment.userSubscription.plan.features.map((feature, idx) => (
+                            <li key={idx}>{feature}</li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="text-[14px] text-gray-500">لا توجد ميزات متاحة</p>
+                      )}
                     </ul>
                   </div>
                 </div>

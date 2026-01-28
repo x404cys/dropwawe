@@ -1,12 +1,14 @@
 'use client';
 import { PricingCard } from '@/components/pricing-card';
 import { Badge } from '@/components/ui/badge';
-import { Check } from 'lucide-react';
+import { Check, CornerLeftDown, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { subscribePlan } from '../../_utils/subscribePlan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { LuMousePointerClick } from 'react-icons/lu';
 
 export default function Plans() {
   const [loading, setLoading] = useState(false);
@@ -47,10 +49,47 @@ export default function Plans() {
             اختر الخطة المناسبة لك
           </h1>
           <p className="text-muted-foreground mx-auto max-w-2xl text-lg text-balance">
-            ابدأ الان وقم بالترقية عندما تحتاج إلى المزيد من الميزات
+            تمتع بتجربة مجانية لمدة 7 ايام لكل الميزات
           </p>
         </div>
+        <div className="flex flex-col items-center justify-center">
+          <div className="max-w-md">
+            <button
+              onClick={async () => {
+                try {
+                  const res = await fetch(`/api/dashboard/give-free-trial`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                  });
 
+                  const data = await res.json();
+
+                  if (!res.ok) {
+                    toast.error(data.message || 'حدث خطأ أثناء تفعيل الفترة التجريبية');
+                    throw new Error(data.error || 'Failed to subscribe');
+                  }
+                  toast.success('تم تفعيل الفترة التجريبية المجانية بنجاح!');
+                  router.replace('/Dashboard');
+                  return data;
+                } catch (error) {
+                  console.error('Subscription error:', error);
+                  throw error;
+                }
+              }}
+              className="relative flex cursor-pointer items-center gap-2 rounded-lg bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
+            >
+              <span> جرب كل الميزات مجاناً لمدة 7 أيام</span>{' '}
+              <LuMousePointerClick className="text-lg" />
+              <span className="pointer-events-none absolute inset-0 rounded-lg shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+            </button>
+          </div>
+        </div>
+        <div className="mt-10 mb-5 text-center">
+          <Badge variant={'success'} className="mt-4 mb-5 text-lg">
+            <span className="font-normal"> او اختر باقتك وابدأ الان </span>{' '}
+            <CornerLeftDown className="" />
+          </Badge>
+        </div>
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4 lg:gap-8">
           <PricingCard
             name="الباقة الاساسية - للتجار"

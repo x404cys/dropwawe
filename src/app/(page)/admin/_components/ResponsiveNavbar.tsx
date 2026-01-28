@@ -49,7 +49,7 @@ const ResponsiveNavbar = () => {
 
   const handleSignOut = async () => {
     await signOut({ redirect: false });
-    window.location.href = 'https://www.dropwave.cloud';
+    window.location.href = 'https://www.matager.store';
   };
 
   return (
@@ -61,11 +61,16 @@ const ResponsiveNavbar = () => {
         <div className="flex items-center justify-between">
           <div className="my-2">
             <div className="flex items-center gap-2">
-              <div className="relative h-6 w-6 md:h-8 md:w-8">
-                <Image src="/logo-drop.png" alt="Dropwave" fill className="object-contain" />
+              <div className="relative h-10 w-10 md:h-8 md:w-8">
+                <Image
+                  src="/Logo-Matager/Matager-logo2.PNG"
+                  alt="Matager Logo"
+                  fill
+                  className="rounded-xl object-contain"
+                />
               </div>
               <div className="flex flex-col">
-                <h1 className="text-sm font-semibold md:text-xl">Dashboard - Dropwave</h1>
+                <h1 className="text-sm font-semibold md:text-xl">Dashboard - Matager</h1>
               </div>
             </div>
           </div>
