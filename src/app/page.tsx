@@ -54,7 +54,7 @@ const Page = () => {
             <button
               onClick={() => router.push('https://login.matager.store')}
               className="ite relative flex cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
-            >
+            >//
               <span>سجّل الآن</span> <LuMousePointerClick className="text-xs" />
               <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
             </button>
@@ -67,3 +67,4 @@ const Page = () => {
 };
 
 export default Page;
+//
