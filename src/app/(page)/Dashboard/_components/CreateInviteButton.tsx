@@ -22,7 +22,7 @@ export default function CreateInvitePage() {
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
 
-  const inviteLink = inviteCode && `${window.location.origin}/login/invite/${inviteCode}`;
+  const inviteLink = inviteCode && `https://login.matager.store/login/invite/${inviteCode}`;
 
   const { data } = useSWR<MultiUser[]>(
     '/api/dashboard/setting/multi-user/get-users',

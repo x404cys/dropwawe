@@ -1,39 +1,42 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { FaGoogle } from 'react-icons/fa';
 import axios from 'axios';
+import Image from 'next/image';
+import { Loader2, AlertCircle } from 'lucide-react';
 
 export default function InviteRegisterPage() {
-  const router = useRouter();
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [validInvite, setValidInvite] = useState(false);
   const [error, setError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [signingIn, setSigningIn] = useState(false);
 
   useEffect(() => {
-    const pathParts = window.location.pathname.split('/');
-    const codeFromPath = pathParts[pathParts.length - 1];
-    setInviteCode(codeFromPath);
+    const parts = window.location.pathname.split('/');
+    const code = parts[parts.length - 1];
+    setInviteCode(code);
 
     const checkInvite = async () => {
       try {
         const res = await axios.post('/api/dashboard/invite/verify', {
-          inviteCode: codeFromPath,
+          inviteCode: code,
         });
-        if (res.data.success) setValidInvite(true);
-        else setError('هذا الرابط غير صالح أو انتهت صلاحيته.');
-      } catch (err) {
-        console.error(err);
-        setError('حدث خطأ أثناء التحقق من الرابط.');
+
+        if (res.data.success) {
+          setValidInvite(true);
+        } else {
+          setError('رابط الدعوة غير صالح أو منتهي');
+        }
+      } catch {
+        setError('حدث خطأ أثناء التحقق من الدعوة');
+      } finally {
+        setLoading(false);
       }
     };
 
-    if (codeFromPath) checkInvite();
+    if (code) checkInvite();
   }, []);
 
   const callbackUrl =
@@ -43,40 +46,62 @@ export default function InviteRegisterPage() {
 
   const handleGoogleSignIn = async () => {
     if (!inviteCode) return;
-    setIsLoading(true);
+    setSigningIn(true);
     await signIn('google', {
       callbackUrl: `${callbackUrl}/Loading-data-invite/${inviteCode}`,
     });
-    setIsLoading(false);
+    setSigningIn(false);
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
-      <div className="w-full max-w-md rounded-lg bg-white p-8 shadow-md">
-        <h1 className="mb-6 text-center text-2xl font-bold">تسجيل مستخدم جديد</h1>
-        {error && <p className="mb-4 text-red-500">{error}</p>}
+    <div className="flex min-h-screen items-center justify-center px-4">
+      <div className="w-full max-w-md space-y-8 text-center">
+        <div className="flex flex-col items-center gap-3">
+          <Image
+            src="/Logo-Matager/Matager-logo2.PNG"
+            alt="Matager"
+            width={64}
+            height={64}
+            className="rounded-2xl"
+          />
+          <h1 className="text-2xl font-bold">Matager</h1>
+        </div>
 
-        {!error && !validInvite && <p>جارٍ التحقق من رابط الدعوة...</p>}
+        <div className="space-y-2">
+          <h2 className="text-xl font-bold">أهلاً بك </h2>
+          <p className="text-muted-foreground text-sm">
+            لديك دعوة للانضمام إلى متجر على منصة متاجر
+          </p>
+        </div>
 
-        {validInvite && (
-          <Button
-            onClick={handleGoogleSignIn}
-            disabled={isLoading}
-            className="flex h-14 w-full cursor-pointer items-center justify-center gap-3 rounded-3xl bg-sky-600 text-lg font-semibold text-white transition hover:bg-sky-800"
-          >
-            {isLoading ? (
-              <>
-                <Loader2 className="h-5 w-5 animate-spin" />
-                جاري التحميل...
-              </>
-            ) : (
-              <>
-                <FaGoogle className="h-5 w-5" />
-                تسجيل الدخول عبر Google
-              </>
-            )}
-          </Button>
+        <div className="rounded-lg border p-4">
+          {loading ? (
+            <Loader2 className="text-primary mx-auto h-5 w-5 animate-spin" />
+          ) : (
+            <code className="text-primary text-lg font-bold tracking-widest">
+              {inviteCode?.toUpperCase()}
+            </code>
+          )}
+        </div>
+
+        {error && !loading && (
+          <div className="border-destructive/30 bg-destructive/5 flex items-start gap-3 rounded-lg border p-3 text-right">
+            <AlertCircle className="text-destructive h-5 w-5" />
+            <p className="text-destructive text-sm">{error}</p>
+          </div>
         )}
+
+        {validInvite && !loading && (
+          <button
+            onClick={handleGoogleSignIn}
+            disabled={signingIn}
+            className="w-full cursor-pointer rounded-lg bg-gradient-to-l from-sky-300/80 via-sky-200/80 to-sky-200/90 px-6 py-3 font-bold text-sky-900 transition hover:scale-105 disabled:opacity-60"
+          >
+            {signingIn ? 'جارٍ تسجيل الدخول...' : 'تسجيل الدخول عبر Google'}
+          </button>
+        )}
+
+        <p className="text-muted-foreground pt-4 text-xs">دعوة خاصة • وصول آمن</p>
       </div>
     </div>
   );

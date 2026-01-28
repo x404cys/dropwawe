@@ -67,7 +67,6 @@ export async function POST(
             planId: plan.id,
             startDate,
             endDate,
-            limitProducts: plan.maxProducts ?? null,
             isActive: false,
           },
         });
@@ -84,7 +83,17 @@ export async function POST(
           startDate,
           endDate,
           isActive: false,
-          limitProducts: plan.maxProducts ?? null,
+        },
+      });
+      await prisma.subscriptionHistory.create({
+        data: {
+          userId: session.user.id,
+          planId: plan.id,
+          subscriptionId: subscription.id,
+          startDate,
+          endDate,
+          price: plan.price,
+          status: 'ACTIVE',
         },
       });
     }

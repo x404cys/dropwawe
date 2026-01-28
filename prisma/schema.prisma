@@ -35,6 +35,7 @@ model User {
   Supplier Supplier[]
 
   UserSubscription UserSubscription[]
+  subscriptionHistory SubscriptionHistory[]
   merchant  Merchant? @relation("UserMerchant")
   traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
   traderProfit    TraderProfit?
@@ -362,27 +363,62 @@ model SubscriptionPlan {
   maxStores         Int?     
   maxSuppliers      Int?      
   features          Json?     
-  description        String?
+  description       String?
   createdAt         DateTime @default(now())
+
   subscriptions     UserSubscription[]
+  history           SubscriptionHistory[]   
 }
+
 
 model UserSubscription {
   id              String   @id @default(cuid())
-  userId          String   @unique
+  userId          String   @unique    
   planId          String
+
   startDate       DateTime @default(now())
   endDate         DateTime
   isActive        Boolean  @default(true)
+
   canceledAt      DateTime?
-  limitProducts   Int?
+  autoRenew       Boolean  @default(false)
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+
+  history         SubscriptionHistory[]    
+}
+model SubscriptionHistory {
+  id              String   @id @default(cuid())
+
+  userId          String
+  planId          String
+  subscriptionId  String?    
+
+  startDate       DateTime
+  endDate         DateTime
+
+  price           Float
+  paymentId       String?
+  status          SubscriptionStatus
+
+  createdAt       DateTime @default(now())
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   plan            SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscription    UserSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([planId])
+  @@index([subscriptionId])
 }
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELED
+}
+
 model Merchant {
   id        String   @id @default(cuid())
   userId    String?  @unique

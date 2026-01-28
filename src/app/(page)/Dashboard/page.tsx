@@ -11,10 +11,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
-import Image from 'next/image';
 import PlanCard from './_components/PlanCard';
-import { useEffect } from 'react';
-import CreateInviteButton from './_components/CreateInviteButton';
 
 export default function Dashboard() {
   const router = useRouter();
@@ -26,17 +23,6 @@ export default function Dashboard() {
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
   );
-  try {
-    useEffect(() => {
-      if (status === 'loading' || loading) return;
-
-      if (status === 'unauthenticated') {
-        router.push('https://login.matager.store');
-      }
-    }, [status, loading, data, router, session]);
-  } catch (e) {
-    toast.error('unthenticated');
-  }
 
   if (status !== 'authenticated' || loading || !data) {
     return (
