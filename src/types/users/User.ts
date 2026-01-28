@@ -80,4 +80,5 @@ export type SubscriptionResponse = {
   isActive: boolean;
   subscription: Subscription;
   type: string;
+  isSubUser?: boolean;
 };

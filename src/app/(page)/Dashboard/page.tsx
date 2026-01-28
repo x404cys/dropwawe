@@ -52,9 +52,6 @@ export default function Dashboard() {
       </section>
     );
   }
-  if (data?.storeSlug === null) {
-    router.push('/Dashboard/create-store');
-  }
 
   const storeUrl = `https://${data.storeSlug?.subLink}.matager.store`;
 

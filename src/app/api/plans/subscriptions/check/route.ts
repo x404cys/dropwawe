@@ -11,7 +11,15 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-
+    const userIsSubUser = await prisma.storeUser.findFirst({
+      where: { userId: userId, isOwner: false },
+    });
+    if (userIsSubUser) {
+      return NextResponse.json({
+        isSubUser: true,
+        message: 'Sub-users cannot have subscriptions',
+      });
+    }
     const subscription = await prisma.userSubscription.findFirst({
       where: { userId, isActive: true },
       include: { plan: true },
