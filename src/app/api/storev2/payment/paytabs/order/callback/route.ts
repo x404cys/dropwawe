@@ -17,19 +17,17 @@ async function handlePayment(data: {
   const paymentOrder = await prisma.paymentOrder.findUnique({
     where: { cartId },
     include: {
-      order: {
-        include: { items: true },
-      },
+      order: { include: { items: true } },
     },
   });
-  const paymentOrderFromTrader = await prisma.orderFromTraderPayment.findUnique({
+
+  const traderPayment = await prisma.orderFromTraderPayment.findUnique({
     where: { cartId },
     include: {
-      order: {
-        include: { items: true },
-      },
+      order: { include: { items: true } },
     },
   });
+
   if (!paymentOrder || !paymentOrder.order) return null;
 
   if (paymentOrder.status === 'Success') {
@@ -49,18 +47,20 @@ async function handlePayment(data: {
     },
   });
 
-  await prisma.orderFromTraderPayment.update({
-    where: { cartId },
-    data: {
-      tranRef,
-      respCode: respStatus,
-      respMessage,
-      customerEmail,
-      signature,
-      token,
-      status: respStatus === 'A' ? 'Success' : 'Failed',
-    },
-  });
+  if (traderPayment) {
+    await prisma.orderFromTraderPayment.update({
+      where: { cartId },
+      data: {
+        tranRef,
+        respCode: respStatus,
+        respMessage,
+        customerEmail,
+        signature,
+        token,
+        status: respStatus === 'A' ? 'Success' : 'Failed',
+      },
+    });
+  }
 
   if (respStatus === 'A') {
     await Promise.all(
@@ -68,9 +68,7 @@ async function handlePayment(data: {
         prisma.product.update({
           where: { id: item.productId! },
           data: {
-            quantity: {
-              decrement: item.quantity,
-            },
+            quantity: { decrement: item.quantity },
           },
         })
       )
@@ -78,9 +76,7 @@ async function handlePayment(data: {
 
     await prisma.order.update({
       where: { id: paymentOrder.order.id },
-      data: {
-        status: 'DELIVERED',
-      },
+      data: { status: 'DELIVERED' },
     });
   }
 
@@ -92,7 +88,6 @@ export async function GET(req: Request) {
     const params = new URL(req.url).searchParams;
 
     const cartId = params.get('cartId') ?? params.get('cart_id') ?? '';
-
     const tranRef = params.get('tranRef') ?? '';
     const respStatus = params.get('respStatus') ?? '';
     const respMessage = params.get('respMessage') ?? '';
@@ -110,9 +105,12 @@ export async function GET(req: Request) {
       token,
     });
 
-    const returnUrl = `https://www.matager.store/storev2/payment-result?tranRef=${tranRef}&respStatus=${respStatus}&respMessage=${encodeURIComponent(
-      respMessage
-    )}&cartId=${cartId}`;
+    const returnUrl =
+      `https://www.matager.store/storev2/payment-result` +
+      `?tranRef=${encodeURIComponent(tranRef)}` +
+      `&respStatus=${encodeURIComponent(respStatus)}` +
+      `&respMessage=${encodeURIComponent(respMessage)}` +
+      `&cartId=${encodeURIComponent(cartId)}`;
 
     return NextResponse.redirect(returnUrl, { status: 303 });
   } catch (error) {
@@ -142,9 +140,12 @@ export async function POST(req: Request) {
       token: data.token ?? '',
     });
 
-    const returnUrl = `https://www.matager.store/storev2/payment-result?tranRef=${data.tranRef}&respStatus=${data.respStatus}&respMessage=${encodeURIComponent(
-      data.respMessage
-    )}&cartId=${cartId}`;
+    const returnUrl =
+      `https://www.matager.store/storev2/payment-result` +
+      `?tranRef=${encodeURIComponent(data.tranRef ?? '')}` +
+      `&respStatus=${encodeURIComponent(data.respStatus ?? '')}` +
+      `&respMessage=${encodeURIComponent(data.respMessage ?? '')}` +
+      `&cartId=${encodeURIComponent(cartId)}`;
 
     return NextResponse.redirect(returnUrl, { status: 303 });
   } catch (error) {
