@@ -23,11 +23,10 @@ export default function PaymentResultClient() {
   const cartId = params.get('cartId') ?? '';
   const [copied, setCopied] = useState(false);
   const { update } = useSession();
-
   const isSuccess = respStatus === 'A' || respStatus === 'success';
 
   async function updateSubscription() {
-    await fetch('/api/storev2/payment/paytabs/plans/subscriptions/update-status', {
+    const res = await fetch('/api/storev2/payment/paytabs/plans/subscriptions/update-status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -37,7 +36,12 @@ export default function PaymentResultClient() {
         cartId,
       }),
     });
-    await update();
+
+    if (!res.ok) return toast.success('فشلت العملية');
+
+    if (res.ok) {
+      update();
+    }
   }
 
   useEffect(() => {

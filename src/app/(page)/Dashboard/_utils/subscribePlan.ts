@@ -9,7 +9,7 @@ export async function subscribePlan(type: string) {
     });
 
     const data = await res.json();
-
+    
     if (!res.ok) {
       throw new Error(data.error || 'Failed to subscribe');
     }
