@@ -100,7 +100,6 @@ export async function POST(
         customerEmail: session.user.email,
       },
     });
-    const uuid = crypto.randomUUID();
 
     const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
     const PAYTABS_PROFILE_ID = 169218;
@@ -112,7 +111,7 @@ export async function POST(
       profile_id: PAYTABS_PROFILE_ID,
       tran_type: 'sale',
       tran_class: 'ecom',
-      cart_id: `${session.user.id}-${uuid}`,
+      cart_id: `${cartId}`,
       cart_description: `دفع اشتراك (${planType}) للمستخدم ${session.user.email}`,
       cart_currency: 'IQD',
       cart_amount: plan.price,
