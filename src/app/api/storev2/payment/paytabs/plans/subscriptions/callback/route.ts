@@ -14,11 +14,11 @@ export async function POST(req: Request) {
   } else {
     return NextResponse.json({ error: 'Unsupported Content-Type' }, { status: 400 });
   }
-  if (data.cartId) return NextResponse.json(data.cartId);
+  // if (data.cartId) return NextResponse.json(data.cartId);
   if (!data.cartId) return NextResponse.json('cartId not found ');
   const payment = await prisma.payment.findUnique({
     where: { cartId: data.cartId },
-  });//
+  });
 
   if (!payment) {
     return NextResponse.json({ error: 'Payment record not found' }, { status: 404 });
