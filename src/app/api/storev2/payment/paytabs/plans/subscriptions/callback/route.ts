@@ -60,7 +60,8 @@ export async function POST(req: Request) {
     `https://dashboard.matager.store/Dashboard/payment-result` +
     `?tranRef=${encodeURIComponent(data.tranRef || '')}` +
     `&respStatus=${encodeURIComponent(data.respStatus || '')}` +
-    `&respMessage=${encodeURIComponent(data.respMessage || '')}`;
+    `&respMessage=${encodeURIComponent(data.respMessage || '')}` +
+    `&cartId=${encodeURIComponent(data.cartId || '')}`;
 
   return NextResponse.redirect(returnUrl, { status: 303 });
 }
