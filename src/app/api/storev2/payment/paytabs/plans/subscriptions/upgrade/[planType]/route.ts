@@ -19,6 +19,13 @@ export async function POST(
     if (!planType) {
       return NextResponse.json({ message: 'Plan type is required' }, { status: 402 });
     }
+    const role = planRoleMap[planType];
+    if (role) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { role: role },
+      });
+    }
 
     const plan = await prisma.subscriptionPlan.findFirst({
       where: { type: planType },
@@ -78,14 +85,6 @@ export async function POST(
         status: 'ACTIVE',
       },
     });
-
-    const role = planRoleMap[planType];
-    if (role) {
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { role },
-      });
-    }
 
     const cartId = `${session.user.id}-${crypto.randomUUID()}`;
 

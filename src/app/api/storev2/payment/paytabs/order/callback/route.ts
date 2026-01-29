@@ -76,7 +76,7 @@ async function handlePayment(data: {
 
     await prisma.order.update({
       where: { id: paymentOrder.order.id },
-      data: { status: 'DELIVERED' },
+      data: { status: 'PENDING' },
     });
   }
 

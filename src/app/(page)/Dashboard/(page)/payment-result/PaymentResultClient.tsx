@@ -11,6 +11,7 @@ import { toast } from 'sonner';
 import type { PaymentResult } from '@/types/api/PaymentRes';
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import { PaymentPDF } from '../../_utils/PaymentPDFProps';
+import { useSession } from 'next-auth/react';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -21,6 +22,7 @@ export default function PaymentResultClient() {
   const respMessage = params.get('respMessage') ?? '';
   const cartId = params.get('cartId') ?? '';
   const [copied, setCopied] = useState(false);
+  const { update } = useSession();
 
   const isSuccess = respStatus === 'A' || respStatus === 'success';
 
@@ -35,6 +37,7 @@ export default function PaymentResultClient() {
         cartId,
       }),
     });
+    await update();
   }
 
   useEffect(() => {
