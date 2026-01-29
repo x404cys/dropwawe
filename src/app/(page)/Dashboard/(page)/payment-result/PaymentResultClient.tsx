@@ -26,7 +26,7 @@ export default function PaymentResultClient() {
   const isSuccess = respStatus === 'A' || respStatus === 'success';
 
   async function updateSubscription() {
-    const res = await fetch('/api/storev2/payment/paytabs/plans/subscriptions/update-status', {
+    const res = await fetch('/api/storev2/payment/paytabs/plans/subscriptions/updata-status', {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -37,7 +37,7 @@ export default function PaymentResultClient() {
       }),
     });
 
-    if (!res.ok) return toast.success('فشلت العملية');
+    if (!res.ok) return toast.success(`${res.statusText + res.status}`);
 
     if (res.ok) {
       update();

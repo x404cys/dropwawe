@@ -8,11 +8,16 @@ export async function GET(req: Request) {
   if (!userId) {
     return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
   }
-
+  const store = await prisma.storeUser.findFirst({
+    where: { userId },
+    select: {
+      storeId: true,
+    },
+  });
   try {
     const totalSum = await prisma.order.aggregate({
       where: {
-        userId,
+        storeId: store?.storeId,
         status: 'CONFIRMED',
       },
       _sum: {
@@ -22,7 +27,7 @@ export async function GET(req: Request) {
 
     const allOrders = await prisma.order.findMany({
       where: {
-        userId,
+        storeId: store?.storeId,
         status: 'CONFIRMED',
       },
       select: {
@@ -40,7 +45,7 @@ export async function GET(req: Request) {
       where: {
         status: 'Success',
         order: {
-          userId: userId,
+          storeId: store?.storeId,
         },
       },
     });

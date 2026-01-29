@@ -86,9 +86,9 @@ export default function Dashboard() {
 
   return (
     <section>
-      <div className="flex items-center justify-center pb-2 text-center">
+      {/* <div className="flex items-center justify-center pb-2 text-center">
         <button onClick={() => update()}>{session.user.role}</button>
-      </div>
+      </div> */}
       <div dir="rtl" className="flex min-h-screen flex-col">
         <main className="flex-1 space-y-4 py-1">
           <div className="grid grid-cols-2 gap-4 md:grid-cols-4">

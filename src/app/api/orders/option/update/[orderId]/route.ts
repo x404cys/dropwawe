@@ -35,8 +35,16 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
       where: { id: orderId },
       include: { items: true },
     });
-
-    if (!order || order.userId !== session.user.id) {
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 405 });
+    }
+    const store = await prisma.storeUser.findFirst({
+      where: { userId: session.user.id },
+      select: {
+        storeId: true,
+      },
+    });
+    if (order.storeId !== store?.storeId) {
       return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
     }
 

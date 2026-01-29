@@ -11,10 +11,15 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // if (session.user.role !== 'DROPSHIPPER') {
-  //   return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  // }
-
+  if (session.user.role !== 'DROPSHIPPER') {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
+  const store = await prisma.storeUser.findFirst({
+    where: { userId: session.user.id },
+    select: {
+      storeId: true,
+    },
+  });
   try {
     const traderProfit = await prisma.traderProfit.findUnique({
       where: { traderId: userId },

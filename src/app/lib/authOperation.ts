@@ -42,17 +42,25 @@ export const authOperation: AuthOptions = {
         token.email = dbUser?.email ?? user.email;
         token.name = dbUser?.name ?? user.name;
         token.role = dbUser?.role ?? 'TRADER';
+      } else {
+        const dbUser = await prisma.user.findUnique({
+          where: { email: token.email as string },
+        });
+
+        if (dbUser) {
+          token.name = dbUser.name;
+          token.role = dbUser.role;
+        }
       }
+
       return token;
     },
 
     async session({ session, token }) {
-      if (token) {
-        session.user.id = token.id as string;
-        session.user.email = token.email as string;
-        session.user.name = token.name as string;
-        session.user.role = token.role as UserRole;
-      }
+      session.user.id = token.id as string;
+      session.user.email = token.email as string;
+      session.user.name = token.name as string;
+      session.user.role = token.role as UserRole;
       return session;
     },
 
