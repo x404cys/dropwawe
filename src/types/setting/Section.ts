@@ -1,1 +1,10 @@
-export type SectionType = 'basic' | 'shipping' | 'social' | 'theme' | 'pixel' | 'withdraw' | 'users' | 'create-another';
+export type SectionType =
+  | 'basic'
+  | 'shipping'
+  | 'social'
+  | 'theme'
+  | 'pixel'
+  | 'withdraw'
+  | 'users'
+  | 'create-another'
+  | 'c-shipping';

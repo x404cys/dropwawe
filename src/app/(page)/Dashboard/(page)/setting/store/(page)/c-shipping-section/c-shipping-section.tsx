@@ -2,17 +2,10 @@
 
 import { Input } from '@/components/ui/input';
 import axios, { AxiosError } from 'axios';
-import { Phone, Truck, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { MdPassword } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 
 interface ShippingSectionProps {
@@ -22,6 +15,7 @@ interface ShippingSectionProps {
   onPhoneChange: (value: string) => void;
   onShippingPriceChange: (value: string) => void;
 }
+
 interface MerchantLoginResponse {
   status: boolean;
   msg?: string;
@@ -31,7 +25,7 @@ interface MerchantLoginResponse {
   };
 }
 
-export default function ShippingSection({
+export default function CShippingSection({
   phone,
   shippingPrice,
   fieldErrors,
@@ -40,6 +34,8 @@ export default function ShippingSection({
 }: ShippingSectionProps) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+
   useEffect(() => {
     const getData = async () => {
       try {
@@ -59,12 +55,10 @@ export default function ShippingSection({
 
   const login = async () => {
     try {
+      setLoading(true);
       const res = await axios.post<MerchantLoginResponse>(
         '/api/delivery/al-waseet/merchant/login',
-        {
-          username,
-          password,
-        }
+        { username, password }
       );
 
       if (res.data.status) {
@@ -75,52 +69,54 @@ export default function ShippingSection({
       toast.error(res.data.msg || 'حدث خطأ');
     } catch (error) {
       const err = error as AxiosError<MerchantLoginResponse>;
-
-      if (err.response?.data) {
-        toast.error(err.response.data.msg || 'حدث خطأ في الإدخال');
-      } else {
-        toast.error('خطأ بالشبكة أو غير معروف');
-      }
+      toast.error(err.response?.data?.msg || 'خطأ بالشبكة');
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      <span className="flex items-center">
-        <span className="h-px flex-1 bg-linear-to-r from-transparent to-gray-300" />
-        <span className="shrink-0 px-4 text-gray-900">التوصيل الذاتي</span>
-        <span className="h-px flex-1 bg-linear-to-l from-transparent to-gray-300" />
+    <div dir="rtl" className="space-y-6 rounded-lg border p-4">
+      <h3 className="text-sm font-semibold text-gray-800">ربط حساب شركة الوسيط</h3>
+
+      <div className="space-y-2">
+        <label className="text-sm text-gray-700">اسم المستخدم</label>
+        <div className="relative">
+          <Input
+            value={username}
+            onChange={e => setUsername(e.target.value)}
+            placeholder="اسم المستخدم في تطبيق الوسيط"
+          />
+          <User className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        </div>
+      </div>
+
+      <div className="space-y-2">
+        <label className="text-sm text-gray-700">كلمة السر</label>
+        <div className="relative">
+          <Input
+            type="password"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            placeholder="كلمة السر"
+          />
+          <MdPassword className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+        </div>
+      </div>
+
+      <Button
+        onClick={login}
+        disabled={loading}
+        className="w-full bg-black text-white hover:bg-gray-900"
+      >
+        {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+      </Button>
+
+      <span className="flex items-center pt-2">
+        <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300" />
+        <span className="px-3 text-xs text-gray-500">أو</span>
+        <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300" />
       </span>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">رقم الهاتف</label>
-        <div className="relative">
-          <Input
-            value={phone}
-            onChange={e => onPhoneChange(e.target.value)}
-            placeholder="0770xxxxxxx"
-          />
-          <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-        </div>
-        {fieldErrors.phone && <p className="mt-1 text-xs text-red-500">{fieldErrors.phone}</p>}
-      </div>
-
-      <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">سعر التوصيل</label>
-        <div className="relative">
-          <Input
-            value={shippingPrice}
-            onChange={e => onShippingPriceChange(e.target.value)}
-            placeholder="5000 د.ع"
-          />
-          <Truck className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
-        </div>
-        {fieldErrors.shippingPrice && (
-          <p className="mt-1 text-xs text-red-500">{fieldErrors.shippingPrice}</p>
-        )}
-      </div>
-
-      
     </div>
   );
 }

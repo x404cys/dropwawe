@@ -21,6 +21,56 @@ interface Order {
   phone: string;
   total: number;
 }
+const FAKE_ORDERS: Order[] = [
+  {
+    id: 'ORD-1001',
+    productName: 'iPhone 15 Pro',
+    quantity: 1,
+    price: 1200000,
+    status: 'CONFIRMED',
+    createdAt: new Date().toISOString(),
+    fullName: 'أحمد علي',
+    location: 'بغداد - المنصور',
+    phone: '07701234567',
+    total: 1200000,
+  },
+  {
+    id: 'ORD-1002',
+    productName: 'Samsung S24 Ultra',
+    quantity: 2,
+    price: 980000,
+    status: 'TRANSIT',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10).toISOString(),
+    fullName: 'سارة محمد',
+    location: 'أربيل',
+    phone: '07501234567',
+    total: 1960000,
+  },
+  {
+    id: 'ORD-1003',
+    productName: 'AirPods Pro',
+    quantity: 1,
+    price: 250000,
+    status: 'PRE_ORDER',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 40).toISOString(),
+    fullName: 'حسين كريم',
+    location: 'البصرة',
+    phone: '07801234567',
+    total: 250000,
+  },
+  {
+    id: 'ORD-1004',
+    productName: 'PlayStation 5',
+    quantity: 1,
+    price: 750000,
+    status: 'CANCELLED',
+    createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24 * 200).toISOString(),
+    fullName: 'علي حسن',
+    location: 'النجف',
+    phone: '07901234567',
+    total: 750000,
+  },
+];
 
 export default function OrderSummaryPage() {
   const { data: session } = useSession();
@@ -85,28 +135,16 @@ export default function OrderSummaryPage() {
     }
   };
   useEffect(() => {
-    async function fetchOrders() {
-      if (!session?.user?.id) return;
+    setLoading(true);
 
-      try {
-        const res = await fetch(`/api/orders/get/${session.user.id}`);
-        if (!res.ok) {
-          const data = await res.json();
-          throw new Error(data.error || 'فشل في تحميل الطلبات');
-        }
-        const data = await res.json();
-        setOrders(data);
-        setFilteredOrders(data);
-      } catch (err: unknown) {
-        if (err instanceof Error) setError(err.message);
-        else setError('حدث خطأ غير معروف');
-      } finally {
-        setLoading(false);
-      }
-    }
+    const timer = setTimeout(() => {
+      setOrders(FAKE_ORDERS);
+      setFilteredOrders(FAKE_ORDERS);
+      setLoading(false);
+    }, 800);
 
-    fetchOrders();
-  }, [session?.user?.id]);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     let filtered = [...orders];
@@ -254,7 +292,7 @@ export default function OrderSummaryPage() {
                                 {new Date(e.createdAt).toLocaleDateString()}
                               </td>
                               <td className="px-4 py-3 text-gray-500 dark:text-gray-300">
-                                ${e.price}
+                                {formatIQD(e.price)}
                               </td>
                               <td className="px-4 py-3">
                                 <span
@@ -269,15 +307,14 @@ export default function OrderSummaryPage() {
                               <td className="px-4 py-3">
                                 <div className="flex gap-2">
                                   <button
-                                    onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
+                                    onClick={() =>
+                                      router.push(`/Test-Mode/Dashboard/orderDetails/${e.id}`)
+                                    }
                                     className="cursor-pointer rounded bg-gray-900 p-1 text-xs text-white dark:text-blue-400"
                                   >
                                     تفاصيل
                                   </button>
-                                  <button
-                                    onClick={() => deletOrder(e.id)}
-                                    className="cursor-pointer rounded bg-red-500 p-1 text-xs text-white dark:text-blue-400"
-                                  >
+                                  <button className="cursor-pointer rounded bg-red-500 p-1 text-xs text-white dark:text-blue-400">
                                     حذف
                                   </button>
                                 </div>
@@ -321,7 +358,7 @@ export default function OrderSummaryPage() {
                             الموقع: {e.location}
                           </div>
                           <button
-                            onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
+                            onClick={() => router.push(`/Test-Mode/Dashboard/orderDetails/${e.id}`)}
                             className="mt-2 inline-block w-full rounded-lg bg-gray-950 py-2 text-sm text-white hover:underline dark:text-blue-400"
                           >
                             التفاصيل

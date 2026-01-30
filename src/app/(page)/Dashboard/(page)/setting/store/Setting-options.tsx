@@ -9,7 +9,7 @@ import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline, IoStorefrontOutline } from 'react-icons/io5';
 import { MdOutlineStyle } from 'react-icons/md';
 import { PiShootingStarThin } from 'react-icons/pi';
-import { FaCrown, FaUsersCog } from 'react-icons/fa';
+import { FaCrown, FaShippingFast, FaUsersCog } from 'react-icons/fa';
 
 import PlanCard from '../../../_components/PlanCard';
 import { useSubscriptions } from '../../../context/useSubscription';
@@ -22,11 +22,11 @@ interface Section {
   id: SectionType;
   label: string;
   icon: ElementType;
+  allowedPlans?: PlanType[];
 }
 
 interface SectionGroup {
   title: string;
-  plan?: PlanType;
   sections: Section[];
 }
 
@@ -42,26 +42,34 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
   const { traderBasic, traderPro, dropBasic, dropPro, hasAccess } = useSubscriptions();
 
   const planNames: Record<PlanType, string> = {
-    'trader-basic': traderBasic?.name || 'Trader Basic',
-    'trader-pro': traderPro?.name || 'Trader Pro',
-    'drop-basics': dropBasic?.name || 'Drop Basics',
-    'drop-pro': dropPro?.name || 'Drop Pro',
+    'free-trial': 'الخطة المجانية',
     'multi-basics': 'الباقة الأساسية',
     'multi-pro': 'الباقة الاحترافية',
     'multi-drop': 'خطة الدروب شيبر',
     'multi-trader': 'خطة التاجر',
-    'free-trial': 'الخطة المجانية',
+    'trader-basic': traderBasic?.name || 'Trader Basic',
+    'trader-pro': traderPro?.name || 'Trader Pro',
+    'drop-basics': dropBasic?.name || 'Drop Basics',
+    'drop-pro': dropPro?.name || 'Drop Pro',
   };
 
   const sectionGroups: SectionGroup[] = [
     {
       title: 'الإعدادات الأساسية',
       sections: [
-        { id: 'basic', label: 'الإعدادات الأساسية', icon: LuUserRoundPen },
-        { id: 'shipping', label: 'إعدادات التوصيل', icon: LiaShippingFastSolid },
+        {
+          id: 'basic',
+          label: 'الإعدادات العامة للمتجر',
+          icon: LuUserRoundPen,
+        },
+        {
+          id: 'shipping',
+          label: 'إعدادات الشحن والتوصيل',
+          icon: LiaShippingFastSolid,
+        },
         {
           id: 'social',
-          label: 'الروابط ووسائل التواصل',
+          label: 'روابط ووسائل التواصل',
           icon: IoShareSocialOutline,
         },
       ],
@@ -69,108 +77,122 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
 
     {
       title: 'إدارة المتجر',
-      plan: 'multi-basics',
       sections: [
         {
+          id: 'theme',
+          label: 'تخصيص القالب والمظهر',
+          icon: MdOutlineStyle,
+          allowedPlans: ['drop-basics', 'trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
+        },
+        {
           id: 'users',
-          label: 'إضافة حساب آخر للمتجر',
+          label: 'إضافة مستخدم لإدارة المتجر',
           icon: FaUsersCog,
+          allowedPlans: ['drop-pro', 'trader-pro'],
         },
         {
           id: 'create-another',
-          label: 'إنشاء متجر آخر',
+          label: 'إنشاء متجر إضافي',
           icon: IoStorefrontOutline,
-        },
-        {
-          id: 'theme',
-          label: 'إعدادات القالب والمظهر',
-          icon: MdOutlineStyle,
+          allowedPlans: ['drop-pro'],
         },
       ],
     },
 
     {
-      title: 'ميزات احترافية',
-      plan: 'multi-pro',
+      title: 'ميزات النمو والاحتراف',
       sections: [
         {
           id: 'pixel',
-          label: 'البيكسل والتتبع',
+          label: 'البيكسل والتتبع الإعلاني',
           icon: PiShootingStarThin,
+          allowedPlans: ['trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
         },
         {
-          id: 'withdraw',
-          label: 'سحب الأرباح',
-          icon: DollarSign,
+          id: 'c-shipping',
+          label: 'الربط مع شركة التوصيل',
+          icon: FaShippingFast,
+          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro'],
         },
       ],
     },
   ];
 
+  const canAccessSection = (allowedPlans?: PlanType[]) => {
+    if (!allowedPlans) return true;
+    return allowedPlans.some(plan => hasAccess(plan));
+  };
+
+  const requiredPlanLabel = (allowedPlans?: PlanType[]) => {
+    if (!allowedPlans || allowedPlans.length === 0) return '';
+    return `يتطلب ${planNames[allowedPlans[0]]}`;
+  };
+
   return (
-    <div className="scrollbar-none flex h-screen w-full flex-col items-center overflow-y-scroll py-3">
+    <div className="scrollbar-none flex h-screen w-full flex-col items-center overflow-y-scroll py-4">
       <div dir="rtl" className="w-full max-w-xl">
         <PlanCard />
       </div>
 
       <div className="mt-6 w-full max-w-xl space-y-6">
-        {sectionGroups.map(group => {
-          const allowedGroup = group.plan ? hasAccess(group.plan) : true;
-          const badgeLabel = group.plan ? `متاح ${planNames[group.plan]}` : '';
+        {sectionGroups.map(group => (
+          <div key={group.title} className="overflow-hidden rounded-xl border bg-white">
+            <div className="bg-gray-100 px-5 py-3 text-sm font-medium text-gray-700">
+              {group.title}
+            </div>
 
-          return (
-            <div key={group.title} className="overflow-hidden rounded-lg border bg-white">
-              <div className="flex items-center justify-between bg-gray-100 px-5 py-3 text-sm font-medium text-gray-700">
-                <span>{group.title}</span>
+            {group.sections.map(section => {
+              const allowed = canAccessSection(section.allowedPlans);
+              const isActive = activeSection === section.id;
 
-                {!allowedGroup && (
-                  <div className="flex items-center gap-2 text-xs text-orange-500">
-                    <FaCrown size={14} />
-                    <span>{badgeLabel}</span>
-                  </div>
-                )}
-              </div>
-
-              {group.sections.map(({ id, label, icon: Icon }) => {
-                const isActive = activeSection === id;
-
-                return (
-                  <button
-                    key={id}
-                    disabled={!allowedGroup}
-                    onClick={() => allowedGroup && onSectionChange(id)}
-                    className={`flex w-full items-center justify-between px-5 py-4 text-sm transition-all ${
-                      !allowedGroup
-                        ? 'cursor-not-allowed bg-gray-50 text-gray-400'
-                        : isActive
-                          ? 'bg-gray-50 font-medium text-gray-900'
-                          : 'text-gray-700 hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                          allowedGroup ? 'bg-sky-700' : 'bg-gray-300'
-                        }`}
-                      >
-                        <Icon size={18} className="text-white" />
-                      </div>
-
-                      <span>{label}</span>
+              return (
+                <button
+                  key={section.id}
+                  disabled={!allowed}
+                  onClick={() => allowed && onSectionChange(section.id)}
+                  className={`flex w-full items-center justify-between px-5 py-4 text-sm transition-all ${
+                    !allowed
+                      ? 'cursor-not-allowed bg-gray-50 text-gray-400'
+                      : isActive
+                        ? 'bg-gray-50 font-medium text-gray-900'
+                        : 'text-gray-700 hover:bg-gray-50'
+                  } `}
+                >
+                  <div className="flex items-center gap-3">
+                    <div
+                      className={`flex h-10 w-10 items-center justify-center rounded-lg ${
+                        allowed ? 'bg-sky-700' : 'bg-gray-300'
+                      } `}
+                    >
+                      <section.icon size={18} className="text-white" />
                     </div>
+
+                    <div className="flex flex-col items-start">
+                      <span>{section.label}</span>
+
+                      {!allowed && (
+                        <span className="text-[11px] text-orange-500">
+                          {requiredPlanLabel(section.allowedPlans)}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    {!allowed && <FaCrown size={14} className="text-orange-400" />}
 
                     <ChevronLeft
                       size={18}
-                      className={`transition-transform ${
-                        isActive ? 'translate-x-0.5' : ''
-                      } ${allowedGroup ? 'text-gray-400' : 'text-gray-300'}`}
+                      className={`transition-transform ${isActive ? 'translate-x-0.5' : ''} ${
+                        allowed ? 'text-gray-400' : 'text-gray-300'
+                      }`}
                     />
-                  </button>
-                );
-              })}
-            </div>
-          );
-        })}
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        ))}
       </div>
     </div>
   );

@@ -69,7 +69,6 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
 
     {
       title: 'إدارة المتجر',
-      plan: 'multi-basics',
       sections: [
         {
           id: 'users',
@@ -91,7 +90,6 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
 
     {
       title: 'ميزات احترافية',
-      plan: 'multi-pro',
       sections: [
         {
           id: 'pixel',

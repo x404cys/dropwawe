@@ -10,11 +10,9 @@ import Link from 'next/link';
 
 interface Props {
   product: Product;
-  onEdit: (product: Product) => void;
-  onDelete: (id: string) => void;
 }
 
-export default function ProductRow({ product, onEdit, onDelete }: Props) {
+export default function ProductRow({ product }: Props) {
   const router = useRouter();
 
   return (
@@ -99,7 +97,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
           <Button
             size="sm"
             variant="outline"
-            onClick={() => router.push(`/Dashboard/edit/${product.id}`)}
             className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
             aria-label="تعديل المنتج"
           >
@@ -108,7 +105,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
           <Button
             size="sm"
             variant="destructive"
-            onClick={() => onDelete(product.id)}
             className="hover:bg-destructive/90 transition-all"
             aria-label="حذف المنتج"
           >

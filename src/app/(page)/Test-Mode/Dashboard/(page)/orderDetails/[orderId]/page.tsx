@@ -54,6 +54,44 @@ export type OrderDetails = {
   items: OrderItem[];
   prodcuts: Product[];
 };
+const FAKE_ORDER: OrderDetails = {
+  id: 'ORD-1001',
+  fullName: 'أحمد علي',
+  location: 'بغداد - المنصور',
+  phone: '07701234567',
+  createdAt: new Date().toISOString(),
+  status: 'PENDING',
+  total: 2150000,
+  items: [
+    {
+      id: 'item-1',
+      quantity: 1,
+      price: 950000,
+      size: '44mm',
+      color: '#111827',
+      product: {
+        id: 'p1',
+        name: 'ساعة ذكية – إصدار رياضي',
+        image: '/img-landing-page/9.png',
+        isFromSupplier: false,
+      } as Product,
+    },
+    {
+      id: 'item-2',
+      quantity: 1,
+      price: 1200000,
+      size: '42',
+      color: '#000000',
+      product: {
+        id: 'p2',
+        name: 'حذاء رياضي رجالي',
+        image: '/img-landing-page/10.png',
+        isFromSupplier: false,
+      } as Product,
+    },
+  ],
+  prodcuts: [],
+};
 
 export default function OrderDetailsPage() {
   const params = useParams();
@@ -102,43 +140,20 @@ export default function OrderDetailsPage() {
     },
   };
 
-  const handleDelete = async () => {
-    try {
-      const res = await fetch(`/api/orders/option/${orderId}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      toast.success('تم إلغاء الطلب بنجاح');
-      router.back();
-    } catch {
-      toast.error('حدث خطأ أثناء إلغاء الطلب');
-    }
-  };
-
-  const handleAccept = async () => {
-    try {
-      const res = await fetch(`/api/orders/option/update/${orderId}`, { method: 'PATCH' });
-      if (!res.ok) throw new Error();
-      toast.success('تم تأكيد الطلب بنجاح');
-      router.back();
-    } catch {
-      toast.error('حدث خطأ أثناء التأكيد');
-    }
-  };
-
   useEffect(() => {
     if (!orderId) return;
-    const fetchOrder = async () => {
-      try {
-        const res = await fetch(`/api/orders/details/${orderId}`, { credentials: 'include' });
-        if (!res.ok) throw new Error();
-        const data: OrderDetails = await res.json();
-        setOrder(data);
-      } catch {
-        console.error('فشل في جلب بيانات الطلب');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchOrder();
+
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      setOrder({
+        ...FAKE_ORDER,
+        id: orderId,
+      });
+      setLoading(false);
+    }, 700);
+
+    return () => clearTimeout(timer);
   }, [orderId]);
 
   if (loading) {
@@ -409,19 +424,11 @@ export default function OrderDetailsPage() {
           </div>
 
           <DialogFooter className="flex flex-col flex-wrap gap-4">
-            <Button
-              variant={'outline'}
-              onClick={handleAccept}
-              className="flex-1 border border-black"
-            >
+            <Button variant={'outline'} className="flex-1 border border-black">
               <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
               تأكيد الطلب ,والتوصيل ذاتي
             </Button>
-            <Button
-              variant={'ghost'}
-              onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
-              className="flex-1 border border-black"
-            >
+            <Button variant={'ghost'} className="flex-1 border border-black">
               <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
               التوصيل مع الوسيط
             </Button>
@@ -462,7 +469,7 @@ export default function OrderDetailsPage() {
             <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1">
               رجوع
             </Button>
-            <Button variant="destructive" onClick={handleDelete} className="flex-1">
+            <Button variant="destructive" className="flex-1">
               <XCircle className="ml-2 h-4 w-4" />
               نعم، إلغاء الطلب
             </Button>

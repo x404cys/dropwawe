@@ -2,7 +2,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody } from '@/components/ui/table';
 import { useSession } from 'next-auth/react';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useProducts } from '../_hooks/useProducts';
 import Loader from '@/components/Loader';
 import ProductRow from './ProductRow';
@@ -11,23 +11,67 @@ import EditProductRow from './EditProductRow';
 import { Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useDashboardData } from '../../../context/useDashboardData';
-import {
-  Boxes,
-  ChevronDown,
-  Package,
-  Search,
-  ShoppingBag,
-  Truck,
-} from 'lucide-react';
+import { Boxes, ChevronDown, Package, Search, ShoppingBag, Truck } from 'lucide-react';
 import { LuPackagePlus } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
+const FAKE_PRODUCTS: Product[] = [
+  {
+    id: 'p1',
+    name: 'ساعة ذكية – إصدار رياضي',
+    price: 950000,
+    quantity: 12,
+    description: 'ساعة ذكية مقاومة للماء مع تتبع النشاط والنبض',
+    category: 'ساعات',
+    shippingType: 'COURIER',
+    hasReturnPolicy: 'لا يوجد',
+    discount: 10,
+    image: '/img-landing-page/9.png',
+  },
+  {
+    id: 'p2',
+    name: 'ساعة كلاسيك جلد',
+    price: 780000,
+    quantity: 8,
+    description: 'ساعة أنالوك بتصميم كلاسيكي فاخر',
+    category: 'ساعات',
+    shippingType: 'COURIER',
+    hasReturnPolicy: 'لا يوجد',
+    discount: 10,
+    image: '/img-landing-page/9.png',
+  },
+  {
+    id: 'p3',
+    name: 'حذاء رياضي رجالي',
+    price: 1200000,
+    quantity: 15,
+    description: 'شوز رياضي مريح مناسب للجري والاستخدام اليومي',
+    category: 'أحذية',
+    shippingType: 'COURIER',
+    hasReturnPolicy: 'لا يوجد',
+    discount: 10,
+    image: '/img-landing-page/10.png',
+  },
+  {
+    id: 'p4',
+    name: 'حذاء رياضي نسائي',
+    price: 1100000,
+    quantity: 10,
+    description: 'تصميم خفيف مع دعم كامل للقدم',
+    category: 'أحذية',
+    shippingType: 'COURIER',
+    hasReturnPolicy: 'لا يوجد',
+    discount: 10,
+    image: '/img-landing-page/10.png',
+  },
+];
 
 export default function ProductTable() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
-  const { products, setProducts, loading } = useProducts(session?.user?.id);
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<
@@ -36,7 +80,18 @@ export default function ProductTable() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
-  
+  const saveEdit = () => {};
+  useEffect(() => {
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      setProducts(FAKE_PRODUCTS);
+      setLoading(false);
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, []);
+
   const startEditing = (product: Product) => {
     setEditingId(product.id);
     setEditData({ ...product, imagePreview: product.image });
@@ -46,39 +101,6 @@ export default function ProductTable() {
     setShowEditDialog(false);
     setEditingId(null);
     setEditData({});
-  };
-
-  const deleteProduct = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
-    try {
-      const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error();
-      setProducts(products.filter(p => p.id !== id));
-    } catch {
-      toast.success('فشل في حذف المنتج');
-    }
-  };
-
-  const saveEdit = async () => {
-    if (!editingId || !editData.name || !editData.price || !editData.quantity) {
-      toast.success('يرجى ملء جميع الحقول');
-      return;
-    }
-    try {
-      const formData = new FormData();
-      formData.append('name', editData.name);
-      formData.append('price', editData.price.toString());
-      formData.append('quantity', editData.quantity.toString());
-      if (editData.imageFile) formData.append('image', editData.imageFile);
-
-      const res = await fetch(`/api/products/${editingId}`, { method: 'PUT', body: formData });
-      if (!res.ok) throw new Error();
-      const updated = await res.json();
-      setProducts(products.map(p => (p.id === editingId ? updated : p)));
-      closeEditDialog();
-    } catch {
-      toast.success('فشل في تحديث المنتج');
-    }
   };
 
   const categories = useMemo(() => {
@@ -239,12 +261,7 @@ export default function ProductTable() {
                     </TableRow>
                   ) : (
                     filteredProducts.map(product => (
-                      <ProductRow
-                        key={product.id}
-                        product={product}
-                        onEdit={startEditing}
-                        onDelete={deleteProduct}
-                      />
+                      <ProductRow key={product.id} product={product} />
                     ))
                   )}
                 </TableBody>

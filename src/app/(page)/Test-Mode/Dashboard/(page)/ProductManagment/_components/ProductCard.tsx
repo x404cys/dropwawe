@@ -44,11 +44,7 @@ export default function ProductCard({ product, onEdit }: Props) {
           <p className="text-primary font-bold">السعر: {product.price} د.ع</p>
         </div>
       </div>
-      <Button
-        className="h-8 w-15 bg-gray-900 text-sm text-white"
-        variant="outline"
-        onClick={() => router.push(`/Dashboard/edit/${product.id}`)}
-      >
+      <Button className="h-8 w-15 bg-gray-900 text-sm text-white" variant="outline">
         <MdOutlineModeEditOutline />
       </Button>
     </div>

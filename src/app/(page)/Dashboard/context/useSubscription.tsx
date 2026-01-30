@@ -83,6 +83,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       traderPro: getPlanByType(sorted, 'trader-pro'),
       dropBasic: getPlanByType(sorted, 'drop-basics'),
       dropPro: getPlanByType(sorted, 'drop-pro'),
+      multi: getPlanByType(sorted, 'multi-pro'),
       free: getPlanByType(sorted, 'free-trial'),
       userPlanType,
 

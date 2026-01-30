@@ -23,6 +23,7 @@ import { CiBookmarkCheck } from 'react-icons/ci';
 import { IoMdCheckmark } from 'react-icons/io';
 import { MdOutlinePayments } from 'react-icons/md';
 import CreateInviteButton from '../../../_components/CreateInviteButton';
+import CShippingSection from './(page)/c-shipping-section/c-shipping-section';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -47,7 +48,7 @@ export default function StoreSetupPage() {
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
-  const hiddenButton: string[] = ['users', 'withdraw', 'create-another'];
+  const hiddenButton: string[] = ['users', 'withdraw', 'create-another', 'c-shipping'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   useEffect(() => {
     const fetchInfo = async () => {
@@ -142,7 +143,7 @@ export default function StoreSetupPage() {
         : '/Dashboard/profit';
 
   return (
-    <section dir="rtl" className="mx-auto pb-10 max-w-4xl space-y-4">
+    <section dir="rtl" className="mx-auto max-w-4xl space-y-4 pb-10">
       {hasErrors && (
         <div className="text-xs text-red-500">لديك أخطاء بالحقول راجع النقاط الحمراء</div>
       )}
@@ -189,7 +190,15 @@ export default function StoreSetupPage() {
                 onShippingPriceChange={setShippingPrice}
               />
             )}
-
+            {activeSection === 'c-shipping' && (
+              <CShippingSection
+                phone={phone}
+                shippingPrice={shippingPrice}
+                fieldErrors={fieldErrors}
+                onPhoneChange={setPhone}
+                onShippingPriceChange={setShippingPrice}
+              />
+            )}
             {activeSection === 'social' && (
               <SocialLinksSection
                 facebookLink={facebookLink}
@@ -207,29 +216,7 @@ export default function StoreSetupPage() {
               </div>
             )}
             {activeSection === 'theme' && <ThemeSection />}
-            {activeSection === 'withdraw' && (
-              <div className="my-12 flex w-full flex-col items-center space-y-8 px-4 sm:px-0">
-                <div>
-                  <span className="inline-flex items-center gap-2 rounded-full border border-sky-200 bg-sky-100 px-4 py-1 text-xs font-medium text-sky-700">
-                    لسحب الأرباح، انتقل إلى صفحة العوائد
-                    <MdOutlinePayments className="h-4 w-4" />
-                  </span>
-                </div>
 
-                <div className="w-full max-w-sm">
-                  <button
-                    onClick={() => router.push(`${path}`)}
-                    className="w-full rounded-xl bg-gradient-to-r from-sky-500 to-sky-600 px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90 sm:text-base"
-                  >
-                    الانتقال إلى صفحة العوائد
-                  </button>
-                </div>
-
-                <p className="text-muted-foreground max-w-xs text-center text-xs sm:text-sm">
-                  يمكنك متابعة أرباحك وسحبها مباشرة من هذه الصفحة، مع سجل كامل لكل العمليات.
-                </p>
-              </div>
-            )}
             {activeSection === 'pixel' && (
               <PixelSection
                 facebookPixel={facebookPixel}

@@ -34,16 +34,24 @@ export async function PATCH(req: Request) {
 
     const subscription = await prisma.userSubscription.findUnique({
       where: { userId: session.user.id },
+      include: {
+        plan: true,
+      },
     });
     if (!subscription) {
       return NextResponse.json({ error: 'Subscription not found for user' }, { status: 404 });
     }
-
     const updated = await prisma.userSubscription.update({
       where: { id: subscription.id },
       data: { isActive: true },
     });
-
+    await prisma.notification.create({
+      data: {
+        userId: session.user.id,
+        message: `تم الاشتراك في الباقة ${subscription.plan.name + '-' + subscription.plan.price + '-' + subscription.plan.type} `,
+        type: 'Sub',
+      },
+    });
     return NextResponse.json({ success: true, subscription: updated });
   } catch (error) {
     console.error('Unexpected PATCH error:', error);
