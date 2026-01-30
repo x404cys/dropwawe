@@ -82,8 +82,11 @@ export const authOperation: AuthOptions = {
 
       return true;
     },
-
     async redirect({ url, baseUrl }) {
+      if (url.startsWith('https://dashboard.matager.store')) {
+        return url;
+      }
+
       if (url.startsWith(baseUrl)) {
         return url;
       }
