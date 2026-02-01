@@ -70,7 +70,7 @@ export default function UserActions() {
   return (
     <div
       dir="ltr"
-      className="mt-2 mb-2 flex items-center justify-between gap-4 bg-white py-2 md:hidden"
+      className="mt-2 mb-2 px-2 flex items-center justify-between gap-4 bg-white py-2 md:hidden"
       ref={dropdownRef}
     >
       <div className="flex items-center justify-start gap-4">

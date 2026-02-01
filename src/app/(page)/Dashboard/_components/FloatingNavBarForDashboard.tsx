@@ -40,10 +40,10 @@ export default function FloatingNavBarForDashboard() {
 
   const baseStyle = 'flex cursor-pointer flex-col items-center justify-center transition';
   const activeStyle = `
-  text-sky-600 font-semibold relative
+  text-sky-400 font-semibold relative
   after:content-[''] after:absolute after:-bottom-1 after:left-1/2
   after:h-[2px] after:w-10 after:-translate-x-1/2
-  after:bg-sky-600 after:rounded-full
+  after:bg-sky-300 after:rounded-full
   transition-all duration-200 ease-out 
 `;
 
@@ -64,7 +64,7 @@ export default function FloatingNavBarForDashboard() {
 
       <div
         dir="rtl"
-        className={`${pathname.includes('/create-store') ? 'hidden' : 'fixed'} bottom-3 left-1/2 z-50 mt-20 -translate-x-1/2`}
+        className={`${pathname.includes('/create-store') ? 'hidden' : 'fixed'} ${pathname.includes('/plans') ? 'hidden' : 'fixed'} bottom-3 left-1/2 z-50 mt-20 -translate-x-1/2 md:hidden`}
       >
         <div className="flex w-72 items-center justify-between rounded-2xl border bg-[#ffffff] px-3 py-2 shadow-xl">
           <button

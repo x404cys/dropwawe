@@ -29,7 +29,7 @@ export default function PlanCard() {
 
   return (
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
-      <div className="rounded-lg bg-gradient-to-b from-sky-600 via-sky-600 to-sky-700 p-5 text-white shadow-md">
+      <div className="rounded-lg bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-300/90 to-80% p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
           {data?.isSubUser === true ? (
             <div className="text-white/90">تم الاشتراك من قبل صاحب المتجر</div>
@@ -75,8 +75,8 @@ export default function PlanCard() {
             onClick={() => router.push('/Dashboard/plans')}
             className="w-full cursor-pointer rounded-lg bg-white text-sky-700 shadow-sm hover:bg-sky-50 hover:text-sky-900"
           >
-            <IoBusinessOutline className="ml-2" />
-            <span>اشترك بالباقة الاحترافية</span>
+            <IoBusinessOutline className="ml-2 text-black" />
+            <span className="text-black">اشترك بالباقة الاحترافية</span>
           </Button>
 
           <Button
@@ -84,7 +84,7 @@ export default function PlanCard() {
             variant="outline"
             className="w-full cursor-pointer rounded-lg border-sky-200 text-sky-700 hover:bg-sky-100"
           >
-            <span>تجديد الاشتراك</span>
+            <span className="text-black">تجديد الاشتراك</span>
           </Button>
         </div>
       </div>

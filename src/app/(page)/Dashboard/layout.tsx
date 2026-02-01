@@ -1,19 +1,22 @@
 import FloatingNavBarForDashboard from './_components/FloatingNavBarForDashboard';
 import UserActions from './_components/UserActions';
-import NavBarForDesktop from './_components/NavBarDesktop';
 import { SubscriptionProvider } from './context/useSubscription';
+import Sidebar from './_components/Sidebar';
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="mb-20 px-2 font-medium md:mx-10">
-      <UserActions />
-      <NavBarForDesktop />
-      <div>
-        <SubscriptionProvider>{children}</SubscriptionProvider>
-      </div>
-      <div className="mt-5 mb-5">
+    <SubscriptionProvider>
+      <section className="min-h-screen font-medium">
+        <UserActions />
+
+        <main className="hidden lg:block">
+          <Sidebar>{children}</Sidebar>
+        </main>
+
+        <div className="block px-2 lg:hidden">{children}</div>
+
         <FloatingNavBarForDashboard />
-      </div>
-    </section>
+      </section>
+    </SubscriptionProvider>
   );
 }

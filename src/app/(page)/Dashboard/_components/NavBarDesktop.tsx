@@ -10,6 +10,10 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { CiSettings } from 'react-icons/ci';
 import { PiHeadset } from 'react-icons/pi';
+import { getDashboardNavItems } from '../_config/dashboardNavItems';
+import { useDashboardData } from '../context/useDashboardData';
+import { Badge } from '@/components/ui/badge';
+import { UserRole } from '@/types/next-auth';
 
 interface Notification {
   id: string;
@@ -19,6 +23,13 @@ interface Notification {
   isRead: boolean;
   orderId: string;
 }
+const roleNames: Record<UserRole, string> = {
+  GUEST: 'زائر',
+  SUPPLIER: 'مورد',
+  DROPSHIPPER: 'دروب شيبر',
+  TRADER: 'تاجر',
+  A: 'مدير',
+};
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -28,18 +39,8 @@ export default function NavBarForDesktop() {
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const navItems = [
-    { label: 'الرئيسية', path: '/Dashboard' },
-    { label: 'المنتجات', path: '/Dashboard/ProductManagment' },
-    { label: 'اضافة منتج', path: '/Dashboard/ProductManagment/add-product' },
-    {
-      label: 'الطلبات',
-      path: `${session?.user.role === 'SUPPLIER' ? '/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage' : '/Dashboard/OrderTrackingPage'}`,
-    },
-    { label: 'الموردين', path: '/Dashboard/supplier' },
-    { label: 'المخزن', path: '/Dashboard/products-dropwave' },
-    { label: 'الاعدادات', path: '/Dashboard/setting/store' },
-  ];
+  const { data, loading } = useDashboardData(session?.user.id);
+
   const { data: notifications, mutate } = useSWR<Notification[]>(
     session?.user?.id ? `/api/notifications?userId=${session.user.id}` : null,
     fetcher
@@ -74,47 +75,61 @@ export default function NavBarForDesktop() {
 
   return (
     <div
-      dir="rtl"
+      dir="ltr"
       ref={dropdownRef}
       className="z-50 mb-2 hidden w-full items-center justify-between border-b bg-white px-6 py-3 md:flex"
     >
-      <div className="flex items-center gap-8">
-        <Link href="/">
-          <div className="flex cursor-pointer items-center gap-1">
-            <Image
-              src="/Logo-Matager/Matager-logo2.PNG"
-              alt="Matager - متاجر"
-              width={40}
-              height={40}
-              className="rounded-2xl"
-            />
-            <h1 className="text-xl font-bold text-gray-900">Matager</h1>
-          </div>
-        </Link>
-
-        <nav className="hidden gap-6 text-gray-700 font-stretch-90% lg:flex">
-          {navItems.map((item, idx) => (
-            <Link
-              key={idx}
-              href={item.path}
-              className="transition-colors duration-200 hover:text-gray-300"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-      </div>
-
       <div className="flex items-center gap-6">
+        <div dir="rtl" className="relative">
+          <button
+            onClick={() => {
+              setOpenUserMenu(!openUserMenu);
+              setOpenNotifications(false);
+            }}
+            className="flex items-center gap-2 rounded-full p-1 transition hover:bg-gray-100"
+          >
+            <div className="flex flex-col text-end">
+              <span className="hidden text-xs font-medium text-gray-900 sm:block">
+                {session.user.name?.split(' ')[0]}
+              </span>
+              <span className="hidden text-xs font-medium text-gray-900 sm:block">
+                {session.user.email?.split(' ')[0]}
+              </span>
+            </div>
+            <Image
+              src={session.user.image as string}
+              alt={session.user.name as string}
+              width={38}
+              height={38}
+              className="rounded-xl object-cover"
+            />
+          </button>
+
+          {openUserMenu && (
+            <div className="absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg">
+              <ul className="flex flex-col p-2 text-sm text-gray-700">
+                <li>
+                  <button className="w-full rounded px-4 py-2 text-right transition hover:bg-gray-100">
+                    الملف الشخصي
+                  </button>
+                </li>
+                <hr className="my-1 border-gray-200" />
+                <li>
+                  <SignOutGoogle />
+                </li>
+              </ul>
+            </div>
+          )}
+        </div>
         <div className="relative">
           <button
             onClick={() => {
               setOpenNotifications(!openNotifications);
               setOpenUserMenu(false);
             }}
-            className="relative cursor-pointer rounded-lg border bg-gray-100 p-2 transition hover:bg-gray-200"
+            className="relative cursor-pointer rounded-lg  bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 text-white p-2 transition hover:bg-gray-200"
           >
-            <MdOutlineNotificationsNone className="text-xl text-gray-800" />
+            <MdOutlineNotificationsNone className="text-xl text-white" />
             {unreadNotifications && unreadNotifications.length > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                 {unreadNotifications.length}
@@ -159,48 +174,6 @@ export default function NavBarForDesktop() {
                   ))}
                 </ul>
               )}
-            </div>
-          )}
-        </div>
-
-        <div className="relative">
-          <button
-            onClick={() => {
-              setOpenUserMenu(!openUserMenu);
-              setOpenNotifications(false);
-            }}
-            className="flex items-center gap-2 rounded-full p-1 transition hover:bg-gray-100"
-          >
-            <div className="flex flex-col text-end">
-              <span className="hidden text-xs font-medium text-gray-900 sm:block">
-                {session.user.name?.split(' ')[0]}
-              </span>
-              <span className="hidden text-xs font-medium text-gray-900 sm:block">
-                {session.user.email?.split(' ')[0]}
-              </span>
-            </div>
-            <Image
-              src={session.user.image as string}
-              alt={session.user.name as string}
-              width={38}
-              height={38}
-              className="rounded-xl object-cover"
-            />
-          </button>
-
-          {openUserMenu && (
-            <div className="absolute left-0 z-50 mt-2 w-48 rounded-lg border bg-white shadow-lg">
-              <ul className="flex flex-col p-2 text-sm text-gray-700">
-                <li>
-                  <button className="w-full rounded px-4 py-2 text-right transition hover:bg-gray-100">
-                    الملف الشخصي
-                  </button>
-                </li>
-                <hr className="my-1 border-gray-200" />
-                <li>
-                  <SignOutGoogle />
-                </li>
-              </ul>
             </div>
           )}
         </div>
