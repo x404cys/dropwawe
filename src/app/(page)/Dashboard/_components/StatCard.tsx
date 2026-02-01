@@ -47,10 +47,10 @@ export default function StatCard({
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="group">
-      <div className="bg-gradient-to-l from-sky-300/80 from-5% via-sky-300/80 via-60% to-sky-200/90 to-80% rounded-2xl pt-1" >
+      <div className="rounded-2xl bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-200/90 to-80% pt-1">
         <div className="relative overflow-hidden rounded-2xl border bg-white p-6 transition-all duration-200 hover:border-gray-300/80 hover:shadow-md">
           <div className="mb-4 flex items-start justify-between">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%">
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-300/90 to-80%">
               <div className="text-white">{icon}</div>
             </div>
 

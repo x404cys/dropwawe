@@ -58,7 +58,7 @@ export default function Dashboard() {
       variant: 'black',
     },
     {
-      title: 'العوائد$',
+      title: 'العوائد',
       value: `${formatIQD(data.profit)}`,
       icon: <DollarSign size={18} />,
       desc: '+0.09%',
