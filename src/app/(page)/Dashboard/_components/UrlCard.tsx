@@ -31,7 +31,7 @@ export default function UrlCard({ storeUrl, copyToClipboard, storeName, theme }:
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="w-full rounded-lg border bg-white px-4 py-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/60"
+      className="w-full rounded-lg border border-gray-200 bg-white px-4 py-4 transition-all duration-300 hover:shadow-lg hover:shadow-gray-200/60"
     >
       <div className="mb-2 flex items-center justify-between gap-2 py-1 font-bold text-gray-800">
         <RiLinksFill size={35} className="rounded-md border p-1" />

@@ -85,10 +85,10 @@ export default function Dashboard() {
   };
 
   return (
-    <section className='bg-[#F8F8F8]'>
+    <section className="bg-[#F8F8F8]">
       <div dir="rtl" className="flex min-h-screen flex-col">
-        <main className="flex-1 space-y-4 py-1">
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+        <main className="flex-1 space-y-2">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
             {stats.map((item, idx) => (
               <StatCard key={idx} {...item} />
             ))}
