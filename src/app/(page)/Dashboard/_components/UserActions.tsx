@@ -75,13 +75,13 @@ export default function UserActions() {
     >
       <div className="flex items-center justify-start gap-4">
         <div
-          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-white"
+          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%"
           onClick={() => {
             setOpenNotifications(!openNotifications);
             setOpenUserMenu(false);
           }}
         >
-          <MdOutlineNotificationsNone className="text-2xl text-gray-950" />
+          <MdOutlineNotificationsNone className="text-2xl text-sky-700" />
 
           {unreadNotifications && unreadNotifications.length > 0 && (
             <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
