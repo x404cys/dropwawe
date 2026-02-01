@@ -77,7 +77,7 @@ export default function NavBarForDesktop() {
     <div
       dir="ltr"
       ref={dropdownRef}
-      className="z-50 mb-2 hidden w-full items-center justify-between border-b bg-white px-6 py-3 md:flex"
+      className="z-50 mb-2 hidden w-full items-center justify-between border-b bg-[#F8F8F8] px-6 py-3 md:flex"
     >
       <div className="flex items-center gap-6">
         <div dir="rtl" className="relative">
@@ -127,7 +127,7 @@ export default function NavBarForDesktop() {
               setOpenNotifications(!openNotifications);
               setOpenUserMenu(false);
             }}
-            className="relative cursor-pointer rounded-lg  bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 text-white p-2 transition hover:bg-gray-200"
+            className="relative cursor-pointer rounded-lg bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 p-2 text-white transition hover:bg-gray-200"
           >
             <MdOutlineNotificationsNone className="text-xl text-white" />
             {unreadNotifications && unreadNotifications.length > 0 && (

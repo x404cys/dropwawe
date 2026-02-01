@@ -47,26 +47,24 @@ export default function StatCard({
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="group">
-      <div className="rounded-2xl bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-200/90 to-80% pt-1">
-        <div className="relative overflow-hidden rounded-2xl border bg-white p-6 transition-all duration-200 hover:border-gray-300/80 hover:shadow-md">
-          <div className="mb-4 flex items-start justify-between">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-300/90 to-80%">
-              <div className="text-white">{icon}</div>
+      <div className="relative overflow-hidden rounded-2xl border bg-white p-6 transition-all duration-200 hover:border-gray-300/80 hover:shadow-md">
+        <div className="mb-4 flex items-start justify-between">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_2px_rgba(255,255,255,0.8),_0_2px_5px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+            <div className="text-sky-700">{icon}</div>
+          </div>
+
+          {desc && (
+            <div className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
+              {desc}
             </div>
+          )}
+        </div>
 
-            {desc && (
-              <div className="rounded-full bg-gray-100 px-2.5 py-1 text-xs font-medium text-gray-600">
-                {desc}
-              </div>
-            )}
-          </div>
-
-          <div className="space-y-1">
-            <h3 className="text-sm leading-tight font-medium text-gray-500">{title}</h3>
-            <p className="text-2xl font-semibold tracking-tight text-gray-900">
-              {typeof value === 'number' ? value.toLocaleString() : value}
-            </p>
-          </div>
+        <div className="space-y-1">
+          <h3 className="text-sm leading-tight font-medium text-gray-500">{title}</h3>
+          <p className="text-2xl font-semibold tracking-tight text-gray-900">
+            {typeof value === 'number' ? value.toLocaleString() : value}
+          </p>
         </div>
       </div>
     </motion.div>

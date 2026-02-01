@@ -6,10 +6,10 @@ import Sidebar from './_components/Sidebar';
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
     <SubscriptionProvider>
-      <section className="min-h-screen font-medium">
+      <section className="min-h-screen bg-[#F8F8F8] font-medium">
         <UserActions />
 
-        <main className="hidden lg:block">
+        <main className="hidden bg-[#F8F8F8] lg:block">
           <Sidebar>{children}</Sidebar>
         </main>
 

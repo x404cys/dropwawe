@@ -20,8 +20,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const navItems = getDashboardNavItems(session?.user.role);
 
   return (
-    <section dir="rtl" className="hidden min-h-screen bg-gray-50 md:flex">
-      <aside className="w-72 border-l bg-white">
+    <section dir="rtl" className="hidden min-h-screen bg-[#F8F8F8] md:flex">
+      <aside className="w-72 border-l  bg-[#F8F8F8]">
         <div className="flex items-center gap-8 p-4">
           <Link href="/">
             <div className="flex cursor-pointer items-center gap-1">
@@ -40,7 +40,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         <div className="px-6 py-4">
           <p className="text-xs text-gray-400">متجرك</p>
 
-          <div className="mt-1 w-full rounded-lg border bg-white">
+          <div className="mt-1 w-full rounded-lg border  bg-[#F8F8F8]">
             <button className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
               <div className="flex items-center gap-2 px-2 py-1">
                 <PiStorefrontLight className="h-6 w-6" />
