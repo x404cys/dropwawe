@@ -129,7 +129,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
   };
 
   return (
-    <div className="scrollbar-none flex h-screen w-full flex-col items-center overflow-y-scroll py-4">
+    <div className="scrollbar-none flex w-full flex-1 flex-col overflow-y-auto py-4">
       <div dir="rtl" className="w-full max-w-xl">
         <PlanCard />
       </div>

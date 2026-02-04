@@ -56,12 +56,6 @@ export default function FloatingNavBarForDashboard() {
 
   return (
     <>
-      {loading && (
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center space-y-4 bg-white/70 backdrop-blur-sm">
-          <Loader />
-        </div>
-      )}
-
       <div
         dir="rtl"
         className={`${pathname.includes('/create-store') ? 'hidden' : 'fixed'} ${pathname.includes('/plans') ? 'hidden' : 'fixed'} bottom-3 left-1/2 z-50 mt-20 -translate-x-1/2 md:hidden`}

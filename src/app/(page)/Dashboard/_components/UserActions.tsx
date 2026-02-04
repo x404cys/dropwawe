@@ -70,12 +70,12 @@ export default function UserActions() {
   return (
     <div
       dir="ltr"
-      className="mt-2 mb-2 flex items-center justify-between gap-4 bg-[#F8F8F8] px-2 py-2 md:hidden"
+      className="mt-2 mb-2 flex items-center justify-between gap-4 bg-white px-2 py-2 md:hidden"
       ref={dropdownRef}
     >
       <div className="flex items-center justify-start gap-4">
         <div
-          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%"
+          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-gradient-to-l from-sky-300/80 from-5% via-sky-300/80 via-60% to-sky-300/90 to-80%"
           onClick={() => {
             setOpenNotifications(!openNotifications);
             setOpenUserMenu(false);
