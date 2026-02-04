@@ -89,6 +89,17 @@ export default function Footer() {
               >
                 الاسئلة الشائعة
               </a>
+              <Link href="/about" className="footer-a">
+                من نحن
+              </Link>
+
+              <Link href="/privacy-policy" className="footer-a">
+                سياسة الخصوصية
+              </Link>
+
+              <Link href="/terms" className="footer-a">
+                شروط الاستخدام
+              </Link>
             </nav>
           </div>
 
@@ -96,21 +107,21 @@ export default function Footer() {
             <h4 className="mb-4 text-base font-semibold">تواصل معنا</h4>
             <div className="flex flex-col gap-4 md:items-start">
               <a
-                href="mailto:support@dropwave.online"
+                href="mailto:info@matager.app"
                 className="group text-muted-foreground hover:text-foreground flex items-center gap-3"
               >
                 <div className="bg-muted/30 group-hover: flex h-10 w-10 items-center justify-center rounded-lg">
                   <Mail className="h-4 w-4 text-white hover:text-black" />
                 </div>
-                <span className="font-normal text-white">support@dropwave.online</span>
+                <span className="font-normal text-white">info@matager.app</span>
               </a>
 
-              <a href="tel:+1234567890" className="group flex items-center gap-3 text-white">
+              <a href="tel:+9647886923291" className="group flex items-center gap-3 text-white">
                 <div className="bg-muted/30 flex h-10 w-10 items-center justify-center rounded-lg">
                   <Phone className="h-4 w-4" />
                 </div>
                 <span dir="ltr" className="font-normal">
-                  +123 456 7890
+                  +9647886923291
                 </span>
               </a>
             </div>
@@ -119,6 +130,10 @@ export default function Footer() {
         <p className="hidden py-2 text-center text-sm leading-relaxed text-white md:block">
           منصة التجارة الإلكترونية الحديثة التي توفر تجربة تسوق سلسة وآمنة
         </p>
+        <p className="mb-2 text-center text-xs font-normal text-white/80">
+          Matager is a digital services platform operated and owned by Ibrahim Bakr Ubaid – Iraq
+        </p>
+
         <div className="border-border/50 border-t pt-6">
           <p className="text-center text-sm text-white">جميع الحقوق محفوظة لمنصة متاجر 2026 ©</p>
         </div>

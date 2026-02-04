@@ -7,6 +7,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/componen
 import { FaGoogle } from 'react-icons/fa';
 import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,7 +34,7 @@ export default function SignInPage() {
                 className="object-contain"
               />
             </div>
-          </div>  
+          </div>
 
           <CardTitle className="text-3xl font-extrabold text-gray-900 md:text-4xl">
             تسجيل الدخول
@@ -90,12 +91,15 @@ export default function SignInPage() {
           </div>
         </CardContent>
 
-        <CardFooter className="flex justify-center px-8 pb-10 text-center md:px-12">
+        <CardFooter className="flex flex-col justify-center px-8 pb-10 text-center md:px-12">
           <p className="text-xs leading-relaxed text-gray-400">
             بالتسجيل، أنت توافق على شروط الخدمة
             <br />
             وسياسة الخصوصية
           </p>
+          <Link href="/privacy-policy" className="footer-a">
+            سياسة الخصوصية
+          </Link>
         </CardFooter>
       </Card>
     </div>
