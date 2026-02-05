@@ -168,7 +168,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        allowed ? 'bg-sky-700' : 'bg-gray-300'
+                        allowed ? 'bg-[#04BAF6]' : 'bg-gray-300'
                       } `}
                     >
                       <section.icon size={18} className="text-white" />

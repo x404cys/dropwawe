@@ -27,6 +27,7 @@ import { PiContactlessPaymentLight } from 'react-icons/pi';
 import { useProducts } from '@/app/(page)/s/context/products-context';
 import OrderSubmitButton from '../../../../_utils/Order-Submit-Button';
 import OrderSubmitButtonPayment from '../../../../_utils/Order-Submit-Button-Payment';
+import CouponInput from '@/app/(page)/s/_components/Coupons/CouponInput';
 
 export default function OrderSubmi() {
   const {
@@ -206,7 +207,6 @@ export default function OrderSubmi() {
                     </div>
                     <DialogHeader>
                       <div className="space-y-3 text-center">
-                        {' '}
                         <div>تأكيد عملية الدفع</div>
                         <div className="text-xs">
                           يرجى التأكد من تفاصيل الطلب قبل المتابعة إلى صفحة الدفع الإلكتروني، سيتم
@@ -249,7 +249,6 @@ export default function OrderSubmi() {
                         <span className="font-bold text-red-400">{formatIQD(totalAfter)} د.ع</span>
                       </div>
                     </div>
-
                     <DialogFooter className="mt-6 flex flex-col flex-wrap-reverse space-y-3">
                       <Button
                         variant="outline"
@@ -275,6 +274,7 @@ export default function OrderSubmi() {
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
+                <CouponInput cartKey={cartKey} storeId={`${store.id}`} />
 
                 <Button variant="outline" className="w-72 rounded-none hover:bg-gray-100">
                   متابعة التسوق

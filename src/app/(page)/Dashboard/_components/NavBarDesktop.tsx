@@ -127,9 +127,9 @@ export default function NavBarForDesktop() {
               setOpenNotifications(!openNotifications);
               setOpenUserMenu(false);
             }}
-            className="relative cursor-pointer rounded-lg bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% p-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_2px_rgba(255,255,255,0.8),_0_2px_5px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
+            className="relative cursor-pointer rounded-lg bg-[#04BAF6] p-2 text-center font-bold text-sky-900 backdrop-blur-lg transition-all duration-300 hover:scale-105"
           >
-            <MdOutlineNotificationsNone className="text-xl text-sky-700" />
+            <MdOutlineNotificationsNone className="text-xl text-white" />
             {unreadNotifications && unreadNotifications.length > 0 && (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-xs text-white">
                 {unreadNotifications.length}
@@ -181,7 +181,3 @@ export default function NavBarForDesktop() {
     </div>
   );
 }
-
-
-
- 

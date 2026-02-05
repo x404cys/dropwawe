@@ -12,12 +12,18 @@ export async function getStoreFromSubdomain(): Promise<StoreProps> {
 
   if (!store) {
     return {
-      id: 'asdasd',
+      id: 'ali12',
       name: 'Default Store',
       theme: 'MODERN',
       domain: 'example.com',
+      subLink: 'ali12',
     };
   }
 
-  return store as StoreProps;
+  return {
+    id: store.id,
+    name: store.name!,
+    theme: store.theme as 'MODERN' | 'NORMAL',
+    domain: store.subLink!,
+  };
 }

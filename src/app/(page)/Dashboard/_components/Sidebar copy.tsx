@@ -3,15 +3,12 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, CreditCard, Gift, LayoutDashboard, MessageSquare } from 'lucide-react';
 import clsx from 'clsx';
-import NavBarForDesktop from './NavBarDesktop';
-import { getDashboardNavItems } from '../_config/dashboardNavItems';
+ import { getDashboardNavItems } from '../_config/dashboardNavItems';
 import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../context/useDashboardData';
-import { useSubscriptions } from '../context/useSubscription';
-import { IoStorefrontOutline } from 'react-icons/io5';
 import { PiStorefrontLight } from 'react-icons/pi';
+import NavBarForDesktop from './NavBarDesktop';
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

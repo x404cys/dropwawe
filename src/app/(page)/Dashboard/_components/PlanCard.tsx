@@ -29,7 +29,7 @@ export default function PlanCard() {
 
   return (
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
-      <div className="rounded-lg bg-gradient-to-l from-sky-400/80 from-5% via-sky-300/80 via-60% to-sky-300/90 to-80% p-5 text-white shadow-md">
+      <div className="rounded-lg bg-gradient-to-l from-[#04BAF6] from-5% via-[#04BAF6] via-30% to-[#52d4ff] to-80% p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
           {data?.isSubUser === true ? (
             <div className="text-white/90">تم الاشتراك من قبل صاحب المتجر</div>

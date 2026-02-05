@@ -9,7 +9,7 @@ export default function PlanCard() {
 
   return (
     <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
-      <div className="rounded-lg bg-gradient-to-b from-sky-600 via-sky-600 to-sky-700 p-5 text-white shadow-md">
+      <div className="rounded-lg bg-gradient-to-l from-[#04BAF6] from-5% via-[#04BAF6] via-30% to-[#52d4ff] to-80% p-5 text-white shadow-md">
         <div className="flex items-center justify-between">
           <p>باقة تجريبية</p>
           <div className="rounded-md border border-white/20 bg-white/10 p-1 text-white">

@@ -76,7 +76,7 @@ export default function UserActionsFake() {
   return (
     <div
       dir="ltr"
-      className="mt-2 mb-2 flex items-center justify-between gap-4 bg-white py-2 md:hidden"
+      className="mt-2 mb-2 flex items-center justify-between gap-4 bg-white px-3 py-2 md:hidden"
       ref={dropdownRef}
     >
       <div className="relative">

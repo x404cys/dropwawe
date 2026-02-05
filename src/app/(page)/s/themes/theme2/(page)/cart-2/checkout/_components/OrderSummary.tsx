@@ -13,13 +13,14 @@ const OrderSummary = ({ cartKey }: Props) => {
     getTotalPriceAfterDiscountByKey,
     getAllShippingPricesByKey,
     getTotalQuantityByKey,
+    getTotalAfterCoupon,
   } = useCart();
 
   const subtotal = getTotalPriceByKey(cartKey);
   const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
   const shipping = getAllShippingPricesByKey(cartKey);
   const totalQty = getTotalQuantityByKey(cartKey);
-
+  const totalAfterCoupon = getTotalAfterCoupon(cartKey);
   const finalTotal = totalAfterDiscount + shipping;
 
   return (
@@ -46,12 +47,17 @@ const OrderSummary = ({ cartKey }: Props) => {
           <span>الشحن</span>
           <span>{shipping.toFixed(2)}</span>
         </div>
-    
+
         <hr />
 
         <div className="flex justify-between text-lg font-bold">
           <span>الإجمالي</span>
           <span>{finalTotal.toFixed(2)}</span>
+        </div>
+
+        <div className="flex justify-between text-lg font-bold">
+          <span>بعد تطبيق الكوبون </span>
+          <span>{totalAfterCoupon.toFixed(2)}</span>
         </div>
       </div>
 
