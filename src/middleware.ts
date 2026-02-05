@@ -39,7 +39,7 @@ export async function middleware(req: NextRequest) {
         return NextResponse.rewrite(url);
       default:
         if (subdomain !== 'www' && subdomain !== 'sahlapp') {
-          url.pathname = url.pathname.startsWith('/storev2')
+          url.pathname = url.pathname.startsWith('/s')
             ? url.pathname
             : `/storev2${url.pathname}`;
           return NextResponse.rewrite(url);
