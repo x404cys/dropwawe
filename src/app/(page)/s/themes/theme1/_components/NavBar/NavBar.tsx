@@ -1,3 +1,4 @@
+'use client';
 import { useState } from 'react';
 import {
   Search,
@@ -47,17 +48,17 @@ export default function StoreNavBarTheme1() {
   const cartItems = getTotalQuantityByKey(KEY_CART);
   const navLinks: NavLink[] = [
     { name: 'الرئيسية', href: '/', icon: Home },
-    { name: 'المنتجات', href: '/products', icon: Package },
-    { name: 'العروض', href: '/storev2/ofers', icon: Gift },
-    { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
-    { name: 'السلة', href: `/storev2/cart/${store?.id}`, icon: ShoppingBag },
-    { name: 'المفضلة', href: `/storev2/favorits/${store?.id}`, icon: IoHeart },
+    { name: 'المنتجات', href: '/s/themes/theme1/products', icon: Package },
+    { name: 'العروض', href: '/s/themes/theme1/ofers', icon: Gift },
+    { name: 'الخصومات', href: '/s/themes/theme1/discount', icon: Percent },
+    { name: 'السلة', href: `/s/themes/theme1/cart/${store?.id}`, icon: ShoppingBag },
+    { name: 'المفضلة', href: `/s/themes/theme1/favorits/${store?.id}`, icon: IoHeart },
   ];
   const navLinks2: NavLink[] = [
     { name: 'الرئيسية', href: '/', icon: Home },
-    { name: 'المنتجات', href: '/products', icon: Package },
-    { name: 'العروض', href: '/storev2/ofers', icon: Gift },
-    { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
+    { name: 'المنتجات', href: '/s/themes/theme1/products', icon: Package },
+    { name: 'العروض', href: '/s/themes/theme1/ofers', icon: Gift },
+    { name: 'الخصومات', href: '/s/themes/theme1/discount', icon: Percent },
   ];
 
   const filterBycategory = ['الكل', ...categories];
@@ -116,7 +117,7 @@ export default function StoreNavBarTheme1() {
                   {filteredProducts.map(product => (
                     <a
                       key={product.id}
-                      href={`/products/${product.id}`}
+                      href={`/s/themes/theme1/products/${product.id}`}
                       className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-gray-100"
                     >
                       <img
@@ -188,7 +189,7 @@ export default function StoreNavBarTheme1() {
           <div className="hidden items-center gap-4 pl-2 md:flex rtl:space-x-reverse">
             <div className="relative">
               <ShoppingBag
-                onClick={() => router.push(`/storev2/cart/${store?.id}`)}
+                onClick={() => router.push(`/s/themes/theme1/cart/${store?.id}`)}
                 className="relative h-5 w-5 cursor-pointer duration-100 hover:text-rose-300"
               />
               {cartItems > 0 && (
@@ -200,7 +201,7 @@ export default function StoreNavBarTheme1() {
 
             <div className="relative">
               <IoIosHeartEmpty
-                onClick={() => router.push(`/storev2/favorits/${store?.id}`)}
+                onClick={() => router.push(`/s/themes/theme1/favorits/${store?.id}`)}
                 size={22}
                 className="cursor-pointer duration-100 hover:text-rose-300"
               />
@@ -215,7 +216,7 @@ export default function StoreNavBarTheme1() {
           <div className="flex gap-4 md:hidden">
             <div className="relative rounded-full border border-gray-400 p-1">
               <HiOutlineShoppingCart
-                onClick={() => router.push(`/storev2/cart/${store?.id}`)}
+                onClick={() => router.push(`/s/themes/theme1/cart/${store?.id}`)}
                 className="relative h-5 w-5 cursor-pointer text-[#292526] duration-100 hover:text-rose-300"
               />
               {cartItems > 0 && (
@@ -253,7 +254,7 @@ export default function StoreNavBarTheme1() {
         )}
       </div>
 
-      {(pathname === '/storev2' || pathname === '/') && (
+      {(pathname === '/s' || pathname === '/') && (
         <div className="md:hidden">
           <div className="mx-auto flex w-full items-center gap-2">
             <button
@@ -286,7 +287,7 @@ export default function StoreNavBarTheme1() {
                   {filteredProducts.map(product => (
                     <a
                       key={product.id}
-                      href={`/storev2/productOverviews/${product.id}`}
+                      href={`/s/themes/theme1/productOverviews/${product.id}`}
                       className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-gray-100"
                     >
                       <img

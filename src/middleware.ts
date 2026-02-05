@@ -35,13 +35,11 @@ export async function middleware(req: NextRequest) {
           : `/Supplier/Dashboard${url.pathname}`;
         return NextResponse.rewrite(url);
       case 'abdulrqhman':
-        url.pathname = url.pathname.startsWith('/store') ? url.pathname : `/storev2${url.pathname}`;
+        url.pathname = url.pathname.startsWith('/store') ? url.pathname : `/s${url.pathname}`;
         return NextResponse.rewrite(url);
       default:
         if (subdomain !== 'www' && subdomain !== 'sahlapp') {
-          url.pathname = url.pathname.startsWith('/storev2')
-            ? url.pathname
-            : `/storev2${url.pathname}`;
+          url.pathname = url.pathname.startsWith('/s') ? url.pathname : `/s${url.pathname}`;
           return NextResponse.rewrite(url);
         }
         break;

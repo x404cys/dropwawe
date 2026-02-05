@@ -1,32 +1,26 @@
-import { ReactNode } from 'react';
-import Theme1Layout from './theme1/layout';
-import Theme2Layout from './theme2/layout';
-import Theme1HomeView from './theme1/HomeView';
-import Theme1CartView from './theme1/CartView';
-import Theme2HomeView from './theme2/HomeView';
-import Theme2CartView from './theme2/CartView';
+import Theme1Navbar from './theme1/_components/NavBar/NavBar';
+import Theme1Footer from './theme1/_components/NavBar/NavBar';
+import Theme1Home from './theme1/HomeView';
+
+import Theme2Navbar from './theme1/_components/NavBar/NavBar';
+import Theme2Footer from './theme1/_components/NavBar/NavBar';
+import Theme2Home from './theme2/HomeView';
 
 export type ThemeName = 'NORMAL' | 'MODERN';
 
-type ThemeComponents = {
-  Layout: React.ComponentType<{ children: ReactNode }>;
-  HomeView: React.ComponentType<any>;
-  CartView: React.ComponentType<any>;
-};
-
-const THEMES: Record<ThemeName, ThemeComponents> = {
-  MODERN: {
-    Layout: Theme1Layout,
-    HomeView: Theme1HomeView,
-    CartView: Theme1CartView,
-  },
+export const THEMES = {
   NORMAL: {
-    Layout: Theme2Layout,
-    HomeView: Theme2HomeView,
-    CartView: Theme2CartView,
+    Navbar: Theme1Navbar,
+    Footer: Theme1Footer,
+    HomeView: Theme1Home,
+  },
+  MODERN: {
+    Navbar: Theme2Navbar,
+    Footer: Theme2Footer,
+    HomeView: Theme2Home,
   },
 };
 
-export function getTheme(themeName: ThemeName): ThemeComponents {
-  return THEMES[themeName] || THEMES.NORMAL;
+export function getTheme(theme: ThemeName) {
+  return THEMES[theme] ?? THEMES.NORMAL;
 }

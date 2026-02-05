@@ -39,7 +39,7 @@ export default function StoreBottomNav() {
     {
       icon: <TbSmartHome size={25} />,
       path: '/s',
-      activeFn: (pathname: string) => pathname === '/storev2' || pathname === '/',
+      activeFn: (pathname: string) => pathname === '/s' || pathname === '/',
     },
     {
       icon: <IoHeartOutline size={25} />,
@@ -48,13 +48,13 @@ export default function StoreBottomNav() {
     },
     {
       icon: <HiOutlineShoppingCart size={25} />,
-      path: `/storev2/cart/${store?.id}`,
+      path: `/s/themes/theme1/cart/${store?.id}`,
       activeFn: (pathname: string) => pathname.includes('cart'),
       badge: totalQuantity,
     },
     {
       icon: <MdOutlineDiscount size={25} />,
-      path: `/storev2/discount`,
+      path: `/s/themes/theme1/discount`,
       activeFn: (pathname: string) => pathname.includes('discount'),
     },
   ];
