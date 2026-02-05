@@ -1,35 +1,32 @@
 'use client';
 
-import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { FaTrash, FaUser, FaEnvelope, FaPhone } from 'react-icons/fa';
+import { FaUser, FaPhone } from 'react-icons/fa';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
-  DialogTitle,
   DialogTrigger,
   DialogFooter,
 } from '@/components/ui/dialog';
 import { User, Phone, MapPin, Wallet } from 'lucide-react';
 import { v4 as uuidv4 } from 'uuid';
 
-import { useParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { FiShoppingBag } from 'react-icons/fi';
 import { LiaShoppingBagSolid } from 'react-icons/lia';
-import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { MdOutlinePayments } from 'react-icons/md';
 import { toast } from 'sonner';
-import { randomUUID } from 'crypto';
-import OrderSubmitButton from '@/app/(page)/store/_utils/OrderSubmitButton';
-import OrderSubmitButtonPayment from '@/app/(page)/store/_utils/OrderSubmitButtonPayment';
+
 import { PiContactlessPaymentLight } from 'react-icons/pi';
-import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
+import { useProducts } from '@/app/(page)/s/context/products-context';
+import OrderSubmitButton from '../../../../_utils/Order-Submit-Button';
+import OrderSubmitButtonPayment from '../../../../_utils/Order-Submit-Button-Payment';
 
 export default function OrderSubmi() {
   const {

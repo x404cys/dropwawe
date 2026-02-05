@@ -1,40 +1,23 @@
 'use client';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import {
   Search,
-  ShoppingCart,
-  User,
-  Menu,
-  X,
-  FileSpreadsheet,
   ShoppingBag,
-  SearchCheck,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Command } from 'cmdk';
-import { TbFilter } from 'react-icons/tb';
-import { LuShoppingCart } from 'react-icons/lu';
-import { BsList } from 'react-icons/bs';
-import { PiBagLight, PiListBold } from 'react-icons/pi';
+import { PiBagLight } from 'react-icons/pi';
 import { IoIosHeartEmpty } from 'react-icons/io';
-import { CiFilter, CiSearch } from 'react-icons/ci';
+import { CiSearch } from 'react-icons/ci';
 import { usePathname, useRouter } from 'next/navigation';
 import { useCart } from '@/app/lib/context/CartContext';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { AnimatePresence, motion } from 'framer-motion';
 import { IoClose, IoCloseOutline, IoHeart } from 'react-icons/io5';
 import Link from 'next/link';
-import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Home, Package, Gift, Percent } from 'lucide-react';
-import { RiSearchLine } from 'react-icons/ri';
-import { VscSettings } from 'react-icons/vsc';
-import { HiOutlineShoppingCart } from 'react-icons/hi';
-import Image from 'next/image';
-import { GoSearch } from 'react-icons/go';
-import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
-import CartPreviewDialog from '@/app/(page)/store/(page)/cart/CartPreviewDialog';
 import { useProducts } from '../../../context/products-context';
+import CartPreviewDialog from '../(page)/cart-2/CartPreviewDialog';
 interface NavLink {
   name: string;
   href: string;
@@ -68,19 +51,18 @@ export default function NavBarTheme2() {
   const cartItems = getTotalQuantityByKey(KEY_CART);
   const navLinks: NavLink[] = [
     { name: 'الرئيسية', href: '/', icon: Home },
-    { name: 'المنتجات', href: '/products', icon: Package },
-    { name: 'العروض', href: '/storev2/ofers', icon: Gift },
-    { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
-    { name: 'السلة', href: `/storev2/cart/${store?.id}`, icon: ShoppingBag },
-    { name: 'المفضلة', href: `/storev2/favorits/${store?.id}`, icon: IoHeart },
+    { name: 'المنتجات', href: '/s/themes/theme2/products', icon: Package },
+    { name: 'العروض', href: '/s/themes/theme2/ofers', icon: Gift },
+    { name: 'الخصومات', href: '/s/themes/theme2/discount', icon: Percent },
+    { name: 'السلة', href: `/s/themes/theme2/cart/${store?.id}`, icon: ShoppingBag },
+    { name: 'المفضلة', href: `/s/themes/theme2/favorits/${store?.id}`, icon: IoHeart },
   ];
   const navLinks2: NavLink[] = [
     { name: 'الرئيسية', href: '/', icon: Home },
-    { name: 'المنتجات', href: '/products', icon: Package },
-    { name: 'العروض', href: '/storev2/ofers', icon: Gift },
-    { name: 'الخصومات', href: '/storev2/discount', icon: Percent },
+    { name: 'المنتجات', href: '/s/themes/theme2/products', icon: Package },
+    { name: 'العروض', href: '/s/themes/theme2/ofers', icon: Gift },
+    { name: 'الخصومات', href: '/s/themes/theme2/discount', icon: Percent },
   ];
-
   return (
     <>
       <nav
@@ -121,7 +103,7 @@ export default function NavBarTheme2() {
                         {filteredProducts.map(product => (
                           <li key={product.id}>
                             <a
-                              href={`/storev2/product-overview/${product.id}`}
+                              href={`/s/themes/theme2/product-overview/${product.id}`}
                               className="flex items-center gap-3 px-4 py-3 transition hover:bg-gray-50"
                             >
                               <img
@@ -204,7 +186,7 @@ export default function NavBarTheme2() {
                                   {filteredProducts.map(product => (
                                     <li key={product.id}>
                                       <a
-                                        href={`/store/product-overview/${product.id}`}
+                                        href={`/s/themes/theme2/product-overview/${product.id}`}
                                         onClick={() => setSearchOpen(false)}
                                         className="flex items-center gap-3 px-4 py-3"
                                       >

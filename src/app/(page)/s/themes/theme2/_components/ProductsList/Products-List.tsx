@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { Product } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
 
-import ProductCard3 from '@/app/(page)/store/_components/Product-Card/ProductCard';
 import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
 import FacebookPixel from '@/app/(page)/s/context/Pixel/FacebookPixel';
 import GooglePixel from '@/app/(page)/s/context/Pixel/GooglePixel';
+import ProductCard3 from '../Product-Card/ProductCard';
 
 interface ProductsListProps {
   products: Product[];
@@ -53,7 +53,7 @@ export default function ProductsListTheme2({
           description={lastProduct.description as string}
           image={lastProduct.image as string}
           ctaText="اشتري الآن"
-          ctaLink={`/storev2/products/${lastProduct.id}`}
+          ctaLink={`/s/themes/theme2/products/${lastProduct.id}`}
         />
       )}
       <div dir="rtl" className="bg-white px-2">

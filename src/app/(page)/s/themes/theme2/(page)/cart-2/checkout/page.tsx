@@ -3,11 +3,11 @@
 export const dynamic = 'force-dynamic';
 
 import { useCart } from '@/app/lib/context/CartContext';
-import { useProducts } from '../../../Data/context/products/ProductsContext';
 
 import CheckoutItem from './_components/CheckoutItem';
 import OrderSummary from './_components/OrderSummary';
 import OrderSubmi from './_components/OrderSubmit';
+import { useProducts } from '@/app/(page)/s/context/products-context';
 
 const CheckoutPage = () => {
   const { getCartByKey } = useCart();

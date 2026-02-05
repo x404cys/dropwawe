@@ -95,7 +95,7 @@ export default function CartPreviewDialog({ open, onClose, cartKey }: Props) {
                 <button
                   onClick={() => {
                     onClose();
-                    router.push(`/storev2/2/cart/checkout`);
+                    router.push(`/s/themes/theme2/cart-2/checkout`);
                   }}
                   className="w-full bg-black py-2 text-sm font-medium text-white hover:bg-gray-900"
                 >
