@@ -84,7 +84,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// Hook to use products anywhere
 export const useProducts = () => {
   const ctx = useContext(ProductsContext);
   if (!ctx) throw new Error('useProducts must be used within ProductsProvider');

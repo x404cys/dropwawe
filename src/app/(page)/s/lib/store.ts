@@ -19,10 +19,5 @@ export async function getStoreFromSubdomain(): Promise<StoreProps> {
     };
   }
 
-  return {
-    id: store.id,
-    name: store.name!,
-    theme: store.theme as 'MODERN' | 'NORMAL',
-    domain: store.subLink!,
-  };
+  return store as StoreProps;
 }
