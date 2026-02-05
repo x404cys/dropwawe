@@ -23,20 +23,19 @@ interface ProductsContextProps {
 const ProductsContext = createContext<ProductsContextProps | null>(null);
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
-  const store = useStore(); // dynamic store from StoreContext
+  const store = useStore();
 
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setCategory] = useState<string | null>(null);
   const [selectedCategoryList, setCategoryList] = useState<string | null>(null);
   const [search, setSearch] = useState('');
 
-  // 1️⃣ Fetch products once per store.id
   useEffect(() => {
     if (!store?.id) return;
 
     const fetchProducts = async () => {
       try {
-        const res = await axios.get<Product[]>(`/api/storev2/products/${store.id}`);
+        const res = await axios.get<Product[]>(`/api/storev2/products/${store.subLink}`);
         setProducts(res.data);
       } catch (err) {
         console.error('Error fetching products:', err);
@@ -46,10 +45,8 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     fetchProducts();
   }, [store.id]);
 
-  // 2️⃣ Categories list
   const categories = useMemo(() => Array.from(new Set(products.map(p => p.category))), [products]);
 
-  // 3️⃣ Filtered products by search + selectedCategory
   const filteredProducts = useMemo(() => {
     let res = [...products];
     if (selectedCategory) {
@@ -61,7 +58,6 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
     return res;
   }, [products, selectedCategory, search]);
 
-  // 4️⃣ Filtered products by selectedCategoryList
   const filteredProductsByCategory = useMemo(() => {
     if (!selectedCategoryList) return products;
     return products.filter(p => p.category === selectedCategoryList);
