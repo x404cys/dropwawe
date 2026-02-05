@@ -33,6 +33,7 @@ model User {
   stores StoreUser[]
 
   Supplier Supplier[]
+  coupons Coupon[] 
 
   UserSubscription UserSubscription?
   subscriptionHistory SubscriptionHistory[]
@@ -40,6 +41,7 @@ model User {
   traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
   traderProfit    TraderProfit?
   invitesSent Invite[] @relation("InviteOwner")
+  couponUsages CouponUsage[]
 
 
 }
@@ -103,6 +105,9 @@ model Store {
   Notification Notification[]
   invites Invite[]
   Supplier Supplier[]
+
+
+  coupons Coupon[] 
 }                                   
 model StoreUser {
   id        String   @id @default(cuid())
@@ -169,6 +174,7 @@ model Product {
   pricingDetails  ProductPricing?
   orderFromTraderItems OrderFromTraderItem[]
   subInfo         ProductSubInfo?
+  coupons Coupon[] 
 
 
 }
@@ -239,8 +245,15 @@ model Order {
 
   Supplier Supplier[]
 
- 
+
   paymentOrder PaymentOrder?
+  couponId     String?
+  coupon Coupon? @relation(fields: [couponId], references: [id])
+
+  discount     Float?   @default(0)
+
+  finalTotal   Float    @default(0)
+  couponUsages CouponUsage[]
 }
 
 model OrderItem {
@@ -508,4 +521,73 @@ model TraderProfit {
   updatedAt DateTime @updatedAt
 }
 
+model Coupon {
+  id      String @id @default(cuid())
 
+  code    String @unique
+
+
+  scope   CouponScope @default(GLOBAL)
+
+  type    CouponType
+
+  value   Float
+
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  storeId   String?
+  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  productId String?
+  product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+
+  minOrder      Float?
+  maxDiscount   Float?
+  maxUsage      Int?
+  perUser       Int?     
+
+
+  startsAt   DateTime?   @default(now())
+  expiresAt  DateTime?
+
+  isActive   Boolean @default(true)
+
+  usedCount  Int @default(0)
+
+  usages CouponUsage[]
+
+  createdAt DateTime @default(now())
+  orders Order[]
+}
+
+enum CouponScope {
+  GLOBAL
+  STORE
+  PRODUCT
+}
+
+enum CouponType {
+  PERCENTAGE
+  FIXED
+  FREE_SHIPPING
+}
+
+model CouponUsage {
+  id        String @id @default(cuid())
+
+  couponId  String?
+  coupon    Coupon? @relation(fields: [couponId], references: [id])
+
+  userId    String?
+  user      User?  @relation(fields: [userId], references: [id])
+
+  orderId   String?
+  order     Order? @relation(fields: [orderId], references: [id])
+
+  usedAt    DateTime @default(now())
+
+  @@index([couponId])
+  @@index([userId])
+}

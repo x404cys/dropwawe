@@ -7,4 +7,5 @@ export type SectionType =
   | 'withdraw'
   | 'users'
   | 'create-another'
-  | 'c-shipping';
+  | 'c-shipping'
+  | 'Coupon';

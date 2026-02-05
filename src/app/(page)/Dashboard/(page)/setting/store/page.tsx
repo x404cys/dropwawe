@@ -24,6 +24,7 @@ import { IoMdCheckmark } from 'react-icons/io';
 import { MdOutlinePayments } from 'react-icons/md';
 import CreateInviteButton from '../../../_components/CreateInviteButton';
 import CShippingSection from './(page)/c-shipping-section/c-shipping-section';
+import CouponCreatePage from '../../../_utils/Coupon';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
@@ -48,7 +49,7 @@ export default function StoreSetupPage() {
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
-  const hiddenButton: string[] = ['users', 'withdraw', 'create-another', 'c-shipping'];
+  const hiddenButton: string[] = ['users', 'withdraw', 'create-another', 'c-shipping' , 'Coupon'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   useEffect(() => {
     const fetchInfo = async () => {
@@ -180,7 +181,7 @@ export default function StoreSetupPage() {
                 onDescriptionChange={setDescription}
               />
             )}
-
+            {activeSection === 'Coupon' && <CouponCreatePage />}
             {activeSection === 'shipping' && (
               <ShippingSection
                 phone={phone}

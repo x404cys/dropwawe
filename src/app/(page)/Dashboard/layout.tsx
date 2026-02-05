@@ -10,7 +10,7 @@ import UserActions from './_components/UserActions';
 import { SubscriptionProvider } from './context/useSubscription';
 import Sidebar from './_components/Sidebar';
 
-NProgress.configure({ showSpinner: true, trickleSpeed: 200 });
+NProgress.configure({ showSpinner: false, trickleSpeed: 200 });
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

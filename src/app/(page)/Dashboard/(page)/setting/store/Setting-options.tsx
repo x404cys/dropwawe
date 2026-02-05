@@ -17,6 +17,7 @@ import { useDashboardData } from '../../../context/useDashboardData';
 
 import { PlanType } from '@/types/plans/Plans';
 import { SectionType } from '@/types/setting/Section';
+import { BiSolidDiscount } from 'react-icons/bi';
 
 interface Section {
   id: SectionType;
@@ -89,6 +90,12 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
           label: 'إضافة مستخدم لإدارة المتجر',
           icon: FaUsersCog,
           allowedPlans: ['drop-pro', 'trader-pro'],
+        },
+        {
+          id: 'Coupon',
+          label: 'كوبونات',
+          icon: BiSolidDiscount,
+          allowedPlans: ['drop-basics', 'trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
         },
         {
           id: 'create-another',
