@@ -1,4 +1,3 @@
-// ProductCardV2.tsx
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Product } from '@/types/Products';
 import Image from 'next/image';
@@ -13,7 +12,7 @@ export default function ProductCard({ products }: { products: Product[] }) {
           {products.map(product => (
             <Link
               key={product.id}
-              href={`/storev2/productOverviews/${product.id}`}
+              href={`/s/themes/theme1/productOverviews/${product.id}`}
               className="group"
             >
               <Image

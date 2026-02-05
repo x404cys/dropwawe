@@ -1,5 +1,5 @@
 import Theme1Navbar from './theme1/_components/NavBar/NavBar';
-import Theme1Footer from './theme1/_components/NavBar/NavBar';
+import StoreFooter from './theme1/_components/Footer/Footer';
 import Theme1Home from './theme1/HomeView';
 
 import Theme2Navbar from './theme1/_components/NavBar/NavBar';
@@ -11,12 +11,12 @@ export type ThemeName = 'NORMAL' | 'MODERN';
 export const THEMES = {
   NORMAL: {
     Navbar: Theme1Navbar,
-    Footer: Theme1Footer,
+    Footer: StoreFooter,
     HomeView: Theme1Home,
   },
   MODERN: {
     Navbar: Theme2Navbar,
-    Footer: Theme2Footer,
+    Footer: StoreFooter,
     HomeView: Theme2Home,
   },
 };

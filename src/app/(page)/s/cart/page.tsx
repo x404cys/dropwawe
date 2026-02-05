@@ -7,5 +7,5 @@ export default function CartPage() {
   const store = useStore();
   const theme = getTheme(store.theme);
 
-  return <theme.CartView />;
+  return <div />;
 }

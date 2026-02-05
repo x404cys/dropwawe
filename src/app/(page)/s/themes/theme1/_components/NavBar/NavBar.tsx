@@ -117,7 +117,7 @@ export default function StoreNavBarTheme1() {
                   {filteredProducts.map(product => (
                     <a
                       key={product.id}
-                      href={`/s/themes/theme1/products/${product.id}`}
+                      href={`/s/themes/theme1/productOverviews/${product.id}`}
                       className="flex items-center gap-4 px-4 py-3 transition-colors hover:bg-gray-100"
                     >
                       <img
