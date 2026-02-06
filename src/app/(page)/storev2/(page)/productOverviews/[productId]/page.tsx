@@ -253,7 +253,7 @@ export default function ProductPage() {
                   //   return;
                   // }
 
-                  const customProduct = {
+                /*   const customProduct = {
                     ...product,
                     selectedColor,
                     selectedSize,
@@ -268,7 +268,7 @@ export default function ProductPage() {
                     `cart/${store?.id}`,
                     selectedColor,
                     selectedSize
-                  );
+                  ); */
                   toast.success(`تم اضافة ${quantity} الى السلة بنجاح`);
                 }}
                 className="hover-scale h-14 flex-1 cursor-pointer rounded-xl"

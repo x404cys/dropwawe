@@ -254,22 +254,22 @@ export default function ProductPage() {
                     return;
                   }
 
-                  const customProduct = {
-                    ...product,
-                    selectedColor,
-                    selectedSize,
-                    colors: product.colors?.filter(c => c.hex === selectedColor) || [],
-                    sizes: product.sizes?.filter(s => s.size === selectedSize) || [],
-                    shippingPrice: product.user?.Store?.[0]?.shippingPrice?.toString() ?? '',
-                  };
+                  // const customProduct = {
+                  //   ...product,
+                  //   selectedColor,
+                  //   selectedSize,
+                  //   colors: product.colors?.filter(c => c.hex === selectedColor) || [],
+                  //   sizes: product.sizes?.filter(s => s.size === selectedSize) || [],
+                  //   shippingPrice: product.user?.Store?.[0]?.shippingPrice?.toString() ?? '',
+                  // };
 
-                  addToCartWithQtyByKey(
-                    customProduct,
-                    quantity,
-                    `cart/${store?.id}`,
-                    selectedColor,
-                    selectedSize
-                  );
+                  // addToCartWithQtyByKey(
+                  //   customProduct,
+                  //   quantity,
+                  //   `cart/${store?.id}`,
+                  //   selectedColor,
+                  //   selectedSize
+                  // );
                   toast.success(`تم اضافة ${quantity} الى السلة بنجاح`);
                 }}
                 className="hover-scale w-72 flex-1 cursor-pointer rounded-none p-4"

@@ -252,7 +252,7 @@ export default function ProductPage() {
                     toast.warning('الرجاء اختيار اللون قبل الإضافة');
                     return;
                   }
-
+/* 
                   const customProduct = {
                     ...product,
                     selectedColor,
@@ -268,7 +268,7 @@ export default function ProductPage() {
                     `cart/${store?.id}`,
                     selectedColor,
                     selectedSize
-                  );
+                  ); */
                   toast.success(`تم اضافة ${quantity} الى السلة بنجاح`);
                 }}
                 className="hover-scale w-72 flex-1 cursor-pointer rounded-none p-4"
