@@ -12,12 +12,14 @@ import { useDashboardData } from '../context/useDashboardData';
 import { useSubscriptions } from '../context/useSubscription';
 import { IoStorefrontOutline } from 'react-icons/io5';
 import { PiStorefrontLight } from 'react-icons/pi';
+import { useStoreProvider } from '../context/StoreContext';
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
   const { data, loading } = useDashboardData(session?.user.id);
   const navItems = getDashboardNavItems(session?.user.role);
+  const { currentStore, stores, setCurrentStore } = useStoreProvider();
 
   return (
     <section dir="rtl" className="hidden min-h-screen bg-[#F8F8F8] md:flex">
@@ -40,30 +42,30 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         <div className="px-6 py-4">
           <p className="text-xs text-gray-400">متجرك</p>
 
-          <div className="mt-1 w-full rounded-lg border bg-white">
-            <button className="flex w-full items-center justify-between rounded-lg px-3 py-2 text-sm font-medium text-gray-900 hover:bg-gray-50 focus:ring-2 focus:ring-blue-500 focus:outline-none">
-              <div className="flex items-center gap-2 px-2 py-1">
+          <div className="mt-1 w-full rounded-lg border bg-white p-2">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
                 <PiStorefrontLight className="h-6 w-6" />
                 <span className="text-sm font-medium text-gray-900">
-                  {data?.storeSlug?.name ?? 'متجر'}
+                  {currentStore?.name ?? 'متجر'}
                 </span>
               </div>
 
-              <svg
-                className="ml-2 h-4 w-4 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+              <select
+                className="rounded border px-2 py-1 text-xs"
+                value={currentStore?.id ?? ''}
+                onChange={e => {
+                  const selected = stores.find(s => s.id === e.target.value);
+                  if (selected) setCurrentStore(selected);
+                }}
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 9l-7 7-7-7"
-                />
-              </svg>
-            </button>
+                {stores.map(store => (
+                  <option key={store.id} value={store.id}>
+                    {store.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
