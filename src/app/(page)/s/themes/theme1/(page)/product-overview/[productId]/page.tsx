@@ -253,13 +253,15 @@ export default function ProductPage() {
                     return;
                   }
 
+                 
                   const customProduct = {
                     ...product,
                     selectedColor,
                     selectedSize,
                     colors: product.colors?.filter(c => c.hex === selectedColor) || [],
                     sizes: product.sizes?.filter(s => s.size === selectedSize) || [],
-                    shippingPrice: product.user?.Store?.[0]?.shippingPrice?.toString() ?? '',
+                    shippingPrice:
+                      product.user?.stores?.[0]?.store?.shippingPrice?.toString() ?? '',
                   };
 
                   addToCartWithQtyByKey(
