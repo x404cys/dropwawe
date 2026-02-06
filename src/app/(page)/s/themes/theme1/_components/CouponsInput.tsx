@@ -8,7 +8,7 @@ type Props = {
   storeId: string;
 };
 
-export default function CouponInput({ cartKey, storeId }: Props) {
+export default function CouponInputTheme1({ cartKey, storeId }: Props) {
   const { applyCoupon, coupon } = useCart();
   const [code, setCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -37,14 +37,14 @@ export default function CouponInput({ cartKey, storeId }: Props) {
   };
 
   return (
-    <div className="w-72 border bg-white p-4 font-light">
+    <div className="w-full rounded-lg border bg-white px-4 py-3 font-light">
       {!showInput ? (
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex items-center justify-between gap-2 rounded-lg">
           <p className="text-sm font-medium text-gray-700">هل لديك قسيمة (كوبون)؟</p>
           <div className="flex gap-2">
             <button
               onClick={() => setShowInput(true)}
-              className="bg-primary px-4 py-2 text-sm text-white hover:opacity-90"
+              className="bg-primary rounded-lg px-4 py-2 text-sm text-white hover:opacity-90"
             >
               نعم
             </button>
@@ -52,20 +52,22 @@ export default function CouponInput({ cartKey, storeId }: Props) {
         </div>
       ) : (
         <div className="flex flex-col gap-2">
-          <label className="mb-2 block text-sm font-medium text-gray-700">كود الخصم</label>
+          <label className="mb-2 block rounded-lg text-sm font-medium text-gray-700">
+            كود الخصم
+          </label>
 
           <div className="flex flex-col gap-2">
             <input
               value={code}
               onChange={e => setCode(e.target.value.toUpperCase())}
               placeholder="SAVE10"
-              className="focus:ring-primary flex-1 border px-3 py-2 text-sm outline-none focus:ring-2"
+              className="focus:ring-primary flex-1 rounded-lg border px-3 py-2 text-sm outline-none focus:ring-2"
             />
 
             <button
               onClick={handleApply}
               disabled={loading}
-              className="bg-primary px-4 py-2 text-sm text-white transition hover:opacity-90 disabled:opacity-50"
+              className="bg-primary rounded-lg px-4 py-2 text-sm text-white transition hover:opacity-90 disabled:opacity-50"
             >
               {loading ? '...' : 'تطبيق'}
             </button>

@@ -1,7 +1,10 @@
 'use client';
 
-import { useCart } from '@/app/lib/context/CartContext';
 import React from 'react';
+import CouponInput from '@/app/(page)/s/_components/Coupons/CouponInput';
+import { useCart } from '@/app/lib/context/CartContext';
+import { useProducts } from '@/app/(page)/s/context/products-context';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 type Props = {
   cartKey: string;
@@ -16,15 +19,18 @@ const OrderSummary = ({ cartKey }: Props) => {
     getTotalAfterCoupon,
   } = useCart();
 
+  const { store } = useProducts();
+
   const subtotal = getTotalPriceByKey(cartKey);
   const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
   const shipping = getAllShippingPricesByKey(cartKey);
   const totalQty = getTotalQuantityByKey(cartKey);
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
-  const finalTotal = totalAfterDiscount + shipping;
+
+  const finalTotal = totalAfterCoupon + shipping;
 
   return (
-    <div className="sticky top-6 border p-6 font-light">
+    <div className="sticky top-6 rounded-md border bg-white p-6 font-light shadow-md">
       <h2 className="mb-4 text-lg font-semibold">ملخص الطلب</h2>
 
       <div className="space-y-2 text-sm">
@@ -35,35 +41,37 @@ const OrderSummary = ({ cartKey }: Props) => {
 
         <div className="flex justify-between">
           <span>المجموع</span>
-          <span>{subtotal.toFixed(2)}</span>
+          <span>{formatIQD(subtotal)}</span>
         </div>
 
-        <div className="flex justify-between text-red-400">
+        <div className="flex justify-between text-red-500">
           <span>بعد الخصم</span>
-          <span>{totalAfterDiscount.toFixed(2)}</span>
+          <span>{formatIQD(totalAfterDiscount)}</span>
         </div>
 
         <div className="flex justify-between">
           <span>الشحن</span>
-          <span>{shipping.toFixed(2)}</span>
+          <span>{formatIQD(shipping)}</span>
         </div>
 
-        <hr />
-
-        <div className="flex justify-between text-lg font-bold">
-          <span>الإجمالي</span>
-          <span>{finalTotal.toFixed(2)}</span>
+        <div className="flex justify-between text-blue-700">
+          <span>بعد تطبيق الكوبون</span>
+          <span>{formatIQD(totalAfterCoupon)}</span>
         </div>
 
+        <hr className="my-2" />
+
         <div className="flex justify-between text-lg font-bold">
-          <span>بعد تطبيق الكوبون </span>
-          <span>{totalAfterCoupon.toFixed(2)}</span>
+          <span>الإجمالي النهائي</span>
+          <span>{formatIQD(finalTotal)}</span>
         </div>
       </div>
 
-      <div className="flex justify-center">
+      <div className="mt-4 flex flex-col items-center">
+        <CouponInput cartKey={cartKey} storeId={store?.id ?? ''} />
+
         <button
-          className="mt-6 w-72 cursor-pointer bg-black py-3 text-white transition hover:opacity-90"
+          className="mt-6 w-full max-w-[280px] rounded-none bg-black py-3 text-white transition hover:opacity-90"
           onClick={() => {
             const checkoutSection = document.getElementById('checkout-section');
             if (checkoutSection) {

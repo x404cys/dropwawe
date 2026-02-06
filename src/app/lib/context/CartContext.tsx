@@ -19,6 +19,7 @@ type CartContextType = {
     keyName: string,
     selectedColor?: string,
     selectedSize?: string
+    
   ) => void;
   removeFromCartByKey: (id: string, keyName: string) => void;
   decreaseQuantityByKey: (id: string, keyName: string) => void;
@@ -127,7 +128,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getAllShippingPricesByKey = (keyName: string): number => {
     const items = getCartByKey(keyName);
     const prices = items
-      .map(item => item.user?.Store?.[0]?.shippingPrice)
+      .map(item => item.user?.stores?.[0]?.store.shippingPrice)
       .filter(p => p !== undefined && p !== null) as number[];
 
     if (prices.length === 0) return 0;

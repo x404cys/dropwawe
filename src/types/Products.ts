@@ -25,7 +25,7 @@ export interface Product {
     storeName?: string;
     storeSlug?: string;
     shippingPrice?: number;
-    Store?: StoreProps[];
+    stores?: { store: StoreProps }[];
   };
   pricingDetails?: ProductPricing;
   subInfo?: subInfo;

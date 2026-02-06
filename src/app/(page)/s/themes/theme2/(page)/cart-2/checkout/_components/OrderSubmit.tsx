@@ -42,6 +42,7 @@ export default function OrderSubmi() {
     getTotalPriceAfterDiscountByKey,
     saveCartId,
     getCartIdByKey,
+    getTotalAfterCoupon,
   } = useCart();
   const { store } = useProducts();
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -55,13 +56,21 @@ export default function OrderSubmi() {
 
   const cartKey = `cart/${store?.id}`;
   const cartItems = getCartByKey(cartKey);
-  const ShippingPriceTotal = getAllShippingPricesByKey(cartKey);
-  const totalPrice = getTotalPriceByKey(cartKey);
-  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
-  const total = totalPrice + ShippingPriceTotal;
-  const totalAfter = totalAfterDiscount + ShippingPriceTotal;
-  const checkQua = getTotalQuantityByKey(cartKey);
-  if (checkQua == 0 || checkQua == null) {
+
+  const totalPrice = getTotalPriceByKey(cartKey); 
+  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);  
+  const shippingPriceTotal = getAllShippingPricesByKey(cartKey);  
+  const totalQuantity = getTotalQuantityByKey(cartKey);  
+
+   const totalBeforeCoupon = totalAfterDiscount + shippingPriceTotal;
+
+   const totalAfterCoupon = getTotalAfterCoupon(cartKey);  
+
+  const finalTotal = totalAfterCoupon + shippingPriceTotal;
+
+  const checkQuantity = getTotalQuantityByKey(cartKey);
+
+  if (checkQuantity == 0 || checkQuantity == null) {
     return (
       <div
         dir="rtl"
@@ -98,7 +107,7 @@ export default function OrderSubmi() {
           name: fullName,
           phone: phone,
           address: locationInput,
-          amount: totalAfter,
+          amount: finalTotal,
           cart_id: `${cart_id}`,
           description: `طلب جديد من ${name}`,
         }),
@@ -187,7 +196,7 @@ export default function OrderSubmi() {
                   email={email}
                   location={locationInput as string}
                   items={cartItems}
-                  total={totalAfter}
+                  total={finalTotal}
                 />
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -246,7 +255,7 @@ export default function OrderSubmi() {
                           <Wallet className="h-4 w-4" />
                           <span className="font-semibold">الإجمالي</span>
                         </div>
-                        <span className="font-bold text-red-400">{formatIQD(totalAfter)} د.ع</span>
+                        <span className="font-bold text-red-400">{formatIQD(finalTotal)} د.ع</span>
                       </div>
                     </div>
                     <DialogFooter className="mt-6 flex flex-col flex-wrap-reverse space-y-3">
@@ -269,12 +278,11 @@ export default function OrderSubmi() {
                         email={email}
                         location={locationInput as string}
                         items={cartItems}
-                        total={totalAfter}
+                        total={finalTotal}
                       />
                     </DialogFooter>
                   </DialogContent>
                 </Dialog>
-                <CouponInput cartKey={cartKey} storeId={`${store.id}`} />
 
                 <Button variant="outline" className="w-72 rounded-none hover:bg-gray-100">
                   متابعة التسوق

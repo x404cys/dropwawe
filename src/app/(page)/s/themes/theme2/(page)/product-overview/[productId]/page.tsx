@@ -4,7 +4,6 @@ import { Heart, ShoppingCart, Truck, RotateCcw, Plus, Minus, ArrowLeft } from 'l
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Product } from '@/types/Products';
 import { useParams, useRouter } from 'next/navigation';
 import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useCart } from '@/app/lib/context/CartContext';
@@ -12,6 +11,13 @@ import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { HiOutlineShare } from 'react-icons/hi';
 import { useProducts } from '@/app/(page)/s/context/products-context';
+import { Product } from '@/types/Products';
+
+export interface CartProduct extends Product {
+  selectedColor?: string;
+  selectedSize?: string;
+  shippingPrice?: string;
+}
 
 export default function ProductPage() {
   const params = useParams();
@@ -259,7 +265,8 @@ export default function ProductPage() {
                     selectedSize,
                     colors: product.colors?.filter(c => c.hex === selectedColor) || [],
                     sizes: product.sizes?.filter(s => s.size === selectedSize) || [],
-                    shippingPrice: product.user?.Store?.[0]?.shippingPrice?.toString() ?? '',
+                    shippingPrice:
+                      product.user?.stores?.[0]?.store?.shippingPrice?.toString() ?? '',
                   };
 
                   addToCartWithQtyByKey(

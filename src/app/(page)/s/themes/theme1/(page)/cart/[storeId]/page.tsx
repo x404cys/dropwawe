@@ -29,6 +29,7 @@ import { randomUUID } from 'crypto';
 import OrderSubmitButton from '../../../_lib/Checkout/OrderSubmitButton';
 import OrderSubmitButtonPayment from '../../../_lib/Checkout/OrderSubmitPayment/OrderSubmitPayment';
 import { useProducts } from '@/app/(page)/s/context/products-context';
+import CouponInputTheme1 from '../../../_components/CouponsInput';
 
 export default function CartPage() {
   const {
@@ -43,6 +44,7 @@ export default function CartPage() {
     getTotalPriceAfterDiscountByKey,
     saveCartId,
     getCartIdByKey,
+    getTotalAfterCoupon,
   } = useCart();
   const { storeId } = useParams();
   const { store } = useProducts();
@@ -61,11 +63,17 @@ export default function CartPage() {
 
   const cartKey = `cart/${storeId}`;
   const cartItems = getCartByKey(cartKey);
-  const ShippingPriceTotal = getAllShippingPricesByKey(cartKey);
-  const totalPrice = getTotalPriceByKey(cartKey);
-  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
-  const total = totalPrice + ShippingPriceTotal;
-  const totalAfter = totalAfterDiscount + ShippingPriceTotal;
+  const shippingPriceTotal = getAllShippingPricesByKey(cartKey);
+  const totalPrice = getTotalPriceByKey(cartKey); // مجموع كل المنتجات بدون خصم
+  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey); // مجموع المنتجات بعد الخصم
+  const checkQuantity = getTotalQuantityByKey(cartKey);
+
+  // بعد تطبيق الكوبون على المنتجات فقط، بدون شحن
+  const totalAfterCoupon = getTotalAfterCoupon(cartKey); // هذا من CartContext
+
+  // الإجمالي النهائي يشمل الشحن ولا يتأثر بالكوبون
+  const finalTotal = totalAfterCoupon + shippingPriceTotal;
+
   const checkQua = getTotalQuantityByKey(cartKey);
   if (checkQua == 0 || checkQua == null) {
     return (
@@ -103,7 +111,7 @@ export default function CartPage() {
           name: fullName,
           phone: phone,
           address: locationInput,
-          amount: totalAfter,
+          amount: finalTotal,
           cart_id: `${cart_id}`,
           description: `طلب جديد من ${name}`,
         }),
@@ -267,7 +275,7 @@ export default function CartPage() {
                   />
                 </div>
               </div>
-
+              <CouponInputTheme1 cartKey={cartKey} storeId={storeId as string} />
               <div className="space-y-2 border-t pt-4 text-sm text-gray-700">
                 <div className="flex justify-between">
                   <span>المجموع الفرعي</span>
@@ -275,16 +283,16 @@ export default function CartPage() {
                 </div>
                 <div className="flex justify-between">
                   <span>التوصيل</span>
-                  <span>د.ع {ShippingPriceTotal}</span>
+                  <span>د.ع {shippingPriceTotal}</span>
                 </div>
 
                 <div className="flex justify-between border-t pt-2 font-bold text-gray-800">
                   <span>الإجمالي</span>
-                  <span>د.ع {total}</span>
+                  <span>د.ع {formatIQD(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 font-bold text-gray-800">
                   <span>الإجمالي بعد الخصم</span>
-                  <span>د.ع {totalAfter}</span>
+                  <span>د.ع {formatIQD(finalTotal)}</span>
                 </div>
               </div>
 
@@ -299,7 +307,7 @@ export default function CartPage() {
                   email={email}
                   location={locationInput as string}
                   items={cartItems}
-                  total={totalAfter}
+                  total={finalTotal}
                 />
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -354,7 +362,7 @@ export default function CartPage() {
                           <span className="font-semibold text-green-700">الإجمالي</span>
                         </div>
                         <span className="font-bold text-green-700">
-                          {formatIQD(totalAfter)} د.ع
+                          {formatIQD(finalTotal)} د.ع
                         </span>
                       </div>
                     </div>
@@ -379,7 +387,7 @@ export default function CartPage() {
                         email={email}
                         location={locationInput as string}
                         items={cartItems}
-                        total={totalAfter}
+                        total={finalTotal}
                       />
                     </DialogFooter>
                   </DialogContent>
