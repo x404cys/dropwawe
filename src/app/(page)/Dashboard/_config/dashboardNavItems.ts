@@ -8,6 +8,16 @@ export const getDashboardNavItems = (role?: string) => [
   { label: 'المنتجات', path: '/Dashboard/ProductManagment', icon: Package },
   { label: 'اضافة منتج', path: '/Dashboard/ProductManagment/add-product', icon: CgFolderAdd },
   {
+    label: 'العوائد',
+    path:
+      role === 'SUPPLIER'
+        ? `/Dashboard/profit/profit-trader `
+        : role === 'DROPSHIPPER'
+          ? `/Dashboard/profit/profit-dropshiper `
+          : `/Dashboard/profit `,
+    icon: DollarSign,
+  },
+  {
     label: 'الطلبات',
     path:
       role === 'SUPPLIER'

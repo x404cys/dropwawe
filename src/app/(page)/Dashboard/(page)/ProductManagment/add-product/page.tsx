@@ -19,11 +19,13 @@ import { SocialMediaSection } from './_components/SocialMediaSection';
 import { MainImageSection } from './_components/MainImageSection';
 import { GallerySection } from './_components/GallerySection';
 import { SubmitButton } from './_components/SubmitButton';
+import { useStoreProvider } from '../../../context/StoreContext';
 
 export default function ProductAddPage() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
+  const { currentStore } = useStoreProvider();
 
   const [expandedSections, setExpandedSections] = useState({
     sizes: false,
@@ -189,11 +191,7 @@ export default function ProductAddPage() {
         'discount',
         Number.isFinite(newProduct.discount) ? String(newProduct.discount) : '0'
       );
-      if (!storeId) {
-        toast.error('يرجى اختيار المتجر');
-        return;
-      }
-
+    
       formData.append('storeId', storeId);
 
       if (newProduct.shippingType?.trim()) {
@@ -290,7 +288,7 @@ export default function ProductAddPage() {
   };
 
   return (
-    <div className="min-h-screen bg-white mb-20" dir="rtl">
+    <div className="mb-20 min-h-screen bg-white" dir="rtl">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-6 lg:grid-cols-3">
           <div className="space-y-6 lg:col-span-2">
@@ -313,7 +311,7 @@ export default function ProductAddPage() {
               setNewProduct={setNewProduct}
               loading={loading}
               categories={categories}
-              storeId={storeId}
+              storeId={currentStore?.id as string}
               setStoreId={setStoreId}
               data={data}
             />

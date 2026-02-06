@@ -9,6 +9,7 @@ import { useDashboardData } from '../../context/useDashboardData';
 import Loader from '@/components/Loader';
 import { Search, ShoppingBag } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { useStoreProvider } from '../../context/StoreContext';
 
 interface Order {
   id: string;
@@ -36,12 +37,13 @@ export default function OrderSummaryPage() {
   const [storeId, setStoreId] = useState<string>('');
   const fiestoreId = data?.Stores?.[0]?.id || '';
   const activeStoreId = storeId || fiestoreId;
+  const { currentStore } = useStoreProvider();
 
   const {
     data: orders = [],
     isLoading,
     error,
-  } = useSWR<Order[]>(activeStoreId ? `/api/orders/store/${activeStoreId}` : null, fetcher);
+  } = useSWR<Order[]>(currentStore ? `/api/orders/store/${currentStore.id}` : null, fetcher);
 
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('year');

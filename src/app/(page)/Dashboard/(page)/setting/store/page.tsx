@@ -25,16 +25,18 @@ import { MdOutlinePayments } from 'react-icons/md';
 import CreateInviteButton from '../../../_components/CreateInviteButton';
 import CShippingSection from './(page)/c-shipping-section/c-shipping-section';
 import CouponCreatePage from '../../../_utils/Coupon';
+import { useStoreProvider } from '../../../context/StoreContext';
+import useSWR from 'swr';
 
 type ServerErrorDetail = { field: string; message: string };
 type ServerErrorResponse = { error: string; details?: ServerErrorDetail[]; field?: string };
 
 export default function StoreSetupPage() {
+  const { currentStore, setCurrentStore, refreshCurrentStore } = useStoreProvider();
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
 
-  const [store, setStore] = useState<StoreProps>();
   const [storeSlug, setStoreSlug] = useState('');
   const [storeName, setStoreName] = useState('');
   const [shippingPrice, setShippingPrice] = useState('');
@@ -49,33 +51,36 @@ export default function StoreSetupPage() {
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
-  const hiddenButton: string[] = ['users', 'withdraw', 'create-another', 'c-shipping' , 'Coupon'];
+  const hiddenButton: string[] = ['users', 'withdraw', 'create-another', 'c-shipping', 'Coupon'];
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const fetcher = (url: string) => axios.get(url).then(res => res.data.store);
+
+  const subLink = currentStore?.subLink;
+  const {
+    data: store,
+    isLoading,
+    error,
+    mutate,
+  } = useSWR<StoreProps>(
+    subLink ? `/api/dashboard/store/get-store-info?sublink=${encodeURIComponent(subLink)}` : null,
+    fetcher
+  );
+
   useEffect(() => {
-    const fetchInfo = async () => {
-      try {
-        const res = await axios.get(`/api/storev2/info4setting/${session?.user?.id}`);
-        const storeData: StoreProps = res.data;
+    if (!store) return;
 
-        setStore(storeData);
-        setStoreSlug(storeData?.subLink ?? '');
-        setStoreName(storeData?.name ?? '');
-        setShippingPrice(storeData?.shippingPrice?.toString() ?? '');
-        setDescription(storeData?.description ?? '');
-        setPhone(storeData?.phone ?? '');
-        setFacebook(storeData?.facebookLink ?? '');
-        setInstagram(storeData?.instaLink ?? '');
-        setTelegram(storeData?.telegram ?? '');
-        setFacebookPixel(storeData?.facebookPixel ?? '');
-        setGooglePixel(storeData?.googlePixel ?? '');
-        setTiktokPixel(storeData?.tiktokPixel ?? '');
-      } catch (err) {
-        console.error('Error fetching store info:', err);
-      }
-    };
-
-    fetchInfo();
-  }, [data?.user?.id]);
+    setStoreSlug(store.subLink ?? '');
+    setStoreName(store.name ?? '');
+    setShippingPrice(store.shippingPrice?.toString() ?? '');
+    setDescription(store.description ?? '');
+    setPhone(store.phone ?? '');
+    setFacebook(store.facebookLink ?? '');
+    setInstagram(store.instaLink ?? '');
+    setTelegram(store.telegram ?? '');
+    setFacebookPixel(store.facebookPixel ?? '');
+    setGooglePixel(store.googlePixel ?? '');
+    setTiktokPixel(store.tiktokPixel ?? '');
+  }, [store]);
 
   const handleSubmit = async () => {
     if (!storeSlug || !storeName || !description || !shippingPrice || !phone) {
@@ -88,6 +93,7 @@ export default function StoreSetupPage() {
       setFieldErrors({});
 
       const payload = {
+        storeId: currentStore?.id,
         subLink: storeSlug,
         name: storeName,
         description,
@@ -126,15 +132,15 @@ export default function StoreSetupPage() {
         return;
       }
 
-      toast.success('تم الحفظ بنجاح');
-      router.back();
+      await mutate();
+      if (store) setCurrentStore(store);
+      setCurrentStore(store as StoreProps);
     } catch {
       toast.error('حدث خطأ في الحفظ');
     } finally {
       setLoading(false);
     }
   };
-
   const hasErrors = Object.keys(fieldErrors).length > 0;
   const path =
     session?.user.role === 'SUPPLIER'
@@ -148,7 +154,7 @@ export default function StoreSetupPage() {
       {hasErrors && (
         <div className="text-xs text-red-500">لديك أخطاء بالحقول راجع النقاط الحمراء</div>
       )}
-
+      {currentStore?.subLink}
       <SettingOptions
         activeSection={activeSection}
         onSectionChange={section => {

@@ -3,16 +3,15 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, CreditCard, Gift, LayoutDashboard, MessageSquare } from 'lucide-react';
 import clsx from 'clsx';
 import NavBarForDesktop from './NavBarDesktop';
 import { getDashboardNavItems } from '../_config/dashboardNavItems';
 import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../context/useDashboardData';
-import { useSubscriptions } from '../context/useSubscription';
-import { IoStorefrontOutline } from 'react-icons/io5';
-import { PiStorefrontLight } from 'react-icons/pi';
+import { PiCaretDown, PiCheck, PiStorefrontLight } from 'react-icons/pi';
 import { useStoreProvider } from '../context/StoreContext';
+import { Listbox } from '@headlessui/react';
+import { FaStore } from 'react-icons/fa';
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -40,32 +39,66 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
         <hr />
         <div className="px-6 py-4">
-          <p className="text-xs text-gray-400">متجرك</p>
+          <label className="mb-3 block text-xs font-semibold tracking-wider text-gray-500 uppercase">
+            متجرك
+          </label>
 
-          <div className="mt-1 w-full rounded-lg border bg-white p-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <PiStorefrontLight className="h-6 w-6" />
-                <span className="text-sm font-medium text-gray-900">
-                  {currentStore?.name ?? 'متجر'}
-                </span>
+          <div dir="rtl" className="relative w-full max-w-sm">
+            <Listbox value={currentStore ?? undefined} onChange={setCurrentStore}>
+              <div className="relative">
+                <Listbox.Button className="group relative w-full">
+                  <div className="flex items-center justify-between rounded-lg border border-gray-200 bg-white px-4 py-3 transition-all duration-200 group-hover:border-blue-400 group-hover:shadow-md focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200">
+                    <FaStore className="h-5 w-5 flex-shrink-0 text-[#04BAF6]" />
+
+                    <span className="flex-1 px-3 text-right text-sm font-medium text-gray-800">
+                      {currentStore?.name ?? 'اختر المتجر'}
+                    </span>
+
+                    <PiCaretDown className="group-ui-open:rotate-180 h-4 w-4 flex-shrink-0 text-gray-400 transition-transform duration-200" />
+                  </div>
+                </Listbox.Button>
+
+                <Listbox.Options
+                  dir="rtl"
+                  className="absolute top-full z-10 mt-2 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg"
+                >
+                  <div className="max-h-64 overflow-y-auto py-1">
+                    {stores.map(store => (
+                      <Listbox.Option
+                        key={store.id}
+                        value={store}
+                        className={({ active, selected }) =>
+                          `relative flex cursor-pointer items-center justify-between px-4 py-3 transition-colors duration-150 ${
+                            active
+                              ? 'bg-blue-50 text-blue-600'
+                              : selected
+                                ? 'bg-blue-50 text-gray-800'
+                                : 'text-gray-700 hover:bg-gray-50'
+                          }`
+                        }
+                      >
+                        {({ selected }) => (
+                          <>
+                            <div className="flex flex-1 items-center gap-3">
+                              <PiStorefrontLight
+                                className={`h-5 w-5 flex-shrink-0 transition-colors ${
+                                  selected ? 'text-blue-500' : 'text-gray-400'
+                                }`}
+                              />
+                              <span className="text-sm font-medium">{store.name}</span>
+                            </div>
+
+                            {selected && (
+                              <PiCheck className="h-5 w-5 flex-shrink-0 text-blue-500" />
+                            )}
+                          </>
+                        )}
+                      </Listbox.Option>
+                    ))}
+                  </div>
+                </Listbox.Options>
               </div>
-
-              <select
-                className="rounded border px-2 py-1 text-xs"
-                value={currentStore?.id ?? ''}
-                onChange={e => {
-                  const selected = stores.find(s => s.id === e.target.value);
-                  if (selected) setCurrentStore(selected);
-                }}
-              >
-                {stores.map(store => (
-                  <option key={store.id} value={store.id}>
-                    {store.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+            </Listbox>
           </div>
         </div>
 

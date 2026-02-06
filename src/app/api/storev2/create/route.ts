@@ -42,6 +42,7 @@ const storeSchema = z.object({
   facebookPixel: z.string().optional(),
   tiktokPixel: z.string().optional(),
   googlePixel: z.string().optional(),
+  storeId: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -90,7 +91,7 @@ export async function POST(req: Request) {
       }
 
       const updatedStore = await prisma.store.update({
-        where: { id: store.id },
+        where: { id: parsed.data.storeId },
         data: {
           name: parsed.data.name,
           subLink: parsed.data.subLink,
@@ -136,7 +137,6 @@ export async function POST(req: Request) {
 
       return NextResponse.json(newStore, { status: 201 });
     }
-    
   } catch (error) {
     console.error('Error creating/updating store:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

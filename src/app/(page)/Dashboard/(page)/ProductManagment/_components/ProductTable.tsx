@@ -14,11 +14,12 @@ import { useDashboardData } from '../../../context/useDashboardData';
 import { Boxes, ChevronDown, Package, Search, ShoppingBag, Store, Truck } from 'lucide-react';
 import { LuPackagePlus } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
+import { useStoreProvider } from '../../../context/StoreContext';
 
 export default function ProductTable() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
-  const { products, setProducts, loading } = useProducts(session?.user?.id);
+  const [products, setProducts] = useState<Product[]>([]);
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [storeId, setStoreId] = useState<string | null>(null);
@@ -29,21 +30,22 @@ export default function ProductTable() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const { currentStore } = useStoreProvider();
+  const [loading, setLoading] = useState(false);
 
   if (!data?.Stores || data?.Stores.length > 0) {
     useEffect(() => {
-      const fetchProducts = async () => {
-        try {
-          const res = await fetch(`/api/products/store/${storeId}`);
-          if (!res.ok) throw new Error();
-          const data = await res.json();
-          setProducts(data);
-        } catch {
-          toast.success('فشل في جلب المنتجات');
-        }
-      };
-      fetchProducts();
-    }, []);
+      if (!currentStore?.id) return;
+      setLoading(true);
+      fetch(`/api/products/store/${currentStore?.id}`)
+        .then(res => {
+          if (!res.ok) throw new Error('فشل في جلب المنتجات');
+          return res.json();
+        })
+        .then(setProducts)
+        .catch(err => console.error(err.message))
+        .finally(() => setLoading(false));
+    }, [currentStore?.id]);
   }
   const startEditing = (product: Product) => {
     setEditingId(product.id);
@@ -158,7 +160,7 @@ export default function ProductTable() {
         </div>
       </div>
       <div className="">
-        <div className="my-1 w-full block md:hidden">
+        <div className="my-1 block w-full md:hidden">
           <select dir="rtl" className="w-full rounded-lg border-2 p-3" name="store" id="store">
             {data?.Stores?.map(store => (
               <option key={store.id} onChange={() => setStoreId(store.id)} value={store.id}>
@@ -169,17 +171,6 @@ export default function ProductTable() {
         </div>
         <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
           <div className="relative flex w-full md:w-[100%]">
-            {data?.Stores && data.Stores.length > 1 && (
-              <div className="relative hidden md:block">
-                <select className="mx-1 rounded-lg border-2 p-3" name="store" id="store">
-                  {data.Stores.map(store => (
-                    <option key={store.id} onChange={() => setStoreId(store.id)} value={store.id}>
-                      {store.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
             <div className="relative">
               <button
                 onClick={() => setOpen(!open)}
@@ -242,7 +233,7 @@ export default function ProductTable() {
         <>
           <Card className="hidden md:block">
             <CardHeader>
-              <CardTitle>قائمة المنتجات</CardTitle>
+              <CardTitle>قائمة المنتجات - {currentStore?.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>

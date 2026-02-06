@@ -12,11 +12,13 @@ import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
 import PlanCard from './_components/PlanCard';
+import { useStoreProvider } from './context/StoreContext';
 
 export default function Dashboard() {
   const router = useRouter();
   const { data: session, status, update } = useSession();
   const userId = session?.user?.id;
+  const { currentStore } = useStoreProvider();
 
   const { data, loading } = useDashboardData(userId);
   const { data: latestOrder } = useSWR<OrderDetails[]>(
@@ -39,7 +41,7 @@ export default function Dashboard() {
     );
   }
 
-  const storeUrl = `https://${data.storeSlug?.subLink}.matager.store`;
+  const storeUrl = `https://${currentStore?.subLink}.matager.store`;
 
   const stats: StatCardProps[] = [
     {
@@ -96,8 +98,8 @@ export default function Dashboard() {
           <div className="grid gap-4 md:grid-cols-2">
             <UrlCard
               storeUrl={storeUrl}
-              storeName={data.storeSlug?.name || 'متجري'}
-              theme={data.storeSlug?.theme || 'MODERN'}
+              storeName={currentStore?.name || 'متجري'}
+              theme={currentStore?.theme || 'MODERN'}
               copyToClipboard={copyToClipboard}
             />
             <PlanCard />

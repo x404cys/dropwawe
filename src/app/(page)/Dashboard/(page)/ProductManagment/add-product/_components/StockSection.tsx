@@ -80,12 +80,12 @@ export function StockSection({
 
         {session.data?.user.role === 'DROPSHIPPER' && (
           <>
-            <label className="flex items-center text-gray-600">
+            <label className="  hidden items-center text-gray-600">
               <Store className="h-4 w-4" />
               <span>اختر المتجر</span>
             </label>
             <select
-              className="mt-2 w-full rounded-md border border-gray-300 bg-white p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+              className="mt-2 w-full hidden rounded-md border border-gray-300 bg-white p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
               value={storeId || ''}
               onChange={e => setStoreId(e.target.value)}
             >

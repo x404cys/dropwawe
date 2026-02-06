@@ -25,6 +25,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useStoreProvider } from '../../context/StoreContext';
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface ProfitData {
@@ -37,7 +38,9 @@ interface ProfitData {
 
 export default function ProfitPage() {
   const { data: session } = useSession();
-  const userId = session?.user.id;
+  const { currentStore } = useStoreProvider();
+
+  const storeId = currentStore?.id;
 
   const [data, setData] = useState<ProfitData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -47,12 +50,12 @@ export default function ProfitPage() {
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!userId) return;
+    if (!storeId) return;
 
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/orders/getall?userId=${userId}`);
+        const res = await axios.get(`/api/orders/getall?storeId=${storeId}`);
         setData(res.data);
       } catch (err) {
         console.error(err);
@@ -63,9 +66,9 @@ export default function ProfitPage() {
     };
 
     fetchData();
-  }, [userId]);
+  }, [storeId]);
   const handleWithdraw = async () => {
-    if (!userId) return;
+    if (!storeId) return;
     setLoading(true);
     setError(null);
     try {

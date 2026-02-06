@@ -1,22 +1,15 @@
-// app/context/StoreContext.tsx
 'use client';
 
+import { StoreProps } from '@/types/store/StoreType';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 
-export interface Store {
-  id: string;
-  name: string;
-  subLink?: string;
-  shippingPrice?: number;
-  hasReturnPolicy?: string;
-}
-
 interface StoreContextType {
-  currentStore: Store | null;
-  stores: Store[];
+  currentStore: StoreProps | null;
+  stores: StoreProps[];
   setCurrentStoreByName: (storeName: string) => Promise<void>;
-  setCurrentStore: (store: Store) => void;
+  setCurrentStore: (store: StoreProps) => void;
   fetchStores: () => Promise<void>;
+  refreshCurrentStore: () => Promise<void>;
 }
 
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
@@ -32,16 +25,14 @@ interface Props {
 }
 
 export const StoreProvider = ({ children }: Props) => {
-  const [currentStore, setCurrentStoreState] = useState<Store | null>(null);
-  const [stores, setStores] = useState<Store[]>([]);
+  const [currentStore, setCurrentStoreState] = useState<StoreProps | null>(null);
+  const [stores, setStores] = useState<StoreProps[]>([]);
 
-  // حفظ المتجر الحالي محليًا
-  const setCurrentStore = (store: Store) => {
+  const setCurrentStore = (store: StoreProps) => {
     setCurrentStoreState(store);
     localStorage.setItem('currentStore', JSON.stringify(store));
   };
 
-  // جلب متجر حسب الاسم وتعيينه
   const setCurrentStoreByName = async (storeName: string) => {
     try {
       const res = await fetch(
@@ -54,7 +45,6 @@ export const StoreProvider = ({ children }: Props) => {
     }
   };
 
-  // جلب كل المتاجر
   const fetchStores = async () => {
     try {
       const res = await fetch(`/api/dashboard/store/get-stores`);
@@ -63,7 +53,6 @@ export const StoreProvider = ({ children }: Props) => {
       if (Array.isArray(data)) {
         setStores(data);
 
-        // اختر أول متجر تلقائياً إذا لم يكن مخزن مسبقًا
         if (!currentStore) {
           const stored = localStorage.getItem('currentStore');
           if (stored) {
@@ -79,6 +68,22 @@ export const StoreProvider = ({ children }: Props) => {
     }
   };
 
+  const refreshCurrentStore = async () => {
+    if (!currentStore) return;
+
+    try {
+      const res = await fetch(
+        `/api/dashboard/store/get-store-info?sublink=${encodeURIComponent(currentStore.subLink as string)}`
+      );
+      const data = await res.json();
+      if (data?.store) {
+        setCurrentStore(data.store);
+      }
+    } catch (err) {
+      console.error('Failed to refresh current store:', err);
+    }
+  };
+
   useEffect(() => {
     fetchStores();
   }, []);
@@ -91,6 +96,7 @@ export const StoreProvider = ({ children }: Props) => {
         setCurrentStoreByName,
         setCurrentStore,
         fetchStores,
+        refreshCurrentStore,
       }}
     >
       {children}

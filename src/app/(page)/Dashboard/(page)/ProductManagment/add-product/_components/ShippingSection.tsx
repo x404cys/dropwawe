@@ -29,7 +29,7 @@ export function ShippingSection({
       isExpanded={isExpanded}
       onToggle={onToggle}
     >
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <ModernInputGroup
           label="مدة التوصيل أو تفاصيله"
           icon={<LiaShippingFastSolid className="h-4 w-4 text-gray-400" />}

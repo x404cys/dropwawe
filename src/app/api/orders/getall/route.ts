@@ -3,21 +3,16 @@ import { prisma } from '../../../lib/db';
 
 export async function GET(req: Request) {
   const url = new URL(req.url);
-  const userId = url.searchParams.get('userId');
+  const storeId = url.searchParams.get('storeId');
 
-  if (!userId) {
-    return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+  if (!storeId) {
+    return NextResponse.json({ error: 'Missing storeId' }, { status: 400 });
   }
-  const store = await prisma.storeUser.findFirst({
-    where: { userId },
-    select: {
-      storeId: true,
-    },
-  });
+
   try {
     const totalSum = await prisma.order.aggregate({
       where: {
-        storeId: store?.storeId,
+        storeId: storeId,
         status: 'CONFIRMED',
       },
       _sum: {
@@ -27,7 +22,7 @@ export async function GET(req: Request) {
 
     const allOrders = await prisma.order.findMany({
       where: {
-        storeId: store?.storeId,
+        storeId: storeId,
         status: 'CONFIRMED',
       },
       select: {
@@ -45,7 +40,7 @@ export async function GET(req: Request) {
       where: {
         status: 'Success',
         order: {
-          storeId: store?.storeId,
+          storeId: storeId,
         },
       },
     });
