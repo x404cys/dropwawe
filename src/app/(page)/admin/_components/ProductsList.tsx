@@ -39,7 +39,7 @@ export default function ProductList({ filterByCategory }: Props) {
     return allProducts
       .filter(p => (filterByCategory ? p.category === filterByCategory : true))
       .filter(p => (selectedCategory ? p.category === selectedCategory : true))
-      .filter(p => (selectedStore ? p.user?.Store?.[0]?.subLink === selectedStore : true))
+      // .filter(p => (selectedStore ? p.user?.Store?.[0]?.subLink === selectedStore : true))
       .filter(p =>
         statusFilter ? (statusFilter === 'available' ? p.quantity > 0 : p.quantity === 0) : true
       )
@@ -160,7 +160,7 @@ export default function ProductList({ filterByCategory }: Props) {
                 </td>
                 <td className="px-2 py-2 font-medium text-gray-800">{product.name}</td>
                 <td className="px-2 py-2 text-gray-600">
-                  {product.user?.Store?.[0]?.subLink || 'بدون متجر'}
+                  {/* {product.user?.Store?.[0]?.subLink || 'بدون متجر'} */}
                 </td>
 
                 <td className="px-2 py-2 text-gray-600">{product.category}</td>
