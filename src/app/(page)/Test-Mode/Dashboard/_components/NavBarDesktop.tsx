@@ -177,7 +177,7 @@ export default function NavBarForDesktopFake() {
             </div>
           )}
         </div>
-      </div>
+      </div> 
     </div>
   );
 }

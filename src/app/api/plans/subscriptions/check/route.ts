@@ -11,45 +11,98 @@ export async function GET() {
     }
 
     const userId = session.user.id;
-    const userIsSubUser = await prisma.storeUser.findFirst({
-      where: { userId: userId, isOwner: false },
-    });
-    if (userIsSubUser) {
-      return NextResponse.json({
-        isSubUser: true,
-        message: 'Sub-users cannot have subscriptions',
-      });
-    }
-    const subscription = await prisma.userSubscription.findFirst({
-      where: { userId, isActive: true },
-      include: { plan: true },
+
+    // 1️⃣ منع الـ SubUser
+    const isSubUser = await prisma.storeUser.findFirst({
+      where: { userId, isOwner: false },
     });
 
-    if (!subscription) {
+    if (isSubUser) {
       return NextResponse.json({
-        isActive: false,
-        message: 'No active subscription found',
+        isSubUser: true,
+        status: 'SUB_USER',
       });
     }
 
     const now = new Date();
-    const endDate = new Date(subscription.endDate);
 
-    if (now > endDate) {
+    // 2️⃣ فحص الاشتراك الفعّال
+    let subscription = await prisma.userSubscription.findFirst({
+      where: { userId, isActive: true },
+      include: { plan: true },
+    });
+
+    // 3️⃣ إذا موجود لكن منتهي
+    if (subscription && now > subscription.endDate) {
       await prisma.userSubscription.update({
         where: { id: subscription.id },
         data: { isActive: false },
       });
 
+      subscription = null;
+    }
+
+    // 4️⃣ إذا ما عنده اشتراك → نحاول نفعل Free Trial
+    if (!subscription) {
+      const freePlan = await prisma.subscriptionPlan.findFirst({
+        where: { type: 'free-trial' },
+      });
+
+      if (!freePlan) {
+        return NextResponse.json({
+          status: 'NO_PLAN',
+          message: 'Free plan not configured',
+        });
+      }
+
+      // هل استخدم التجربة سابقاً؟
+      const usedTrialBefore = await prisma.userSubscription.findFirst({
+        where: {
+          userId,
+          planId: freePlan.id,
+        },
+      });
+
+      if (usedTrialBefore) {
+        return NextResponse.json({
+          status: 'NEED_SUBSCRIPTION',
+          message: 'Free trial expired',
+        });
+      }
+
+      // 5️⃣ تفعيل التجربة المجانية
+      const startDate = new Date();
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() + freePlan.durationDays);
+
+      const trialSubscription = await prisma.userSubscription.create({
+        data: {
+          userId,
+          planId: freePlan.id,
+          startDate,
+          endDate,
+          isActive: true,
+        },
+        include: { plan: true },
+      });
+
       return NextResponse.json({
-        isActive: false,
-        message: 'Subscription expired',
-        expiredAt: endDate,
+        status: 'TRIAL_ACTIVE',
+        subscription: {
+          id: trialSubscription.id,
+          planName: trialSubscription.plan.name,
+          type: trialSubscription.plan.type,
+          description: trialSubscription.plan.description,
+          startDate,
+          endDate,
+          remainingDays: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+          detailsSubscription: trialSubscription.plan,
+        },
       });
     }
 
     return NextResponse.json({
-      isActive: true,
+      status: 'ACTIVE',
       subscription: {
         id: subscription.id,
         planName: subscription.plan.name,
@@ -57,7 +110,9 @@ export async function GET() {
         description: subscription.plan.description,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
-        remainingDays: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+        remainingDays: Math.ceil(
+          (subscription.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+        ),
         detailsSubscription: subscription.plan,
       },
     });
@@ -66,4 +121,3 @@ export async function GET() {
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
-//

@@ -77,8 +77,15 @@ export type Subscription = {
 };
 
 export type SubscriptionResponse = {
-  isActive: boolean;
-  subscription: Subscription;
-  type: string;
+  status: SubscriptionStatus;
+  subscription?: Subscription;
   isSubUser?: boolean;
+  message?: string;
 };
+
+export type SubscriptionStatus =
+  | 'SUB_USER'
+  | 'TRIAL_ACTIVE'
+  | 'ACTIVE'
+  | 'NEED_SUBSCRIPTION'
+  | 'NO_PLAN';

@@ -116,7 +116,7 @@ export default function StoreSetupPage() {
       }
       toast.success('تم الحفظ بنجاح ✨');
 
-      router.replace('/Dashboard/plans');
+      router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ في الحفظ');
     } finally {
