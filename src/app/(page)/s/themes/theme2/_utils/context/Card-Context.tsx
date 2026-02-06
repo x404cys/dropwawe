@@ -26,11 +26,12 @@ type CartContextType = {
   getCartByKey: (keyName: string) => Product[];
   getTotalQuantityByKey: (keyName: string) => number;
   getTotalPriceByKey: (keyName: string) => number;
+  getTotalAfterCoupon: (keyName: string) => number;
   getAllShippingPricesByKey: (keyName: string) => number;
   getTotalPriceAfterDiscountByKey: (keyName: string) => number;
   saveCartId: (cartId: string, keyName: string) => void;
   getCartIdByKey: (keyName: string) => string | null;
-  applyCoupon: (code: string, keyName: string) => Promise<void>;
+  applyCoupon: (code: string, keyName: string, storeId: string) => Promise<void>;
   coupon: CouponResult | null;
 };
 
@@ -39,7 +40,6 @@ const CartContext = createContext<CartContextType | undefined>(undefined);
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [carts, setCarts] = useState<Record<string, Product[]>>({});
   const [coupon, setCoupon] = useState<CouponResult | null>(null);
-  const { store } = useProducts();
 
   useEffect(() => {
     const initialCarts: Record<string, Product[]> = {};
@@ -127,7 +127,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const getAllShippingPricesByKey = (keyName: string): number => {
     const items = getCartByKey(keyName);
     const prices = items
-      .map(item => item.user?.Store?.[0]?.shippingPrice)
+      .map(item => item.user?.stores?.[0]?.store.shippingPrice)
       .filter(p => p !== undefined && p !== null) as number[];
 
     if (prices.length === 0) return 0;
@@ -139,7 +139,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     return prices.reduce((a, b) => (frequency[a] >= frequency[b] ? a : b));
   };
-  const applyCoupon = async (code: string, keyName: string) => {
+  const applyCoupon = async (code: string, keyName: string, storeId: string) => {
     const cart = getCartByKey(keyName);
 
     const res = await fetch('/api/coupons/validate', {
@@ -147,7 +147,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         code,
-        storeId: store.id,
+        storeId: storeId,
         products: cart.map(p => ({
           id: p.id,
           price: p.price,
@@ -199,6 +199,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         saveCartId,
         getCartIdByKey,
         applyCoupon,
+        getTotalAfterCoupon,
         coupon,
       }}
     >
