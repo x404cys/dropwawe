@@ -1,6 +1,7 @@
 import { ChangeEvent, JSX } from 'react';
 import { StoreProps } from './store/StoreType';
 import { User } from './users/User';
+import { JSX } from 'react/jsx-runtime';
 
 export interface Product {
   id: string;
@@ -84,6 +85,7 @@ export interface Order {
   storeId: string;
 
   items: {
+    map(arg0: (item: any) => JSX.Element): import("react").ReactNode;
     id: string;
     quantity: number;
     price: number;
