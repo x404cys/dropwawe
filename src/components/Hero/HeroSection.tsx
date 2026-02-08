@@ -21,15 +21,18 @@ export default function HeroSection() {
           className="mt-8 flex flex-col items-center gap-2 space-y-6 md:space-y-0"
         >
           <h1 className="font-landing px-1 text-4xl md:text-5xl md:leading-snug">
-            ضغطة واحدة تفصلك <br /> عن النجاح في التجارة الالكترونية
+            ضَغطة واحدة
+            <br />
+            تَفصلك عن ما يُمكِن تَحقيقه{' '}
           </h1>
-          <div className="mt-4">
-            <p className="max-w-xl text-xl leading-relaxed text-sky-900">
-              اطلق مشروعك خلال دقائق فقط،
-            </p>
-            <p className="max-w-xl px-2 text-lg leading-relaxed text-sky-900">
+          <div className="mt-2">
+            <p className="max-w-xl px-2 text-xl leading-relaxed text-sky-900">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل.
+            </p>
+            <br />
+            <p className="text-ld max-w-xl leading-relaxed text-sky-900">
+              اطلق مشروعك خلال دقائق فقط.
             </p>
           </div>
         </div>
