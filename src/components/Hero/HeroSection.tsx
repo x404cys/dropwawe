@@ -23,15 +23,15 @@ export default function HeroSection() {
           <h1 className="font-landing px-1 text-4xl md:text-5xl md:leading-snug">
             ضَغطة واحدة
             <br />
-            تَفصلك عن ما يُمكِن تَحقيقه{' '}
+            تَفصلك عن ما يُمكِن تَحقيقه
           </h1>
           <div className="mt-2">
             <p className="max-w-xl px-2 text-xl leading-relaxed text-sky-900">
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل.
             </p>
-            <br />
-            <p className="text-ld max-w-xl leading-relaxed text-sky-900">
+           
+            <p className="text-ld mt-2 max-w-xl leading-relaxed text-sky-900">
               اطلق مشروعك خلال دقائق فقط.
             </p>
           </div>

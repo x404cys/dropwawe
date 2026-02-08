@@ -2,12 +2,13 @@
 
 import { v4 as uuidv4 } from 'uuid';
 import { useState } from 'react';
-import { Product } from '@/types/Products';
+import { Order, Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useCart } from '@/app/lib/context/CartContext';
 import { TbTruckDelivery } from 'react-icons/tb';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface OrderSubmitButtonProps {
   storeId: string;
@@ -21,7 +22,7 @@ interface OrderSubmitButtonProps {
   buttonText?: string;
   selectedColor?: string;
   selectedSize?: string;
-  onSuccess?: () => void; 
+  onSuccess?: () => void;
 }
 
 export default function OrderSubmitButton({
@@ -41,7 +42,7 @@ export default function OrderSubmitButton({
   const [message, setMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { clearCartByKey } = useCart();
-
+  const router = useRouter();
   const handleSubmit = async () => {
     if (!fullName || !phone || !location) {
       setMessage('الرجاء ملء جميع الحقول المطلوبة.');
@@ -75,15 +76,16 @@ export default function OrderSubmitButton({
         }),
       });
 
-      const data = await res.json();
+      const data: Order = await res.json();
 
       if (!res.ok) {
-        setMessage(`فشل: ${data.error || 'حدث خطأ غير معروف'}`);
-        console.error('تفاصيل الخطأ:', data.details);
+        setMessage(`فشل: ${'حدث خطأ غير معروف'}`);
+        console.error('تفاصيل الخطأ:', data);
       } else {
         setMessage('تم إرسال الطلب بنجاح!');
         clearCartByKey(`cart/${storeId}`);
         toast.success('تم إرسال الطلب بنجاح');
+        router.push(`/s/order-details/${data.id}`);
         if (onSuccess) onSuccess();
       }
     } catch (error) {
