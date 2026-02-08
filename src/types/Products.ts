@@ -1,8 +1,7 @@
 import { ChangeEvent, JSX } from 'react';
 import { StoreProps } from './store/StoreType';
 import { User } from './users/User';
-import { JSX } from 'react/jsx-runtime';
-
+ 
 export interface Product {
   id: string;
   name: string;
