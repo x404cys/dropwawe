@@ -35,7 +35,7 @@ interface PricingCardProps {
 }
 
 export function PricingCard({
-  name,
+  name,//
   price,
   period,
   description,
