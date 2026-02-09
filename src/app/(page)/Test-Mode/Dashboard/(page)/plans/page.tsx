@@ -1,12 +1,15 @@
 'use client';
 import { PricingCard } from '@/components/pricing-card';
 import { Badge } from '@/components/ui/badge';
-import { Check } from 'lucide-react';
+import { Check, CornerLeftDown, Rocket } from 'lucide-react';
 import { useState } from 'react';
 import { subscribePlan } from '../../_utils/subscribePlan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
+import { Button } from '@/components/ui/button';
+import { LuMousePointerClick } from 'react-icons/lu';
+import { fbEvent } from '@/app/(page)/Dashboard/_utils/pixel';
 
 export default function Plans() {
   const [loading, setLoading] = useState(false);
@@ -15,7 +18,9 @@ export default function Plans() {
 
   const handleSubscribe = async (type: string) => {
     setLoading(true);
-
+    fbEvent('InitiateCheckout', {
+      content_name: type,
+    });
     try {
       const result = await subscribePlan(type);
       await update();
@@ -23,7 +28,11 @@ export default function Plans() {
         window.location.href = result.redirect_url;
         return;
       }
-
+      fbEvent('Purchase', {
+        content_name: type,
+        currency: 'IQD',
+        value: type.includes('pro') ? 69000 : 39000,
+      });
       toast.success(`تم الاشتراك بنجاح في خطة: ${type}`);
       router.replace('/Dashboard');
     } catch (err) {
@@ -35,7 +44,7 @@ export default function Plans() {
 
   return (
     <div dir="rtl" className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="container mx-auto px-4 py-2 md:py-5">
         <div className="mb-16 text-center">
           <Badge
             variant="secondary"
@@ -47,10 +56,16 @@ export default function Plans() {
             اختر الخطة المناسبة لك
           </h1>
           <p className="text-muted-foreground mx-auto max-w-2xl text-lg text-balance">
-            ابدأ الان وقم بالترقية عندما تحتاج إلى المزيد من الميزات
+            تمتع بتجربة مجانية لمدة 7 ايام لكل الميزات
           </p>
         </div>
 
+        <div className="mt-10 mb-5 text-center">
+          <Badge variant={'success'} className="mt-4 mb-5 text-lg">
+            <span className="font-normal"> او اختر باقتك وابدأ الان </span>{' '}
+            <CornerLeftDown className="" />
+          </Badge>
+        </div>
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4 lg:gap-8">
           <PricingCard
             name="الباقة الاساسية - للتجار"
@@ -69,6 +84,8 @@ export default function Plans() {
               'ربط ميتا وتيك توك وسناب بكسل',
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
+            r="499 د.ع+ 3.25%
+,  متاجر"
             buttonText="ابدأ "
             buttonVariant="outline"
             planType="trader-basic"
@@ -86,10 +103,9 @@ export default function Plans() {
               'عدد طلبات غير محدود',
               'ادارة الطلبات',
               'ادارة المخزون',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
-              'استشارة تسويقية',
-              'محتوى خاص بمتجرك عدد 2 (مجاني)',
+
+              'دعم تسويقي',
+
               'تفعيل كوبونات خصم',
               'ربط ميتا وتيك توك وسناب بكسل',
               'الربط مع شركات التوصيل',
@@ -97,6 +113,8 @@ export default function Plans() {
               'صلاحية ادارة المتجر لـ 3 اشخاص',
               'اولوية الدعم 24/7',
             ]}
+            r="399 د.ع + 2.75%
+,  متاجر"
             buttonText="ابدأ الآن"
             buttonVariant="outline"
             recommended
@@ -114,13 +132,14 @@ export default function Plans() {
               'منتجات جاهزة للرفع عدد 5',
               'محتوى جاهز للمنتجات',
               'حد الطلبات 125 شهرياً',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
+
               'الربط مع شركات التوصيل',
               'ثيمات متجر عدد 1',
-              'محتوى خاص بمتجرك (رسوم إضافية)',
+
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
+            r="199 د.ع+ 3.25%
+,  متاجر"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-basics"
@@ -135,9 +154,7 @@ export default function Plans() {
               'متجر إلكتروني عدد 2',
               'عدد منتجات غير محدود',
               'عدد طلبات غير محدود',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
-              'محتوى خاص بمتجرك عدد 2 (مجاني)',
+
               'خصومات ومكافآت',
               'ربط ميتا وتيك توك وسناب بكسل',
               'الربط مع شركات التوصيل',
@@ -145,6 +162,8 @@ export default function Plans() {
               'صلاحية إدارة المتجر 3 أشخاص',
               'أولوية الدعم 24/7',
             ]}
+            r="99 د.ع+ 2.75%
+,  متاجر"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-pro"
