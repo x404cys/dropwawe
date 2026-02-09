@@ -18,4 +18,3 @@ export async function GET(req: Request) {
     return NextResponse.json({ err }, { status: 404 });
   }
 }
-c
