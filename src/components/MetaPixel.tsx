@@ -1,7 +1,7 @@
 'use client';
 
 import Script from 'next/script';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
 
 const PIXEL_ID = '2182043858994428';
@@ -14,13 +14,12 @@ declare global {
 
 export default function MetaPixel() {
   const pathname = usePathname();
-  const searchParams = useSearchParams();
 
   useEffect(() => {
-    if (window.fbq) {
+    if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView');
     }
-  }, [pathname, searchParams]);
+  }, [pathname]); // 👈 فقط على تغيير المسار
 
   return (
     <>
