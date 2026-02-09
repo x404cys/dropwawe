@@ -33,7 +33,7 @@ interface PricingCardProps {
   planType?: string;
   r: string;
 }
-
+//
 export function PricingCard({
   name,//
   price,
