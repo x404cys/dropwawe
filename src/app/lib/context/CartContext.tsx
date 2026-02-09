@@ -1,14 +1,15 @@
 'use client';
 import { Product } from '@/types/Products';
-import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
+import { createContext, useContext, ReactNode, useState, useEffect } from 'react';
 import { calculateDiscountedPrice } from '../utils/CalculateDiscountedPrice';
-import { useProducts } from '@/app/(page)/s/context/products-context';
 type CouponResult = {
   valid: boolean;
   message?: string;
   discount: number;
-  appliedOn: 'ORDER' | 'PRODUCT';
+  type: 'PERCENTAGE' | 'FIXED' | 'FREE_SHIPPING';
+  appliedOn: 'ORDER' | 'PRODUCT' | 'SHIPPING';
   productId?: string;
+  shippingDiscount?: number | 'FULL';
 };
 
 type CartContextType = {
@@ -19,7 +20,6 @@ type CartContextType = {
     keyName: string,
     selectedColor?: string,
     selectedSize?: string
-    
   ) => void;
   removeFromCartByKey: (id: string, keyName: string) => void;
   decreaseQuantityByKey: (id: string, keyName: string) => void;
@@ -163,11 +163,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     setCoupon(data);
   };
   const getTotalAfterCoupon = (keyName: string) => {
-    const total = getTotalPriceAfterDiscountByKey(keyName);
+    const subtotal = getTotalPriceAfterDiscountByKey(keyName);
+    const shipping = getAllShippingPricesByKey(keyName);
 
-    if (!coupon) return total;
+    if (!coupon) return subtotal + shipping;
 
-    return Math.max(total - coupon.discount, 0);
+    let finalShipping = shipping;
+
+    if (coupon.appliedOn === 'SHIPPING') {
+      if (coupon.shippingDiscount === 'FULL') {
+        finalShipping = 0;
+      } else if (typeof coupon.shippingDiscount === 'number') {
+        finalShipping = Math.max(shipping - coupon.shippingDiscount, 0);
+      }
+    }
+
+    const finalSubtotal = Math.max(subtotal - coupon.discount, 0);
+
+    return finalSubtotal + finalShipping;
   };
 
   const getTotalPriceAfterDiscountByKey = (keyName: string): number => {

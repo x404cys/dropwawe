@@ -565,7 +565,7 @@ model Coupon {
 enum CouponScope {
   GLOBAL
   STORE
-  PRODUCT
+  PRODUCT 
 }
 
 enum CouponType {

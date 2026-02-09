@@ -78,7 +78,19 @@ export default function CouponInput({ cartKey, storeId }: Props) {
           )}
 
           {coupon && (
-            <p className="mt-1 text-sm text-blue-700">خصم الكوبون: {coupon.discount} د.ع</p>
+            <>
+              {coupon.appliedOn === 'SHIPPING' ? (
+                coupon.shippingDiscount === 'FULL' ? (
+                  <p className="mt-1 text-sm text-blue-700">التوصيل مجاني</p>
+                ) : (
+                  <p className="mt-1 text-sm text-blue-700">
+                    خصم التوصيل: {coupon.shippingDiscount} د.ع
+                  </p>
+                )
+              ) : (
+                <p className="mt-1 text-sm text-blue-700">خصم الكوبون: {coupon.discount} د.ع</p>
+              )}
+            </>
           )}
         </div>
       )}

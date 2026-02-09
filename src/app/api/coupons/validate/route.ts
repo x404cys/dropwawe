@@ -62,6 +62,14 @@ export async function POST(req: NextRequest) {
         return NextResponse.json({ message: 'Coupon already used by this user' }, { status: 400 });
       }
     }
+    if (coupon.type === 'FREE_SHIPPING') {
+      return NextResponse.json({
+        valid: true,
+        appliedOn: 'SHIPPING',
+        shippingDiscount: coupon.value,
+        discount: 0,
+      });
+    }
 
     if (coupon.productId) {
       const product = products.find(p => p.id === coupon.productId);
@@ -117,10 +125,6 @@ function calculateCouponDiscount(
   type: 'PERCENTAGE' | 'FIXED' | 'FREE_SHIPPING',
   maxDiscount?: number | null
 ): number {
-  if (type === 'FREE_SHIPPING') {
-    return 0;
-  }
-
   let discount = type === 'PERCENTAGE' ? (amount * value) / 100 : value;
 
   if (maxDiscount && discount > maxDiscount) {

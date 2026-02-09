@@ -154,7 +154,7 @@ export default function StoreSetupPage() {
       {hasErrors && (
         <div className="text-xs text-red-500">لديك أخطاء بالحقول راجع النقاط الحمراء</div>
       )}
-      {currentStore?.subLink}
+
       <SettingOptions
         activeSection={activeSection}
         onSectionChange={section => {

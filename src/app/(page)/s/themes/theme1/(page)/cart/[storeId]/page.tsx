@@ -64,15 +64,12 @@ export default function CartPage() {
   const cartKey = `cart/${storeId}`;
   const cartItems = getCartByKey(cartKey);
   const shippingPriceTotal = getAllShippingPricesByKey(cartKey);
-  const totalPrice = getTotalPriceByKey(cartKey); // مجموع كل المنتجات بدون خصم
-  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey); // مجموع المنتجات بعد الخصم
+  const totalPrice = getTotalPriceByKey(cartKey);
+  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
   const checkQuantity = getTotalQuantityByKey(cartKey);
-
-  // بعد تطبيق الكوبون على المنتجات فقط، بدون شحن
-  const totalAfterCoupon = getTotalAfterCoupon(cartKey); // هذا من CartContext
-
-  // الإجمالي النهائي يشمل الشحن ولا يتأثر بالكوبون
-  const finalTotal = totalAfterCoupon + shippingPriceTotal;
+  const totalplusShippingPrice = shippingPriceTotal + totalPrice;
+  const totalAfterCoupon = getTotalAfterCoupon(cartKey);
+  const finalTotal = totalAfterCoupon;
 
   const checkQua = getTotalQuantityByKey(cartKey);
   if (checkQua == 0 || checkQua == null) {
@@ -279,16 +276,20 @@ export default function CartPage() {
               <div className="space-y-2 border-t pt-4 text-sm text-gray-700">
                 <div className="flex justify-between">
                   <span>المجموع الفرعي</span>
-                  <span>د.ع {totalPrice}</span>
+                  <span>د.ع {formatIQD(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span>التوصيل</span>
-                  <span>د.ع {shippingPriceTotal}</span>
+                  <span>د.ع {formatIQD(shippingPriceTotal)}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>سعر الكلي مع التوصيل </span>
+                  <span>د.ع {formatIQD(totalplusShippingPrice)}</span>
                 </div>
 
                 <div className="flex justify-between border-t pt-2 font-bold text-gray-800">
                   <span>الإجمالي</span>
-                  <span>د.ع {formatIQD(totalPrice)}</span>
+                  <span>د.ع {formatIQD(totalplusShippingPrice)}</span>
                 </div>
                 <div className="flex justify-between border-t pt-2 font-bold text-gray-800">
                   <span>الإجمالي بعد الخصم</span>

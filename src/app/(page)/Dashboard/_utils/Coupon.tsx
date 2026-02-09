@@ -34,7 +34,7 @@ import {
 import { MdCancel } from 'react-icons/md';
 import { toast } from 'sonner';
 export type CouponScope = 'GLOBAL' | 'STORE' | 'PRODUCT';
-export type CouponType = 'PERCENTAGE' | 'FIXED';
+export type CouponType = 'PERCENTAGE' | 'FIXED' | 'FREE_SHIPPING';
 
 export interface Coupon {
   id: string;
@@ -108,6 +108,8 @@ export default function CouponCreatePage() {
   const [scope, setScop] = useState('');
   const [form, setForm] = useState<CouponForm>(initialForm);
   const [openDailog, setOpenDailog] = useState(false);
+  const isShipping = form.type === 'FREE_SHIPPING';
+
   useEffect(() => {
     fetchCoupons();
   }, []);
@@ -387,6 +389,7 @@ export default function CouponCreatePage() {
                         <SelectContent dir="rtl">
                           <SelectItem value="PERCENTAGE">نسبة مئوية %</SelectItem>
                           <SelectItem value="FIXED">مبلغ ثابت</SelectItem>
+                          <SelectItem value="FREE_SHIPPING">خصم على التوصيل</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -460,7 +463,7 @@ export default function CouponCreatePage() {
                                   key={p.id}
                                   onClick={() => {
                                     handleChange('productId', p.id);
-                                    setOpenDailog(false); // يغلق الدايالوج بعد الاختيار
+                                    setOpenDailog(false);
                                   }}
                                   className={`flex cursor-pointer flex-col items-center rounded-lg border p-3 text-center transition hover:shadow-md ${
                                     form.productId === p.id
