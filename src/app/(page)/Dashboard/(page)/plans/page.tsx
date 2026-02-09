@@ -37,7 +37,7 @@ export default function Plans() {
 
   return (
     <div dir="rtl" className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="container mx-auto px-4 py-2 md:py-5">
         <div className="mb-16 text-center">
           <Badge
             variant="secondary"
@@ -52,7 +52,7 @@ export default function Plans() {
             تمتع بتجربة مجانية لمدة 7 ايام لكل الميزات
           </p>
         </div>
-        
+
         <div className="mt-10 mb-5 text-center">
           <Badge variant={'success'} className="mt-4 mb-5 text-lg">
             <span className="font-normal"> او اختر باقتك وابدأ الان </span>{' '}
@@ -77,6 +77,9 @@ export default function Plans() {
               'ربط ميتا وتيك توك وسناب بكسل',
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
+            r="499 د.ع+ 3.25%
+, تغطية كلف بوابة الدفع الالكتروني
+"
             buttonText="ابدأ "
             buttonVariant="outline"
             planType="trader-basic"
@@ -94,10 +97,9 @@ export default function Plans() {
               'عدد طلبات غير محدود',
               'ادارة الطلبات',
               'ادارة المخزون',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
-              'استشارة تسويقية',
-              'محتوى خاص بمتجرك عدد 2 (مجاني)',
+
+              'دعم تسويقي',
+
               'تفعيل كوبونات خصم',
               'ربط ميتا وتيك توك وسناب بكسل',
               'الربط مع شركات التوصيل',
@@ -105,6 +107,9 @@ export default function Plans() {
               'صلاحية ادارة المتجر لـ 3 اشخاص',
               'اولوية الدعم 24/7',
             ]}
+            r="399 د.ع + 2.75%
+, تغطية كلف بوابة الدفع الالكتروني
+"
             buttonText="ابدأ الآن"
             buttonVariant="outline"
             recommended
@@ -122,13 +127,15 @@ export default function Plans() {
               'منتجات جاهزة للرفع عدد 5',
               'محتوى جاهز للمنتجات',
               'حد الطلبات 125 شهرياً',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
+
               'الربط مع شركات التوصيل',
               'ثيمات متجر عدد 1',
-              'محتوى خاص بمتجرك (رسوم إضافية)',
+
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
+            r="199 د.ع+ 3.25%
+, تغطية كلف بوابة الدفع الالكتروني
+"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-basics"
@@ -143,9 +150,7 @@ export default function Plans() {
               'متجر إلكتروني عدد 2',
               'عدد منتجات غير محدود',
               'عدد طلبات غير محدود',
-              'تحقق من هاتف العميل',
-              'إشعارات الواتساب للعميل',
-              'محتوى خاص بمتجرك عدد 2 (مجاني)',
+
               'خصومات ومكافآت',
               'ربط ميتا وتيك توك وسناب بكسل',
               'الربط مع شركات التوصيل',
@@ -153,6 +158,9 @@ export default function Plans() {
               'صلاحية إدارة المتجر 3 أشخاص',
               'أولوية الدعم 24/7',
             ]}
+            r="99 د.ع+ 2.75%
+, تغطية كلف بوابة الدفع الالكتروني
+"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-pro"

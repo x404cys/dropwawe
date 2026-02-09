@@ -31,6 +31,7 @@ interface PricingCardProps {
   recommended?: boolean;
   onClick?: (type: string) => void;
   planType?: string;
+  r: string;
 }
 
 export function PricingCard({
@@ -38,6 +39,7 @@ export function PricingCard({
   price,
   period,
   description,
+  r,
   features,
   buttonText,
   buttonVariant = 'default',
@@ -96,12 +98,17 @@ export function PricingCard({
               </li>
             ))}
           </ul>
+          <div className="mt-4 px-8 pt-2 text-xs">
+            <span>رسوم المعاملات</span>
+            <p>{r}</p>
+          </div>
         </CardContent>
+
         <CardFooter>
           <Button
             onClick={handleOpenDialog}
             variant={buttonVariant}
-            className={'w-full cursor-pointer hover:bg-sky-600 bg-sky-500 text-white'}
+            className={'w-full cursor-pointer bg-sky-500 text-white hover:bg-sky-600'}
           >
             {buttonText}
           </Button>

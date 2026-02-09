@@ -104,7 +104,7 @@ export default function OrderDetailsPage() {
 
   const handleDelete = async () => {
     try {
-      const res = await fetch(`/api/orders/option/${orderId}`, { method: 'DELETE' });
+      const res = await fetch(`/api/orders/option/${orderId}`, { method: 'PATCH' });
       if (!res.ok) throw new Error();
       toast.success('تم إلغاء الطلب بنجاح');
       router.back();
@@ -274,39 +274,37 @@ export default function OrderDetailsPage() {
                 </div>
               </div>
 
-              {order.status === 'PENDING' && (
-                <div className="flex flex-wrap-reverse gap-3">
-                  {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
-                    <Button
-                      size="lg"
-                      className="bg-foreground text-background hover:bg-foreground/90 flex-1"
-                      onClick={() => setOpenAccept(true)}
-                    >
-                      <CheckCircle className="ml-2 h-5 w-5" />
-                      تأكيد الطلب
-                    </Button>
-                  )}
-                  {session.data?.user.role === 'SUPPLIER' && (
-                    <Button
-                      size="lg"
-                      className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
-                      onClick={() => setOpenAccept(true)}
-                    >
-                      <CheckCircle className="ml-2 h-5 w-5" />
-                      تأكيد الطلب
-                    </Button>
-                  )}
+              <div className="flex flex-wrap-reverse gap-3">
+                {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
                   <Button
                     size="lg"
-                    variant="destructive"
-                    className="flex-1 cursor-pointer"
-                    onClick={() => setOpenCancel(true)}
+                    className="bg-foreground text-background hover:bg-foreground/90 flex-1"
+                    onClick={() => setOpenAccept(true)}
                   >
-                    <XCircle className="ml-2 h-5 w-5" />
-                    إلغاء الطلب
+                    <CheckCircle className="ml-2 h-5 w-5" />
+                    تأكيد الطلب
                   </Button>
-                </div>
-              )}
+                )}
+                {session.data?.user.role === 'SUPPLIER' && (
+                  <Button
+                    size="lg"
+                    className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
+                    onClick={() => setOpenAccept(true)}
+                  >
+                    <CheckCircle className="ml-2 h-5 w-5" />
+                    تأكيد الطلب
+                  </Button>
+                )}
+                <Button
+                  size="lg"
+                  variant="destructive"
+                  className="flex-1 cursor-pointer"
+                  onClick={() => setOpenCancel(true)}
+                >
+                  <XCircle className="ml-2 h-5 w-5" />
+                  إلغاء الطلب
+                </Button>
+              </div>
             </div>
 
             <div className="space-y-6">
