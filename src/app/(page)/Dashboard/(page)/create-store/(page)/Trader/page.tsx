@@ -17,6 +17,7 @@ import { PiStorefront } from 'react-icons/pi';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import Image from 'next/image';
+import { fbEvent } from '@/app/(page)/Dashboard/_utils/pixel';
 type ServerErrorDetail = {
   field: string;
   message: string;
@@ -52,6 +53,11 @@ export default function StoreSetupPage() {
     { id: 'shipping', label: 'التوصيل والاتصال', icon: <LiaShippingFastSolid size={24} /> },
     { id: 'social', label: 'الروابط الاجتماعية', icon: <IoShareSocialOutline size={24} /> },
   ];
+  useEffect(() => {
+    fbEvent('ViewContent', {
+      content_name: 'Create Store Page',
+    });
+  }, []);
 
   useEffect(() => {
     if (!session?.user?.id) return;
@@ -115,7 +121,10 @@ export default function StoreSetupPage() {
         return;
       }
       toast.success('تم الحفظ بنجاح ✨');
-
+      fbEvent('CompleteRegistration', {
+        content_name: 'Store Created',
+        store_name: storeName,
+      });
       router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ في الحفظ');

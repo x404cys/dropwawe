@@ -1,4 +1,5 @@
 'use client';
+import { useEffect } from 'react';
 
 import { useState } from 'react';
 import { signIn } from 'next-auth/react';
@@ -9,11 +10,23 @@ import { Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 
+const fbEvent = (name: string, options = {}) => {
+  if (typeof window !== 'undefined' && (window as any).fbq) {
+    (window as any).fbq('track', name, options);
+  }
+};
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
   const callbackUrl = 'https://dashboard.matager.store/Dashboard/create-store';
-
+  useEffect(() => {
+    fbEvent('ViewContent', {
+      content_name: 'Sign In Page',
+    });
+  }, []);
   const handleGoogleSignIn = async () => {
+    fbEvent('InitiateCheckout', {
+      content_name: 'Google Sign In',
+    });
     setIsLoading(true);
     await signIn('google', {
       callbackUrl,

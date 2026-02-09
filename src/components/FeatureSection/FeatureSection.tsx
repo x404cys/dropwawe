@@ -16,7 +16,7 @@ export default function PaymentSection() {
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
       <h2 className="mb-4 text-center text-4xl font-bold text-sky-400">
-        صُمّمت دروب ويف لتغطية كافة احتياجاتك <br /> في التجارة الالكترونية
+        صُمّمت متاجر لتغطية كافة احتياجاتك <br /> في التجارة الالكترونية
       </h2>
       <div className="mx-auto flex max-w-7xl flex-col-reverse items-center gap-14 md:flex-row">
         <div data-aos="fade-up" className="flex-1 space-y-3">

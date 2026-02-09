@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { LuMousePointerClick } from 'react-icons/lu';
+import { fbEvent } from '../../_utils/pixel';
 
 export default function Plans() {
   const [loading, setLoading] = useState(false);
@@ -17,7 +18,9 @@ export default function Plans() {
 
   const handleSubscribe = async (type: string) => {
     setLoading(true);
-
+    fbEvent('InitiateCheckout', {
+      content_name: type,
+    });
     try {
       const result = await subscribePlan(type);
       await update();
@@ -25,7 +28,11 @@ export default function Plans() {
         window.location.href = result.redirect_url;
         return;
       }
-
+      fbEvent('Purchase', {
+        content_name: type,
+        currency: 'IQD',
+        value: type.includes('pro') ? 69000 : 39000,
+      });
       toast.success(`تم الاشتراك بنجاح في خطة: ${type}`);
       router.replace('/Dashboard');
     } catch (err) {
@@ -78,8 +85,7 @@ export default function Plans() {
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
             r="499 د.ع+ 3.25%
-, تغطية كلف بوابة الدفع الالكتروني
-"
+,  متاجر"
             buttonText="ابدأ "
             buttonVariant="outline"
             planType="trader-basic"
@@ -108,8 +114,7 @@ export default function Plans() {
               'اولوية الدعم 24/7',
             ]}
             r="399 د.ع + 2.75%
-, تغطية كلف بوابة الدفع الالكتروني
-"
+,  متاجر"
             buttonText="ابدأ الآن"
             buttonVariant="outline"
             recommended
@@ -134,8 +139,7 @@ export default function Plans() {
               'صلاحية إدارة المتجر لشخص واحد',
             ]}
             r="199 د.ع+ 3.25%
-, تغطية كلف بوابة الدفع الالكتروني
-"
+,  متاجر"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-basics"
@@ -159,8 +163,7 @@ export default function Plans() {
               'أولوية الدعم 24/7',
             ]}
             r="99 د.ع+ 2.75%
-, تغطية كلف بوابة الدفع الالكتروني
-"
+,  متاجر"
             buttonText="الترقية الآن"
             buttonVariant="default"
             planType="drop-pro"

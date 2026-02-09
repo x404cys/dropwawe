@@ -9,6 +9,7 @@ import { FavoriteProvider } from './lib/context/FavContext';
 import { ProvidersContext } from './providersContext';
 import { UserProvider } from './lib/context/UserIdContect';
 import { Toaster } from 'sonner';
+import MetaPixel from '@/components/MetaPixel';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 const geistMono = Geist_Mono({ variable: '--font-geist-mono', subsets: ['latin'] });
@@ -34,7 +35,7 @@ export const metadata: Metadata = {
   title: 'Matager | منصة المتاجر الإلكترونية',
   description:
     'منصة Matager - متاجر لإنشاء المتاجر الإلكترونية أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً. منصة سهلة وشاملة مع جميع الأدوات التي تحتاجها لنمو تجارتك.',
-  keywords: ['دروب ويف', 'متجر إلكتروني', 'إنشاء متجر', 'ecommerce', 'shop', 'store builder'],
+  keywords: [' متاجر', 'متجر إلكتروني', 'إنشاء متجر', 'ecommerce', 'shop', 'store builder'],
   openGraph: {
     title: 'Matager - متاجر | منصة المتاجر الإلكترونية',
     description:
@@ -70,6 +71,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.className} antialiased`}
       >
+        <MetaPixel />
+
         <div className="mx-auto overflow-hidden font-bold md:px-0">
           <Providers>
             <FavoriteProvider>

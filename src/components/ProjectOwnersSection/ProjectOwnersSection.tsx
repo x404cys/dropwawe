@@ -46,7 +46,7 @@ export default function ProjectOwnersSection() {
       <div className="mx-auto max-w-7xl">
         <div className="mb-12 text-center md:mb-16" data-aos="fade-up">
           <h2 className="mb-4 text-3xl font-extrabold text-sky-400 md:text-4xl lg:text-5xl">
-            لمن صُمّمت دروب ويڤ؟{' '}
+            لمن صُمّمت متاجر{' '}
           </h2>
         </div>
 
