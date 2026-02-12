@@ -6,6 +6,7 @@ import Theme2Footer from './theme2/_components/NavBarTheme2';
 import Theme2Home from './theme2/HomeView';
 import Theme3Navbar from './theme3/_components/Header';
 import HomeViewTheme3 from './theme3/HomeView';
+import StoreFooterTheme3 from './theme3/_components/FooterTheme3';
 export type ThemeName = 'NORMAL' | 'MODERN' | 'RAMADAN';
 
 export const THEMES = {
@@ -21,7 +22,7 @@ export const THEMES = {
   },
   RAMADAN: {
     Navbar: Theme3Navbar,
-    Footer: StoreFooter,
+    Footer: StoreFooterTheme3,
     HomeView: HomeViewTheme3,
   },
 };

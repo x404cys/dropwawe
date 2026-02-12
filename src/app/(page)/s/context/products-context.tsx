@@ -18,12 +18,14 @@ interface ProductsContextProps {
   store: StoreProps;
   selectedCategoryList: string | null;
   setCategoryList: (cat: string | null) => void;
+  loading: boolean;
 }
 
 const ProductsContext = createContext<ProductsContextProps | null>(null);
 
 export function ProductsProvider({ children }: { children: ReactNode }) {
   const store = useStore();
+  const [loading, setLoading] = useState(true);
 
   const [products, setProducts] = useState<Product[]>([]);
   const [selectedCategory, setCategory] = useState<string | null>(null);
@@ -35,10 +37,13 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
 
     const fetchProducts = async () => {
       try {
+        setLoading(true);
         const res = await axios.get<Product[]>(`/api/storev2/products/${store.subLink}`);
         setProducts(res.data);
       } catch (err) {
         console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -77,6 +82,7 @@ export function ProductsProvider({ children }: { children: ReactNode }) {
         store,
         selectedCategoryList,
         setCategoryList,
+        loading
       }}
     >
       {children}

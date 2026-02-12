@@ -5,7 +5,7 @@ import { CiSearch } from 'react-icons/ci';
 import { useProducts } from '../../../context/products-context';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useCart } from '@/app/lib/context/CartContext';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function HeaderSectionTheme3() {
   const { filteredProducts, store, setSearch, search } = useProducts();
@@ -13,6 +13,7 @@ export default function HeaderSectionTheme3() {
   const KEY_CART = `cart/${store?.id}`;
   const cartItems = getTotalQuantityByKey(KEY_CART);
   const router = useRouter();
+  const pathname = usePathname();
   return (
     <div dir="rtl" className="w-full bg-[#7f2d2f] font-sans">
       <div className="relative bg-[#f9f6f3] pt-8 pb-10 text-center">
@@ -35,7 +36,9 @@ export default function HeaderSectionTheme3() {
             </span>
           )}
         </button>
-        <div className="absolute -right-52 flex rotate-30 gap-2 text-3xl">
+        <div
+          className={`absolute -right-52 flex rotate-30 gap-2 text-3xl ${!pathname.includes('/s') ? 'hidden' : 'block'}`}
+        >
           <Image
             src={'/img-theme/IMG_8474-removebg-preview.png'}
             alt="al"
@@ -43,12 +46,21 @@ export default function HeaderSectionTheme3() {
             height={200}
           />
         </div>
-        <div className="space-y-4">
-          <h1 className="mt-6 text-3xl text-[#7f2d2f]">رمضان</h1>
-          <h2 className="mt-2 text-[#7f2d2f]">{store?.name}</h2>
+        <div className="relative pt-19 text-center">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2">
+            <Image
+              src={'/img-theme/IMG_8476-removebg-preview.png'}
+              alt="logo"
+              width={100}
+              height={100}
+            />
+          </div>
+
+          <h2 className="text-[#7f2d2f]">{store?.name}</h2>
         </div>
+
         <div className="relative mx-auto mt-6 max-w-sm">
-          <div className="relative">
+          <div className={`relative ${!pathname.includes('/s') ? 'hidden' : 'block'}`}>
             <input
               type="text"
               value={search || ''}
@@ -75,17 +87,23 @@ export default function HeaderSectionTheme3() {
                 {filteredProducts.map(product => (
                   <a
                     key={product.id}
-                    href={`/s/themes/theme1/productOverviews/${product.id}`}
+                    href={`/s/themes/theme3/product-overview/${product.id}`}
                     className="flex items-center gap-3 px-4 py-3 transition hover:bg-[#f8f3f3]"
                   >
-                    <img
-                      src={product.image || '/placeholder.png'}
+                    <Image
+                      src={product?.image as string}
                       alt={product.name}
+                      width={20}
+                      height={20}
                       className="h-12 w-12 rounded-lg border border-gray-100 object-cover"
                     />
                     <div className="flex flex-col">
-                      <span className="text-sm font-semibold text-gray-800">{product.name}</span>
-                      <span className="text-xs text-[#7f2d2f]">{formatIQD(product.price)} د.ع</span>
+                      <span className="line-clamp-1 text-right text-sm font-semibold text-gray-800">
+                        {product.name}
+                      </span>
+                      <span className="text-right text-xs text-[#7f2d2f]">
+                        {formatIQD(product.price)} د.ع
+                      </span>
                     </div>
                   </a>
                 ))}
