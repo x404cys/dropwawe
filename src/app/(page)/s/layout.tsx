@@ -15,7 +15,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
   return (
     <StoreProvider store={store}>
       <ProductsProvider>
-        <section className="flex min-h-screen flex-col px-3">
+        <section className="flex min-h-screen flex-col ">
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

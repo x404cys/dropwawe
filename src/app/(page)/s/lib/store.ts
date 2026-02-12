@@ -14,7 +14,7 @@ export async function getStoreFromSubdomain(): Promise<StoreProps> {
     return {
       id: 'ali12',
       name: 'Default Store',
-      theme: 'NORMAL',
+      theme: 'RAMADAN',
       domain: 'example.com',
       subLink: 'ali12',
     };

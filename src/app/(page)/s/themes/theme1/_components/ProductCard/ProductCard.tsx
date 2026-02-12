@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export default function ProductCard({ products }: { products: Product[] }) {
   return (
-    <div className="bg-white">
+    <div className=" ">
       <div className="mx-auto">
         <h2 className="sr-only">Products</h2>
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-5">

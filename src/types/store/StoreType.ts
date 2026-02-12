@@ -18,7 +18,7 @@ export type StoreProps = {
   tiktokPixel?: string;
   domain?: string;
   googlePixel?: string;
-  theme: 'MODERN' | 'NORMAL';
+  theme: 'MODERN' | 'NORMAL' | 'RAMADAN';
 };
 
 export type StatsProps = {

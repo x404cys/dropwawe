@@ -16,7 +16,7 @@ export async function GET(req: Request, context: { params: Promise<{ orderId: st
       where: { id: orderId },
       include: { items: { include: { product: true } } },
     });
-
+    
     if (order) return NextResponse.json(order);
 
     if (session?.user.role === 'SUPPLIER') {

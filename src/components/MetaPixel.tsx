@@ -14,12 +14,12 @@ declare global {
 
 export default function MetaPixel() {
   const pathname = usePathname();
-
+    
   useEffect(() => {
     if (typeof window !== 'undefined' && window.fbq) {
       window.fbq('track', 'PageView');
     }
-  }, [pathname]); // 👈 فقط على تغيير المسار
+  }, [pathname]);
 
   return (
     <>
