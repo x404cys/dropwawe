@@ -29,7 +29,10 @@ export default function HeaderSectionTheme3() {
           onClick={() => router.push('/s/themes/theme3/cart/checkout')}
           className="absolute top-18 right-5 cursor-pointer rounded-lg border border-[#d9b3b4] p-2 text-2xl"
         >
-          <LuShoppingBasket className="text-[#d9b3b4]" />
+          <LuShoppingBasket
+            onClick={() => router.push('/s/themes/theme3/cart/checkout')}
+            className="text-[#d9b3b4]"
+          />
           {cartItems > 0 && (
             <span className="text-primary-foreground absolute -top-3 -right-3 flex h-5 w-5 items-center justify-center rounded-full bg-[#7f2d2f] text-xs">
               {cartItems}
@@ -37,7 +40,7 @@ export default function HeaderSectionTheme3() {
           )}
         </button>
         <div
-          className={`absolute -right-52 flex rotate-30 gap-2 text-3xl ${!pathname.includes('/s') ? 'hidden' : 'block'}`}
+          className={`absolute -right-52 flex rotate-30 gap-2 text-3xl ${pathname.includes('/s') ? 'hidden' : 'block'}`}
         >
           <Image
             src={'/img-theme/IMG_8474-removebg-preview.png'}
@@ -60,7 +63,7 @@ export default function HeaderSectionTheme3() {
         </div>
 
         <div className="relative mx-auto mt-6 max-w-sm">
-          <div className={`relative ${!pathname.includes('/s') ? 'hidden' : 'block'}`}>
+          <div className={`relative ${pathname.includes('/s') ? 'hidden' : 'block'}`}>
             <input
               type="text"
               value={search || ''}
@@ -74,7 +77,7 @@ export default function HeaderSectionTheme3() {
             {search && (
               <button
                 onClick={() => setSearch('')}
-                className="absolute top-1/2 left-4 -translate-y-1/2 text-xs font-medium text-[#7f2d2f] hover:underline"
+                className="absolute top-1/2 left-4 -translate-y-1/2 font-medium text-[#7f2d2f] hover:underline"
               >
                 حذف
               </button>
