@@ -65,7 +65,7 @@ export default function OrderSubmi() {
 
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
 
-  const finalTotal = totalAfterCoupon + shippingPriceTotal;
+  const finalTotal = totalAfterCoupon;
 
   const checkQuantity = getTotalQuantityByKey(cartKey);
 

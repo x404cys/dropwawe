@@ -65,8 +65,6 @@ export default function CartPage() {
   const cartItems = getCartByKey(cartKey);
   const shippingPriceTotal = getAllShippingPricesByKey(cartKey);
   const totalPrice = getTotalPriceByKey(cartKey);
-  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
-  const checkQuantity = getTotalQuantityByKey(cartKey);
   const totalplusShippingPrice = shippingPriceTotal + totalPrice;
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
   const finalTotal = totalAfterCoupon;

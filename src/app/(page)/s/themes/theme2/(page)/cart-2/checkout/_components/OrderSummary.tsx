@@ -15,7 +15,7 @@ const OrderSummary = ({ cartKey }: Props) => {
     getTotalPriceByKey,
     getTotalPriceAfterDiscountByKey,
     getAllShippingPricesByKey,
-    getTotalQuantityByKey,
+    getTotalQuantityByKey, 
     getTotalAfterCoupon,
   } = useCart();
 
@@ -27,7 +27,7 @@ const OrderSummary = ({ cartKey }: Props) => {
   const totalQty = getTotalQuantityByKey(cartKey);
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
 
-  const finalTotal = totalAfterCoupon + shipping;
+  const finalTotal = totalAfterCoupon ;
 
   return (
     <div className="sticky top-6 rounded-md border bg-white p-6 font-light shadow-md">

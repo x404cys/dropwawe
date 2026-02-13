@@ -178,7 +178,7 @@ export default function ProfitPage() {
             <div className="">
               <div className="flex items-center gap-2 text-neutral-600">
                 <TrendingUp className="h-5 w-5" />
-                <span className="text-sm font-medium">العائد الكلي</span>
+                <span className="text-sm font-medium">العائد الكلي - كاش</span>
               </div>
               <p className="mt-2 text-3xl font-bold text-neutral-900">
                 {formatCurrency(data.totalProfit)}

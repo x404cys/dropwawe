@@ -27,7 +27,7 @@ const OrderSummary = ({ cartKey }: Props) => {
   const totalQty = getTotalQuantityByKey(cartKey);
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
 
-  const finalTotal = totalAfterCoupon + shipping;
+  const finalTotal = totalAfterCoupon ;
 
   return (
     <div className="sticky top-6 rounded-md border bg-[#f9f6f3] p-6 font-light shadow-md">

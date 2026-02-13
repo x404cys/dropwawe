@@ -57,18 +57,13 @@ export default function OrderSubmi() {
   const cartKey = `cart/${store?.id}`;
   const cartItems = getCartByKey(cartKey);
 
-  const totalPrice = getTotalPriceByKey(cartKey); 
-  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);  
-  const shippingPriceTotal = getAllShippingPricesByKey(cartKey);  
-  const totalQuantity = getTotalQuantityByKey(cartKey);  
-
-   const totalBeforeCoupon = totalAfterDiscount + shippingPriceTotal;
-
-   const totalAfterCoupon = getTotalAfterCoupon(cartKey);  
-
-  const finalTotal = totalAfterCoupon + shippingPriceTotal;
-
+  const shippingPriceTotal = getAllShippingPricesByKey(cartKey);
+  const totalPrice = getTotalPriceByKey(cartKey);
+  const totalAfterDiscount = getTotalPriceAfterDiscountByKey(cartKey);
   const checkQuantity = getTotalQuantityByKey(cartKey);
+  const totalplusShippingPrice = shippingPriceTotal + totalPrice;
+  const totalAfterCoupon = getTotalAfterCoupon(cartKey);
+  const finalTotal = totalAfterCoupon;
 
   if (checkQuantity == 0 || checkQuantity == null) {
     return (

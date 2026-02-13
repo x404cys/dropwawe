@@ -9,7 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 
 export default function HeaderSectionTheme3() {
   const { filteredProducts, store, setSearch, search } = useProducts();
-  const { getTotalQuantityByKey, getTotalPriceAfterDiscountByKey } = useCart();
+  const { getTotalQuantityByKey } = useCart();
   const KEY_CART = `cart/${store?.id}`;
   const cartItems = getTotalQuantityByKey(KEY_CART);
   const router = useRouter();
