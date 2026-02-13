@@ -5,7 +5,7 @@ import axios from 'axios';
 import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import { format, differenceInDays } from 'date-fns';
-
+import Image from 'next/image';
 import { IoBusinessOutline } from 'react-icons/io5';
 import { BiTestTube } from 'react-icons/bi';
 import { RiFireLine } from 'react-icons/ri';
@@ -49,9 +49,19 @@ export default function PlanCard() {
   const status = data?.status;
 
   return (
-    <div dir="rtl" className="w-full space-y-5 rounded-lg bg-white">
+    <div dir="rtl" className="relative w-full space-y-5 rounded-lg bg-white">
       <div className="rounded-lg bg-gradient-to-l from-[#04BAF6] via-[#04BAF6] to-[#52d4ff] p-5 text-white shadow-md">
         <div className="flex items-start justify-between">
+          {data?.subscription?.type === 'ramadan-plan' && (
+            <div className="absolute top-0 -left-3 flex text-3xl">
+              <Image
+                src={'/img-theme/IMG_8473-removebg-preview.png'}
+                alt="al"
+                width={80}
+                height={180}
+              />
+            </div>
+          )}
           {status === 'SUB_USER' && (
             <div className="text-sm text-white/90">تم الاشتراك من قبل صاحب المتجر</div>
           )}
@@ -65,14 +75,14 @@ export default function PlanCard() {
             </div>
           )}
 
-          {status === 'ACTIVE' && (
-            <div>
-              <p className="text-base font-semibold">{data?.subscription?.planName}</p>
-              <p className="mt-1 text-xs text-white/80">
-                {data?.subscription?.detailsSubscription.description}
-              </p>
-            </div>
-          )}
+            {status === 'ACTIVE' && (
+              <div>
+                <p className="text-base font-semibold">{data?.subscription?.planName}</p>
+                <p className="mt-1 text-xs text-white/80">
+                  {data?.subscription?.detailsSubscription.description}
+                </p>
+              </div>
+            )}
 
           {status === 'NEED_SUBSCRIPTION' && (
             <div>
@@ -82,9 +92,13 @@ export default function PlanCard() {
           )}
 
           <div className="rounded-md border border-white/20 bg-white/10 p-1">
-            {status === 'TRIAL_ACTIVE' && <BiTestTube />}
-            {status === 'ACTIVE' && <Rocket size={22} />}
-            {status === 'NEED_SUBSCRIPTION' && <RiFireLine />}
+            {data?.subscription?.type !== 'ramadan-plan' && (
+              <>
+                {status === 'TRIAL_ACTIVE' && <BiTestTube />}
+                {status === 'ACTIVE' && <Rocket size={22} />}
+                {status === 'NEED_SUBSCRIPTION' && <RiFireLine />}
+              </>
+            )}
           </div>
         </div>
 

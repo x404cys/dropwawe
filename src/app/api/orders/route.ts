@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
 
     for (const item of items) {
       const product = productsInDb.find(p => p.id === item.productId);
-
       if (!product) {
         errors.push({
           productId: item.productId,

@@ -10,7 +10,8 @@ import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { LuMousePointerClick } from 'react-icons/lu';
 import { fbEvent } from '../../_utils/pixel';
-
+import Image from 'next/image';
+import { IoMoonOutline } from 'react-icons/io5';
 export default function Plans() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
@@ -55,17 +56,76 @@ export default function Plans() {
           <h1 className="mb-4 text-4xl font-bold tracking-tight text-balance md:text-5xl lg:text-6xl">
             اختر الخطة المناسبة لك
           </h1>
-          <p className="text-muted-foreground mx-auto max-w-2xl text-lg text-balance">
-            تمتع بتجربة مجانية لمدة 7 ايام لكل الميزات
-          </p>
         </div>
 
-        <div className="mt-10 mb-5 text-center">
-          <Badge variant={'success'} className="mt-4 mb-5 text-lg">
-            <span className="font-normal"> او اختر باقتك وابدأ الان </span>{' '}
-            <CornerLeftDown className="" />
-          </Badge>
+        <div className="mx-auto mb-16 max-w-3xl">
+          <div className="relative overflow-hidden rounded-2xl border p-8 md:p-12">
+            <Badge className="mb-4 bg-amber-300 text-lg text-white">
+              <span>عرض رمضان</span>
+              <IoMoonOutline size={28} className="h-16 w-16" />
+            </Badge>
+            <div className="absolute top-0 -left-3 flex text-3xl">
+              <Image
+                src={'/img-theme/IMG_8473-removebg-preview.png'}
+                alt="al"
+                width={100}
+                height={200}
+              />
+            </div>
+            <div className="grid items-center gap-8 md:grid-cols-2">
+              <div>
+                <h2 className="mb-4 text-3xl font-bold">باقة رمضان الخاصة</h2>
+
+                <p className="text-muted-foreground mb-6">
+                  باقة مؤقتة بمميزات إضافية لمساعدتك على زيادة مبيعاتك خلال شهر رمضان.
+                </p>
+
+                <ul className="mb-6 space-y-3">
+                  {[
+                    ' متجر الكتروني بتصميم رمضاني ',
+                    'عدد منتجات غير محدود',
+                    'عدد طلبات غير محدود',
+                    'ادارة الطلبات',
+                    'ادارة المخزون',
+                    'دعم تسويقي مكثف',
+                    'تفعيل كوبونات خصم',
+                    'ربط ميتا وتيك توك وسناب بكسل',
+                    'الربط مع شركات التوصيل',
+                    'ثيمات متحر عدد 2 ',
+                    'صلاحية ادارة المتجر لـ 3 اشخاص',
+                    'اولوية الدعم 24/7',
+                  ].map(feature => (
+                    <li key={feature} className="flex items-center gap-2">
+                      {feature}
+                    </li>
+                  ))}
+                </ul>
+
+                <Button
+                  size="lg"
+                  disabled={loading}
+                  onClick={() => handleSubscribe('ramadan-plan')}
+                  className="text-lg"
+                >
+                  اشترك الآن
+                </Button>
+              </div>
+
+              <div className="space-y-5 text-center md:text-left">
+                <p className="text-muted-foreground">السعر الخاص</p>
+                <span>
+                  بدل <span className="pt-2 text-gray-600 line-through">69,000</span>
+                </span>
+                <h3 className="my-3 text-5xl font-bold">
+                  39,000
+                  <span className="text-lg font-normal"> د.ع</span>
+                </h3>
+                <p className="text-muted-foreground">لفترة محدودة خلال شهر رمضان فقط</p>
+              </div>
+            </div>
+          </div>
         </div>
+
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4 lg:gap-8">
           <PricingCard
             name="الباقة الاساسية - للتجار"
