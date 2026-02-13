@@ -28,7 +28,7 @@ const OrderSummary = ({ cartKey }: Props) => {
   const totalAfterCoupon = getTotalAfterCoupon(cartKey);
 
   const finalTotal = totalAfterCoupon ;
-
+//
   return (
     <div className="sticky top-6 rounded-md border bg-white p-6 font-light shadow-md">
       <h2 className="mb-4 text-lg font-semibold">ملخص الطلب</h2>
