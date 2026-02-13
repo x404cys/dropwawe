@@ -47,7 +47,7 @@ export default function PlanCard() {
     startDate && endDate ? Math.max(0, differenceInDays(endDate, new Date()) + 1) : null;
 
   const status = data?.status;
-//
+  //
   return (
     <div dir="rtl" className="relative w-full space-y-5 rounded-lg bg-white">
       <div className="rounded-lg bg-gradient-to-l from-[#04BAF6] via-[#04BAF6] to-[#52d4ff] p-5 text-white shadow-md">
@@ -75,14 +75,14 @@ export default function PlanCard() {
             </div>
           )}
 
-            {status === 'ACTIVE' && (
-              <div>
-                <p className="text-base font-semibold">{data?.subscription?.planName}</p>
-                <p className="mt-1 text-xs text-white/80">
-                  {data?.subscription?.detailsSubscription.description}
-                </p>
-              </div>
-            )}
+          {status === 'ACTIVE' && (
+            <div>
+              <p className="text-base font-semibold">{data?.subscription?.planName}</p>
+              <p className="mt-1 text-xs text-white/80">
+                {data?.subscription?.detailsSubscription.description}
+              </p>
+            </div>
+          )}
 
           {status === 'NEED_SUBSCRIPTION' && (
             <div>
