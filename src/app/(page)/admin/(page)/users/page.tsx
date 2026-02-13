@@ -1,7 +1,5 @@
 'use client';
-import { useState } from 'react';
 import useSWR from 'swr';
-import { toast } from './_hooks/use-toast';
 import { User, UsersResponse } from '@/types/users/UserForDashboard';
 import { UserTableComponents } from './_components/UserTableComponents';
 
@@ -15,17 +13,11 @@ export default function Page() {
 
   const { data, error } = useSWR<UsersResponse>('/api/admin/overview/stats/users', fetcher);
 
-  const handleDelete = (user: User) => {
-    toast({ title: `User ${user.name} has been deleted` });
-  };
+  const handleDelete = (user: User) => {};
 
-  const handleRenew = (user: User, plan: string, months: number) => {
-    toast({ title: `${user.name}'s subscription renewed to ${plan} for ${months} months` });
-  };
+  const handleRenew = (user: User, plan: string, months: number) => {};
 
-  const handleContact = (user: User, message: string) => {
-    toast({ title: `Message sent to ${user.name} via WhatsApp` });
-  };
+  const handleContact = (user: User, message: string) => {};
 
   return (
     <main className="min-h-screen bg-gray-50">
