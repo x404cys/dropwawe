@@ -27,7 +27,7 @@ export default function HeaderSectionTheme3() {
         </div>
         <button
           onClick={() => router.push('/s/themes/theme3/cart/checkout')}
-          className="absolute top-18 right-5 cursor-pointer rounded-lg border border-[#d9b3b4] p-2 text-2xl"
+          className="absolute top-18 right-5 z-50 cursor-pointer rounded-lg border border-[#d9b3b4] p-2 text-2xl"
         >
           <LuShoppingBasket
             onClick={() => router.push('/s/themes/theme3/cart/checkout')}
