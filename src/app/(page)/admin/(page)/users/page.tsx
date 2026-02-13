@@ -1,8 +1,8 @@
 'use client';
 import useSWR from 'swr';
 import { User, UsersResponse } from '@/types/users/UserForDashboard';
-import { UserTableComponents } from './_components/UserTableComponents';
-  
+import { UserTableComponentsDashboard } from './_components/UserTableComponents';
+   
 export type UserDialogState = {
   isOpen: boolean;
   type: 'details' | 'renew' | 'whatsapp' | 'delete' | null;
@@ -21,7 +21,7 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <UserTableComponents
+      <UserTableComponentsDashboard
         users={data?.users ?? []}
         onDelete={handleDelete}
         onRenew={handleRenew}
