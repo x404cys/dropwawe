@@ -61,7 +61,7 @@ export type User = {
   subscriptionPlan?: SubscriptionPlan;
 };
 
-export default function UserTableComponents({ users }: { users: User[] }) {
+export default function UserTableComponents1({ users }: { users: User[] }) {
   const [search, setSearch] = useState('');
 
   const filteredUsers = users.filter(

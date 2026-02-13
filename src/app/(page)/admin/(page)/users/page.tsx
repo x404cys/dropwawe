@@ -2,7 +2,7 @@
 import useSWR from 'swr';
 import { User, UsersResponse } from '@/types/users/UserForDashboard';
 import { UserTableComponents } from './_components/UserTableComponents';
-
+ 
 export type UserDialogState = {
   isOpen: boolean;
   type: 'details' | 'renew' | 'whatsapp' | 'delete' | null;
