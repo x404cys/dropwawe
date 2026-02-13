@@ -66,7 +66,7 @@ export default function HeaderSectionTheme3() {
               value={search || ''}
               placeholder="ابحث عن منتج"
               onChange={e => setSearch(e.target.value)}
-              className="w-full rounded-lg border border-[#d9b3b4] bg-white/70 py-3 pr-12 pl-10 text-sm text-[#7f2d2f] placeholder-[#b8898a] transition outline-none focus:border-[#7f2d2f] focus:ring-1 focus:ring-[#7f2d2f]"
+              className="w-full rounded-lg border border-[#d9b3b4] bg-white/70 py-3 pr-12 pl-10 text-[#7f2d2f] placeholder-[#b8898a] transition outline-none focus:border-[#7f2d2f] focus:ring-1 focus:ring-[#7f2d2f]"
             />
 
             <CiSearch className="absolute top-1/2 right-4 -translate-y-1/2 text-xl text-[#b8898a]" />
