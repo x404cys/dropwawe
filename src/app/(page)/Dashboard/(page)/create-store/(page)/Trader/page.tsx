@@ -271,15 +271,6 @@ export default function StoreSetupPage() {
     <div dir="rtl" className="bg-background min-h-screen">
       <div className="mx-auto max-w-3xl py-12">
         <div className="mb-12 space-y-3 text-center">
-          <div>
-            <Image
-              src="/Logo-Matager/Matager-logo2.png"
-              alt="Matager Logo"
-              width={45}
-              height={45}
-              className="mx-auto rounded-xl object-contain"
-            />
-          </div>
           <h1 className="text-foreground text-3xl font-semibold tracking-tight text-balance md:text-4xl">
             أنشئ متجرك الآن
           </h1>

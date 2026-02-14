@@ -8,14 +8,28 @@ import { useSession } from 'next-auth/react';
 import { useDashboardData } from '../context/useDashboardData';
 import Loader from '@/components/Loader';
 import { IoSettingsOutline } from 'react-icons/io5';
+import { useStoreProvider } from '../context/StoreContext';
+import axios from 'axios';
+import useSWR from 'swr';
+import { Order } from '@/types/Products';
 
 export default function FloatingNavBarForDashboard() {
   const router = useRouter();
   const { data: session } = useSession();
+  const { currentStore } = useStoreProvider();
   const { data } = useDashboardData(session?.user.id);
+  const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
 
   const pathname = usePathname();
   const [loading, setLoading] = useState(false);
+  const { data: pendingData, isLoading: pendingLoading } = useSWR<Order[]>(
+    currentStore?.id ? `/api/dashboard/order/pending/${currentStore.id}` : null,
+    fetcher,
+    {
+      refreshInterval: 1000,
+      revalidateOnFocus: true,
+    }
+  );
 
   const handleNavigate = (path: string) => {
     if (pathname === path) {
@@ -78,11 +92,12 @@ export default function FloatingNavBarForDashboard() {
             }
           >
             <ShoppingBag size={20} />
-            {data?.pendingOrderCount > 0 && (
+            {pendingData?.length ? (
               <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-                {data.pendingOrderCount}
+                {pendingData?.length}
               </span>
-            )}
+            ) : null}
+
             <span className="mt-1 text-xs">الطلبات</span>
           </button>
 

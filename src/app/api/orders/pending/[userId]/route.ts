@@ -17,8 +17,20 @@ export async function GET(request: Request, context: { params: Promise<{ userId:
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
+    const store = await prisma.storeUser.findFirst({
+      where: { userId },
+      orderBy: { createdAt: 'asc' },
+    });
+
+    if (!store) {
+      return NextResponse.json({ error: 'User has no store' }, { status: 404 });
+    }
+
     const orders = await prisma.order.findMany({
-      where: { userId, status: 'PENDING' },
+      where: {
+        storeId: store.id,
+        status: 'PENDING',
+      },
       orderBy: { createdAt: 'desc' },
     });
 

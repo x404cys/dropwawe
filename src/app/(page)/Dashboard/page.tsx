@@ -13,6 +13,9 @@ import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
 import PlanCard from './_components/PlanCard';
 import { useStoreProvider } from './context/StoreContext';
+type ProfitResponse = {
+  totalAmount: number;
+};
 
 export default function Dashboard() {
   const router = useRouter();
@@ -24,6 +27,16 @@ export default function Dashboard() {
   const { data: latestOrder } = useSWR<OrderDetails[]>(
     userId ? `/api/orders/latest/${userId}` : null,
     (url: string | URL | Request) => fetch(url).then(res => res.json())
+  );
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+
+  const { data: profit, isLoading } = useSWR<ProfitResponse>(
+    currentStore?.id ? `/api/dashboard/profit/total-profit-dashboard/${currentStore.id}` : null,
+    fetcher
+  );
+  const { data: visted } = useSWR(
+    currentStore?.subLink ? `/api/storev2/info4setting/${currentStore?.subLink}` : null,
+    fetcher
   );
 
   if (status !== 'authenticated' || loading || !data) {
@@ -61,7 +74,7 @@ export default function Dashboard() {
     },
     {
       title: 'العوائد',
-      value: `${formatIQD(data.profit)}`,
+      value: `${formatIQD(profit?.totalAmount)}`,
       icon: <DollarSign size={18} />,
       desc: '+0.09%',
       href: `/Dashboard/profit/`,
