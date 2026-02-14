@@ -21,7 +21,7 @@ export function SearchBar({
         <div className="mb-4 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <h1 className="text-lg font-semibold text-gray-900">المستخدمين</h1>
-            <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1 text-sm font-medium text-blue-700">
+            <span className="inline-flex items-center rounded-full bg-blue-50 px-3 py-1   se font-medium text-blue-700">
               {filteredCount}
               {filteredCount !== totalUsers && ` / ${totalUsers}`}
             </span>
@@ -35,7 +35,7 @@ export function SearchBar({
             placeholder="Search by name, email, role or store..."
             value={searchValue}
             onChange={e => onSearchChange(e.target.value)}
-            className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-500 transition-colors"
+            className="w-full rounded-lg border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-base text-gray-900 placeholder-gray-500 transition-colors"
           />
           {searchValue && (
             <button
