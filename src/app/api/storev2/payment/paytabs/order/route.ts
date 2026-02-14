@@ -202,9 +202,9 @@ export async function POST(request: NextRequest) {
 
     // const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
     // const PAYTABS_PROFILE_ID = 144505;
-    // const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
+    const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
     const PAYTABS_PROFILE_ID = 144504;
-    const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
+    // const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
     // const PAYTABS_PROFILE_ID = 169218;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.matager.store';
 
