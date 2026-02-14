@@ -100,10 +100,11 @@ export async function POST(
       },
     });
 
-    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
-    const PAYTABS_PROFILE_ID = 169218;
+    const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
+    const PAYTABS_PROFILE_ID = 144504;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://dashboard.matager.store';
 
+    
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/plans/subscriptions/callback`;
 
     const payload = {
