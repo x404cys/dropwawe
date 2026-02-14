@@ -28,11 +28,9 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function NavBarForDesktop() {
   const { data: session } = useSession();
-  const router = useRouter();
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { data, loading } = useDashboardData(session?.user.id);
 
   const { data: notifications, mutate } = useSWR<Notification[]>(
     session?.user?.id ? `/api/notifications?userId=${session.user.id}` : null,
@@ -141,7 +139,10 @@ export default function NavBarForDesktop() {
                     <Link
                       key={n.id}
                       href={`/Dashboard/orderDetails/${n.orderId}`}
-                      onClick={() => markAsRead(n.id)}
+                      onClick={() => {
+                        markAsRead(n.id)  
+                        setOpenNotifications(false)
+                      }}
                       className="block transition hover:bg-gray-50"
                     >
                       <li className="flex items-center gap-3 px-4 py-2">

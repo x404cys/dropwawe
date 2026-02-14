@@ -34,6 +34,9 @@ import { Separator } from '@/components/ui/separator';
 import CityRegionDialog from '../../../_components/Citys_and_regions';
 import { Product } from '@/types/Products';
 import { useSession } from 'next-auth/react';
+import useSWR from 'swr';
+import axios from 'axios';
+import { SubscriptionResponse } from '@/types/users/User';
 
 type OrderItem = {
   id: string;
@@ -101,7 +104,17 @@ export default function OrderDetailsPage() {
       icon: <XCircle className="h-4 w-4" />,
     },
   };
+  const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
 
+  const { data, isLoading } = useSWR<SubscriptionResponse>(
+    '/api/plans/subscriptions/check',
+    fetcher,
+    {
+      revalidateOnFocus: true,
+      refreshInterval: 5000,
+      revalidateOnMount: true,
+    }
+  );
   const handleDelete = async () => {
     try {
       const res = await fetch(`/api/orders/option/${orderId}`, { method: 'PATCH' });
@@ -173,7 +186,7 @@ export default function OrderDetailsPage() {
 
   return (
     <>
-      <div dir="rtl" className="bg-muted/30 min-h-screen py-8 md:px-8">
+      <div dir="rtl" className="mb-12 min-h-screen py-8 md:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
             <span className="hover:text-foreground cursor-pointer">الطلبات</span>
@@ -415,14 +428,18 @@ export default function OrderDetailsPage() {
               <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
               تأكيد الطلب ,والتوصيل ذاتي
             </Button>
-            <Button
-              variant={'ghost'}
-              onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
-              className="flex-1 border border-black"
-            >
-              <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
-              التوصيل مع الوسيط
-            </Button>
+            {data?.subscription?.type === 'trader-basic' ? (
+              <></>
+            ) : (
+              <Button
+                variant={'ghost'}
+                onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
+                className="flex-1 border border-black"
+              >
+                <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
+                التوصيل مع الوسيط
+              </Button>
+            )}
             <Button variant="destructive" onClick={() => setOpenAccept(false)} className="flex-1">
               إلغاء
             </Button>

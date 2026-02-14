@@ -75,7 +75,7 @@ export default function UserActions() {
     >
       <div className="flex items-center justify-start gap-4">
         <div
-          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-[#04BAF6]  "
+          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-[#04BAF6]"
           onClick={() => {
             setOpenNotifications(!openNotifications);
             setOpenUserMenu(false);
@@ -197,7 +197,10 @@ export default function UserActions() {
                 <Link
                   key={n.id}
                   href={`/Dashboard/orderDetails/${n.orderId}`}
-                  onClick={() => markAsRead(n.id)}
+                  onClick={() => {
+                    markAsRead(n.id);
+                    setOpenNotifications(false);
+                  }}
                 >
                   <li
                     className={`cursor-pointer border-b px-6 py-3 transition-colors duration-200 last:border-none ${
