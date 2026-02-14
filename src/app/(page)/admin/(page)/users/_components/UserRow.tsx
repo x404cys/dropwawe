@@ -54,6 +54,18 @@ const UserRowComponent = ({
           </div>
         </div>
       </td>
+      <td className="text-xs">
+        {' '}
+        {user.createdAt
+          ? new Date(user.createdAt).toLocaleString('en', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+              hour: '2-digit',
+              minute: '2-digit',
+            })
+          : '-'}{' '}
+      </td>
 
       <td className="px-4 py-2">
         <div className="flex flex-wrap gap-1">
@@ -107,8 +119,6 @@ const UserRowComponent = ({
           >
             رسالة
           </button>
-
-          
         </div>
       </td>
     </tr>

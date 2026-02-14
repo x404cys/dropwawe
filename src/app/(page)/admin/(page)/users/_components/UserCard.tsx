@@ -4,41 +4,7 @@ import Image from 'next/image';
 import { MoreHorizontal } from 'lucide-react';
 import { memo, useState } from 'react';
 import { FaWhatsapp } from 'react-icons/fa';
-
-export type SubscriptionPlan = {
-  name?: string;
-  expiryDate?: string;
-  status?: 'active' | 'expired' | 'pending';
-  renewalDate?: string;
-};
-
-export type Store = {
-  id: string;
-  name: string;
-  subLink: string;
-  active: boolean;
-  createdAt: string;
-};
-
-export type UserStore = {
-  id: string;
-  storeId: string;
-  userId: string;
-  role: string;
-  isOwner: boolean;
-  createdAt: string;
-  store: Store;
-};
-
-export type User = {
-  id?: string;
-  image?: string;
-  email: string;
-  name?: string;
-  role?: string;
-  stores?: UserStore[];
-  subscriptionPlan?: SubscriptionPlan;
-};
+import { SubscriptionPlan, User } from '@/types/users/UserForDashboard';
 
 interface UserCardProps {
   user: User;
@@ -91,42 +57,6 @@ const UserCardComponent = ({
             <p className="truncate text-xs text-gray-500">{user.email}</p>
           </div>
         </div>
-
-        <div className="relative self-end sm:self-auto">
-          <button
-            onClick={e => {
-              e.stopPropagation();
-              setMenuOpen(v => !v);
-            }}
-            className="rounded-lg p-2 hover:bg-gray-100"
-          >
-            <MoreHorizontal size={18} />
-          </button>
-
-          {menuOpen && (
-            <div className="absolute right-0 z-20 mt-2 w-40 rounded-lg border bg-white shadow-lg">
-              <button
-                onClick={e => {
-                  e.stopPropagation();
-                  onViewDetails(user);
-                }}
-                className="w-full px-4 py-2 text-left text-sm hover:bg-gray-50"
-              >
-                View Details
-              </button>
-
-              <button
-                onClick={e => {
-                  e.stopPropagation();
-                  onDelete(user);
-                }}
-                className="w-full px-4 py-2 text-left text-sm text-red-600 hover:bg-red-50"
-              >
-                Delete
-              </button>
-            </div>
-          )}
-        </div>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -136,11 +66,20 @@ const UserCardComponent = ({
         </div>
 
         <div>
-          <p className="text-xs text-gray-500 uppercase">Status</p>
+          <p className="text-xs text-gray-500 uppercase">تسجيل</p>
           <span
             className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${status.color}`}
           >
-            {status.label}
+            {user.createdAt
+              ? new Date(user.createdAt).toLocaleString('en', {
+                  year: 'numeric',
+                  month: '2-digit',
+                  day: '2-digit',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })
+              : '-'}
+            s{' '}
           </span>
         </div>
       </div>

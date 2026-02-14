@@ -123,13 +123,16 @@ export function UserTableComponentsDashboard({
         filteredCount={filteredUsers.length}
       />
 
-      <div className="hidden text-right overflow-x-auto md:block">
+      <div className="hidden overflow-x-auto text-right md:block">
         <div className="mx-auto max-w-7xl">
           <table className="w-full">
-            <thead dir='rtl' className='text-right'>
+            <thead dir="rtl" className="text-right">
               <tr className="border-b border-gray-200 bg-white">
                 <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-gray-700 uppercase">
                   المستخدم
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-gray-700 uppercase">
+                  التسجيل
                 </th>
                 <th className="px-6 py-4 text-left text-xs font-semibold tracking-wide text-gray-700 uppercase">
                   المتجر

@@ -9,10 +9,11 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, Mail, Phone } from 'lucide-react';
 import { User } from '@/types/users/UserForDashboard';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-
+import Image from 'next/image';
+import { toast } from 'sonner';
 interface RenewSubscriptionDialogProps {
   user: User | null;
   isOpen: boolean;
@@ -45,6 +46,18 @@ export function RenewSubscriptionDialog({
     setIsLoading(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 1000));
+      const res = await fetch(`/api/admin/plans/renew-plan/${plan.id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: user.id,
+        }),
+      });
+
+      if (res.ok) toast.success(`تم الاشتراك بنجاح لـ ${user.name} بنجاح`);
+      if (!res.ok) toast.error(`لم يتم  الاشتراك  لـ ${user.name} `);
       onConfirm(user, plan.name, plan.months);
       onClose();
     } finally {
@@ -60,17 +73,30 @@ export function RenewSubscriptionDialog({
         </DialogHeader>
 
         <div className="space-y-6">
-          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
-            <p className="text-right text-sm font-medium text-gray-950">
-              يجب ان تكون متاكدر من قرارك فقرار الغاء الاشتراك يكون من قبل المبرمج{' '}
-            </p>
-            {user.subscriptionPlan?.expiryDate && (
-              <p className="mt-1 text-xs text-gray-600">
-                Expires: {new Date(user.subscriptionPlan.expiryDate).toLocaleDateString()}
+          <div className="flex items-start gap-4 border-b border-gray-200 pb-4">
+            <div className="relative flex-shrink-0">
+              <Image
+                alt={user.name || 'User avatar'}
+                src={user.image || '/placeholder.svg'}
+                width={50}
+                height={50}
+                className="rounded-full object-cover"
+              />
+            </div>
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-gray-900">{user.name || 'Unknown'}</h2>
+              <p className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                <Mail className="h-4 w-4" />
+                {user.email}
               </p>
-            )}
+              {user.phone && (
+                <p className="mt-1 flex items-center gap-2 text-sm text-gray-600">
+                  <Phone className="h-4 w-4" />
+                  {user.phone}
+                </p>
+              )}
+            </div>
           </div>
-
           <div>
             <p className="mb-3 text-right text-sm font-semibold text-gray-900">اختر الباقة</p>
             <div className="grid grid-cols-3 gap-3">

@@ -18,30 +18,51 @@ interface WhatsAppContactDialogProps {
   onClose: () => void;
   onSend: (user: User, message: string) => void;
 }
-
 const MESSAGE_TEMPLATES = [
   {
+    id: 'welcome',
+    label: 'رسالة ترحيبية',
+    message:
+      'أهلاً وسهلاً {name} 🌟، نورتنا! تم إنشاء حسابك بنجاح، وإذا تحتاج أي مساعدة أو استفسار إحنا دائماً بالخدمة.',
+  },
+  {
     id: 'renewal',
-    label: 'Subscription Renewal',
-    message: 'Hi {name}, your subscription is expiring soon. Click here to renew your plan.',
+    label: 'تجديد الاشتراك',
+    message:
+      'مرحبا {name} 👋، نحب نذكرك إن اشتراكك راح ينتهي قريباً. تگدر تجدده بسهولة من خلال الرابط التالي.',
   },
   {
     id: 'support',
-    label: 'Support Follow-up',
-    message: 'Hi {name}, we wanted to check if you need any assistance with your account.',
+    label: 'متابعة الدعم',
+    message:
+      'مرحبا {name} 😊، حابين نتأكد إذا تحتاج أي مساعدة أو عندك استفسار بخصوص حسابك. إحنا بالخدمة دائماً.',
   },
   {
     id: 'promotion',
-    label: 'Special Promotion',
-    message: 'Hi {name}, check out our new premium features at a special price just for you!',
+    label: 'عرض خاص',
+    message: 'مرحبا {name} 🎉، عدنا ميزات جديدة وعرض خاص إلك بس! تواصل ويانه حتى تعرف التفاصيل.',
   },
   {
     id: 'feedback',
-    label: 'Request Feedback',
-    message: 'Hi {name}, we would love to hear your feedback about our service.',
+    label: 'طلب رأي',
+    message:
+      'مرحبا {name} 🙏، رأيك يهمنا جداً. نحب نسمع تقييمك وتجربتك ويانه حتى نطور خدمتنا للأفضل.',
   },
 ];
 
+const formatIraqiPhone = (phone?: string | null) => {
+  if (!phone) return '';
+
+  let cleaned = phone.replace(/\D/g, '');
+
+  if (cleaned.startsWith('964')) return cleaned;
+
+  if (cleaned.startsWith('0')) {
+    return '964' + cleaned.slice(1);
+  }
+
+  return cleaned;
+};
 export function WhatsAppContactDialog({
   user,
   isOpen,
@@ -58,8 +79,10 @@ export function WhatsAppContactDialog({
   const template = MESSAGE_TEMPLATES.find(t => t.id === selectedTemplate)!;
   const message = customMessage || template.message;
   const finalMessage = message.replace('{name}', user.name || 'User');
-  const phoneNumber = user.phone?.replace(/\D/g, '') || '';
-  const whatsappUrl = `https://api.whatsapp.com/send?phone=${phoneNumber}&text=${encodeURIComponent(finalMessage)}`;
+  const rawPhone = user.stores?.find(p => p.store.phone)?.store.phone;
+
+  const phoneNumber = formatIraqiPhone(rawPhone);
+  const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(finalMessage)}`;
 
   const handleCopyMessage = () => {
     navigator.clipboard.writeText(finalMessage);
@@ -67,102 +90,74 @@ export function WhatsAppContactDialog({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleSend = async () => {
-    setIsLoading(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      onSend(user, finalMessage);
-      onClose();
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSend = () => {
+    if (!phoneNumber) return;
+
+    window.open(whatsappUrl, '_blank');
+
+    onSend(user, finalMessage);
+    onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
-        <DialogHeader>
-          <DialogTitle>Contact via WhatsApp</DialogTitle>
-        </DialogHeader>
+      <DialogContent className="max-w-md p-0">
+        <div className="max-h-[80vh] space-y-5 overflow-y-auto p-6">
+          <DialogHeader>
+            <DialogTitle>WhatsApp Message</DialogTitle>
+          </DialogHeader>
 
-        <div className="space-y-6">
-          {/* User Info */}
-          <div className="rounded-lg border border-green-200 bg-green-50 p-4">
-            <p className="text-sm font-medium text-gray-700">Sending to:</p>
-            <p className="mt-1 text-lg font-semibold text-gray-900">{user.name || 'Unknown'}</p>
-            {phoneNumber ? (
-              <p className="mt-1 text-sm text-green-700">📱 {user.phone}</p>
-            ) : (
-              <p className="mt-1 text-sm text-red-700">⚠️ No phone number available</p>
-            )}
+          <div className="rounded-lg bg-green-50 p-3 text-sm">
+            <p className="font-semibold">{user.name || 'Unknown'}</p>
+            <p className="text-xs text-green-700">{phoneNumber}</p>
           </div>
 
-          {/* Template Selection */}
           <div>
-            <p className="mb-3 text-sm font-semibold text-gray-900">Message Template</p>
-            <div className="grid gap-2">
+            <label className="text-xs text-gray-500">Template</label>
+
+            <select
+              value={selectedTemplate}
+              onChange={e => {
+                setSelectedTemplate(e.target.value);
+                setCustomMessage('');
+              }}
+              className="mt-1 w-full rounded-lg border p-2 text-sm"
+            >
               {MESSAGE_TEMPLATES.map(t => (
-                <button
-                  key={t.id}
-                  onClick={() => {
-                    setSelectedTemplate(t.id);
-                    setCustomMessage('');
-                  }}
-                  className={`rounded-lg border-2 p-3 text-left transition-all ${
-                    selectedTemplate === t.id
-                      ? 'border-green-500 bg-green-50'
-                      : 'border-gray-200 bg-white hover:border-gray-300'
-                  }`}
-                >
-                  <p className="text-sm font-medium text-gray-900">{t.label}</p>
-                  <p className="mt-1 line-clamp-1 text-xs text-gray-600">{t.message}</p>
-                </button>
+                <option key={t.id} value={t.id}>
+                  {t.label}
+                </option>
               ))}
-            </div>
+            </select>
           </div>
 
-          {/* Message Preview */}
           <div>
-            <p className="mb-2 text-sm font-semibold text-gray-900">Message Preview</p>
-            <div className="rounded-lg border border-gray-200 bg-gray-50 p-4">
-              <p className="text-sm break-words text-gray-900">{finalMessage}</p>
-            </div>
-          </div>
+            <label className="text-xs text-gray-500">Message</label>
 
-          {/* Custom Message */}
-          <div>
-            <p className="mb-2 text-xs font-medium tracking-widest text-gray-500 uppercase">
-              Or write your own message
-            </p>
             <textarea
-              value={customMessage}
+              value={customMessage || finalMessage}
               onChange={e => setCustomMessage(e.target.value)}
-              placeholder="Leave empty to use template..."
-              className="w-full rounded-lg border border-gray-200 p-3 text-sm focus:border-green-500 focus:ring-2 focus:ring-green-500/20 focus:outline-none"
-              rows={3}
+              rows={5}
+              className="mt-1 w-full rounded-lg border p-3 text-sm outline-none focus:border-green-500 focus:ring-2 focus:ring-green-500/20"
             />
           </div>
-        </div>
 
-        <DialogFooter>
-          <div className="flex flex-1 gap-2">
+          <DialogFooter className="flex gap-2 pt-2">
             <Button variant="outline" onClick={handleCopyMessage} className="flex-1">
               <Copy className="mr-2 h-4 w-4" />
-              {copied ? 'Copied!' : 'Copy Message'}
+              {copied ? 'Copied' : 'Copy'}
             </Button>
-          </div>
-          <Button variant="outline" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleSend}
-            disabled={isLoading || !phoneNumber}
-            className="bg-green-600 hover:bg-green-700"
-          >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            {isLoading ? 'Sending...' : 'Send via WhatsApp'}
-          </Button>
-        </DialogFooter>
+
+            <Button
+              onClick={handleSend}
+              disabled={isLoading || !phoneNumber}
+              className="flex-1 bg-green-600 hover:bg-green-700"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Send
+            </Button>
+          </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
   );
