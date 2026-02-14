@@ -204,7 +204,7 @@ export async function POST(request: NextRequest) {
     // const PAYTABS_PROFILE_ID = 144505;
     // const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
     const PAYTABS_PROFILE_ID = 144504;
-    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
     // const PAYTABS_PROFILE_ID = 169218;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.matager.store';
 
@@ -228,7 +228,7 @@ export async function POST(request: NextRequest) {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY as string,
+        Authorization: PAYTABS_SERVER_KEY,
       },
       body: JSON.stringify(payload),
     });
