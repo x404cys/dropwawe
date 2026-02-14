@@ -237,13 +237,21 @@ export default function ProductPage() {
                   <Button
                     variant="default"
                     size="icon"
+                    disabled={session.data?.user.role !== 'DROPSHIPPER'}
                     onClick={() => {
                       setOpenDailog(true);
                     }}
                     className="hover-scale h-14 flex-1 cursor-pointer rounded-xl"
                   >
                     <ShoppingCart className="mr-2 h-5 w-5" />
-                    اضف الى متجرك الالكتروني
+
+                    {session.data?.user.role !== 'DROPSHIPPER' ? (
+                      <div className="-top-2">
+                        <span className=" ">الاضافة فقط للدروب شيبر</span>
+                      </div>
+                    ) : (
+                      <span> اضف الى متجرك الالكتروني </span>
+                    )}
                   </Button>
 
                   <Button
@@ -320,6 +328,7 @@ export default function ProductPage() {
                     </button>
 
                     <button
+                      disabled={session.data?.user.role !== 'DROPSHIPPER'}
                       onClick={() => {
                         const price = parseFloat(newPrice as string);
                         const min = product?.pricingDetails?.minPrice!;
