@@ -32,19 +32,19 @@ export default function PaymentSection() {
               onClick={() => router.push('https://login.matager.store')}
               className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-2 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_3px_10px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
             >
-              انشأ متجرك !
+              انشئ متجرك !
               <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_12px_2px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
             </button>
           </div>
         </div>
-        <div className="relative flex aspect-[16/10] w-full flex-1 items-center justify-center overflow-hidden rounded-2xl shadow">
+        <div className="relative flex aspect-[16/11] w-full flex-1 items-center justify-center overflow-hidden rounded-2xl shadow">
           <Image
-            src="/image.png"
+            src="/img-landing-page/image.png"
             alt="Secure Payment"
             fill
             priority
             sizes="(max-width: 770px) 100vw, 50vw"
-            className="scale-105 rounded-xl object-contain object-center shadow transition-transform duration-300"
+            className="scale rounded-xl object-contain object-center shadow transition-transform duration-300"
           />
         </div>
       </div>

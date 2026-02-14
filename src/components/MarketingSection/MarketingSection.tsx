@@ -48,14 +48,14 @@ export default function SmartMarketingSection() {
   return (
     <section dir="rtl" className="bg-white px-5 py-20 md:px-20">
       <div className="mx-auto flex max-w-7xl flex-col items-center gap-16 md:flex-row">
-        <div data-aos="fade-up" className="relative aspect-[16/10] w-full flex-1 md:aspect-[16/9]">
+        <div data-aos="fade-up" className="relative aspect-[18/10] w-full flex-1 md:aspect-[16/9]">
           <Image
             src="/img-landing-page/8-.png"
             alt="Smart Marketing"
             fill
             priority
             sizes="(max-width: 768px) 100vw, 50vw"
-            className="rounded-xl object-fill shadow"
+            className="rounded-xl object-cover shadow"
           />
         </div>
 
