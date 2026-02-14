@@ -13,6 +13,7 @@ import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import UrlCard from './_components/UrlCard';
 import PlanCard from './_components/PlanCard';
 import { useStoreProvider } from './context/StoreContext';
+import { Order } from '@/types/Products';
 type ProfitResponse = {
   totalAmount: number;
 };
@@ -35,8 +36,16 @@ export default function Dashboard() {
     fetcher
   );
   const { data: visted } = useSWR(
-    currentStore?.subLink ? `/api/storev2/info4setting/${currentStore?.subLink}` : null,
+    currentStore?.subLink ? `/api/visit/${currentStore?.subLink}` : null,
     fetcher
+  );
+  const { data: pendingData, isLoading: pendingLoading } = useSWR<Order[]>(
+    currentStore?.id ? `/api/dashboard/order/pending/${currentStore.id}` : null,
+    fetcher,
+    {
+      refreshInterval: 1000,
+      revalidateOnFocus: true,
+    }
   );
 
   if (status !== 'authenticated' || loading || !data) {
@@ -67,7 +76,7 @@ export default function Dashboard() {
     },
     {
       title: 'الزيارات',
-      value: `${data.visitTotal ?? 0}`,
+      value: `${visted.count ?? 0}`,
       icon: <Users size={18} />,
       desc: '+0.03%',
       variant: 'black',
@@ -82,7 +91,7 @@ export default function Dashboard() {
     },
     {
       title: 'الطلبات',
-      value: data.orderCount,
+      value: pendingData?.length ?? (0 as number),
       icon: <ShoppingBag size={18} />,
       desc: '+2.10%',
       href: '/Dashboard/OrderTrackingPage',

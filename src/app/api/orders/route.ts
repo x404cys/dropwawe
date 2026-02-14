@@ -175,17 +175,16 @@ export async function POST(request: NextRequest) {
     }
     const notificationMessage = `وصل طلب جديد (${order.fullName}) الموقع: ${location}. الرجاء مراجعة الطلب لمعالجته.`;
 
-    // await prisma.notification.create({
-    //   data: {
-    //     userId: userId,
-    //     storeId,
-    //     message: notificationMessage,
-    //     type: 'order',
-    //     orderId: order.id,
-    //     isRead: false,
-    //     createdAt: new Date(),
-    //   },
-    // });
+    await prisma.notification.create({
+      data: {
+        userId: userId ?? null,
+        storeId: storeId ?? null,
+        message: notificationMessage,
+        type: 'order',
+        orderId: order.id,
+        isRead: false,
+      },
+    });
 
     return NextResponse.json(order, { status: 201 });
   } catch (error) {

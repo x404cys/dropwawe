@@ -316,7 +316,7 @@ model Visitor {
 
 model Notification {
   id        String   @id @default(cuid())
-  userId    String
+  userId    String?
   storeId   String?
   message   String
   url       String?
@@ -325,16 +325,14 @@ model Notification {
   createdAt DateTime @default(now())
   orderId   String?
   productId String?
+  orderFromTraderId String?
+  orderFromTrader   OrderFromTrader? @relation("TraderOrderNotifications", fields: [orderFromTraderId], references: [id])
+  
 
   order     Order?   @relation(fields: [orderId], references: [id])
   product   Product? @relation(fields: [productId], references: [id])
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
   store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  orderFromTraderId String?       
-  orderFromTrader   OrderFromTrader? @relation(fields: [orderFromTraderId], references: [id])
-  @@index([userId])
-  @@index([orderId])
-  @@index([productId])
 }
 
 
@@ -468,7 +466,7 @@ model OrderFromTrader {
   items        OrderFromTraderItem[]
   paymentOrder OrderFromTraderPayment?
 
-  Notification Notification[]
+  Notification Notification[] @relation("TraderOrderNotifications")
 }
 
 model OrderFromTraderItem {
