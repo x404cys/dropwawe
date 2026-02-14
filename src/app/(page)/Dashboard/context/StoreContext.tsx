@@ -1,7 +1,9 @@
 'use client';
 
 import { StoreProps } from '@/types/store/StoreType';
+import { useRouter } from 'next/navigation';
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { toast } from 'sonner';
 
 interface StoreContextType {
   currentStore: StoreProps | null;
@@ -27,7 +29,8 @@ interface Props {
 export const StoreProvider = ({ children }: Props) => {
   const [currentStore, setCurrentStoreState] = useState<StoreProps | null>(null);
   const [stores, setStores] = useState<StoreProps[]>([]);
-
+  const [storesLoaded, setStoresLoaded] = useState(false);
+  const router = useRouter();
   const setCurrentStore = (store: StoreProps) => {
     setCurrentStoreState(store);
     localStorage.setItem('currentStore', JSON.stringify(store));
@@ -52,9 +55,11 @@ export const StoreProvider = ({ children }: Props) => {
 
       if (Array.isArray(data)) {
         setStores(data);
+        setStoresLoaded(true);
 
         if (!currentStore) {
           const stored = localStorage.getItem('currentStore');
+
           if (stored) {
             setCurrentStoreState(JSON.parse(stored));
           } else if (data.length > 0) {
@@ -65,6 +70,7 @@ export const StoreProvider = ({ children }: Props) => {
       }
     } catch (err) {
       console.error('Failed to fetch stores:', err);
+      setStoresLoaded(true);
     }
   };
 
@@ -87,6 +93,18 @@ export const StoreProvider = ({ children }: Props) => {
   useEffect(() => {
     fetchStores();
   }, []);
+  useEffect(() => {
+    if (!storesLoaded) return;
+
+    if (stores.length > 0) return;
+
+    const timer = setTimeout(() => {
+      toast.warning('عزيزي لا تملك متجر انشاء واحد');
+      router.push('/Dashboard/create-store');
+    }, 60 * 1000);
+
+    return () => clearTimeout(timer);
+  }, [storesLoaded, stores.length]);
 
   return (
     <StoreContext.Provider

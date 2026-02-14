@@ -76,7 +76,7 @@ export default function Dashboard() {
     },
     {
       title: 'الزيارات',
-      value: `${visted.count ?? 0}`,
+      value: `${visted?.count ?? 0}`,
       icon: <Users size={18} />,
       desc: '+0.03%',
       variant: 'black',

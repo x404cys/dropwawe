@@ -54,7 +54,7 @@ export default function FloatingNavBarForDashboard() {
 
   const baseStyle = 'flex cursor-pointer flex-col items-center justify-center transition';
   const activeStyle = `
-  text-sky-400 font-semibold relative
+  text-sky-400  relative
   after:content-[''] after:absolute after:-bottom-1 after:left-1/2
   after:h-[2px] after:w-10 after:-translate-x-1/2
   after:bg-sky-300 after:rounded-full

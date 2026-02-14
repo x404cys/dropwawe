@@ -4,9 +4,19 @@ import { prisma } from '@/app/lib/db';
 export async function GET(request: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const params = await context.params;
+    const firstStore = await prisma.storeUser.findFirst({
+      where: { userId: params.id },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      select: {
+        storeId: true,
+      },
+    });
     const unreadNotifications = await prisma.notification.findMany({
       where: {
-        userId: params.id,
+        OR: [{ userId: params.id }, { storeId: firstStore?.storeId }],
+
         isRead: false,
       },
       orderBy: { createdAt: 'desc' },

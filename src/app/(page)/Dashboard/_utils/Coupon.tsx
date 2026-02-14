@@ -33,6 +33,7 @@ import {
 } from 'lucide-react';
 import { MdCancel } from 'react-icons/md';
 import { toast } from 'sonner';
+import { useStoreProvider } from '../context/StoreContext';
 export type CouponScope = 'GLOBAL' | 'STORE' | 'PRODUCT';
 export type CouponType = 'PERCENTAGE' | 'FIXED' | 'FREE_SHIPPING';
 
@@ -102,7 +103,7 @@ export default function CouponCreatePage() {
   const [products, setProducts] = useState<
     { id: string; name: string; image: string; price: string }[]
   >([]);
-
+  const { currentStore } = useStoreProvider();
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [scope, setScop] = useState('');
@@ -115,7 +116,7 @@ export default function CouponCreatePage() {
   }, []);
 
   const fetchCoupons = async () => {
-    const res = await fetch('/api/coupons');
+    const res = await fetch(`/api/coupons/${currentStore?.id}`);
     const data = await res.json();
 
     if (Array.isArray(data)) {

@@ -23,13 +23,6 @@ interface Notification {
   isRead: boolean;
   orderId: string;
 }
-const roleNames: Record<UserRole, string> = {
-  GUEST: 'زائر',
-  SUPPLIER: 'مورد',
-  DROPSHIPPER: 'دروب شيبر',
-  TRADER: 'تاجر',
-  A: 'مدير',
-};
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 

@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client';
 import { NextRequest, NextResponse } from 'next/server';
 
 const prisma = new PrismaClient();
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -11,8 +12,20 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'userId is required' }, { status: 400 });
     }
 
-    const notifications = await prisma.notification.findMany({
+    const firstStore = await prisma.storeUser.findFirst({
       where: { userId },
+      orderBy: {
+        createdAt: 'asc',
+      },
+      select: {
+        storeId: true,
+      },
+    });
+
+    const notifications = await prisma.notification.findMany({
+      where: {
+        OR: [{ userId }, { storeId: firstStore?.storeId }],
+      },
       orderBy: { createdAt: 'desc' },
     });
 

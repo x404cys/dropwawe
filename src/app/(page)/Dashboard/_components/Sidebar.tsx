@@ -151,26 +151,25 @@ function Section({
           const isOrders = item.label === 'الطلبات';
 
           return (
-            <>
-              <Link
-                key={item.path}
-                href={item.path}
-                className={clsx(
-                  'flex items-center gap-3 rounded-lg px-3 py-2 transition',
-                  active
-                    ? 'bg-gradient-to-r from-sky-300/45 from-20% via-[#04BAF6] via-60% to-[#04BAF6] to-80% text-white'
-                    : 'text-gray-700 hover:bg-gray-100'
-                )}
-              >
-                <Icon size={18} />
-                {item.label}
-                {isOrders && pendingCount > 0 && (
-                  <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
-                    {pendingCount}
-                  </span>
-                )}
-              </Link>
-            </>
+            <Link
+              key={item.path}
+              href={item.path}
+              className={clsx(
+                'flex items-center gap-3 rounded-lg px-3 py-2 transition',
+                active
+                  ? 'bg-gradient-to-r from-sky-300/45 from-20% via-[#04BAF6] via-60% to-[#04BAF6] to-80% text-white'
+                  : 'text-gray-700 hover:bg-gray-100'
+              )}
+            >
+              <Icon size={18} />
+              {item.label}
+
+              {isOrders && pendingCount > 0 && (
+                <span className="flex h-5 min-w-[20px] items-center justify-center rounded-full bg-red-500 px-1 text-[11px] font-semibold text-white">
+                  {pendingCount}
+                </span>
+              )}
+            </Link>
           );
         })}
       </div>
