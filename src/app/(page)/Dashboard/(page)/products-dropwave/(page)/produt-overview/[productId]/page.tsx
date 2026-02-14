@@ -36,7 +36,7 @@ import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
 import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-
+//
 export default function ProductPage() {
   const params = useParams();
   const session = useSession();
