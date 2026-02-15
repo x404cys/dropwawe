@@ -237,7 +237,6 @@ export default function ProductPage() {
                   <Button
                     variant="default"
                     size="icon"
-                    disabled={session.data?.user.role !== 'DROPSHIPPER'}
                     onClick={() => {
                       setOpenDailog(true);
                     }}
@@ -328,8 +327,7 @@ export default function ProductPage() {
                     </button>
 
                     <button
-                      disabled={session.data?.user.role !== 'DROPSHIPPER'}
-                      onClick={() => {
+                       onClick={() => {
                         const price = parseFloat(newPrice as string);
                         const min = product?.pricingDetails?.minPrice!;
                         const max = product?.pricingDetails?.maxPrice!;

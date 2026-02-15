@@ -22,6 +22,7 @@ interface RenewSubscriptionDialogProps {
 }
 
 const PLANS = [
+  { id: 'free-trial', name: 'تجربة مجانية', monthlyPrice: 0, months: 1 },
   { id: 'ramadan-plan', name: 'باقة رمضان', monthlyPrice: 39000, months: 1 },
   { id: 'trader-basic', name: 'الاساسية للتجار', monthlyPrice: 39000, months: 1 },
   { id: 'trader-pro', name: 'الاحترافية للتجار', monthlyPrice: 69000, months: 1 },
