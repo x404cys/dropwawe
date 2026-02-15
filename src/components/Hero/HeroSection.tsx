@@ -30,9 +30,9 @@ export default function HeroSection() {
               ارتقِ بمشروعك واستقبل طلباتك على متجرك الالكتروني مع بوابة دفع امنة وربط مع شركات
               التوصيل.
             </p>
-           
+
             <p className="text-ld mt-2 max-w-xl leading-relaxed text-sky-900">
-              اطلق مشروعك خلال دقائق فقط.
+              او اطلق مشروعك خلال دقائق فقط
             </p>
           </div>
         </div>

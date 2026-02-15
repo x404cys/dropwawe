@@ -36,6 +36,7 @@ import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
 import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import PriceInput from '@/app/(page)/Dashboard/_components/PriceInput';
 //
 export default function ProductPage() {
   const params = useParams();
@@ -52,9 +53,11 @@ export default function ProductPage() {
   const { addToCartWithQtyByKey } = useCart();
   const { addToFavoriteByKey } = useFavorite();
   const [open, setOpen] = useState(false);
-  const [price, setPrice] = useState(0);
   const [categories, setCategories] = useState<string[]>([]);
   const [category, setCategory] = useState('');
+  const [price, setPrice] = useState<number>(0);
+  const [priceError, setPriceError] = useState<string>('');
+
   useEffect(() => {
     const fetchProduct = async () => {
       try {
@@ -96,12 +99,38 @@ export default function ProductPage() {
   const handleImageSelect = (imageUrl: string) => {
     setSelectedImage(imageUrl);
   };
+  const handlePriceChange = (value: number) => {
+    if (value < product?.pricingDetails?.minPrice!) {
+      setPriceError(`السعر يجب أن لا يقل عن ${product?.pricingDetails?.minPrice}`);
+      setPrice(value);
+      return;
+    }
+
+    if (value > product?.pricingDetails?.maxPrice!) {
+      setPriceError(`السعر يجب أن لا يتجاوز ${product?.pricingDetails?.maxPrice!}`);
+      setPrice(value);
+      return;
+    }
+
+    setPriceError('');
+    setPrice(value);
+  };
+
   const addToStore = async () => {
-    axios.post('/api/products/add-product-to-store', {
-      productId: product?.id,
-      profit: price,
-      category: category,
+    if (category === null) return toast.warning('حدد التصنيف للمنتج');
+    const res = await fetch('/api/products/add-product-to-store', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        productId: product?.id,
+        profit: price,
+        category: category,
+      }),
     });
+    if (res.ok) return toast.success('تمت اضافة المنتج بنجاح');
+    if (!res.ok) return toast.error('فشل الاضافة');
   };
   if (loading) {
     return (
@@ -366,7 +395,6 @@ export default function ProductPage() {
             </div>
 
             <div className="flex flex-col flex-wrap-reverse gap-4 md:flex">
-             
               <Button
                 variant="outline"
                 className="hover-scale h-14 flex-1 cursor-pointer rounded-lg"
@@ -389,13 +417,12 @@ export default function ProductPage() {
                     التحكم.
                   </div>
                   <div>
-                    <CustomInput
-                      type="number"
-                      label={'حدد سعرك'}
-                      icon={<DollarSign />}
+                    <PriceInput
+                      value={price}
+                      min={product?.pricingDetails?.minPrice!}
+                      max={product?.pricingDetails?.maxPrice!}
                       placeholder="حدد السعر بحيث لا يتجاوز الحد الادنى والاعلى للسعر"
-                      value={price === 0 ? '' : price}
-                      onChange={e => setPrice(Number(e.target.value))}
+                      onChange={setPrice}
                     />
 
                     <CategoryDropdown

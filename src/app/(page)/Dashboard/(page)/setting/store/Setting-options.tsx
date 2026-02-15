@@ -159,7 +159,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                   onClick={() => allowed && onSectionChange(section.id)}
                   className={`flex w-full items-center justify-between px-5 py-4 text-sm transition-all ${
                     !allowed
-                      ? 'cursor-not-allowed bg-gray-50 text-gray-400'
+                      ? 'cursor-not-allowed hidden bg-gray-50 text-gray-400'
                       : isActive
                         ? 'bg-gray-50 font-medium text-gray-900'
                         : 'text-gray-700 hover:bg-gray-50'
@@ -168,7 +168,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        allowed ? 'bg-[#04BAF6]' : 'bg-gray-300'
+                        allowed ? 'bg-[#04BAF6]' : 'bg-gray-300 '
                       } `}
                     >
                       <section.icon size={18} className="text-white" />

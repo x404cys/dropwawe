@@ -15,6 +15,7 @@ import { FaStore } from 'react-icons/fa';
 import axios from 'axios';
 import useSWR from 'swr';
 import { Order } from '@/types/Products';
+import { useSubscriptions } from '../context/useSubscription';
 
 export default function Sidebar({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -31,6 +32,8 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
       revalidateOnFocus: true,
     }
   );
+  const { hasAccess, userPlanType } = useSubscriptions();
+
   const pendingCount = pendingData?.length ?? 0;
 
   return (
@@ -116,7 +119,13 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="mt-4 flex flex-col gap-6 px-4 text-sm">
-          <Section title="عام" items={navItems} pathname={pathname} pendingCount={pendingCount} />
+          <Section
+            title="عام"
+            items={navItems}
+            pathname={pathname}
+            pendingCount={pendingCount}
+            hasAccess={hasAccess}
+          />
         </nav>
       </aside>
 
@@ -134,18 +143,30 @@ function Section({
   items,
   pathname,
   pendingCount,
+  role,
+  hasAccess,
 }: {
   title: string;
   items: any[];
   pathname: string;
   pendingCount: number;
+  role?: string;
+  hasAccess: (plan: any) => boolean;
 }) {
+  const filteredItems = items.filter(item => {
+    const roleAllowed = !item.roles || item.roles.includes(role);
+
+    const planAllowed = !item.plans || item.plans.some((p: any) => hasAccess(p));
+
+    return roleAllowed && planAllowed;
+  });
+
   return (
     <div>
       <p className="mb-2 px-2 text-xs font-semibold text-gray-400">{title}</p>
 
       <div className="flex flex-col gap-1">
-        {items.map(item => {
+        {filteredItems.map(item => {
           const Icon = item.icon;
           const active = pathname === item.path;
           const isOrders = item.label === 'الطلبات';

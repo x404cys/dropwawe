@@ -32,6 +32,10 @@ export default function ProductTable() {
   const [categoryFilter, setCategoryFilter] = useState('');
   const { currentStore } = useStoreProvider();
   const [loading, setLoading] = useState(false);
+  const role = session?.user?.role;
+  const isTraderOrSupplier = role === 'SUPPLIER' || role === 'TRADER';
+
+  const isDropshipper = role === 'DROPSHIPPER';
 
   if (!data?.Stores || data?.Stores.length > 0) {
     useEffect(() => {
@@ -118,13 +122,23 @@ export default function ProductTable() {
           dir="rtl"
           className="mt-4 flex items-center justify-between text-xs font-medium text-gray-600"
         >
-          <button
-            onClick={() => router.push('/Dashboard/ProductManagment/add-product')}
-            className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
-          >
-            <LuPackagePlus className="h-5 w-5" />
-            <span>إضافة منتج</span>
-          </button>
+          {isTraderOrSupplier ? (
+            <button
+              onClick={() => router.push('/Dashboard/ProductManagment/add-product')}
+              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
+            >
+              <LuPackagePlus className="h-5 w-5" />
+              <span>إضافة منتج</span>
+            </button>
+          ) : (
+            <button
+              onClick={() => router.push('/Dashboard/products-dropwave')}
+              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
+            >
+              <LuPackagePlus className="h-5 w-5" />
+              <span>المخزن</span>
+            </button>
+          )}
 
           <div className="h-8 w-px bg-gray-200" />
 
