@@ -130,7 +130,7 @@ export default function ProductPage() {
       }),
     });
     if (res.ok) return toast.success('تمت اضافة المنتج بنجاح');
-    if (!res.ok) return toast.error('فشل الاضافة');
+    if (!res.ok) return toast.error('فشل الاضافة - او وصلت للحد المسموح وهو 5 منتجات فقط');
   };
   if (loading) {
     return (

@@ -9,10 +9,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.redirect('/');
   }
 
-  if (session.user.role !== 'DROPSHIPPER') {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
-  }
-
   const { productId, profit, category } = await req.json();
 
   const product = await prisma.product.findUnique({
@@ -35,21 +31,27 @@ export async function POST(req: NextRequest) {
     where: {
       userId: session.user.id,
     },
-  });
-  const checkLimitAddProduct = await prisma.subscriptionPlan.findUnique({
-    where: {
-      id: plan?.id,
+    include: {
+      plan: true,
     },
   });
 
   const productCount = await prisma.product.findMany({
     where: {
-      OR: [{ storeId: storeUser.id }, { userId: session.user.id }],
+      OR: [{ storeId: storeUser.store.id }, { userId: session.user.id }],
     },
   });
-  if (productCount.length === 5 && checkLimitAddProduct?.type === 'drop-basics') {
+  if (productCount.length >= 5 && plan?.plan.type === 'drop-basics') {
     return NextResponse.json({ message: 'Full Product' }, { status: 403 });
   }
+  if (
+    plan?.plan.type !== 'drop-basics' &&
+    plan?.plan.type !== 'drop-pro' &&
+    plan?.plan.type !== 'free-trial'
+  ) {
+    return NextResponse.json({ message: 'unUthraize' }, { status: 404 });
+  }
+
   const addProduct = await prisma.product.create({
     data: {
       name: product.name,

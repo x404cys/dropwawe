@@ -15,11 +15,9 @@ export async function POST(req: Request) {
     const { productId, newPrice } = body;
 
     if (!productId) {
-      console.log('dsd');
       return NextResponse.json({ message: 'productId و newPrice is  requierd' }, { status: 400 });
     }
     if (!newPrice) {
-      console.log('|| newPrice');
       return NextResponse.json({ message: 'productId و newPrice is  requierd' }, { status: 400 });
     }
 
@@ -46,9 +44,30 @@ export async function POST(req: Request) {
         store: true,
       },
     });
+    const plan = await prisma.userSubscription.findUnique({
+      where: {
+        userId: session.user.id,
+      },
+      include: {
+        plan: true,
+      },
+    });
 
-    const existingStore = storeUser?.store;
-
+    const productCount = await prisma.product.findMany({
+      where: {
+        OR: [{ storeId: storeUser?.store.id }, { userId: session.user.id }],
+      },
+    });
+    if (productCount.length >= 5 && plan?.plan.type === 'drop-basics') {
+      return NextResponse.json({ message: 'Full Product' }, { status: 403 });
+    }
+    if (
+      plan?.plan.type !== 'drop-basics' &&
+      plan?.plan.type !== 'drop-pro' &&
+      plan?.plan.type !== 'free-trial'
+    ) {
+      return NextResponse.json({ message: 'unUthraize' }, { status: 404 });
+    }
     const newProduct = await prisma.product.create({
       data: {
         name: product.name,
@@ -62,7 +81,7 @@ export async function POST(req: Request) {
         shippingPrice: product.shippingPrice,
         shippingType: product.shippingType,
         userId: session.user.id,
-        storeId: storeUser?.userId,
+        storeId: storeUser?.store.id,
         unlimited: product.unlimited,
         isFromSupplier: true,
         supplierId: product.supplierId ?? null,
