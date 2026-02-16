@@ -56,24 +56,27 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     const sorted = plansData ? sortPlans(plansData) : [];
 
     const userPlanType: PlanType | null = userSubscription?.subscription?.type ?? null;
-
     const ACCESS_MAP: Record<PlanType, PlanType[]> = {
       'trader-basic': ['trader-basic'],
       'trader-pro': ['trader-basic', 'trader-pro'],
-      'drop-basics': ['drop-basics', 'drop-pro'],
+
+      'drop-basics': ['drop-basics'],
+
       'drop-pro': ['drop-basics', 'drop-pro'],
+
       'multi-basics': ['drop-basics', 'trader-basic'],
       'multi-pro': ['drop-pro', 'trader-pro', 'drop-basics', 'trader-basic'],
+
       'multi-trader': ['trader-basic', 'trader-pro'],
       'multi-drop': ['drop-basics', 'drop-pro'],
+
       'ramadan-plan': ['trader-pro'],
+
       'free-trial': [
         'multi-basics',
-        'multi-pro',
         'multi-drop',
         'multi-trader',
         'drop-basics',
-        'drop-pro',
         'trader-basic',
         'trader-pro',
       ],

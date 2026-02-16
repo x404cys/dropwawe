@@ -91,7 +91,7 @@ const plans: Plan[] = [
     r: ['399 د.ع + 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
   },
   {
-    title: 'باقة رمضان',
+    title: 'الباقة الرمضانية',
     price: 39000,
     popular: true,
     type: 'ramadan-plan',

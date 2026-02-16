@@ -88,7 +88,7 @@ export default function Plans() {
           <div className="relative">
             <div className="rounded-xl border p-8 md:p-12">
               <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-                <h2 className="mb-4 text-3xl font-bold">باقة رمضان الخاصة</h2>
+                <h2 className="mb-4 text-3xl font-bold">الباقة الرمضانية</h2>
 
                 <div className="absolute top-0 -left-3 z-50 flex text-3xl">
                   <Image

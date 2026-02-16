@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import { Check, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
+import { PlanType } from '@/types/plans/Plans';
+import { useSubscriptions } from '@/app/(page)/Dashboard/context/useSubscription';
 
 type ThemeId = 'NORMAL' | 'MODERN' | 'RAMADAN';
 
@@ -14,28 +16,34 @@ type Theme = {
   description: string;
   image?: string;
   badge?: string;
+  allowedPlans: PlanType[];
 };
 
 const themes: Theme[] = [
+  {
+    id: 'NORMAL',
+    name: 'ثيم كلاسيكي',
+    description: 'تصميم بسيط وألوان هادئة',
+    image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
+    allowedPlans: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro', 'free-trial'],
+  },
+
   {
     id: 'MODERN',
     name: 'ثيم عصري',
     description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
     image: '/img-theme/iPhone-13-PRO-MODREN.webp',
     badge: 'شائع',
+    allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
   },
+
   {
     id: 'RAMADAN',
     name: 'ثيم رمضان',
-    description:'تصميم رمضاني يناسب متجرك في الموسم',
+    description: 'تصميم رمضاني يناسب متجرك في الموسم',
     image: '/img-theme/IMG_6629.JPG',
-    badge: 'شائع',
-  },
-  {
-    id: 'NORMAL',
-    name: 'ثيم كلاسيكي',
-    description: 'تصميم بسيط وألوان هادئة',
-    image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
+    badge: 'موسمي',
+    allowedPlans: ['ramadan-plan', 'free-trial'],
   },
 ];
 
@@ -47,6 +55,7 @@ const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function ThemeSection() {
   const [loadingTheme, setLoadingTheme] = useState<ThemeId | null>(null);
+  const { userPlanType } = useSubscriptions();
 
   const { data, isLoading } = useSWR<ThemeResponse>('/api/dashboard/setting/get-theme', fetcher, {
     revalidateOnFocus: true,
@@ -68,6 +77,10 @@ export default function ThemeSection() {
       setLoadingTheme(null);
     }
   };
+  const visibleThemes = themes.filter(theme => {
+    if (!userPlanType) return false;
+    return theme.allowedPlans.includes(userPlanType);
+  });
 
   return (
     <div className="space-y-8">
@@ -92,7 +105,7 @@ export default function ThemeSection() {
       </div>
 
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {themes.map(theme => {
+        {visibleThemes.map(theme => {
           const isActive = data?.theme === theme.id;
           const isLoadingBtn = loadingTheme === theme.id;
 
