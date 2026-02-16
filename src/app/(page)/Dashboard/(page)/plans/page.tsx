@@ -2,7 +2,7 @@
 import { PricingCard } from '@/components/pricing-card';
 import { Badge } from '@/components/ui/badge';
 import { Check, CornerLeftDown, Rocket } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { subscribePlan } from '../../_utils/subscribePlan';
 import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
@@ -16,6 +16,32 @@ export default function Plans() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { update } = useSession();
+  const useCountdown = (days: number) => {
+    const [timeLeft, setTimeLeft] = useState(0);
+
+    useEffect(() => {
+      const endDate =
+        Number(localStorage.getItem('ramadanEnd')) || Date.now() + days * 24 * 60 * 60 * 1000;
+
+      localStorage.setItem('ramadanEnd', String(endDate));
+
+      const interval = setInterval(() => {
+        setTimeLeft(endDate - Date.now());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [days]);
+
+    const d = Math.max(0, timeLeft);
+
+    return {
+      days: Math.floor(d / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((d / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((d / (1000 * 60)) % 60),
+      seconds: Math.floor((d / 1000) % 60),
+    };
+  };
+  const timer = useCountdown(35);
 
   const handleSubscribe = async (type: string) => {
     setLoading(true);
@@ -58,20 +84,37 @@ export default function Plans() {
           </h1>
         </div>
 
-        <div className="mx-auto mb-16 max-w-3xl">
-          <div className="relative overflow-hidden rounded-2xl border p-8 md:p-12">
-            <Badge className="mb-4 bg-amber-300 text-lg text-white">
-              <span>عرض رمضان</span>
-              <IoMoonOutline size={28} className="h-16 w-16" />
-            </Badge>
-            <div className="absolute top-0 -left-3 flex text-3xl">
-              <Image
-                src={'/img-theme/IMG_8473-removebg-preview.png'}
-                alt="al"
-                width={100}
-                height={200}
-              />
+        <div className="relative mx-auto mb-16 max-w-xl">
+          <div className="rounded-xl border p-8 md:p-12">
+            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
+              <div className="absolute top-0 -left-3 z-50 flex text-3xl">
+                <Image
+                  src={'/img-theme/IMG_8473-removebg-preview.png'}
+                  alt="al"
+                  width={100}
+                  height={200}
+                />
+              </div>
+              <div className="mt-18 flex gap-3 text-center md:mt-0 md:pt-0">
+                {[
+                  { label: 'يوم', value: timer.days },
+                  { label: 'ساعة', value: timer.hours },
+                  { label: 'دقيقة', value: timer.minutes },
+                  { label: 'ثانية', value: timer.seconds },
+                ].map(t => (
+                  <div
+                    key={t.label}
+                    className={`min-w-[70px] rounded-xl px-4 py-2 ${
+                      t.label === 'ثانية' ? 'animate-pulse bg-black/5' : 'bg-black/5'
+                    }`}
+                  >
+                    <div className="text-xl font-bold">{t.value}</div>
+                    <div className="text-muted-foreground text-xs">{t.label}</div>
+                  </div>
+                ))}
+              </div>
             </div>
+
             <div className="grid items-center gap-8 md:grid-cols-2">
               <div>
                 <h2 className="mb-4 text-3xl font-bold">باقة رمضان الخاصة</h2>
@@ -80,9 +123,9 @@ export default function Plans() {
                   باقة مؤقتة بمميزات إضافية لمساعدتك على زيادة مبيعاتك خلال شهر رمضان.
                 </p>
 
-                <ul className="mb-6 space-y-3">
+                <ul className="space-y-3">
                   {[
-                    ' متجر الكتروني بتصميم رمضاني ',
+                    'متجر الكتروني بتصميم رمضاني',
                     'عدد منتجات غير محدود',
                     'عدد طلبات غير محدود',
                     'ادارة الطلبات',
@@ -91,36 +134,37 @@ export default function Plans() {
                     'تفعيل كوبونات خصم',
                     'ربط ميتا وتيك توك وسناب بكسل',
                     'الربط مع شركات التوصيل',
-                    'ثيمات متحر عدد 2 ',
+                    'ثيمات متجر عدد 2',
                     'صلاحية ادارة المتجر لـ 3 اشخاص',
                     'اولوية الدعم 24/7',
                   ].map(feature => (
-                    <li key={feature} className="flex items-center gap-2">
+                    <li key={feature} className="flex gap-2">
                       {feature}
                     </li>
                   ))}
                 </ul>
+              </div>
+
+              <div className="text-center md:text-left">
+                <p className="text-muted-foreground">السعر الخاص</p>
+
+                <p className="mt-2 text-xl text-gray-400 line-through">69,000 د.ع</p>
+
+                <h3 className="my-4 text-6xl font-extrabold">
+                  39,000
+                  <span className="text-lg font-normal text-black"> د.ع</span>
+                </h3>
+
+                <p className="text-muted-foreground mb-6">العرض ينتهي خلال الوقت المتبقي</p>
 
                 <Button
                   size="lg"
                   disabled={loading}
                   onClick={() => handleSubscribe('ramadan-plan')}
-                  className="text-lg"
+                  className="w-full cursor-pointer bg-sky-500 text-white hover:bg-sky-600"
                 >
                   اشترك الآن
                 </Button>
-              </div>
-
-              <div className="space-y-5 text-center md:text-left">
-                <p className="text-muted-foreground">السعر الخاص</p>
-                <span>
-                  بدل <span className="pt-2 text-gray-600 line-through">69,000</span>
-                </span>
-                <h3 className="my-3 text-5xl font-bold">
-                  39,000
-                  <span className="text-lg font-normal"> د.ع</span>
-                </h3>
-                <p className="text-muted-foreground">لفترة محدودة خلال شهر رمضان فقط</p>
               </div>
             </div>
           </div>

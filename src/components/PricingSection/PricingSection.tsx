@@ -6,6 +6,7 @@ import 'aos/dist/aos.css';
 import { Check, Sparkles } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { signIn } from 'next-auth/react';
+import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -23,7 +24,7 @@ interface Plan {
   features: string[];
   popular?: boolean;
   r?: string[];
-  type: 'store' | 'dropship';
+  type: 'store' | 'dropship' | 'ramadan-plan';
 }
 const faqs = [
   {
@@ -90,6 +91,23 @@ const plans: Plan[] = [
     r: ['399 د.ع + 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
   },
   {
+    title: 'باقة رمضان',
+    price: 39000,
+    popular: true,
+    type: 'ramadan-plan',
+    features: [
+      'كل مميزات الباقة الاحترافية',
+      'متجر الكتروني بتصميم رمضاني',
+      'دعم تسويقي مكثف',
+      'ربط شركات التوصيل',
+
+      'ثيمات متجر عدد 2',
+      'صلاحية إدارة المتجر 3 أشخاص',
+      'أولوية الدعم 24/7',
+    ],
+    r: ['99 د.ع+ 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
+  },
+  {
     title: 'الأساسية - دروبشيبينغ',
     price: 39000,
     type: 'dropship',
@@ -137,6 +155,32 @@ export default function PricingSection() {
   }, []);
 
   const filteredPlans = filter === 'all' ? plans : plans.filter(p => p.type === filter);
+  const useCountdown = (days: number) => {
+    const [timeLeft, setTimeLeft] = useState(0);
+
+    useEffect(() => {
+      const endDate =
+        Number(localStorage.getItem('ramadanEnd')) || Date.now() + days * 24 * 60 * 60 * 1000;
+
+      localStorage.setItem('ramadanEnd', String(endDate));
+
+      const interval = setInterval(() => {
+        setTimeLeft(endDate - Date.now());
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, [days]);
+
+    const d = Math.max(0, timeLeft);
+
+    return {
+      days: Math.floor(d / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((d / (1000 * 60 * 60)) % 24),
+      minutes: Math.floor((d / (1000 * 60)) % 60),
+      seconds: Math.floor((d / 1000) % 60),
+    };
+  };
+  const timer = useCountdown(35);
 
   return (
     <section
@@ -149,7 +193,7 @@ export default function PricingSection() {
         <div className="absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full bg-white/10 blur-2xl" />
       </div>
 
-      <div className="relative z-10 mx-auto max-w-7xl px-6">
+      <div className="max-w-8xl relative z-10 mx-auto px-6">
         <div className="mb-12 text-center">
           <h2 className="text-3xl font-extrabold text-white md:text-4xl">
             باقات مرنة تناسب
@@ -162,11 +206,12 @@ export default function PricingSection() {
         </div>
 
         <div className="mb-12 flex justify-center">
-          <div className="relative flex gap-4 rounded-full bg-white/10 p-1 px-8 py-2 text-white ring-1 ring-white/30 transition hover:bg-white/20">
+          <div className="relative flex gap-4 rounded-full bg-white/10 p-1 px-4 py-2 text-white ring-1 ring-white/30 transition hover:bg-white/20">
             {[
               { key: 'all', label: 'الكل' },
               { key: 'store', label: 'متاجر' },
               { key: 'dropship', label: 'دروبشيبينغ' },
+              { key: 'ramadan-plan', label: 'رمضان' },
             ].map(b => (
               <button
                 key={b.key}
@@ -184,13 +229,24 @@ export default function PricingSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-14 pt-10 sm:grid-cols-2 md:gap-6 lg:grid-cols-3 xl:grid-cols-4">
+        <div className="grid grid-cols-1 gap-14 pt-10 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
           {filteredPlans.map((plan, i) => (
             <div
               key={i}
               data-aos="fade-up"
               className={`relative flex h-full flex-col rounded-[28px] bg-sky-100/90 p-6 text-center shadow-xl backdrop-blur transition duration-700`}
             >
+              {plan.type === 'ramadan-plan' && (
+                <div className="absolute top-2 -left-3 flex text-3xl">
+                  <Image
+                    src={'/img-theme/IMG_8473-removebg-preview.png'}
+                    alt="al"
+                    width={100}
+                    height={200}
+                  />
+                </div>
+              )}
+
               <span className="absolute -top-10 left-1/2 mx-auto inline-flex h-16 w-[85%] max-w-[220px] -translate-x-1/2 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
                 <span className="text-lg leading-tight">{plan.title}</span>
                 <span className="font-extrabold">{formatIQD(plan.price)}</span>
@@ -204,7 +260,28 @@ export default function PricingSection() {
                   </li>
                 ))}
               </ul>
-
+              {plan.type === 'ramadan-plan' && (
+                <div className="mt-12 flex gap-3 text-center text-xs md:mt-0 md:gap-3 md:px-0 md:pt-0">
+                  {[
+                    { label: 'يوم', value: timer.days },
+                    { label: 'ساعة', value: timer.hours },
+                    { label: 'دقيقة', value: timer.minutes },
+                    { label: 'ثانية', value: timer.seconds },
+                  ].map(t => (
+                    <div
+                      key={t.label}
+                      className={`min-w-[10px] rounded-xl px-3 py-1 text-xs ${
+                        t.label === 'ثانية'
+                          ? 'bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%'
+                          : 'bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%'
+                      }`}
+                    >
+                      <div className="text-lg font-bold">{t.value}</div>
+                      <div className="text-xs">{t.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
               <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-900">
                 <p className="mb-2 font-bold">رسوم المعاملات</p>
                 {plan.r?.map(r => (
