@@ -84,93 +84,91 @@ export default function Plans() {
           </h1>
         </div>
 
-        <div className="relative mx-auto mb-16 max-w-xl">
-          <div className="rounded-xl border p-8 md:p-12">
-            <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
-              <div className="absolute top-0 -left-3 z-50 flex text-3xl">
-                <Image
-                  src={'/img-theme/IMG_8473-removebg-preview.png'}
-                  alt="al"
-                  width={100}
-                  height={200}
-                />
-              </div>
-              <div className="mt-18 flex gap-3 text-center md:mt-0 md:pt-0">
-                {[
-                  { label: 'يوم', value: timer.days },
-                  { label: 'ساعة', value: timer.hours },
-                  { label: 'دقيقة', value: timer.minutes },
-                  { label: 'ثانية', value: timer.seconds },
-                ].map(t => (
-                  <div
-                    key={t.label}
-                    className={`min-w-[70px] rounded-xl px-4 py-2 ${
-                      t.label === 'ثانية' ? 'animate-pulse bg-black/5' : 'bg-black/5'
-                    }`}
-                  >
-                    <div className="text-xl font-bold">{t.value}</div>
-                    <div className="text-muted-foreground text-xs">{t.label}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <div>
+        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3 lg:gap-8">
+          <div className="relative">
+            <div className="rounded-xl border p-8 md:p-12">
+              <div className="mb-8 flex flex-wrap items-center justify-between gap-4">
                 <h2 className="mb-4 text-3xl font-bold">باقة رمضان الخاصة</h2>
 
-                <p className="text-muted-foreground mb-6">
-                  باقة مؤقتة بمميزات إضافية لمساعدتك على زيادة مبيعاتك خلال شهر رمضان.
-                </p>
+                <div className="absolute top-0 -left-3 z-50 flex text-3xl">
+                  <Image
+                    src={'/img-theme/IMG_8473-removebg-preview.png'}
+                    alt="al"
+                    width={100}
+                    height={200}
+                  />
+                </div>
 
-                <ul className="space-y-3">
-                  {[
-                    'متجر الكتروني بتصميم رمضاني',
-                    'عدد منتجات غير محدود',
-                    'عدد طلبات غير محدود',
-                    'ادارة الطلبات',
-                    'ادارة المخزون',
-                    'دعم تسويقي مكثف',
-                    'تفعيل كوبونات خصم',
-                    'ربط ميتا وتيك توك وسناب بكسل',
-                    'الربط مع شركات التوصيل',
-                    'ثيمات متجر عدد 2',
-                    'صلاحية ادارة المتجر لـ 3 اشخاص',
-                    'اولوية الدعم 24/7',
-                  ].map(feature => (
-                    <li key={feature} className="flex gap-2">
-                      {feature}
-                    </li>
-                  ))}
-                </ul>
+                <div className="grid items-center gap-8 md:grid-cols-1">
+                  <div className="flex gap-3 text-center md:mt-0 md:pt-0">
+                    {[
+                      { label: 'يوم', value: timer.days },
+                      { label: 'ساعة', value: timer.hours },
+                      { label: 'دقيقة', value: timer.minutes },
+                      { label: 'ثانية', value: timer.seconds },
+                    ].map(t => (
+                      <div
+                        key={t.label}
+                        className={`min-w-[70px] rounded-xl px-4 py-2 ${
+                          t.label === 'ثانية' ? 'animate-pulse bg-black/5' : 'bg-black/5'
+                        }`}
+                      >
+                        <div className="text-xl font-bold">{t.value}</div>
+                        <div className="text-muted-foreground text-xs">{t.label}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <p className="text-muted-foreground mb-6">
+                    باقة مؤقتة بمميزات إضافية لمساعدتك على زيادة مبيعاتك خلال شهر رمضان.
+                  </p>
+
+                  <ul className="space-y-3">
+                    {[
+                      'متجر الكتروني بتصميم رمضاني',
+                      'عدد منتجات غير محدود',
+                      'عدد طلبات غير محدود',
+                      'ادارة الطلبات',
+                      'ادارة المخزون',
+                      'دعم تسويقي مكثف',
+                      'تفعيل كوبونات خصم',
+                      'ربط ميتا وتيك توك وسناب بكسل',
+                      'الربط مع شركات التوصيل',
+                      'ثيمات متجر عدد 2',
+                      'صلاحية ادارة المتجر لـ 3 اشخاص',
+                      'اولوية الدعم 24/7',
+                    ].map(feature => (
+                      <li key={feature} className="flex gap-2">
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div className="text-right md:text-right">
+                  <p className="text-muted-foreground">السعر الخاص</p>
+
+                  <p className="mt-2 text-xl text-gray-400 line-through">69,000 د.ع</p>
+
+                  <h3 className="my-4 text-3xl font-extrabold">
+                    39,000
+                    <span className="text-lg font-normal text-black"> د.ع</span>
+                  </h3>
+
+                  <p className="text-muted-foreground mb-6">العرض ينتهي خلال الوقت المتبقي</p>
+                </div>
               </div>
-
-              <div className="text-center md:text-left">
-                <p className="text-muted-foreground">السعر الخاص</p>
-
-                <p className="mt-2 text-xl text-gray-400 line-through">69,000 د.ع</p>
-
-                <h3 className="my-4 text-6xl font-extrabold">
-                  39,000
-                  <span className="text-lg font-normal text-black"> د.ع</span>
-                </h3>
-
-                <p className="text-muted-foreground mb-6">العرض ينتهي خلال الوقت المتبقي</p>
-
-                <Button
-                  size="lg"
-                  disabled={loading}
-                  onClick={() => handleSubscribe('ramadan-plan')}
-                  className="w-full cursor-pointer bg-sky-500 text-white hover:bg-sky-600"
-                >
-                  اشترك الآن
-                </Button>
-              </div>
+              <Button
+                size="lg"
+                disabled={loading}
+                onClick={() => handleSubscribe('ramadan-plan')}
+                className="absolute bottom-5 w-72 cursor-pointer bg-sky-500 text-white hover:bg-sky-600"
+              >
+                اشترك الآن
+              </Button>
             </div>
           </div>
-        </div>
-
-        <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-4 lg:gap-8">
           <PricingCard
             name="الباقة الاساسية - للتجار"
             price="39,000"

@@ -74,20 +74,22 @@ export default function UserActions() {
       ref={dropdownRef}
     >
       <div className="flex items-center justify-start gap-4">
-        <div
-          className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-[#04BAF6]"
-          onClick={() => {
-            setOpenNotifications(!openNotifications);
-            setOpenUserMenu(false);
-          }}
-        >
-          <MdOutlineNotificationsNone className="text-2xl text-white" />
+        <div className="relative">
+          <div
+            className="relative flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border bg-white"
+            onClick={() => {
+              setOpenNotifications(!openNotifications);
+              setOpenUserMenu(false);
+            }}
+          >
+            <MdOutlineNotificationsNone className="text-2xl text-gray-950" />
 
-          {unreadNotifications && unreadNotifications.length > 0 && (
-            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
-              {unreadNotifications.length}
-            </span>
-          )}
+            {unreadNotifications && unreadNotifications.length > 0 && (
+              <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] text-white">
+                {unreadNotifications.length}
+              </span>
+            )}
+          </div>
         </div>
       </div>
       <div></div>

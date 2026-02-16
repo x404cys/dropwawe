@@ -13,7 +13,8 @@ export type PlanType =
   | 'multi-pro'
   | 'multi-drop'
   | 'multi-trader'
-  | 'free-trial';
+  | 'free-trial'
+  | 'ramadan-plan';
 
 export interface Plan {
   id: string;

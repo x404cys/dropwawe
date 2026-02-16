@@ -66,6 +66,7 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
       'multi-pro': ['drop-pro', 'trader-pro', 'drop-basics', 'trader-basic'],
       'multi-trader': ['trader-basic', 'trader-pro'],
       'multi-drop': ['drop-basics', 'drop-pro'],
+      'ramadan-plan': ['trader-pro'],
       'free-trial': [
         'multi-basics',
         'multi-pro',

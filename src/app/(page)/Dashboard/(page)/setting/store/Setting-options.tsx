@@ -52,6 +52,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     'trader-pro': traderPro?.name || 'Trader Pro',
     'drop-basics': dropBasic?.name || 'Drop Basics',
     'drop-pro': dropPro?.name || 'Drop Pro',
+    'ramadan-plan': '',
   };
 
   const sectionGroups: SectionGroup[] = [
@@ -83,19 +84,33 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
           id: 'theme',
           label: 'تخصيص القالب والمظهر',
           icon: MdOutlineStyle,
-          allowedPlans: ['drop-basics', 'trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
+          allowedPlans: [
+            'drop-basics',
+            'trader-basic',
+            'trader-pro',
+            'drop-pro',
+            'free-trial',
+            'ramadan-plan',
+          ],
         },
         {
           id: 'users',
           label: 'إضافة مستخدم لإدارة المتجر',
           icon: FaUsersCog,
-          allowedPlans: ['drop-pro', 'trader-pro'],
+          allowedPlans: ['drop-pro', 'trader-pro', 'trader-pro', 'ramadan-plan'],
         },
         {
           id: 'Coupon',
           label: 'كوبونات',
           icon: BiSolidDiscount,
-          allowedPlans: ['drop-basics', 'trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
+          allowedPlans: [
+            'drop-basics',
+            'trader-basic',
+            'trader-pro',
+            'drop-pro',
+            'free-trial',
+            'ramadan-plan',
+          ],
         },
         {
           id: 'create-another',
@@ -113,13 +128,13 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
           id: 'pixel',
           label: 'البيكسل والتتبع الإعلاني',
           icon: PiShootingStarThin,
-          allowedPlans: ['trader-basic', 'trader-pro', 'drop-pro', 'free-trial'],
+          allowedPlans: ['trader-basic', 'trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
         },
         {
           id: 'c-shipping',
           label: 'الربط مع شركة التوصيل',
           icon: FaShippingFast,
-          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro'],
+          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro', 'ramadan-plan'],
         },
       ],
     },
@@ -159,7 +174,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                   onClick={() => allowed && onSectionChange(section.id)}
                   className={`flex w-full items-center justify-between px-5 py-4 text-sm transition-all ${
                     !allowed
-                      ? 'cursor-not-allowed hidden bg-gray-50 text-gray-400'
+                      ? 'hidden cursor-not-allowed bg-gray-50 text-gray-400'
                       : isActive
                         ? 'bg-gray-50 font-medium text-gray-900'
                         : 'text-gray-700 hover:bg-gray-50'
@@ -168,7 +183,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                   <div className="flex items-center gap-3">
                     <div
                       className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                        allowed ? 'bg-[#04BAF6]' : 'bg-gray-300 '
+                        allowed ? 'bg-[#04BAF6]' : 'bg-gray-300'
                       } `}
                     >
                       <section.icon size={18} className="text-white" />

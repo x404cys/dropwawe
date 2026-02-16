@@ -51,6 +51,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     'multi-drop': 'خطة الدروب شيبر',
     'multi-trader': 'خطة التاجر',
     'free-trial': 'الخطة المجانية',
+    'ramadan-plan': '',
   };
 
   const sectionGroups: SectionGroup[] = [
@@ -148,7 +149,7 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
                     <div className="flex items-center gap-3">
                       <div
                         className={`flex h-10 w-10 items-center justify-center rounded-lg ${
-                          allowedGroup ? 'bg-sky-700' : 'bg-gray-300'
+                          allowedGroup ? 'bg-[#04BAF6]' : 'bg-gray-300'
                         }`}
                       >
                         <Icon size={18} className="text-white" />
