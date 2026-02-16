@@ -14,7 +14,7 @@ export async function GET() {
     const theme = await prisma.store.findFirst({
       where: {
         users: {
-          some: {
+          some: { 
             userId: userId,
           },
         },

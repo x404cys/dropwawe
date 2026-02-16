@@ -6,7 +6,7 @@ import { Check, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 
-type ThemeId = 'NORMAL' | 'MODERN';
+type ThemeId = 'NORMAL' | 'MODERN' | 'RAMADAN';
 
 type Theme = {
   id: ThemeId;
@@ -22,6 +22,13 @@ const themes: Theme[] = [
     name: 'ثيم عصري',
     description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
     image: '/img-theme/iPhone-13-PRO-MODREN.webp',
+    badge: 'شائع',
+  },
+  {
+    id: 'RAMADAN',
+    name: 'ثيم رمضان',
+    description:'تصميم رمضاني يناسب متجرك في الموسم',
+    image: '/img-theme/IMG_6629.JPG',
     badge: 'شائع',
   },
   {

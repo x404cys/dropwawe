@@ -12,7 +12,7 @@ export async function POST(req: Request) {
 
     const { theme } = await req.json();
 
-    if (!['NORMAL', 'MODERN'].includes(theme)) {
+    if (!['NORMAL', 'MODERN', 'RAMADAN'].includes(theme)) {
       return NextResponse.json({ error: 'Invalid theme value' }, { status: 400 });
     }
     await prisma.store.updateMany({
