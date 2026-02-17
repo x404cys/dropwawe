@@ -92,7 +92,7 @@ export default function UserActions() {
           </div>
         </div>
       </div>
-      <div></div>
+
       {openUserMenu && (
         <div
           dir="rtl"
