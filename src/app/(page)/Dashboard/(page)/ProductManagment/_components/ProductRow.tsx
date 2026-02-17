@@ -72,28 +72,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
         </Badge>
       </TableCell>
 
-      <TableCell>
-        <Badge variant="outline" className="font-normal">
-          {product.shippingType}
-        </Badge>
-      </TableCell>
-
-      <TableCell>
-        <div className="flex items-center gap-2">
-          {product.hasReturnPolicy ? (
-            <>
-              <ShieldCheck className="h-4 w-4 text-green-600 dark:text-green-500" />
-              <span className="text-sm font-medium text-green-600 dark:text-green-500">نعم</span>
-            </>
-          ) : (
-            <>
-              <XCircle className="text-muted-foreground h-4 w-4" />
-              <span className="text-muted-foreground text-sm">لا</span>
-            </>
-          )}
-        </div>
-      </TableCell>
-
       <TableCell className="whitespace-nowrap">
         <div className="flex items-center gap-2 rtl:flex-row-reverse">
           <Button
@@ -104,15 +82,6 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
             aria-label="تعديل المنتج"
           >
             <Pencil className="h-4 w-4" />
-          </Button>
-          <Button
-            size="sm"
-            variant="destructive"
-            onClick={() => onDelete(product.id)}
-            className="hover:bg-destructive/90 transition-all"
-            aria-label="حذف المنتج"
-          >
-            <Trash className="h-4 w-4" />
           </Button>
         </div>
       </TableCell>

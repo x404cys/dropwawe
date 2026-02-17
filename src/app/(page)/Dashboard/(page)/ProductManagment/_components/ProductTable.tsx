@@ -256,10 +256,7 @@ export default function ProductTable() {
                     <TableHead>المنتج</TableHead>
                     <TableHead>السعر</TableHead>
                     <TableHead>الكمية</TableHead>
-                    <TableHead>الوصف</TableHead>
                     <TableHead>الصنف</TableHead>
-                    <TableHead>التوصيل</TableHead>
-                    <TableHead>سياسة الاسترجاع</TableHead>
                     <TableHead>الصورة</TableHead>
                     <TableHead>إجراءات</TableHead>
                   </TableRow>
