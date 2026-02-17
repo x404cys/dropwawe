@@ -116,12 +116,12 @@ export default function Footer() {
                 <span className="font-normal text-white">info@matager.app</span>
               </a>
 
-              <a href="tel:+9647886923291" className="group flex items-center gap-3 text-white">
+              <a href="tel:+9647718599996" className="group flex items-center gap-3 text-white">
                 <div className="bg-muted/30 flex h-10 w-10 items-center justify-center rounded-lg">
                   <Phone className="h-4 w-4" />
                 </div>
                 <span dir="ltr" className="font-normal">
-                  +9647886923291
+                  +964 771 859 9996{' '}
                 </span>
               </a>
             </div>
