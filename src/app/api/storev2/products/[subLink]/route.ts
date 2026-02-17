@@ -24,12 +24,17 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
 
     const ownerUserId = store.users.find(u => u.userId)?.userId;
  */
-    const products =
-      await prisma.product.findMany(/* {
+    const products = await prisma.product.findMany(
+      /* {
       where: {
         OR: [{ storeId: store.id }, { userId: ownerUserId }],
       },
-    } */);
+    } */ {
+        orderBy: {
+          createdAt: 'desc',
+        },
+      }
+    );
 
     return NextResponse.json(products, { status: 200 });
   } catch (err) {
