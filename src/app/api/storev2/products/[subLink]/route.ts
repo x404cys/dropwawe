@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 
 export async function GET(req: NextRequest, context: { params: Promise<{ subLink: string }> }) {
-  /*   const { subLink } = await context.params;
+  const { subLink } = await context.params;
 
   if (!subLink) {
     return NextResponse.json({ error: 'subLink is required' }, { status: 400 });
   }
- */
+
   try {
-    /* const store = await prisma.store.findFirst({
+    const store = await prisma.store.findFirst({
       where: { subLink },
       include: {
         users: {
@@ -23,10 +23,10 @@ export async function GET(req: NextRequest, context: { params: Promise<{ subLink
     }
 
     const ownerUserId = store.users.find(u => u.userId)?.userId;
- */
+
     const products = await prisma.product.findMany({
       where: {
-        category: 'ملابس اطفال',
+        OR: [{ storeId: store.id }, { userId: ownerUserId }],
       },
     });
 
