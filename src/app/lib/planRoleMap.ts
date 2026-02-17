@@ -6,6 +6,6 @@ export const planRoleMap: Record<string, UserRole> = {
 
   'drop-basics': 'DROPSHIPPER',
   'drop-pro': 'DROPSHIPPER',
-
+  'ramadan-plan': 'TRADER',
   supplier: 'SUPPLIER',
 };
