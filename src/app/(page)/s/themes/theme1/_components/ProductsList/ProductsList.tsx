@@ -54,7 +54,7 @@ export default function ProductsListTheme1() {
             </button>
           ))}
         </div>
-      </div>{' '}
+      </div>
       <div dir="rtl" className="bg-white">
         <div className="mx-auto">
           <h2 className="sr-only">Products</h2>
