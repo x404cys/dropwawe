@@ -2,7 +2,7 @@ import { useProducts } from '@/app/(page)/s/context/products-context';
 import { useState } from 'react';
 
 export default function CategoriesList() {
-  const { categories, setCategory, setCategoryList } = useProducts();
+  const { categories, setCategoryList } = useProducts();
   const [activeCategory, setActiveCategory] = useState('الكل');
 
   const allCategories = ['الكل', ...categories];

@@ -28,23 +28,17 @@ export default function NavBarTheme2() {
     store,
     setSearch,
     filteredProducts,
-    products,
     search,
-    categories,
-    setCategory,
-    selectedCategory,
   } = useProducts();
   const pathname = usePathname();
 
-  const [searchInput, setSearchInput] = useState('');
-  const [searchOpen, setSearchOpen] = useState(false);
-  const { getTotalQuantityByKey, getTotalPriceAfterDiscountByKey } = useCart();
+   const [searchOpen, setSearchOpen] = useState(false);
+  const { getTotalQuantityByKey } = useCart();
   const { getFavoritesByKey, getTotalFavoritesByKey, removeFromFavoriteByKey } = useFavorite();
   const [isOpen, setIsOpen] = useState(false);
   const [favOpen, setFavOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
 
-  const router = useRouter();
   const KEY_CART = `cart/${store?.id}`;
   const KEY_FAV = `fav/${store?.id}`;
   const favTotal = getTotalFavoritesByKey(KEY_FAV);
@@ -56,12 +50,6 @@ export default function NavBarTheme2() {
     { name: 'الخصومات', href: '/s/themes/theme2/discount', icon: Percent },
     { name: 'السلة', href: `/s/themes/theme2/cart/${store?.id}`, icon: ShoppingBag },
     { name: 'المفضلة', href: `/s/themes/theme2/favorits/${store?.id}`, icon: IoHeart },
-  ];
-  const navLinks2: NavLink[] = [
-    { name: 'الرئيسية', href: '/', icon: Home },
-    { name: 'المنتجات', href: '/s/themes/theme2/products', icon: Package },
-    { name: 'العروض', href: '/s/themes/theme2/ofers', icon: Gift },
-    { name: 'الخصومات', href: '/s/themes/theme2/discount', icon: Percent },
   ];
   return (
     <>
