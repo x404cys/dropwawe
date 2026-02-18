@@ -4,6 +4,10 @@ import { ProductsProvider } from './context/products-context';
 import { getStoreFromSubdomain } from './lib/store';
 import { getTheme } from './themes';
 import type { Metadata } from 'next';
+import FacebookPixel from './context/Pixel/FacebookPixel';
+import GooglePixel from './context/Pixel/GooglePixel';
+import TikTokPixel from './context/Pixel/TikTokPixel';
+import SnapPixel from './context/Pixel/SnapPixel';
 
 export async function generateMetadata(): Promise<Metadata> {
   const store = await getStoreFromSubdomain();
@@ -44,6 +48,11 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
           <Footer />
         </section>
       </ProductsProvider>
+      {store?.facebookPixel && <FacebookPixel pixelId={store.facebookPixel} />}
+      {store?.googlePixel && <GooglePixel measurementId={store.googlePixel} />}
+      {store?.tiktokPixel && <TikTokPixel pixelId={store.tiktokPixel} />}
+      {store?.snapPixel && <SnapPixel pixelId={store.snapPixel} />}
+        
     </StoreProvider>
   );
 }

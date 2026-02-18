@@ -42,6 +42,7 @@ const storeSchema = z.object({
   facebookPixel: z.string().optional(),
   tiktokPixel: z.string().optional(),
   googlePixel: z.string().optional(),
+  snapPixel: z.string().optional(),
   storeId: z.string().optional(),
 });
 
@@ -107,6 +108,7 @@ export async function POST(req: Request) {
           facebookPixel: parsed.data.facebookPixel ?? '',
           tiktokPixel: parsed.data.tiktokPixel ?? '',
           googlePixel: parsed.data.googlePixel ?? '',
+          snapPixel: parsed.data.snapPixel ?? '',
         },
       });
 

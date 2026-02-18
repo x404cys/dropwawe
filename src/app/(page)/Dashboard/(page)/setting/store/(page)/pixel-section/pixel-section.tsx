@@ -7,18 +7,22 @@ interface PixelSectionProps {
   facebookPixel: string | null;
   googlePixel: string | null;
   tiktokPixel: string | null;
+  snapPixel: string | null;
   onFacebookPixelChange: (value: string) => void;
   onGooglePixelChange: (value: string) => void;
   onTiktokPixelChange: (value: string) => void;
+  onSnapPixelChange: (value: string) => void;
 }
 
 export default function PixelSection({
   facebookPixel,
   googlePixel,
   tiktokPixel,
+  snapPixel,
   onFacebookPixelChange,
   onGooglePixelChange,
   onTiktokPixelChange,
+  onSnapPixelChange,
 }: PixelSectionProps) {
   return (
     <div>
@@ -46,7 +50,14 @@ export default function PixelSection({
         value={tiktokPixel || ''}
         onChange={e => onTiktokPixelChange(e.target.value)}
       />
-
+      <CustomInput
+        type="text"
+        placeholder="  "
+        icon={<RiLinksFill className="h-4 w-4" />}
+        label="بيكسل سناب - Snap Pixel"
+        value={snapPixel || ''}
+        onChange={e => onSnapPixelChange(e.target.value)}
+      />
       <div
         role="alert"
         className="mt-5 mb-5 rounded-md border-s-4 border-blue-400 bg-blue-50 p-4 text-xs"
@@ -56,7 +67,8 @@ export default function PixelSection({
         </div>
         <p className="mt-2 text-xs text-blue-400">
           اعرف من يزور متجرك، المنتجات التي يهتم بها، وحسّن حملاتك الإعلانية على Facebook،
-          Instagram، Google وTikTok. كل خطوة يقوم بها زائرك تُسجل بدقة لتزيد مبيعاتك وتحسن استهدافك
+          Instagram، Google وTikTok , SnapChat. كل خطوة يقوم بها زائرك تُسجل بدقة لتزيد مبيعاتك
+          وتحسن استهدافك
         </p>
       </div>
     </div>

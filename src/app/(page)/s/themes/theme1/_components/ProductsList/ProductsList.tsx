@@ -8,6 +8,7 @@ import FacebookPixel from '@/app/(page)/s/context/Pixel/FacebookPixel';
 import GooglePixel from '@/app/(page)/s/context/Pixel/GooglePixel';
 import { useProducts } from '@/app/(page)/s/context/products-context';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import SnapPixel from '@/app/(page)/s/context/Pixel/SnapPixel';
 
 interface ProductsListProps {
   store: StoreProps;
@@ -80,6 +81,7 @@ export default function ProductsListTheme1() {
       </div>
       {store?.facebookPixel && <FacebookPixel pixelId={store.facebookPixel} />}
       {store?.googlePixel && <GooglePixel measurementId={store.googlePixel} />}
+      {store?.tiktokPixel && <SnapPixel pixelId={store.tiktokPixel} />}
     </>
   );
 }

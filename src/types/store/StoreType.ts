@@ -14,6 +14,7 @@ export type StoreProps = {
   createdAt?: Date;
   userId?: string;
   facebookPixel?: string;
+  snapPixel?: string;
   instagramPixel?: string;
   tiktokPixel?: string;
   image?: string;
