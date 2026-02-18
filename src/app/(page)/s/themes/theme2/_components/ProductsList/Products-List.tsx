@@ -2,10 +2,10 @@ import { useMemo } from 'react';
 import { Product } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
 
-import HeroBanner from '@/app/(page)/store/_components/HeroBanner/HeroBanner';
 import FacebookPixel from '@/app/(page)/s/context/Pixel/FacebookPixel';
 import GooglePixel from '@/app/(page)/s/context/Pixel/GooglePixel';
 import ProductCard3 from '../Product-Card/ProductCard';
+import HeroBanner from '../HeroBanner/HeroBanner';
 
 interface ProductsListProps {
   products: Product[];

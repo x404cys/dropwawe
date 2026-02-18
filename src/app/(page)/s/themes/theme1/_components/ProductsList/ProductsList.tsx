@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import { Product } from '@/types/Products';
 
 import { StoreProps } from '@/types/store/StoreType';
 import Link from 'next/link';
 import Image from 'next/image';
 
-import CategoriesList from '../CategoriesList/CategoriesList';
-import ProductCard from '../ProductCard/ProductCard';
 import FacebookPixel from '@/app/(page)/s/context/Pixel/FacebookPixel';
 import GooglePixel from '@/app/(page)/s/context/Pixel/GooglePixel';
 import { useProducts } from '@/app/(page)/s/context/products-context';

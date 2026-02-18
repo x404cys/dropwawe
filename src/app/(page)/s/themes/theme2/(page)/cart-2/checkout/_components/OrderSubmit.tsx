@@ -27,7 +27,6 @@ import { PiContactlessPaymentLight } from 'react-icons/pi';
 import { useProducts } from '@/app/(page)/s/context/products-context';
 import OrderSubmitButton from '../../../../_utils/Order-Submit-Button';
 import OrderSubmitButtonPayment from '../../../../_utils/Order-Submit-Button-Payment';
-import CouponInput from '@/app/(page)/s/_components/Coupons/CouponInput';
 
 export default function OrderSubmi() {
   const {

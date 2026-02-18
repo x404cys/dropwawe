@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/app/lib/context/CartContext';
-import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
 import { toast } from 'sonner';
+import { useProducts } from '@/app/(page)/s/context/products-context';
 
 export default function CheckoutPage() {
   const { store } = useProducts();

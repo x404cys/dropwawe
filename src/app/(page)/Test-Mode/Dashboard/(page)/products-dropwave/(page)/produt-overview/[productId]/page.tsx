@@ -24,8 +24,7 @@ import { useCart } from '@/app/lib/context/CartContext';
 import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { RxShare2 } from 'react-icons/rx';
-import { useProducts } from '@/app/(page)/store/Data/context/products/ProductsContext';
-import {
+ import {
   Dialog,
   DialogContent,
   DialogHeader,

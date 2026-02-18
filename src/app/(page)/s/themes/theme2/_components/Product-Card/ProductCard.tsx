@@ -2,7 +2,6 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { calculateDiscountedPrice, formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Product } from '@/types/Products';
-import { Eye, ShoppingCart, Heart } from 'lucide-react';
 
 export default function ProductCard3({ product }: { product: Product }) {
   return (

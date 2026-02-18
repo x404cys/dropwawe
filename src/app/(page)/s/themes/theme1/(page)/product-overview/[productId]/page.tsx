@@ -11,7 +11,7 @@ import { useCart } from '@/app/lib/context/CartContext';
 import { toast } from 'sonner';
 import { useFavorite } from '@/app/lib/context/FavContext';
 import { HiOutlineShare } from 'react-icons/hi';
-import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
+import { useProducts } from '@/app/(page)/s/context/products-context';
 
 export default function ProductPage() {
   const params = useParams();
@@ -253,7 +253,6 @@ export default function ProductPage() {
                     return;
                   }
 
-                 
                   const customProduct = {
                     ...product,
                     selectedColor,

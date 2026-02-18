@@ -9,7 +9,7 @@ import { useState } from 'react';
 import { Product } from '@/types/Products';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Button } from '../ui/button';
-import { useProducts } from '@/app/(page)/storev2/Data/context/products/ProductsContext';
+import { useProducts } from '@/app/(page)/s/context/products-context';
 
 export default function ProductCardV1({ product }: { product: Product }) {
   const { addToCartByKey } = useCart();

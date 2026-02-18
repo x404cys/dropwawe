@@ -7,10 +7,6 @@ import { useRouter, useParams } from 'next/navigation';
 import { FiShoppingBag } from 'react-icons/fi';
 import { MdClear } from 'react-icons/md';
 import { Product } from '@/types/Products';
-import Image from 'next/image';
-import Link from 'next/link';
-import ProductCardV1 from '@/components/Product/ProductDesignV1';
-import { useProducts } from '@/app/(page)/s/context/products-context';
 
 export default function FavoritesPage() {
   const { getFavoritesByKey, clearFavoritesByKey, getTotalFavoritesByKey } = useFavorite();

@@ -1,7 +1,6 @@
 'use client';
 import { Product } from '@/types/Products';
 import React, { createContext, useContext, ReactNode, useState, useEffect } from 'react';
-import { useProducts } from '@/app/(page)/s/context/products-context';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
 type CouponResult = {
   valid: boolean;
