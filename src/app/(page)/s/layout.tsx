@@ -11,17 +11,19 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: store.name,
     description: store.description,
-    metadataBase: new URL(`https://${store.domain}matager.store`),
+    metadataBase: new URL(`https://${store.domain}.matager.store`),
 
     openGraph: {
       title: store.name,
       description: store.description,
+      images: [store.image as string],
     },
 
     twitter: {
       card: 'summary_large_image',
       title: store.name,
       description: store.description,
+      images: [store.image as string],
     },
   };
 }

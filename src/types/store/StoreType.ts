@@ -16,6 +16,7 @@ export type StoreProps = {
   facebookPixel?: string;
   instagramPixel?: string;
   tiktokPixel?: string;
+  image?: string;
   domain?: string;
   googlePixel?: string;
   theme: 'MODERN' | 'NORMAL' | 'RAMADAN';
