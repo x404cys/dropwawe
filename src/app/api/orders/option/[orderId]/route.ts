@@ -13,9 +13,61 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
     }
 
     if (session.user.role === 'SUPPLIER') {
-      await prisma.orderFromTrader.findUnique({
+      const traderOrder = await prisma.orderFromTrader.findUnique({
         where: { id: orderId },
+        include: { items: true },
       });
+
+      if (!traderOrder) {
+        return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+      }
+
+      if (traderOrder.status === 'CANCELLED') {
+        return NextResponse.json({ message: 'Order already cancelled' });
+      }
+
+      await prisma.$transaction(async tx => {
+        for (const item of traderOrder.items) {
+          if (!item.productId) continue;
+
+          const product = await tx.product.findUnique({
+            where: { id: item.productId },
+            select: { unlimited: true },
+          });
+
+          if (product?.unlimited) continue;
+
+          if (item.size) {
+            await tx.productSize.updateMany({
+              where: {
+                productId: item.productId,
+                size: item.size,
+              },
+              data: {
+                stock: { increment: item.quantity },
+              },
+            });
+          } else if (item.color) {
+            await tx.productColor.updateMany({
+              where: {
+                productId: item.productId,
+                color: item.color,
+              },
+              data: {
+                stock: { increment: item.quantity },
+              },
+            });
+          } else {
+            await tx.product.update({
+              where: { id: item.productId },
+              data: {
+                quantity: { increment: item.quantity },
+              },
+            });
+          }
+        }
+      });
+
       const updated = await prisma.orderFromTrader.update({
         where: { id: orderId },
         data: { status: 'CANCELLED' },
@@ -27,34 +79,81 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
       });
 
       return NextResponse.json(updated);
-      // if (existingTraderOrder && existingTraderOrder.supplierId === session.user.id) {
-      // }
     }
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
       include: { items: true },
     });
+
     if (!order) {
       return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 405 });
     }
+
+    if (order.status === 'CANCELLED') {
+      return NextResponse.json({ message: 'Order already cancelled' });
+    }
+
+    if (order.status === 'DELIVERED') {
+      return NextResponse.json({ error: 'Cannot cancel delivered order' }, { status: 400 });
+    }
+
     const store = await prisma.storeUser.findFirst({
       where: { userId: session.user.id },
-      select: {
-        storeId: true,
-      },
+      select: { storeId: true },
     });
+
     if (order.storeId !== store?.storeId) {
       return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
     }
+
+    await prisma.$transaction(async tx => {
+      for (const item of order.items) {
+        if (!item.productId) continue;
+
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          select: { unlimited: true },
+        });
+
+        if (product?.unlimited) continue;
+
+        if (item.size) {
+          await tx.productSize.updateMany({
+            where: {
+              productId: item.productId,
+              size: item.size,
+            },
+            data: {
+              stock: { increment: item.quantity },
+            },
+          });
+        } else if (item.color) {
+          await tx.productColor.updateMany({
+            where: {
+              productId: item.productId,
+              color: item.color,
+            },
+            data: {
+              stock: { increment: item.quantity },
+            },
+          });
+        } else {
+          await tx.product.update({
+            where: { id: item.productId },
+            data: {
+              quantity: { increment: item.quantity },
+            },
+          });
+        }
+      }
+    });
 
     const supplierItems = await Promise.all(
       order.items.map(async item => {
         const product = await prisma.product.findUnique({
           where: { id: item.productId! },
-          include: {
-            pricingDetails: true,
-          },
+          include: { pricingDetails: true },
         });
         return { item, product };
       })
@@ -71,6 +170,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
     }
 
     const supplierMap: Record<string, typeof itemsFromSupplier> = {};
+
     for (const pair of itemsFromSupplier) {
       const supplierId = pair.product!.supplierId!;
       if (!supplierMap[supplierId]) supplierMap[supplierId] = [];
@@ -81,6 +181,7 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
 
     for (const [supplierId, items] of Object.entries(supplierMap)) {
       const total = items.reduce((sum, p) => sum + p.item.price * p.item.quantity, 0);
+
       const traderOrder = await prisma.orderFromTrader.create({
         data: {
           traderId: session.user.id,
@@ -104,10 +205,14 @@ export async function PATCH(req: Request, context: { params: Promise<{ orderId: 
         },
         include: { items: true, paymentOrder: true },
       });
+
       ordersFromTrader.push(traderOrder);
     }
 
-    return NextResponse.json({ message: 'Supplier items moved successfully', ordersFromTrader });
+    return NextResponse.json({
+      message: 'Supplier items moved successfully',
+      ordersFromTrader,
+    });
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

@@ -45,6 +45,7 @@ export default function StoreSetupPage() {
   const [loading, setLoading] = useState(false);
   const [facebookPixel, setFacebookPixel] = useState<string | null>(null);
   const [googlePixel, setGooglePixel] = useState<string | null>(null);
+  const [snapPixel, setSnapPixel] = useState<string | null>(null);
   const [tiktokPixel, setTiktokPixel] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<{ [key: string]: string }>({});
   const [activeSection, setActiveSection] = useState<SectionType>('basic');
@@ -229,6 +230,8 @@ export default function StoreSetupPage() {
                 onFacebookPixelChange={setFacebookPixel}
                 onGooglePixelChange={setGooglePixel}
                 onTiktokPixelChange={setTiktokPixel}
+                snapPixel={snapPixel}
+                onSnapPixelChange={setSnapPixel}
               />
             )}
             {activeSection === 'create-another' && (
