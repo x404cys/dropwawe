@@ -17,6 +17,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { FaGoogle } from 'react-icons/fa';
+import { useRouter } from 'next/navigation';
 
 interface Plan {
   title: string;
@@ -149,7 +150,7 @@ type PlanFilter = 'all' | 'store' | 'dropship';
 export default function PricingSection() {
   const [filter, setFilter] = useState<PlanFilter>('all');
   const [open, setOpen] = useState(false);
-
+  const router = useRouter();
   useEffect(() => {
     AOS.init({ duration: 700, once: true });
   }, []);
@@ -349,7 +350,7 @@ export default function PricingSection() {
           <DialogFooter className="mt-4 flex-col gap-2">
             <Button
               variant="outline"
-              onClick={() => signIn('google', { callbackUrl: '/Dashboard/create-store' })}
+              onClick={() => router.push('https://login.matager.store')}
               className="flex gap-2"
             >
               <FaGoogle />
