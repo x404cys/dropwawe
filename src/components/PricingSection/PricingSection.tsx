@@ -316,7 +316,6 @@ export default function PricingSection() {
             {faqs.map((faq, index) => (
               <details key={index} open={faq.open} className="group backdrop-blur-lg">
                 <summary className="flex cursor-pointer items-center justify-between gap-2 rounded-full bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% px-8 py-3 font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] [&::-webkit-details-marker]:hidden">
-                  {' '}
                   <h3 className="text-sm text-gray-900 md:text-lg">{faq.question}</h3>
                   <svg
                     className="size-5 shrink-0 transition-transform duration-300 group-open:-rotate-180"

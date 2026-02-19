@@ -128,8 +128,7 @@ export default function PlanCard() {
             onClick={() => router.push('/Dashboard/plans')}
             className="w-full cursor-pointer bg-white text-sky-700 hover:bg-sky-50"
           >
-            <IoBusinessOutline className="ml-2 text-black" />
-            <span className="text-black">اشترك بالباقة الاحترافية</span>
+             <span className="text-black">استكشف الباقات</span>
           </Button>
 
           <Button
