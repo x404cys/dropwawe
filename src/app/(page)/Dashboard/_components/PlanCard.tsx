@@ -86,7 +86,7 @@ export default function PlanCard() {
               </div>
             </div>
           )}
-
+{/*  */}
           {status === 'TRIAL_ACTIVE' && (
             <div>
               <p className="text-base font-semibold">{data?.subscription?.planName}</p>
