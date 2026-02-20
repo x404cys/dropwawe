@@ -12,27 +12,63 @@ export async function GET() {
 
     const userId = session.user.id;
 
-    // 1️⃣ منع الـ SubUser
     const isSubUser = await prisma.storeUser.findFirst({
       where: { userId, isOwner: false },
     });
 
     if (isSubUser) {
+      // جلب بيانات المتجر مع المالك
+      const store = await prisma.storeUser.findFirst({
+        where: { userId },
+        include: {
+          store: {
+            include: {
+              users: {
+                where: { isOwner: true },
+                include: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const ownerUser = store?.store?.users[0]?.user;
+
+      const ownerSubscription = await prisma.userSubscription.findFirst({
+        where: {
+          userId: ownerUser?.id,
+          isActive: true,
+        },
+        include: { plan: true },
+      });
+
       return NextResponse.json({
-        isSubUser: true,
         status: 'SUB_USER',
+        owner: {
+          name: ownerUser?.name,
+          email: ownerUser?.email,
+        },
+        subscription: ownerSubscription
+          ? {
+              planName: ownerSubscription.plan.name,
+              type: ownerSubscription.plan.type,
+              description: ownerSubscription.plan.description,
+              startDate: ownerSubscription.startDate,
+              endDate: ownerSubscription.endDate,
+              detailsSubscription: ownerSubscription.plan,
+            }
+          : null,
       });
     }
-
     const now = new Date();
 
-    // 2️⃣ فحص الاشتراك الفعّال
     let subscription = await prisma.userSubscription.findFirst({
       where: { userId, isActive: true },
       include: { plan: true },
     });
 
-    // 3️⃣ إذا موجود لكن منتهي
     if (subscription && now > subscription.endDate) {
       await prisma.userSubscription.update({
         where: { id: subscription.id },
@@ -42,7 +78,6 @@ export async function GET() {
       subscription = null;
     }
 
-    // 4️⃣ إذا ما عنده اشتراك → نحاول نفعل Free Trial
     if (!subscription) {
       const freePlan = await prisma.subscriptionPlan.findFirst({
         where: { type: 'free-trial' },
@@ -55,7 +90,6 @@ export async function GET() {
         });
       }
 
-      // هل استخدم التجربة سابقاً؟
       const usedTrialBefore = await prisma.userSubscription.findFirst({
         where: {
           userId,
@@ -70,7 +104,6 @@ export async function GET() {
         });
       }
 
-      // 5️⃣ تفعيل التجربة المجانية
       const startDate = new Date();
       const endDate = new Date();
       endDate.setDate(endDate.getDate() + freePlan.durationDays);

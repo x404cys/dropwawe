@@ -63,7 +63,28 @@ export default function PlanCard() {
             </div>
           )}
           {status === 'SUB_USER' && (
-            <div className="text-sm text-white/90">تم الاشتراك من قبل صاحب المتجر</div>
+            <div className="space-y-3">
+              <div>
+                <p className="text-base leading-tight font-semibold">
+                  {data?.subscription?.planName}
+                </p>
+
+                <p className="mt-1 line-clamp-2 text-xs text-white/80">
+                  {data?.subscription?.detailsSubscription.description}
+                </p>
+              </div>
+
+              <div className="h-px w-full bg-white/20" />
+
+              <div className="space-y-1 text-sm">
+                <p className="font-medium text-white/90">الاشتراك تابع لصاحب المتجر</p>
+
+                <div className="flex flex-col text-white/80">
+                  <span> {data?.owner?.name}</span>
+                  <span className="text-xs opacity-90">{data?.owner?.email}</span>
+                </div>
+              </div>
+            </div>
           )}
 
           {status === 'TRIAL_ACTIVE' && (
@@ -123,22 +144,25 @@ export default function PlanCard() {
           </div>
         )}
 
-        <div className="mt-5 flex flex-col flex-wrap gap-3 sm:flex-row">
-          <Button
-            onClick={() => router.push('/Dashboard/plans')}
-            className="w-full cursor-pointer bg-white text-sky-700 hover:bg-sky-50"
-          >
-             <span className="text-black">استكشف الباقات</span>
-          </Button>
+        {status !== 'SUB_USER' && (
+          <div className="mt-5 flex flex-col flex-wrap gap-3 sm:flex-row">
+            <Button
+              onClick={() => router.push('/Dashboard/plans')}
+              className="w-full cursor-pointer bg-white text-sky-700 hover:bg-sky-50"
+            >
+              <IoBusinessOutline className="ml-2 text-black" />
+              <span className="text-black">اشترك بالباقة الاحترافية</span>
+            </Button>
 
-          <Button
-            onClick={() => router.push('/Dashboard/plans')}
-            variant="outline"
-            className="w-full cursor-pointer border-sky-200 text-sky-700 hover:bg-sky-100"
-          >
-            <span className="text-black">تجديد الاشتراك</span>
-          </Button>
-        </div>
+            <Button
+              onClick={() => router.push('/Dashboard/plans')}
+              variant="outline"
+              className="w-full cursor-pointer border-sky-200 text-sky-700 hover:bg-sky-100"
+            >
+              <span className="text-black">تجديد الاشتراك</span>
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -81,6 +81,7 @@ export type SubscriptionResponse = {
   subscription?: Subscription;
   isSubUser?: boolean;
   message?: string;
+  owner?: StoreOwner;
 };
 
 export type SubscriptionStatus =
@@ -89,3 +90,7 @@ export type SubscriptionStatus =
   | 'ACTIVE'
   | 'NEED_SUBSCRIPTION'
   | 'NO_PLAN';
+export type StoreOwner = {
+  name?: string | null;
+  email?: string | null;
+};

@@ -55,9 +55,7 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
             </div>
           </div>
 
-          {/* Details Grid */}
           <div className="grid grid-cols-2 gap-6">
-            {/* Role */}
             <div>
               <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">Role</p>
               <p className="mt-2 inline-flex items-center rounded-full bg-gray-100 px-3 py-1 text-sm font-medium text-gray-700">
@@ -65,7 +63,6 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
               </p>
             </div>
 
-            {/* Status */}
             <div>
               <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
                 Subscription
@@ -77,7 +74,6 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
               </p>
             </div>
 
-            {/* Plan Name */}
             {user.subscriptionPlan?.name && (
               <div>
                 <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
@@ -89,7 +85,6 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
               </div>
             )}
 
-            {/* Expiry Date */}
             {user.subscriptionPlan?.expiryDate && (
               <div>
                 <p className="text-xs font-semibold tracking-widest text-gray-500 uppercase">
@@ -103,7 +98,6 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
             )}
           </div>
 
-          {/* Stores */}
           {user.stores && user.stores.length > 0 && (
             <div>
               <p className="mb-3 text-sm font-semibold text-gray-900">
@@ -134,13 +128,22 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
                         Owner
                       </span>
                     )}
+                    {store.store.subLink && (
+                      <a
+                        href={`https://${store.store.subLink}.matager.store`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-700"
+                      >
+                        Visit Store
+                      </a>
+                    )}
                   </div>
                 ))}
               </div>
             </div>
           )}
 
-          {/* Metadata */}
           <div className="grid grid-cols-2 gap-6 border-t border-gray-200 pt-4">
             {user.createdAt && (
               <div>
