@@ -15,7 +15,7 @@ export async function GET() {
     }
 
     if (session.user.role !== 'A') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+      return NextResponse.redirect(new URL('https://www.matager.store'));
     }
 
     const totalStores = await prisma.user.count({
