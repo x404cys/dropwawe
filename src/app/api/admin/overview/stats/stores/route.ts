@@ -15,7 +15,7 @@ export async function GET() {
     }
     const stores = await prisma.store.findMany({
       orderBy: {
-        createdAt: 'asc',
+        createdAt: 'desc',
       },
     });
 
