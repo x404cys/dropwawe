@@ -1,3 +1,4 @@
+import { getToken } from 'next-auth/jwt';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
@@ -12,11 +13,21 @@ export async function middleware(req: NextRequest) {
   } else if (parts.length > 2) {
     subdomain = parts[0];
   }
+  const session = await getToken({
+    req,
+    secret: process.env.NEXTAUTH_SECRET,
+  });
+  const role = session?.role as string | undefined;
 
   if (subdomain) {
     switch (subdomain) {
       case 'admin':
+        if (!session || role !== 'A') {
+          return NextResponse.redirect(new URL('/login', req.url));
+        }
+
         url.pathname = url.pathname.startsWith('/admin') ? url.pathname : `/admin${url.pathname}`;
+
         return NextResponse.rewrite(url);
 
       case 'login':
