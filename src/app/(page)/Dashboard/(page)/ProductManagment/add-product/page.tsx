@@ -118,7 +118,7 @@ export default function ProductAddPage() {
       toast.warning('لم يتم اختيار أي صورة');
       return;
     }
-
+//
     if (file.size === 0) {
       toast.warning('الملف تالف أو فارغ');
       e.target.value = '';
