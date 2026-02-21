@@ -43,7 +43,12 @@ type TraderProfit = {
 };
 
 export default function TraderProfit() {
-  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const fetcher = async (url: string) => {
+    const res = await fetch(url);
+    const json = await res.json();
+
+    return Array.isArray(json) ? json : json.data || json.profits || [];
+  };
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const { data, isLoading, mutate } = useSWR<TraderProfit[]>('/api/admin/trader-profit/', fetcher);

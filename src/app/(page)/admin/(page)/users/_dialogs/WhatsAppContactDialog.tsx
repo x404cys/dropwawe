@@ -8,7 +8,7 @@ import {
   DialogFooter,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Copy, MessageCircle } from 'lucide-react';
+import { AlertCircle, Copy, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
 import { User } from '@/types/users/UserForDashboard';
 
@@ -142,7 +142,14 @@ export function WhatsAppContactDialog({
 
           <div className="rounded-lg bg-green-50 p-3 text-sm">
             <p className="font-semibold">{user.name || 'Unknown'}</p>
-            <p className="text-xs text-green-700">{phoneNumber}</p>
+            {phoneNumber ? (
+              <p className="text-xs text-green-700">{phoneNumber}</p>
+            ) : (
+              <div className="flex items-center gap-2 text-red-600">
+                <AlertCircle className="h-4 w-4" />
+                <span>رقم الهاتف غير متوفر</span>
+              </div>
+            )}
           </div>
 
           <div>

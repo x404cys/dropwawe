@@ -17,8 +17,7 @@ export async function GET() {
     });
 
     if (isSubUser) {
-      // جلب بيانات المتجر مع المالك
-      const store = await prisma.storeUser.findFirst({
+       const store = await prisma.storeUser.findFirst({
         where: { userId },
         include: {
           store: {

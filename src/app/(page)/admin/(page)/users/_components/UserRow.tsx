@@ -92,12 +92,19 @@ const UserRowComponent = ({
         </span>
       </td>
 
-      <td className="px-4 py-2">
-        <span className={`rounded-full px-2 py-[2px] text-[11px] font-medium ${status.color}`}>
-          {status.label}
-        </span>
+     
+      <td>
+        <div className="flex flex-col">
+          <span className="text-xs text-blue-600">
+            {user.UserSubscription?.plan?.name || 'No Plan'}
+          </span>
+          <span
+            className={`text-xs ${user.UserSubscription?.isActive ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {user.UserSubscription?.isActive ? 'نشط' : 'غير نشط'}{' '}
+          </span>
+        </div>
       </td>
-
       <td className="px-4 py-2 text-left">
         <div className="flex items-center justify-end gap-1.5">
           <button

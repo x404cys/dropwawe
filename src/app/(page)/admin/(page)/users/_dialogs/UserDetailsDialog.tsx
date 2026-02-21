@@ -70,7 +70,33 @@ export function UserDetailsDialog({ user, isOpen, onClose }: UserDetailsDialogPr
               <p
                 className={`mt-2 inline-flex items-center rounded-full px-3 py-1 text-sm font-medium ${status.color}`}
               >
-                {status.label}
+                {user.UserSubscription?.plan?.name || 'No Plan'}
+              </p>
+              <p
+                className={`mt-2 inline-flex items-center rounded-full bg-blue-100 px-3 py-1 text-xs font-medium text-blue-600`}
+              >
+                {user.UserSubscription?.startDate
+                  ? new Date(user.UserSubscription?.startDate).toLocaleString('en', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : '-'}{' '}
+              </p>
+              <p
+                className={`mt-2 inline-flex items-center rounded-full bg-red-100 px-3 py-1 text-xs font-medium text-red-500 ${status.color}`}
+              >
+                {user.UserSubscription?.endDate
+                  ? new Date(user.UserSubscription?.endDate).toLocaleString('en', {
+                      year: 'numeric',
+                      month: '2-digit',
+                      day: '2-digit',
+                      hour: '2-digit',
+                      minute: '2-digit',
+                    })
+                  : '-'}{' '}
               </p>
             </div>
 

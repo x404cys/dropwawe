@@ -100,7 +100,15 @@ export default function StoresList({ stores }: { stores: StoreProps[] }) {
                   </td>
 
                   <td className="px-6 py-4 text-sm text-gray-500">
-                    {store.createdAt ? new Date(store.createdAt).toLocaleDateString() : '-'}
+                    {store.createdAt
+                      ? new Date(store.createdAt).toLocaleString('en', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })
+                      : '-'}{' '}
                   </td>
 
                   <td className="px-6 py-4 text-left">
@@ -169,7 +177,15 @@ export default function StoresList({ stores }: { stores: StoreProps[] }) {
               <div>
                 <p className="text-gray-400">تاريخ الإنشاء</p>
                 <p className="font-medium text-gray-800">
-                  {store.createdAt ? new Date(store.createdAt).toLocaleDateString() : '-'}
+                  {store.createdAt
+                    ? new Date(store.createdAt).toLocaleString('en', {
+                        year: 'numeric',
+                        month: '2-digit',
+                        day: '2-digit',
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })
+                    : '-'}{' '}
                 </p>
               </div>
 

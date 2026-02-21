@@ -84,24 +84,37 @@ const UserCardComponent = ({
         </div>
       </div>
 
-      {storeCount > 0 && (
-        <div className="mt-4">
-          <p className="mb-1 text-xs text-gray-500 uppercase">Stores</p>
+      <div className="grid grid-cols-2">
+        {storeCount > 0 && (
+          <div className="mt-4">
+            <p className="mb-1 text-xs text-gray-500 uppercase">Stores</p>
 
-          <div className="flex flex-wrap gap-1">
-            {user.stores?.slice(0, 3).map(s => (
-              <span
-                key={s.id}
-                className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700"
-              >
-                {s.store.name}
-              </span>
-            ))}
+            <div className="flex flex-wrap gap-1">
+              {user.stores?.slice(0, 3).map(s => (
+                <span
+                  key={s.id}
+                  className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-700"
+                >
+                  {s.store.name}
+                </span>
+              ))}
 
-            {storeCount > 3 && <span className="text-xs text-gray-500">+{storeCount - 3}</span>}
+              {storeCount > 3 && <span className="text-xs text-gray-500">+{storeCount - 3}</span>}
+            </div>
           </div>
+        )}
+        <div className="mt-4 flex flex-col">
+          <p className="mb-1 text-xs text-gray-500 uppercase">Subscription</p>
+          <span className="text-xs text-blue-600">
+            {user.UserSubscription?.plan?.name || 'No Plan'}
+          </span>
+          <span
+            className={`text-xs ${user.UserSubscription?.isActive ? 'text-green-600' : 'text-red-600'}`}
+          >
+            {user.UserSubscription?.isActive ? 'نشط' : 'غير نشط'}{' '}
+          </span>
         </div>
-      )}
+      </div>
 
       <div className="mt-4 flex flex-col gap-2 sm:flex-row">
         <button

@@ -6,25 +6,33 @@ import { Loader2, Search } from 'lucide-react';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-type Store = {
+type Plan = {
+  id: string;
   name: string;
-  phone: string;
+  type: string;
+  price: number;
+  durationDays: number;
 };
 
 type User = {
+  id: string;
   name: string;
   email: string;
-  Store?: Store[];
+  image: string | null;
+  role: string;
+  active: boolean;
+  createdAt: string;
 };
 
 type Subscription = {
   id: string;
-  user: User | null;
   planId: string;
-  isActive: boolean;
   startDate: string;
   endDate: string;
-  limitProducts: number;
+  isActive: boolean;
+  autoRenew: boolean;
+  plan: Plan;
+  user: User | null;
 };
 
 export default function SubscriptionsPage() {
@@ -35,23 +43,19 @@ export default function SubscriptionsPage() {
   if (isLoading) {
     return (
       <div className="mt-10 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-700" />
+        <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
       </div>
     );
   }
 
   const subscriptions = data || [];
 
-  const filtered = subscriptions.filter(sub => {
-    const user = sub.user;
-    const store = user?.Store?.[0];
-
+  const filtered = subscriptions?.filter(sub => {
     const text = `
-      ${user?.name || ''}
-      ${user?.email || ''}
-      ${store?.name || ''}
-      ${store?.phone || ''}
-      ${sub.planId || ''}
+      ${sub.user?.name || ''}
+      ${sub.user?.email || ''}
+      ${sub.plan?.name || ''}
+      ${sub.plan?.type || ''}
     `.toLowerCase();
 
     return text.includes(query.toLowerCase());
@@ -59,40 +63,32 @@ export default function SubscriptionsPage() {
 
   return (
     <div className="space-y-6 p-4 md:p-8">
-      <h1 className="mb-4 text-2xl font-bold md:text-3xl">الاشتراكات</h1>
+      <div>
+        <h1 className="text-2xl font-bold md:text-3xl">الاشتراكات</h1>
+        <p className="text-muted-foreground text-sm">{filtered.length} اشتراك</p>
+      </div>
 
-      <div className="mb-4 flex items-center gap-2 rounded-xl border bg-white px-3 py-2 shadow-sm transition-all hover:shadow-md">
-        <Search className="h-5 w-5 text-gray-500" />
+      <div className="border-border bg-background flex items-center gap-2 rounded-xl border px-3 py-2 shadow-sm">
+        <Search className="text-muted-foreground h-4 w-4" />
         <input
           type="text"
-          placeholder="ابحث عن مستخدم، بريد، متجر، رقم هاتف..."
-          className="w-full bg-transparent text-right text-sm outline-none"
+          placeholder="ابحث عن مستخدم أو خطة..."
+          className="w-full bg-transparent text-sm outline-none"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
       </div>
 
       {filtered.length === 0 && (
-        <div className="py-6 text-center text-gray-500">لا توجد نتائج مطابقة</div>
+        <div className="text-muted-foreground py-10 text-center">لا توجد نتائج</div>
       )}
 
-      <div className="hidden overflow-x-auto rounded-xl border border-gray-200 shadow-sm md:block">
-        <table className="w-full table-auto border-collapse text-sm">
-          <thead className="bg-gray-900 text-xs text-white">
+      <div className="hidden overflow-x-auto rounded-xl border md:block">
+        <table className="w-full text-sm">
+          <thead className="bg-muted/40 text-xs">
             <tr>
-              {[
-                'الرقم',
-                'المستخدم',
-                'البريد',
-                'الخطة',
-                'الحالة',
-                'تاريخ البداية',
-                'تاريخ النهاية',
-                'حد المنتجات',
-                'اسم المتجر',
-                'الهاتف',
-              ].map(h => (
-                <th key={h} className="border border-gray-800 p-2 font-medium">
+              {['المستخدم', 'البريد', 'الخطة', 'السعر', 'الحالة', 'البداية', 'النهاية'].map(h => (
+                <th key={h} className="p-3 text-right font-medium">
                   {h}
                 </th>
               ))}
@@ -100,85 +96,109 @@ export default function SubscriptionsPage() {
           </thead>
 
           <tbody>
-            {filtered.map((sub, idx) => (
-              <tr key={sub.id} className="transition even:bg-gray-50 hover:bg-gray-100">
-                <td className="border p-2">{idx + 1}</td>
-                <td className="border p-2">{sub.user?.name || '—'}</td>
-                <td className="border p-2">{sub.user?.email || '—'}</td>
-                <td className="border p-2 text-xs">{sub.planId}</td>
-                <td className="border p-2">
+            {filtered.map(sub => (
+              <tr key={sub.id} className="hover:bg-muted/30 border-t">
+                <td className="p-3">{sub.user?.name}</td>
+                <td className="p-3">{sub.user?.email}</td>
+                <td className="p-3">{sub.plan.name}</td>
+                <td className="p-3">{sub.plan.price.toLocaleString()} IQD</td>
+
+                <td className="p-3">
                   <span
-                    className={`rounded-md px-2 py-1 text-[11px] font-semibold ${
-                      sub.isActive ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                    className={`rounded-full px-2 py-1 text-xs ${
+                      sub.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
                     }`}
                   >
                     {sub.isActive ? 'نشط' : 'غير نشط'}
                   </span>
                 </td>
-                <td className="border p-2">{new Date(sub.startDate).toLocaleDateString('ar')}</td>
-                <td className="border p-2">{new Date(sub.endDate).toLocaleDateString('ar')}</td>
-                <td className="border p-2">{sub.limitProducts}</td>
-                <td className="border p-2 text-xs">{sub.user?.Store?.[0]?.name || '—'}</td>
-                <td className="border p-2 text-xs">{sub.user?.Store?.[0]?.phone || '—'}</td>
+
+                <td className="p-3">{new Date(sub.startDate).toLocaleDateString('ar')}</td>
+
+                <td className="p-3">{new Date(sub.endDate).toLocaleDateString('ar')}</td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
 
-      <div className="grid gap-4 md:hidden">
-        {filtered.map(sub => (
-          <div
-            key={sub.id}
-            className="rounded-xl border border-gray-200 bg-gradient-to-r from-white to-gray-50 p-5 shadow-lg transition-shadow hover:shadow-xl"
-          >
-            <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-xl font-semibold text-gray-800">{sub.user?.name || '—'}</h2>
-              <span
-                className={`rounded-full px-3 py-1 text-sm font-medium ${
-                  sub.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                }`}
-              >
-                {sub.isActive ? 'نشط' : 'غير نشط'}
-              </span>
-            </div>
+      <div className="grid gap-3 md:hidden">
+        {filtered.map(sub => {
+          const end = new Date(sub.endDate);
+          const today = new Date();
 
-            <div className="space-y-1 text-sm text-gray-700">
-              <p>
-                <span className="font-medium">البريد:</span> {sub.user?.email || '—'}
-              </p>
-              <p>
-                <span className="font-medium">الخطة:</span> {sub.planId}
-              </p>
-              <p>
-                <span className="font-medium">تاريخ البداية:</span>{' '}
-                {new Date(sub.startDate).toLocaleDateString('ar')}
-              </p>
-              <p>
-                <span className="font-medium">تاريخ النهاية:</span>{' '}
-                {new Date(sub.endDate).toLocaleDateString('ar')}
-              </p>
-              <p>
-                <span className="font-medium">حد المنتجات:</span> {sub.limitProducts}
-              </p>
-            </div>
+          const daysLeft = Math.ceil((end.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
 
-            {sub.user?.Store?.length ? (
-              <div className="mt-4 border-t border-gray-200 pt-3">
-                <h3 className="mb-1 font-semibold text-gray-800">المتجر</h3>
-                <div className="space-y-1 text-sm text-gray-700">
-                  <p>
-                    <span className="font-medium">اسم المتجر:</span> {sub.user.Store![0].name}
-                  </p>
-                  <p>
-                    <span className="font-medium">الهاتف:</span> {sub.user.Store![0].phone}
-                  </p>
+          const isExpired = daysLeft <= 0;
+          const isExpiring = daysLeft <= 7 && daysLeft > 0;
+
+          const statusColor = isExpired
+            ? 'bg-rose-100 text-rose-700'
+            : isExpiring
+              ? 'bg-amber-100 text-amber-700'
+              : 'bg-emerald-100 text-emerald-700';
+
+          return (
+            <div
+              key={sub.id}
+              className="rounded-xl border bg-white p-3 shadow-sm transition hover:shadow-md"
+            >
+              {/* TOP ROW */}
+              <div className="flex items-center gap-3">
+                {sub.user?.image && (
+                  <img src={sub.user.image} className="h-10 w-10 rounded-full object-cover" />
+                )}
+
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">{sub.user?.name}</p>
+
+                  <p className="truncate text-[11px] text-gray-500">{sub.user?.email}</p>
                 </div>
+
+                <span
+                  className={`rounded-full px-2 py-1 text-xs ${
+                    sub.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                  }`}
+                >
+                  {sub.isActive ? 'نشط' : 'غير نشط'}
+                </span>
               </div>
-            ) : null}
-          </div>
-        ))}
+
+              <div className="mt-2 flex items-center justify-between text-xs">
+                <div className="font-medium text-gray-800">
+                  {sub.plan.name}
+                  <span className="ml-1 text-gray-500">
+                    • {sub.plan.price.toLocaleString()} IQD
+                  </span>
+                </div>
+
+                <div className="text-gray-600">{isExpired ? 'انتهى' : `${daysLeft} يوم`}</div>
+              </div>
+
+              <div className="mt-2 flex flex-wrap gap-2 text-[10px] text-gray-500">
+                <span>بداية: {new Date(sub.startDate).toLocaleDateString('ar')}</span>
+
+                <span>•</span>
+
+                <span>تجديد: {sub.autoRenew ? 'ON' : 'OFF'}</span>
+
+                <span>•</span>
+
+                <span>{sub.plan.type}</span>
+              </div>
+            </div>
+          );
+        })}
       </div>
+    </div>
+  );
+}
+
+function Info({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="bg-muted/30 rounded-lg p-2">
+      <p className="text-muted-foreground text-xs">{label}</p>
+      <p className="font-medium">{children}</p>
     </div>
   );
 }

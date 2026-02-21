@@ -23,6 +23,11 @@ export async function GET() {
             store: true,
           },
         },
+        UserSubscription: {
+          include: {
+            plan: true,
+          },
+        },
       },
     });
     const totalUsers = await prisma.user.count();

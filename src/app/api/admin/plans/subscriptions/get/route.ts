@@ -12,16 +12,20 @@ export async function GET() {
       return NextResponse.json({ error: 'Unauthorized. Please log in first.' }, { status: 401 });
     }
 
-    // if (session.user.role !== 'A') {
-    //   return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    // }
+    if (session.user.role !== 'A') {
+      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
+    }
     const subscription = await prisma.userSubscription.findMany({
       include: {
+        plan: true,
         user: {
           include: {
             stores: true,
           },
         },
+      },
+      orderBy: {
+        startDate: 'desc',
       },
     });
     return NextResponse.json(subscription);

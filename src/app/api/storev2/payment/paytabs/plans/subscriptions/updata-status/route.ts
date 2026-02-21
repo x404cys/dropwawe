@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
+import { planRoleMap } from '@/app/lib/planRoleMap';
 
 interface PatchBody {
   tranRef?: string;
@@ -45,6 +46,19 @@ export async function PATCH(req: Request) {
       where: { id: subscription.id },
       data: { isActive: true },
     });
+    const plan = await prisma.subscriptionPlan.findUnique({
+      where: { id: subscription.planId },
+    });
+    if (!plan) {
+      return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
+    }
+    const role = planRoleMap[plan?.type];
+    if (role) {
+      await prisma.user.update({
+        where: { id: session.user.id },
+        data: { role: role },
+      });
+    }
     await prisma.notification.create({
       data: {
         userId: session.user.id,

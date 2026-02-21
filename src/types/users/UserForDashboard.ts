@@ -1,3 +1,5 @@
+import { SubscriptionType } from './User';
+
 export type SubscriptionPlan = {
   name?: string;
   expiryDate?: string;
@@ -55,11 +57,22 @@ export type User = {
   role?: 'GUEST' | 'SUPPLIER' | 'DROPSHIPPER' | 'TRADER' | 'ADMIN' | string;
   stores?: UserStore[];
   subscriptionPlan?: SubscriptionPlan;
+  UserSubscription?: SubscriptionPlanForDashboard;
   createdAt?: string;
   lastLogin?: string;
   isActive?: boolean;
 };
-
+export type SubscriptionPlanForDashboard = {
+  id: string;
+  userId: string;
+  planId: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  canceledAt: null;
+  autoRenew: boolean;
+  plan: SubscriptionType;
+};
 export type UserDialogState = {
   isOpen: boolean;
   type: 'details' | 'renew' | 'whatsapp' | 'delete' | null;
@@ -69,4 +82,5 @@ export type UsersResponse = {
   users: User[];
   totalUsers: number;
   totalUsersHaveStores: number;
+  
 };
