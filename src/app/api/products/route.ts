@@ -69,7 +69,7 @@ export async function POST(req: Request) {
     }
     const storeId = formData.get('storeId') as string;
     if (!storeId) {
-      return NextResponse.json({ error: 'Store ID is required' }, { status: 400 });
+      return NextResponse.json({ error: 'Store ID is required' }, { status: 406 });
     }
 
     const store = await prisma.storeUser.findFirst({

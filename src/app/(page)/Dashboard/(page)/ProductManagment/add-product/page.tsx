@@ -191,8 +191,8 @@ export default function ProductAddPage() {
         'discount',
         Number.isFinite(newProduct.discount) ? String(newProduct.discount) : '0'
       );
-    
-      formData.append('storeId', storeId);
+
+      formData.append('storeId', currentStore?.id || '');
 
       if (newProduct.shippingType?.trim()) {
         formData.append('shippingType', newProduct.shippingType.trim());
