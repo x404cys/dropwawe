@@ -10,6 +10,8 @@ interface MainImageSectionProps {
   setNewProduct: (product: any) => void;
   handleImageChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   loading: boolean;
+  isCompressing: boolean;
+  compressionProgress: number;
 }
 
 export function MainImageSection({
@@ -17,6 +19,8 @@ export function MainImageSection({
   setNewProduct,
   handleImageChange,
   loading,
+  isCompressing,
+  compressionProgress,
 }: MainImageSectionProps) {
   return (
     <div className="sticky rounded-lg border border-gray-200 bg-white">
@@ -27,6 +31,20 @@ export function MainImageSection({
         </h3>
       </div>
       <div className="p-6">
+        {isCompressing && (
+          <div className="w-full rounded-lg border border-sky-200 bg-sky-50 p-3">
+            <p className="mb-2 text-xs font-medium text-sky-700">
+              جاري تجهيز الصورة... {compressionProgress}%
+            </p>
+
+            <div className="h-2 w-full overflow-hidden rounded bg-sky-100">
+              <div
+                className="h-full bg-sky-500 transition-all duration-200"
+                style={{ width: `${compressionProgress}%` }}
+              />
+            </div>
+          </div>
+        )}
         {newProduct.imagePreview ? (
           <div className="relative aspect-square overflow-hidden rounded-lg border-2 border-gray-300 bg-gray-50">
             <img

@@ -69,7 +69,8 @@ export default function ProductAddPage() {
   const [sizes, setSizes] = useState<{ size: string; stock: number }[]>([]);
   const [colors, setColors] = useState<{ name: string; hex: string; stock: number }[]>([]);
   const [storeId, setStoreId] = useState<string>('');
-
+  const [compressionProgress, setCompressionProgress] = useState(0);
+  const [isCompressing, setIsCompressing] = useState(false);
   useEffect(() => {
     if (!id) return;
 
@@ -138,34 +139,31 @@ export default function ProductAddPage() {
       return;
     }
 
-    if (!file.type.startsWith('image/')) {
-      toast.warning('الملف المختار ليس صورة');
-      e.target.value = '';
-      return;
-    }
-
     try {
+      setIsCompressing(true);
+      setCompressionProgress(0);
+
       const compressedFile = await imageCompression(file, {
         maxSizeMB: 1,
         maxWidthOrHeight: 1920,
         useWebWorker: true,
+        onProgress: progress => {
+          setCompressionProgress(progress);
+        },
       });
-
-      if (!compressedFile) {
-        toast.warning('حدث خطأ أثناء ضغط الصورة');
-        return;
-      }
 
       const preview = URL.createObjectURL(compressedFile);
 
-      setNewProduct({
-        ...newProduct,
+      setNewProduct(prev => ({
+        ...prev,
         imageFile: compressedFile,
         imagePreview: preview,
-      });
+      }));
     } catch (err) {
       console.error('Compression error:', err);
-      toast.warning('فشل تجهيز الصورة، حاول اختيار صورة أخرى');
+      toast.warning('فشل تجهيز الصورة');
+    } finally {
+      setIsCompressing(false);
     }
   };
 
@@ -404,6 +402,8 @@ export default function ProductAddPage() {
               setNewProduct={setNewProduct}
               handleImageChange={handleImageChange}
               loading={loading}
+              isCompressing={isCompressing}
+              compressionProgress={compressionProgress}
             />
 
             <GallerySection
