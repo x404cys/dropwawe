@@ -1,7 +1,7 @@
 'use client';
 
 import useSWR from 'swr';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, XCircle, CreditCard } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -24,7 +24,7 @@ export default function PaymentResultClient() {
   const [copied, setCopied] = useState(false);
   const { update } = useSession();
   const isSuccess = respStatus === 'A' || respStatus === 'success';
-
+  const router = useRouter();
   async function updateSubscription() {
     const res = await fetch('/api/storev2/payment/paytabs/plans/subscriptions/updata-status', {
       method: 'PATCH',
@@ -36,8 +36,6 @@ export default function PaymentResultClient() {
         cartId,
       }),
     });
-
-    if (!res.ok) return toast.success(`${res.statusText + res.status}`);
 
     if (res.ok) {
       update();
@@ -100,7 +98,10 @@ export default function PaymentResultClient() {
             {respMessage || 'تمت معالجة عملية الدفع'}
           </p>
 
-          <div className="flex flex-col items-center justify-center gap-3 pt-8 sm:flex-row sm:gap-4">
+          <div className="mt-4">
+            <Button onClick={() => router.push('/Dashboard')}>العودة إلى الصفحة الرئيسية</Button>
+          </div>
+          {/* <div className="flex flex-col items-center justify-center gap-3 pt-8 sm:flex-row sm:gap-4">
             <Button
               onClick={handleShare}
               variant="outline"
@@ -129,7 +130,7 @@ export default function PaymentResultClient() {
                 </PDFDownloadLink>
               </div>
             )}
-          </div>
+          </div> */}
         </div>
 
         <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">

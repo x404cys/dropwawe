@@ -302,7 +302,7 @@ model Payment {
   createdAt     DateTime  @default(now())
   userId        String     
   planId        String     
- 
+  isActive        Boolean   @default(false)
   @@index([cartId])
 }
  

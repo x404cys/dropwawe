@@ -25,7 +25,7 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'cartId is required' }, { status: 400 });
     }
 
-    const checkPayment = await prisma.payment.findUnique({ where: { cartId } });
+    const checkPayment = await prisma.payment.findUnique({ where: { cartId, isActive: false } });
     if (!checkPayment) {
       return NextResponse.json(
         { error: `Payment not found for cartId: ${cartId}` },
@@ -59,6 +59,13 @@ export async function PATCH(req: Request) {
         data: { role: role },
       });
     }
+
+    await prisma.payment.update({
+      where: { cartId },
+      data: {
+        isActive: true,
+      },
+    });
     await prisma.notification.create({
       data: {
         userId: session.user.id,
