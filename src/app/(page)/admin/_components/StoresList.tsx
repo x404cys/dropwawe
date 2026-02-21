@@ -46,7 +46,7 @@ export default function StoresList({ stores }: { stores: StoreProps[] }) {
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="ابحث عن متجر..."
-                className="h-10 w-full rounded-lg border border-gray-200 bg-white pr-3 pl-10 text-sm focus:border-gray-400 focus:outline-none"
+                className="h-10 w-full rounded-lg border border-gray-200 bg-white pr-3 pl-10 focus:border-gray-400 focus:outline-none"
               />
             </div>
           </div>

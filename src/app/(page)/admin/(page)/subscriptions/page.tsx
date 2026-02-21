@@ -73,7 +73,7 @@ export default function SubscriptionsPage() {
         <input
           type="text"
           placeholder="ابحث عن مستخدم أو خطة..."
-          className="w-full bg-transparent text-sm outline-none"
+          className="w-full bg-transparent outline-none"
           value={query}
           onChange={e => setQuery(e.target.value)}
         />
