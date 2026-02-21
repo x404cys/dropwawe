@@ -61,6 +61,49 @@ export type User = {
   createdAt?: string;
   lastLogin?: string;
   isActive?: boolean;
+  subscriptionHistory?: SubscriptionHistory[];
+};
+type SubscriptionHistoryPlan = {
+  id: string;
+  name: string;
+  type: string;
+  price: number;
+  durationDays: number;
+  maxProducts: number | null;
+  maxTemplates: number | null;
+  templateCategory: string | null;
+  maxStores: number | null;
+  maxSuppliers: number | null;
+  features: string | null;
+  description: string;
+  createdAt: string;
+};
+
+type SubscriptionHistorySubscription = {
+  id: string;
+  userId: string;
+  planId: string;
+  startDate: string;
+  endDate: string;
+  isActive: boolean;
+  canceledAt: string | null;
+  autoRenew: boolean;
+};
+
+export type SubscriptionHistory = {
+  id: string;
+  userId: string;
+  planId: string;
+  subscriptionId: string;
+  startDate: string;
+  endDate: string;
+  price: number;
+  paymentId: string | null;
+  status: 'ACTIVE' | 'EXPIRED' | 'CANCELED';
+  createdAt: string;
+
+  plan: SubscriptionHistoryPlan;
+  subscription: SubscriptionHistorySubscription;
 };
 export type SubscriptionPlanForDashboard = {
   id: string;
@@ -82,5 +125,4 @@ export type UsersResponse = {
   users: User[];
   totalUsers: number;
   totalUsersHaveStores: number;
-  
 };

@@ -21,6 +21,15 @@ export async function GET() {
         user: {
           include: {
             stores: true,
+            subscriptionHistory: {
+              include: {
+                plan: true,
+                subscription: true,
+              },
+              orderBy: {
+                startDate: 'desc',
+              },
+            },
           },
         },
       },

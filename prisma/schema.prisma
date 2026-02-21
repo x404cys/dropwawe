@@ -429,6 +429,7 @@ enum SubscriptionStatus {
   ACTIVE
   EXPIRED
   CANCELED
+  PENDING
 }
 
 model Merchant {

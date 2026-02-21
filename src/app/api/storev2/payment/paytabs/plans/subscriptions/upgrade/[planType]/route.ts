@@ -82,7 +82,7 @@ export async function POST(
         startDate: now,
         endDate,
         price: plan.price,
-        status: 'ACTIVE',
+        status: 'PENDING',
       },
     });
 

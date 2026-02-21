@@ -59,13 +59,23 @@ export async function PATCH(req: Request) {
         data: { role: role },
       });
     }
-
+    await prisma.subscriptionHistory.updateMany({
+      where: {
+        userId: session.user.id,
+        paymentId: checkPayment.id,
+        status: 'PENDING',
+      },
+      data: {
+        status: 'ACTIVE',
+      },
+    });
     await prisma.payment.update({
       where: { cartId },
       data: {
         isActive: true,
       },
     });
+   
     await prisma.notification.create({
       data: {
         userId: session.user.id,
