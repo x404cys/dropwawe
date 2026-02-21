@@ -3,6 +3,7 @@
 import type React from 'react';
 import { useState, type ChangeEvent, useEffect } from 'react';
 import { toast } from 'sonner';
+import imageCompression from 'browser-image-compression';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { useUser } from '@/app/lib/context/UserIdContect';
@@ -109,25 +110,63 @@ export default function ProductAddPage() {
       return prev.filter((_, i) => i !== index);
     });
   };
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (!file) return;
 
-    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
-    if (!allowedTypes.includes(file.type)) {
-      alert('صيغة الصورة غير مدعومة. الرجاء اختيار JPG أو PNG أو WEBP');
+    if (!file) {
+      toast.warning('لم يتم اختيار أي صورة');
+      return;
+    }
+
+    if (file.size === 0) {
+      toast.warning('الملف تالف أو فارغ');
       e.target.value = '';
       return;
     }
 
-    const preview = URL.createObjectURL(file);
+    const MAX_UPLOAD_MB = 15;
+    if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
+      toast.warning(`حجم الصورة كبير جداً. الحد الأقصى ${MAX_UPLOAD_MB}MB`);
+      e.target.value = '';
+      return;
+    }
 
-    setNewProduct({
-      ...newProduct,
-      imageFile: file,
-      imagePreview: preview,
-    });
+    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      toast.warning('صيغة الصورة غير مدعومة (JPG / PNG / WEBP فقط)');
+      e.target.value = '';
+      return;
+    }
+
+    if (!file.type.startsWith('image/')) {
+      toast.warning('الملف المختار ليس صورة');
+      e.target.value = '';
+      return;
+    }
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
+      });
+
+      if (!compressedFile) {
+        toast.warning('حدث خطأ أثناء ضغط الصورة');
+        return;
+      }
+
+      const preview = URL.createObjectURL(compressedFile);
+
+      setNewProduct({
+        ...newProduct,
+        imageFile: compressedFile,
+        imagePreview: preview,
+      });
+    } catch (err) {
+      console.error('Compression error:', err);
+      toast.warning('فشل تجهيز الصورة، حاول اختيار صورة أخرى');
+    }
   };
 
   const updateSize = (index: number, field: 'size' | 'stock', value: string | number) => {
