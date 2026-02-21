@@ -1,35 +1,23 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import Loader from '../_components/Loader-check';
 
 export default function AdminGuard({ children }: { children: React.ReactNode }) {
+  const { data: session, status } = useSession();
   const router = useRouter();
-  const [authorized, setAuthorized] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const checkSession = async () => {
-      try {
-        const res = await fetch('/api/admin/check-admin-role', {
-          credentials: 'include',
-        });
+    if (status === 'loading') return;
 
-        if (!res.ok) {
-          router.replace('https://www.matager.store');
-          return;
-        }
+    if (!session || session.user.role !== 'A') {
+      router.replace('https://www.matager.store');
+    }
+  }, [session, status, router]);
 
-        setAuthorized(true);
-      } catch {
-        router.replace('https://www.matager.store');
-      }
-    };
-
-    checkSession();
-  }, [router]);
-
-  if (authorized === null) {
+  if (status === 'loading') {
     return (
       <div className="flex h-screen items-center justify-center">
         <Loader />
