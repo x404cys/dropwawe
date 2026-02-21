@@ -49,19 +49,8 @@ export default function Plans() {
       content_name: type,
     });
     try {
-      const result = await subscribePlan(type);
+      router.push(`/Dashboard/plans/checkout/${type}`);
       await update();
-      if (result.redirect_url) {
-        window.location.href = result.redirect_url;
-        return;
-      }
-      fbEvent('Purchase', {
-        content_name: type,
-        currency: 'IQD',
-        value: type.includes('pro') ? 69000 : 39000,
-      });
-      toast.success(`تم الاشتراك بنجاح في خطة: ${type}`);
-      router.replace('/Dashboard');
     } catch (err) {
       toast.error('حدث خطأ أثناء الاشتراك');
     } finally {
