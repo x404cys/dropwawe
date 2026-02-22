@@ -146,6 +146,8 @@ export default function ProfitPage() {
 
   return (
     <section className="min-h-screen px-4 py-8 md:px-8">
+      {/* <button className=' cursor-pointer' onClick={() => handleWithdraw()}>hhhhhhhhhhhhhhhhhhhh</button> */}
+
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
@@ -162,7 +164,6 @@ export default function ProfitPage() {
                 </p>
               </div>
             </div>
-
             <div>
               <Nfc className="h-14 w-14 text-neutral-700" />
             </div>
