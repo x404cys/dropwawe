@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import dotenv from 'dotenv';
-import { Order } from '@/types/Products';
 
 dotenv.config();
 type ItemInput = {
@@ -131,7 +130,6 @@ export async function POST(request: NextRequest) {
       },
       include: { items: true },
     });
-
     let traderOrder: TraderOrder | null = null;
 
     if (productsInDb.find(p => p.isFromSupplier === true)) {
@@ -202,10 +200,12 @@ export async function POST(request: NextRequest) {
 
     // const PAYTABS_SERVER_KEY = 'SKJ9R66GWL-JJ6GGK966B-TZ9GLZ29LH';
     // const PAYTABS_PROFILE_ID = 144505;
-    const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
-    const PAYTABS_PROFILE_ID = 144504;
+    // const PAYTABS_SERVER_KEY = 'S2J9R66GMT-JJ6GGGG62G-KKJ6KRBKDB';
+    // const PAYTABS_PROFILE_ID = 144504; dsdw
     // const PAYTABS_SERVER_KEY = process.env.NEXT_PUBLIC_PAYTABS_SERVER_KEY!;
     // const PAYTABS_PROFILE_ID = 169218;
+    const PAYTABS_SERVER_KEY = 'SRJ9DJHRHK-JM2BWN9BZ2-ZHN9G2WRHJ';
+    const PAYTABS_PROFILE_ID = 169218;
     const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.matager.store';
 
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
@@ -223,7 +223,7 @@ export async function POST(request: NextRequest) {
       callback: CALLBACK_URL,
       return: CALLBACK_URL,
     };
-//
+
     const response = await fetch('https://secure-iraq.paytabs.com/payment/request', {
       method: 'POST',
       headers: {

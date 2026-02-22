@@ -42,7 +42,7 @@ model User {
   traderProfit    TraderProfit?
   invitesSent Invite[] @relation("InviteOwner")
   couponUsages CouponUsage[]
-
+  ProfitWithdrawal ProfitWithdrawal[]
 
 }
 model Supplier {
@@ -520,7 +520,21 @@ model TraderProfit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+model ProfitWithdrawal {
+  id        String   @id @default(cuid())
+  traderId  String   
+  amount    Float
+  status    WithdrawalStatus @default(PENDING)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
+  trader    User     @relation(fields: [traderId], references: [id], onDelete: Cascade)
+}
+enum WithdrawalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
 model Coupon {
   id      String @id @default(cuid())
 

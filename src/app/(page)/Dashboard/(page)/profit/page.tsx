@@ -26,6 +26,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { useStoreProvider } from '../../context/StoreContext';
+import { useRouter } from 'next/navigation';
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface ProfitData {
@@ -39,7 +40,7 @@ interface ProfitData {
 export default function ProfitPage() {
   const { data: session } = useSession();
   const { currentStore } = useStoreProvider();
-
+  const router = useRouter();
   const storeId = currentStore?.id;
 
   const [data, setData] = useState<ProfitData | null>(null);
@@ -111,14 +112,6 @@ export default function ProfitPage() {
 
   const monthlyFiltered = useMemo(() => data?.monthly ?? [], [data]);
 
-  if (loading)
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-neutral-50">
-        <Loader />
-      </div>
-    );
-
-  if (error) return <p className="mt-6 text-center text-red-600">{error}</p>;
   if (!data) return <p className="mt-6 text-center text-neutral-600">No data</p>;
 
   const commonChartOptions = {
@@ -178,7 +171,7 @@ export default function ProfitPage() {
             <div className="">
               <div className="flex items-center gap-2 text-neutral-600">
                 <TrendingUp className="h-5 w-5" />
-                <span className="text-sm font-medium">العائد الكلي - كاش</span>
+                <span className="text-sm font-medium">العائد الكلي</span>
               </div>
               <p className="mt-2 text-3xl font-bold text-neutral-900">
                 {formatCurrency(data.totalProfit)}
@@ -200,30 +193,12 @@ export default function ProfitPage() {
             </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
-          <Dialog>
-            <DialogTrigger dir="rtl" asChild>
-              <Button size="lg" className="mr-auto w-full cursor-pointer bg-sky-600 md:w-40">
-                سحب الأرباح
-              </Button>
-            </DialogTrigger>
-            <DialogContent dir="rtl" className="sm:max-w-[400px]">
-              <DialogHeader>
-                <DialogTitle>تأكيد السحب</DialogTitle>
-                <DialogDescription>
-                  هل أنت متأكد أنك تريد سحب الأرباح؟ سيتم تحديث الرصيد المتبقي والمسحوب بعد العملية.
-                </DialogDescription>
-              </DialogHeader>
-              {error && <p className="mt-2 text-red-500">{error}</p>}
-              <DialogFooter className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setError(null)}>
-                  إلغاء
-                </Button>
-                <Button onClick={handleWithdraw} disabled={loading}>
-                  {loading ? 'Processing...' : 'تأكيد السحب '}
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+          <button
+            onClick={() => router.push('/Dashboard/profit/payment-order')}
+            className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300"
+          >
+            سحب الارباح
+          </button>
         </div>
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-2">

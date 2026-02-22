@@ -4,35 +4,29 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 
 export async function GET() {
+  const session = await getServerSession(authOperation);
+
+  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  if (session.user.role !== 'A') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+
   try {
-    const session = await getServerSession(authOperation);
-
-    if (!session) {
-      return NextResponse.json({ error: 'Unauthorized. Please log in first.' }, { status: 401 });
-    }
-
-    if (session.user.role !== 'A') {
-      return NextResponse.json({ error: 'Access denied' }, { status: 403 });
-    }
-
-    const traderProfit = await prisma.traderProfit.findMany({
+    const withdrawals = await prisma.profitWithdrawal.findMany({
       include: {
         trader: {
           include: {
             stores: true,
-            UserSubscription: {
-              include: {
-                plan: true,
-              },
-            },
           },
         },
       },
+      orderBy: {
+        createdAt: 'desc',
+      },
     });
 
-    return NextResponse.json(traderProfit);
-  } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
+    return NextResponse.json(withdrawals);
+  } catch (e) {
+    console.error(e);
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

@@ -45,8 +45,6 @@ export async function GET(req: Request) {
       },
     });
 
-    console.log(orderPayment._sum.amount ?? 0);
-
     const dailyMap: Record<string, number> = {};
     const weeklyMap: Record<string, number> = {};
     const monthlyMap: Record<string, number> = {};

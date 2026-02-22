@@ -141,7 +141,7 @@ export async function POST(req: Request) {
     });
 
     const returnUrl =
-      `https://www.matager.store/storev2/payment-result` +
+      `https://www.matager.store/s/payment-result` +
       `?tranRef=${encodeURIComponent(data.tranRef ?? '')}` +
       `&respStatus=${encodeURIComponent(data.respStatus ?? '')}` +
       `&respMessage=${encodeURIComponent(data.respMessage ?? '')}` +
