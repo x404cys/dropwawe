@@ -146,8 +146,6 @@ export default function ProfitPage() {
 
   return (
     <section className="min-h-screen px-4 py-8 md:px-8">
-      {/* <button className=' cursor-pointer' onClick={() => handleWithdraw()}>hhhhhhhhhhhhhhhhhhhh</button> */}
-
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
@@ -195,7 +193,10 @@ export default function ProfitPage() {
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <button
-            onClick={() => router.push('/Dashboard/profit/payment-order')}
+            onClick={() => {
+              handleWithdraw();
+              router.push('/Dashboard/profit/payment-order');
+            }}
             className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300"
           >
             سحب الارباح
