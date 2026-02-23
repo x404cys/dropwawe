@@ -6,7 +6,6 @@ import useSWR from 'swr';
 import { useRouter } from 'next/navigation';
 import { format, differenceInDays } from 'date-fns';
 import Image from 'next/image';
-import { IoBusinessOutline } from 'react-icons/io5';
 import { BiTestTube } from 'react-icons/bi';
 import { RiFireLine } from 'react-icons/ri';
 import { Rocket } from 'lucide-react';

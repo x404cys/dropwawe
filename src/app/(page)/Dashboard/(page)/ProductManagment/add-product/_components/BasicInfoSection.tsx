@@ -14,13 +14,7 @@ interface BasicInfoSectionProps {
 
 export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicInfoSectionProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white">
-      <div className="border-b border-gray-200 bg-gray-50 p-4">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-black">
-          <Package className="h-5 w-5 text-sky-500" />
-          <span>المعلومات الأساسية</span>
-        </h3>
-      </div>
+    <div className=" ">
       <div className="p-6">
         <div className="space-y-5">
           <ModernInputGroup

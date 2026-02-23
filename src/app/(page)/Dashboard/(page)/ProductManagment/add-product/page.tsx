@@ -21,6 +21,9 @@ import { MainImageSection } from './_components/MainImageSection';
 import { GallerySection } from './_components/GallerySection';
 import { SubmitButton } from './_components/SubmitButton';
 import { useStoreProvider } from '../../../context/StoreContext';
+import { ImageForMobile } from './_components/Image-Section/Image4Mobile';
+import { GallerySectionForMobile } from './_components/Image-Section/GallerySectionForMobile';
+import { CollapsibleSection } from './_components/CollapsibleSection';
 
 export default function ProductAddPage() {
   const { data: session } = useSession();
@@ -118,7 +121,7 @@ export default function ProductAddPage() {
       toast.warning('لم يتم اختيار أي صورة');
       return;
     }
-//
+
     if (file.size === 0) {
       toast.warning('الملف تالف أو فارغ');
       e.target.value = '';
@@ -327,8 +330,28 @@ export default function ProductAddPage() {
   return (
     <div className="mb-20 min-h-screen bg-white" dir="rtl">
       <div className="mx-auto max-w-7xl">
-        <div className="grid gap-6 lg:grid-cols-3">
-          <div className="space-y-6 lg:col-span-2">
+        <div className="grid gap-2 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <div className="block space-y-6 rounded-lg md:hidden">
+              <ImageForMobile
+                newProduct={newProduct}
+                setNewProduct={setNewProduct}
+                handleImageChange={handleImageChange}
+                loading={loading}
+                isCompressing={isCompressing}
+                compressionProgress={compressionProgress}
+              />
+
+              <GallerySectionForMobile
+                galleryFiles={galleryFiles}
+                galleryPreviews={galleryPreviews}
+                onGalleryChange={onGalleryChange}
+                removeGalleryImage={removeGalleryImage}
+                isExpanded={expandedSections.gallery}
+                onToggle={() => toggleSection('gallery')}
+                loading={loading}
+              />
+            </div>
             <BasicInfoSection
               newProduct={newProduct}
               setNewProduct={setNewProduct}
@@ -343,6 +366,11 @@ export default function ProductAddPage() {
               />
             )}
 
+            <DescriptionSection
+              newProduct={newProduct}
+              setNewProduct={setNewProduct}
+              loading={loading}
+            />
             <StockSection
               newProduct={newProduct}
               setNewProduct={setNewProduct}
@@ -353,37 +381,38 @@ export default function ProductAddPage() {
               data={data}
             />
 
-            <DescriptionSection
-              newProduct={newProduct}
-              setNewProduct={setNewProduct}
-              loading={loading}
-            />
-
-            <SizesSection
-              sizes={sizes}
-              updateSize={updateSize}
-              addSize={addSize}
-              removeSize={removeSize}
-              isExpanded={expandedSections.sizes}
-              onToggle={() => toggleSection('sizes')}
-            />
-
-            <ColorsSection
-              colors={colors}
-              updateColor={updateColor}
-              addColor={addColor}
-              removeColor={removeColor}
-              isExpanded={expandedSections.colors}
-              onToggle={() => toggleSection('colors')}
-            />
-
-            <ShippingSection
-              newProduct={newProduct}
-              setNewProduct={setNewProduct}
-              loading={loading}
+            <CollapsibleSection
+              title="التفاصيل المتقدمة (اختياري)"
+              subtitle="مثل المقاسات، الألوان، الشحن،  "
               isExpanded={expandedSections.shipping}
               onToggle={() => toggleSection('shipping')}
-            />
+            >
+              <SizesSection
+                sizes={sizes}
+                updateSize={updateSize}
+                addSize={addSize}
+                removeSize={removeSize}
+                isExpanded={expandedSections.sizes}
+                onToggle={() => toggleSection('sizes')}
+              />
+
+              <ColorsSection
+                colors={colors}
+                updateColor={updateColor}
+                addColor={addColor}
+                removeColor={removeColor}
+                isExpanded={expandedSections.colors}
+                onToggle={() => toggleSection('colors')}
+              />
+
+              <ShippingSection
+                newProduct={newProduct}
+                setNewProduct={setNewProduct}
+                loading={loading}
+                isExpanded={expandedSections.shipping}
+                onToggle={() => toggleSection('shipping')}
+              />
+            </CollapsibleSection>
 
             {data.supplier && (
               <SocialMediaSection
@@ -396,7 +425,7 @@ export default function ProductAddPage() {
             )}
           </div>
 
-          <div className="space-y-6 rounded-lg">
+          <div className="hidden space-y-6 rounded-lg md:block">
             <MainImageSection
               newProduct={newProduct}
               setNewProduct={setNewProduct}
@@ -419,6 +448,9 @@ export default function ProductAddPage() {
             <SubmitButton loading={loading} onClick={addProduct} />
           </div>
         </div>
+        <div className="block md:hidden">
+          <SubmitButton loading={loading} onClick={addProduct} />
+        </div>{' '}
       </div>
     </div>
   );

@@ -30,7 +30,7 @@ export default function CategoryDropdown({ categories, value, onChange, loading 
       <div className="flex items-center gap-1">
         <TbCategoryPlus className="text-gray-600" />
         <label className="mb-1 block text-sm font-medium text-gray-600">
-          التصنيف <span className='text-red-500'>*</span>
+          التصنيف <span className="text-red-500">*</span>
         </label>
       </div>
       <input
@@ -47,7 +47,7 @@ export default function CategoryDropdown({ categories, value, onChange, loading 
             ? 'مثلاً: هودي - نظارات - اكسسوارات'
             : ` المقترحات : ${filtered.slice(0, 3).join(' - ')}`
         }
-        className="w-full rounded-lg border px-3 py-2"
+        className="w-full rounded-2xl border px-3 py-2"
       />
       {open && filtered.length > 0 && (
         <ul className="absolute z-10 max-h-48 w-full overflow-auto rounded border bg-white shadow-md">

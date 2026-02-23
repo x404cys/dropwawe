@@ -19,15 +19,15 @@ export function CollapsibleSection({
   children,
 }: CollapsibleSectionProps) {
   return (
-    <div className="rounded-lg border border-gray-200 bg-white">
+    <div className="rounded-lg border-t border-gray-400 mx-4 bg-white">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 p-4 text-right transition hover:bg-gray-100"
+        className="flex w-full items-center justify-between border-gray-200 bg-gray-50 px-4 py-2 text-right transition hover:bg-gray-100"
       >
         <div>
-          <h3 className="text-sm font-semibold text-black">{title}</h3>
-          {subtitle && <p className="mt-0.5 text-xs text-gray-600">{subtitle}</p>}
+          <h3 className="text-sm text-gray-500">{title}</h3>
+          {subtitle && <p className="mt-0.5 text-xs font-light text-gray-500">{subtitle}</p>}
         </div>
         {isExpanded ? (
           <ChevronUp className="h-5 w-5 text-gray-500" />
