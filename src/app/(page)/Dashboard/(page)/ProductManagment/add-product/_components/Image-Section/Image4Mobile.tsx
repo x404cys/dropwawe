@@ -22,10 +22,10 @@ export function ImageForMobile({
   compressionProgress,
 }: ImageForMobileProps) {
   return (
-    <div className="relative mb-6 block w-full md:hidden">
+    <div className="relative mb-6 block w-full px-4 md:hidden">
       <div className="flex items-center justify-center gap-6">
         {!newProduct.imagePreview && (
-          <label className="flex h-60 w-4/5 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition hover:border-gray-400">
+          <label className="flex h-60 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition hover:border-gray-400">
             <SlCloudUpload size={26} />
 
             <span className="text-sm">رفع صورة</span>

@@ -25,9 +25,8 @@ export function GallerySectionForMobile({
   loading,
 }: GallerySectionForMobileProps) {
   return (
-    <OptionalSection title="إضافة صور إضافية" isOpen={isExpanded} onToggle={onToggle}>
+    <OptionalSection title="إضافة صور إضافية (اختياري)" isOpen={isExpanded} onToggle={onToggle}>
       <div className="grid grid-cols-3 gap-4">
-        {/* Images */}
         {galleryPreviews.map((preview, idx) => (
           <div
             key={idx}
@@ -35,7 +34,6 @@ export function GallerySectionForMobile({
           >
             <img src={preview} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
 
-            {/* Remove button */}
             <button
               type="button"
               onClick={() => removeGalleryImage(idx)}
@@ -47,7 +45,6 @@ export function GallerySectionForMobile({
           </div>
         ))}
 
-        {/* Upload Box */}
         {galleryFiles.length < 3 && (
           <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-500 transition hover:border-gray-400 hover:bg-gray-100">
             <TbUpload size={22} />

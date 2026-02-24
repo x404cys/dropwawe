@@ -381,38 +381,38 @@ export default function ProductAddPage() {
               data={data}
             />
 
-            <CollapsibleSection
-              title="التفاصيل المتقدمة (اختياري)"
-              subtitle="مثل المقاسات، الألوان، الشحن،  "
-              isExpanded={expandedSections.shipping}
-              onToggle={() => toggleSection('shipping')}
-            >
-              <SizesSection
-                sizes={sizes}
-                updateSize={updateSize}
-                addSize={addSize}
-                removeSize={removeSize}
-                isExpanded={expandedSections.sizes}
-                onToggle={() => toggleSection('sizes')}
-              />
-
-              <ColorsSection
-                colors={colors}
-                updateColor={updateColor}
-                addColor={addColor}
-                removeColor={removeColor}
-                isExpanded={expandedSections.colors}
-                onToggle={() => toggleSection('colors')}
-              />
-
-              <ShippingSection
-                newProduct={newProduct}
-                setNewProduct={setNewProduct}
-                loading={loading}
+            <div className='mx-4'>
+              <CollapsibleSection
+                title="التفاصيل المتقدمة (اختياري)"
+                subtitle="مثل المقاسات، الألوان، الشحن،  "
                 isExpanded={expandedSections.shipping}
                 onToggle={() => toggleSection('shipping')}
-              />
-            </CollapsibleSection>
+              >
+                <SizesSection
+                  sizes={sizes}
+                  updateSize={updateSize}
+                  addSize={addSize}
+                  removeSize={removeSize}
+                  isExpanded={expandedSections.sizes}
+                  onToggle={() => toggleSection('sizes')}
+                />
+
+                <ColorsSection
+                  colors={colors}
+                  updateColor={updateColor}
+                  addColor={addColor}
+                  removeColor={removeColor}
+                  isExpanded={expandedSections.colors}
+                  onToggle={() => toggleSection('colors')}
+                />
+
+                <ShippingSection
+                  newProduct={newProduct}
+                  setNewProduct={setNewProduct}
+                  loading={loading}
+                />
+              </CollapsibleSection>
+            </div>
 
             {data.supplier && (
               <SocialMediaSection

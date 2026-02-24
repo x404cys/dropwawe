@@ -12,13 +12,13 @@ interface OptionalSectionProps {
 
 export function OptionalSection({ title, isOpen, onToggle, children }: OptionalSectionProps) {
   return (
-    <div className="w-full">
+    <div className="w-full px-4 md:px-0">
       {!isOpen && (
         <div className="flex w-full justify-center">
           <button
             type="button"
             onClick={onToggle}
-            className="flex w-4/5 md:w-full md:mx-9 items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-light text-gray-600 transition hover:bg-gray-50"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-light text-gray-600 transition hover:border-sky-500 hover:bg-gray-50 hover:text-sky-500 md:mx-9"
           >
             <Plus className="h-3 w-3" />
             {title}

@@ -19,11 +19,11 @@ export function CollapsibleSection({
   children,
 }: CollapsibleSectionProps) {
   return (
-    <div className="rounded-lg border-t border-gray-400 mx-4 bg-white">
+    <div className="mt-5 rounded-2xl border border-dashed border-gray-300">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full items-center justify-between border-gray-200 bg-gray-50 px-4 py-2 text-right transition hover:bg-gray-100"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border-gray-200 bg-gray-50 px-4 py-2 text-right transition"
       >
         <div>
           <h3 className="text-sm text-gray-500">{title}</h3>

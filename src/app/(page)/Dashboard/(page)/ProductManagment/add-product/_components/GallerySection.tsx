@@ -3,6 +3,8 @@
 import React from 'react';
 import { TbUpload } from 'react-icons/tb';
 import { CollapsibleSection } from './CollapsibleSection';
+import { OptionalSection } from './Image-Section/SectionCard';
+import { GallerySectionForMobile } from './Image-Section/GallerySectionForMobile';
 
 interface GallerySectionProps {
   galleryFiles: File[];
@@ -32,10 +34,7 @@ export function GallerySection({
     >
       <div className="grid grid-cols-3 gap-3">
         {galleryPreviews.map((preview, idx) => (
-          <div
-            key={idx}
-            className="relative aspect-square overflow-hidden border border-gray-300"
-          >
+          <div key={idx} className="relative aspect-square overflow-hidden border border-gray-300">
             <img
               src={preview || '/placeholder.svg'}
               alt={`Gallery ${idx + 1}`}

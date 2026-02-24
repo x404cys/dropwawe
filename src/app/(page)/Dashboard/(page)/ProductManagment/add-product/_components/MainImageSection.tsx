@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { SlCloudUpload } from 'react-icons/sl';
-import { ImageIcon } from 'lucide-react';
 import type { Product } from '@/types/Products';
 
 interface MainImageSectionProps {
@@ -23,14 +22,14 @@ export function MainImageSection({
   compressionProgress,
 }: MainImageSectionProps) {
   return (
-    <div className="sticky top-0 z-10 mt-0 mb-6 rounded-2xl p-6">
+    <div className="sticky top-0 left-2 z-10 mt-10 space-y-2 rounded-xl px-1">
       {isCompressing && (
-        <div className="w-full rounded-2xl border border-sky-200 bg-sky-50 p-3">
-          <p className="mb-2 text-xs font-medium text-sky-700">
-            جاري تجهيز الصورة... {compressionProgress}%
+        <div className="rounded-xl border border-sky-200 bg-sky-50 p-2">
+          <p className="mb-1 text-[11px] font-medium text-sky-700">
+            تجهيز الصورة {compressionProgress}%
           </p>
 
-          <div className="h-2 w-full overflow-hidden rounded bg-sky-100">
+          <div className="h-1.5 w-full overflow-hidden rounded bg-sky-100">
             <div
               className="h-full bg-sky-500 transition-all duration-200"
               style={{ width: `${compressionProgress}%` }}
@@ -38,13 +37,15 @@ export function MainImageSection({
           </div>
         </div>
       )}
+
       {newProduct.imagePreview ? (
-        <div className="relative aspect-square overflow-hidden rounded-2xl border-2 border-gray-300 bg-gray-50">
+        <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-300 bg-gray-50">
           <img
             src={newProduct.imagePreview || '/placeholder.svg'}
             alt="Preview"
             className="h-full w-full object-cover"
           />
+
           <button
             type="button"
             onClick={() =>
@@ -54,12 +55,12 @@ export function MainImageSection({
                 imagePreview: undefined,
               })
             }
-            className="absolute top-3 right-3 bg-black p-2 text-white transition hover:bg-gray-800"
+            className="absolute top-2 right-2 rounded-md bg-black/80 p-1.5 text-white hover:bg-black"
             disabled={loading}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4"
+              className="h-3.5 w-3.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -74,14 +75,16 @@ export function MainImageSection({
           </button>
         </div>
       ) : (
-        <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
-          <div className="rounded-2xl bg-sky-100 p-4">
-            <SlCloudUpload size={32} className="text-sky-500" />
+        <label className="flex max-h-2/4 aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
+          <div className="rounded-lg bg-sky-100 p-2.5">
+            <SlCloudUpload size={20} className="text-sky-500" />
           </div>
-          <div className="text-center">
-            <span className="block text-sm font-semibold text-black">اضغط لرفع الصورة</span>
-            <span className="mt-1 block text-xs text-gray-600">JPG, PNG, أو WEBP</span>
+
+          <div className="text-center leading-tight">
+            <span className="block text-xs font-semibold text-black">رفع الصورة</span>
+            <span className="text-[10px] text-gray-500">JPG / PNG / WEBP</span>
           </div>
+
           <input
             type="file"
             accept="image/jpeg,image/png,image/webp"
