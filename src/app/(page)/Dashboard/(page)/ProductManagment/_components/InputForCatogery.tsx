@@ -1,6 +1,9 @@
 'use client';
-import { useState, useEffect, useRef } from 'react';
+
+import { useState } from 'react';
 import { TbCategoryPlus } from 'react-icons/tb';
+import { Check, Plus } from 'lucide-react';
+import { CgAdd } from 'react-icons/cg';
 
 type Props = {
   categories: string[];
@@ -10,59 +13,59 @@ type Props = {
 };
 
 export default function CategoryDropdown({ categories, value, onChange, loading }: Props) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (ref.current && !ref.current.contains(event.target as Node)) {
-        setOpen(false);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   const filtered = categories.filter(cat => cat.toLowerCase().includes(value.toLowerCase()));
 
+  const isNewCategory = value && !categories.some(cat => cat.toLowerCase() === value.toLowerCase());
+
   return (
-    <div className="relative w-full" ref={ref}>
-      <div className="flex items-center gap-1">
-        <TbCategoryPlus className="text-gray-600" />
-        <label className="mb-1 block text-sm font-medium text-gray-600">
-          التصنيف <span className="text-red-500">*</span>
-        </label>
-      </div>
+    <div className="relative w-full space-y-1">
+      <label className="flex items-center gap-2 text-sm font-medium text-gray-700">
+        <TbCategoryPlus className="h-4 w-4 text-gray-500" />
+        التصنيف <span className="text-red-500">*</span>
+      </label>
+
       <input
         type="text"
         value={value}
         disabled={loading}
         onChange={e => {
           onChange(e.target.value);
-          setOpen(true);
+          setIsOpen(true);
         }}
-        onFocus={() => setOpen(true)}
-        placeholder={
-          filtered.length === 0
-            ? 'مثلاً: هودي - نظارات - اكسسوارات'
-            : ` المقترحات : ${filtered.slice(0, 3).join(' - ')}`
-        }
-        className="w-full rounded-2xl border px-3 py-2"
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => setTimeout(() => setIsOpen(false), 150)}
+        className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
       />
-      {open && filtered.length > 0 && (
-        <ul className="absolute z-10 max-h-48 w-full overflow-auto rounded border bg-white shadow-md">
-          {filtered.map((cat, i) => (
+
+      {isOpen && (
+        <ul className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-xl border border-gray-300 bg-white shadow-lg">
+          {filtered.map(cat => (
             <li
-              key={i}
-              className="cursor-pointer px-3 py-2 hover:bg-green-100"
-              onClick={() => {
-                onChange(cat);
-                setOpen(false);
-              }}
+              key={cat}
+              onMouseDown={() => onChange(cat)}
+              className={`flex cursor-pointer items-center justify-between px-3 py-2 text-sm hover:bg-sky-50 ${
+                value === cat ? 'font-medium' : ''
+              }`}
             >
-              {cat}
+              {cat} {value === cat && <Check className="h-4 w-4 text-green-500" />}
             </li>
           ))}
+
+          {isNewCategory && (
+            <li
+              onMouseDown={() => onChange(value)}
+              className="flex cursor-pointer items-center justify-between px-3 py-2 text-sm font-medium hover:bg-sky-50"
+            >
+              <span> إضافة "{value}"</span>
+              <Plus className="h-4 w-4 text-gray-500" />
+            </li>
+          )}
+
+          {filtered.length === 0 && !isNewCategory && (
+            <li className="px-3 py-2 text-sm text-gray-400">لا يوجد تصنيف</li>
+          )}
         </ul>
       )}
     </div>
