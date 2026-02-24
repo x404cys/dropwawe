@@ -36,7 +36,7 @@ export default function CategoryDropdown({ categories, value, onChange, loading 
         }}
         onFocus={() => setIsOpen(true)}
         onBlur={() => setTimeout(() => setIsOpen(false), 150)}
-        className="w-full rounded-xl border border-gray-300 px-3 py-2 text-sm focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
+        className="w-full rounded-xl border border-gray-300 px-3 py-2 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
       />
 
       {isOpen && (
