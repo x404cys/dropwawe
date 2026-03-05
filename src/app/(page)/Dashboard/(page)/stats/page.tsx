@@ -520,7 +520,7 @@ export default function StatsPage() {
                 </ResponsiveContainer>
               </div>
             </div>
-
+            {/* ══ Top Products ══*/}
             {topProducts.length > 0 && (
               <div className="bg-card border-border rounded-xl border">
                 <div className="p-4 pb-3">
