@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -24,11 +25,12 @@ export default function BasicInfoSection({
   onStoreNameChange,
   onDescriptionChange,
 }: BasicInfoSectionProps) {
+  const { t } = useLanguage();
   return (
     <>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">
-          رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.matager.store</span>
+        <label className="text-sm font-medium text-foreground">
+          {t.profile?.domain || 'رابط المتجر'} <span className="text-xs text-muted-foreground">{storeSlug}.drop-wave.com</span>
         </label>
         <div className="relative">
           <Input
@@ -39,35 +41,35 @@ export default function BasicInfoSection({
                 onStoreSlugChange(value);
               }
             }}
-            placeholder="store1.matager.store"
+            placeholder={`store1.drop-wave.com`}
           />
-          <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         </div>
         {fieldErrors.subLink && <p className="mt-1 text-xs text-red-500">{fieldErrors.subLink}</p>}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">اسم المتجر</label>
+        <label className="text-sm font-medium text-foreground">{t.profile.storeName}</label>
         <div className="relative">
           <Input
             value={storeName}
             onChange={e => onStoreNameChange(e.target.value)}
-            placeholder="اسم المتجر"
+            placeholder={t.profile.storeName}
           />
-          <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         </div>
         {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-gray-700">الوصف</label>
+        <label className="text-sm font-medium text-foreground">{t.inventory.description}</label>
         <div className="relative">
           <Textarea
             value={description}
             onChange={e => onDescriptionChange(e.target.value)}
-            placeholder="صف متجرك للعملاء..."
+            placeholder={t.store?.storeDescPlaceholder || 'صف متجرك للعملاء...'}
           />
-          <FileText className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+          <FileText className="absolute top-3 left-3 h-5 w-5 text-muted-foreground" />
         </div>
         {fieldErrors.description && (
           <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
@@ -75,8 +77,8 @@ export default function BasicInfoSection({
       </div>
 
       <InfoAlert
-        message="في حال تغييرك لرابط المتجر , سيتم حذف الزيارات لديك والبدء بزيارات جديدة"
-        submessage="اذا ردت ان تبقى الزيارات راسل الدعم"
+        message={t.store?.domainChangeWarning || 'في حال تغييرك لرابط المتجر , سيتم حذف الزيارات لديك والبدء بزيارات جديدة'}
+        submessage={t.store?.domainChangeSubwarning || 'اذا ردت ان تبقى الزيارات راسل الدعم'}
       />
     </>
   );

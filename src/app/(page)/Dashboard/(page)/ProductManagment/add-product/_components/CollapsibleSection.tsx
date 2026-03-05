@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { ChevronDown, ChevronUp } from 'lucide-react';
@@ -23,16 +23,16 @@ export function CollapsibleSection({
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border-gray-200 bg-gray-50 px-4 py-2 text-right transition"
+        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border-border bg-muted px-4 py-2 text-right transition"
       >
         <div>
-          <h3 className="text-sm text-gray-500">{title}</h3>
-          {subtitle && <p className="mt-0.5 text-xs font-light text-gray-500">{subtitle}</p>}
+          <h3 className="text-sm text-muted-foreground">{title}</h3>
+          {subtitle && <p className="mt-0.5 text-xs font-light text-muted-foreground">{subtitle}</p>}
         </div>
         {isExpanded ? (
-          <ChevronUp className="h-5 w-5 text-gray-500" />
+          <ChevronUp className="h-5 w-5 text-muted-foreground" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-gray-500" />
+          <ChevronDown className="h-5 w-5 text-muted-foreground" />
         )}
       </button>
 
@@ -42,3 +42,4 @@ export function CollapsibleSection({
     </div>
   );
 }
+

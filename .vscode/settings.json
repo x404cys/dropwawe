@@ -27,5 +27,6 @@
   "editor.cursorBlinking": "smooth",
   "editor.cursorSmoothCaretAnimation": "on",
   "editor.cursorWidth": 3,
-  "editor.cursorStyle": "line"
+  "editor.cursorStyle": "line",
+  "postman.settings.dotenv-detection-notification-visibility": false
 }

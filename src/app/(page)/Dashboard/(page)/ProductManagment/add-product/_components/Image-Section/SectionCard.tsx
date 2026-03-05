@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { Plus, X } from 'lucide-react';
@@ -18,7 +18,7 @@ export function OptionalSection({ title, isOpen, onToggle, children }: OptionalS
           <button
             type="button"
             onClick={onToggle}
-            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-light text-gray-600 transition hover:border-sky-500 hover:bg-gray-50 hover:text-sky-500 md:mx-9"
+            className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-gray-300 py-2 text-sm font-light text-muted-foreground transition hover:border-sky-500 hover:bg-muted hover:text-sky-500 md:mx-9"
           >
             <Plus className="h-3 w-3" />
             {title}
@@ -31,7 +31,7 @@ export function OptionalSection({ title, isOpen, onToggle, children }: OptionalS
           <div className="mb-4 flex items-center justify-between">
             <h3 className="text-sm font-semibold">{title}</h3>
 
-            <button type="button" onClick={onToggle} className="text-gray-400 hover:text-black">
+            <button type="button" onClick={onToggle} className="text-muted-foreground hover:text-black">
               <X className="h-4 w-4" />
             </button>
           </div>
@@ -42,3 +42,4 @@ export function OptionalSection({ title, isOpen, onToggle, children }: OptionalS
     </div>
   );
 }
+

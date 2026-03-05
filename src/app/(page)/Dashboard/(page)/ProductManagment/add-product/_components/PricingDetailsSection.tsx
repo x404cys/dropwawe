@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { ModernInputGroup } from './ModernInputGroup';
@@ -15,12 +16,14 @@ export function PricingDetailsSection({
   setNewProduct,
   loading,
 }: PricingDetailsSectionProps) {
+  const { t } = useLanguage();
+
   return (
-    <div className="space-y-4 border border-gray-200 bg-gray-50 p-4">
-      <h3 className="text-sm font-semibold text-black">أسعار الموردين</h3>
+    <div className="space-y-4 border border-border bg-muted p-4">
+      <h3 className="text-sm font-semibold text-black">{t.inventory?.supplierPrices || 'أسعار الموردين'}</h3>
       <div className="grid gap-4 sm:grid-cols-3">
         <ModernInputGroup
-          label="سعر الجملة"
+          label={t.inventory?.wholesalePrice || 'سعر الجملة'}
           type="number"
           value={newProduct.pricingDetails?.wholesalePrice ?? ''}
           onChange={value => {
@@ -36,7 +39,7 @@ export function PricingDetailsSection({
           disabled={loading}
         />
         <ModernInputGroup
-          label="الحد الأدنى"
+          label={t.inventory?.minPrice || 'الحد الأدنى'}
           type="number"
           value={newProduct.pricingDetails?.minPrice ?? ''}
           onChange={value => {
@@ -52,7 +55,7 @@ export function PricingDetailsSection({
           disabled={loading}
         />
         <ModernInputGroup
-          label="الحد الأقصى"
+          label={t.inventory?.maxPrice || 'الحد الأقصى'}
           type="number"
           value={newProduct.pricingDetails?.maxPrice ?? ''}
           onChange={value => {

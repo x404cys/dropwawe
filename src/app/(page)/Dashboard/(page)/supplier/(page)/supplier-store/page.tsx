@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -40,6 +41,7 @@ type ServerErrorResponse = {
 };
 
 export default function StoreSetupPage() {
+  const { t } = useLanguage();
   const { data: session } = useSession();
 
   const router = useRouter();
@@ -165,14 +167,14 @@ export default function StoreSetupPage() {
   return (
     <div dir="rtl" className="mx-auto mb-20 max-w-2xl space-y-10 py-10">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-gray-900">
+        <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
           <div className=" ">
             <Image
               src={'/IMG_3549.PNG'}
               alt="Image"
               width={50}
               height={20}
-              className="rounded-lg border bg-gray-200"
+              className="rounded-lg border bg-muted"
             />
           </div>
           انشاء المتجر
@@ -180,7 +182,7 @@ export default function StoreSetupPage() {
         <p className="text-sm font-medium">
           انضم كمورّد الآن في دقائق، وابدأ بعرض منتجاتك للتجار والمتاجر بسهولة 😎
         </p>
-        <p className="text-xs text-gray-600">وسّع شبكة عملائك وزد مبيعاتك دون عناء 🚀</p>
+        <p className="text-xs text-muted-foreground">وسّع شبكة عملائك وزد مبيعاتك دون عناء 🚀</p>
       </div>
 
       {/* <div className="absolute top-15 left-1.5 -z-50 md:left-25">
@@ -226,7 +228,7 @@ export default function StoreSetupPage() {
                 >
                   <div
                     className={`relative rounded-full p-2 transition-all duration-300 ${
-                      activeSection === step.id ? 'scale-108 bg-black' : 'bg-gray-200'
+                      activeSection === step.id ? 'scale-108 bg-black' : 'bg-muted'
                     }`}
                   >
                     {step.icon}
@@ -240,7 +242,7 @@ export default function StoreSetupPage() {
             })}
           </div>
 
-          <div className="relative mt-1 h-1 rounded-full bg-gray-200">
+          <div className="relative mt-1 h-1 rounded-full bg-muted">
             <div
               className="absolute top-0 right-0 h-1 rounded-full bg-black transition-all duration-300"
               style={{
@@ -262,8 +264,8 @@ export default function StoreSetupPage() {
         {activeSection === 'basic' && (
           <>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">
-                رابط المتجر <span className="text-xs text-gray-400">{storeSlug}.matager.store</span>
+              <label className="text-sm font-medium text-foreground">
+                رابط المتجر <span className="text-xs text-muted-foreground">{storeSlug}.matager.store</span>
               </label>
               <div className="relative">
                 <Input
@@ -277,32 +279,32 @@ export default function StoreSetupPage() {
                   placeholder="store1.matager.store"
                 />
 
-                <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               </div>
               {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">اسم المتجر</label>
+              <label className="text-sm font-medium text-foreground">{t.profile.storeName}</label>
               <div className="relative">
                 <Input
                   value={storeName}
                   onChange={e => setStoreName(e.target.value)}
-                  placeholder="اسم المتجر"
+                  placeholder={t.profile.storeName}
                 />
-                <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               </div>
               {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">الوصف</label>
+              <label className="text-sm font-medium text-foreground">{t.inventory.description}</label>
               <div className="relative">
                 <Textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="صف متجرك للعملاء..."
                 />
-                <FileText className="absolute top-3 left-3 h-5 w-5 text-gray-400" />
+                <FileText className="absolute top-3 left-3 h-5 w-5 text-muted-foreground" />
               </div>
               {fieldErrors.description && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
@@ -316,7 +318,7 @@ export default function StoreSetupPage() {
             <div className="flex w-full items-center justify-center">
               <label
                 htmlFor="store-logo"
-                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-gray-800"
+                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-muted transition hover:bg-muted dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-card"
               >
                 {imagePreview ? (
                   <>
@@ -339,7 +341,7 @@ export default function StoreSetupPage() {
                 ) : (
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <svg
-                      className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                      className="mb-4 h-8 w-8 text-muted-foreground dark:text-muted-foreground"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -353,10 +355,10 @@ export default function StoreSetupPage() {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
                       <span className="font-semibold">انقر للتحميل</span> أو اسحب الصورة هنا
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, أو GIF</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">PNG, JPG, أو GIF</p>
                   </div>
                 )}
 
@@ -383,7 +385,7 @@ export default function StoreSetupPage() {
             <div className="flex w-full items-center justify-center">
               <label
                 htmlFor="store-header"
-                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-gray-50 transition hover:bg-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-gray-800"
+                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-muted transition hover:bg-muted dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-card"
               >
                 {headerPreview ? (
                   <>
@@ -406,7 +408,7 @@ export default function StoreSetupPage() {
                 ) : (
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <svg
-                      className="mb-4 h-8 w-8 text-gray-500 dark:text-gray-400"
+                      className="mb-4 h-8 w-8 text-muted-foreground dark:text-muted-foreground"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -420,10 +422,10 @@ export default function StoreSetupPage() {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
+                    <p className="mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
                       <span className="font-semibold">انقر للتحميل</span> أو اسحب الصورة هنا
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, أو GIF</p>
+                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">PNG, JPG, أو GIF</p>
                   </div>
                 )}
 
@@ -445,7 +447,7 @@ export default function StoreSetupPage() {
 
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -462,7 +464,7 @@ export default function StoreSetupPage() {
                   <span className="text-sm font-medium">
                     في حال تغييرك لرابط المتجر لاحقا , سيتم حذف الزيارات لديك والبدء بزيارات جديدة
                     <br />
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-muted-foreground">
                       اذا ردت ان تبقى الزيارات راسل الدعم
                     </span>
                   </span>
@@ -475,14 +477,14 @@ export default function StoreSetupPage() {
         {activeSection === 'shipping' && (
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">رقم الهاتف</label>
+              <label className="text-sm font-medium text-foreground">{t.profile.phone}</label>
               <div className="relative">
                 <Input
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="0770xxxxxxx"
                 />
-                <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               </div>
               {fieldErrors.phone && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.phone}</p>
@@ -490,14 +492,14 @@ export default function StoreSetupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">سعر التوصيل</label>
+              <label className="text-sm font-medium text-foreground">سعر التوصيل</label>
               <div className="relative">
                 <Input
                   value={shippingPrice}
                   onChange={e => setShippingPrice(e.target.value)}
                   placeholder="5000 د.ع"
                 />
-                <Truck className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+                <Truck className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
               </div>
               {fieldErrors.shippingPrice && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.shippingPrice}</p>
@@ -505,7 +507,7 @@ export default function StoreSetupPage() {
             </div>
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -555,14 +557,14 @@ export default function StoreSetupPage() {
               },
             ].map(({ label, value, setValue, icon: Icon, field, placeholder }) => (
               <div key={field} className="space-y-2">
-                <label className="text-sm font-medium text-gray-700">{label}</label>
+                <label className="text-sm font-medium text-foreground">{label}</label>
                 <div className="relative">
                   <Input
                     value={value}
                     onChange={e => setValue(e.target.value)}
                     placeholder={placeholder}
                   />
-                  <Icon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-500" />
+                  <Icon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
                 </div>
                 {fieldErrors[field] && (
                   <p className="mt-1 text-xs text-red-500">{fieldErrors[field]}</p>
@@ -574,14 +576,14 @@ export default function StoreSetupPage() {
 
         {activeSection === 'payment' && (
           <div className="flex flex-col justify-center space-y-8">
-            <p className="text-gray-700">
+            <p className="text-foreground">
               {selectedMethods.length > 0
                 ? selectedMethods.join(' - ')
                 : 'لم يتم اختيار أي طريقة بعد'}
             </p>
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -669,7 +671,7 @@ export default function StoreSetupPage() {
       </div>
       <div className="mt-6 flex justify-between">
         <button
-          className="rounded-lg bg-gray-300 px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-muted px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => {
             const steps = ['basic', 'shipping', 'social', 'payment'];
             const currentIndex = steps.indexOf(activeSection);
@@ -684,7 +686,7 @@ export default function StoreSetupPage() {
         </button>
 
         <button
-          className="rounded-lg bg-black px-6 py-2 text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+          className="rounded-lg bg-black px-6 py-2 text-white transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => {
             const steps = ['basic', 'shipping', 'social', 'payment'];
             const currentIndex = steps.indexOf(activeSection);
@@ -719,3 +721,4 @@ export default function StoreSetupPage() {
     </div>
   );
 }
+

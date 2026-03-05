@@ -3,6 +3,7 @@ import { StoreProps } from './store/StoreType';
 import { User } from './users/User';
  
 export interface Product {
+  priceBeforeDiscount: boolean;
   id: string;
   name: string;
   price: number;

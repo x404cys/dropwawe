@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import useSWR from 'swr';
 import axios from 'axios';
@@ -28,6 +29,7 @@ interface Statement {
 /* ================= PAGE ================= */
 
 export default function ProfitStatement() {
+  const { t } = useLanguage();
   const { data, error, isLoading, mutate, isValidating } = useSWR<Statement>(
     '/api/dashboard/profit/statement',
     fetcher,
@@ -99,7 +101,7 @@ export default function ProfitStatement() {
         <table className="w-full text-sm">
           <thead className="border-b bg-neutral-50 text-neutral-600">
             <tr className="text-center">
-              <th className="p-4 font-medium">التاريخ</th>
+              <th className="p-4 font-medium">{t.orders.date}</th>
               <th className="font-medium">المبلغ</th>
               <th className="font-medium">الحالة</th>
             </tr>
@@ -128,7 +130,7 @@ export default function ProfitStatement() {
 
 function Card({ title, value, icon }: any) {
   return (
-    <div className="rounded-xl border bg-white p-5">
+    <div className="rounded-xl border bg-card p-5">
       <div className="flex items-center gap-2 text-neutral-500">
         {icon}
         <p className="text-sm">{title}</p>

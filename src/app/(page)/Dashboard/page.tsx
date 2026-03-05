@@ -3,61 +3,82 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { toast } from 'sonner';
-import { DollarSign, Package, ShoppingBag, Users } from 'lucide-react';
-import { CiTimer } from 'react-icons/ci';
-import { useDashboardData } from './context/useDashboardData';
-import StatCard, { StatCardProps } from './_components/StatCard';
-import { Skeleton } from '@/components/ui/skeleton';
-import { OrderDetails } from './(page)/orderDetails/[orderId]/page';
-import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-import UrlCard from './_components/UrlCard';
-import PlanCard from './_components/PlanCard';
-import { useStoreProvider } from './context/StoreContext';
+import { AlertCircle, DollarSign, Package, Plus, ShoppingBag, Sparkles, Users } from 'lucide-react';
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Order } from '@/types/Products';
+import { useLanguage } from './context/LanguageContext';
+import { useStoreProvider } from './context/StoreContext';
+import { useDashboardData } from './context/useDashboardData';
+import { Skeleton } from '@/components/ui/skeleton';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import StatCard, { StatCardProps } from './_components/cards/StatCard';
+import RevenueHeroCard from './_components/cards/RevenueHeroCard';
+import QuickActionsGrid from './_components/cards/QuickActionsGrid';
+import UrlCard from './_components/cards/UrlCard';
+import PlanCard from './_components/cards/PlanCard';
+import RecentOrdersPanel from './_components/cards/RecentOrdersPanel';
+import { OrderDetails } from '../Test-Mode/Dashboard/(page)/orderDetails/[orderId]/page';
+import { TriangleAlert } from 'lucide-react';
+import Link from 'next/link';
+import { Button } from '@/components/ui/button';
+
 type ProfitResponse = {
   totalAmount: number;
 };
 
 export default function Dashboard() {
+  const { t } = useLanguage();
   const router = useRouter();
-  const { data: session, status, update } = useSession();
+  const { data: session, status } = useSession();
   const userId = session?.user?.id;
   const { currentStore } = useStoreProvider();
 
   const { data, loading } = useDashboardData(userId);
-  const { data: latestOrder } = useSWR<OrderDetails[]>(
-    userId ? `/api/orders/latest/${userId}` : null,
-    (url: string | URL | Request) => fetch(url).then(res => res.json())
-  );
+
   const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-  const { data: profit, isLoading } = useSWR<ProfitResponse>(
+  const { data: latestOrder } = useSWR<OrderDetails[]>(
+    userId ? `/api/orders/latest/${userId}` : null,
+    fetcher
+  );
+
+  const { data: profit, isLoading: profitLoading } = useSWR<ProfitResponse>(
     currentStore?.id ? `/api/dashboard/profit/total-profit-dashboard/${currentStore.id}` : null,
     fetcher
   );
-  const { data: visted } = useSWR(
+
+  const { data: visited } = useSWR(
     currentStore?.subLink ? `/api/visit/${currentStore?.subLink}` : null,
     fetcher
   );
-  const { data: pendingData, isLoading: pendingLoading } = useSWR<Order[]>(
+
+  const { data: pendingData } = useSWR<Order[]>(
     currentStore?.id ? `/api/dashboard/order/pending/${currentStore.id}` : null,
     fetcher,
-    {
-      refreshInterval: 1000,
-      revalidateOnFocus: true,
-    }
+    { refreshInterval: 1000, revalidateOnFocus: true }
   );
 
   if (status !== 'authenticated' || loading || !data) {
     return (
-      <section dir="rtl" className="flex min-h-screen flex-col bg-white p-4">
-        <main className="mx-auto w-full max-w-7xl flex-1 space-y-8 px-2 py-9">
-          <Skeleton className="h-6 w-48 rounded-md bg-gray-300" />
-          <div className="grid grid-cols-3 gap-6 text-center">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <Skeleton key={i} className="h-14 rounded-lg bg-gray-300" />
+      <section dir="rtl" className="bg-muted flex min-h-screen flex-col p-4">
+        <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-2 py-6">
+          <Skeleton className="bg-muted h-48 w-full rounded-2xl" />
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="bg-muted h-28 rounded-2xl" />
             ))}
           </div>
+          <div className="grid grid-cols-4 gap-2.5">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <Skeleton key={i} className="bg-muted h-20 rounded-xl" />
+            ))}
+          </div>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Skeleton className="bg-muted h-52 rounded-2xl" />
+            <Skeleton className="bg-muted h-52 rounded-2xl" />
+          </div>
+          <Skeleton className="bg-muted h-40 rounded-2xl" />
         </main>
       </section>
     );
@@ -67,121 +88,73 @@ export default function Dashboard() {
 
   const stats: StatCardProps[] = [
     {
-      title: 'المنتجات',
+      title: t.inventory.products,
       value: `${data.productCount}`,
-      icon: <Package size={18} />,
-      desc: '+11.01%',
+      icon: <Package size={15} />,
       href: '/Dashboard/ProductManagment',
-      variant: 'gray',
     },
     {
-      title: 'الزيارات',
-      value: `${visted?.count ?? 0}`,
-      icon: <Users size={18} />,
-      desc: '+0.03%',
-      variant: 'black',
+      title: t.home?.visitors || 'الزيارات',
+      value: `${visited?.count ?? 0}`,
+      icon: <Users size={15} />,
     },
+
     {
-      title: 'العوائد',
-      value: `${formatIQD(profit?.totalAmount) ?? 0}`,
-      icon: <DollarSign size={18} />,
-      desc: '+0.09%',
-      href: `/Dashboard/profit/`,
-      variant: 'gray',
-    },
-    {
-      title: 'الطلبات',
-      value: pendingData?.length ?? (0 as number),
-      icon: <ShoppingBag size={18} />,
-      desc: '+2.10%',
+      title: t.orders.title,
+      value: pendingData?.length ?? 0,
+      icon: <ShoppingBag size={15} />,
       href: '/Dashboard/OrderTrackingPage',
-      variant: 'gray',
     },
   ];
 
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(storeUrl);
-      toast.success(`تم نسخ الرابط إلى الحافظة! \n${storeUrl}`);
-    } catch (err) {
-      console.error('فشل نسخ الرابط:', err);
-    }
-  };
-
   return (
-    <section className="bg-white">
-       <div dir="rtl" className="flex min-h-screen flex-col">
-        <main className="flex-1 space-y-2">
-          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-            {stats.map((item, idx) => (
-              <StatCard key={idx} {...item} />
-            ))}
-          </div>
-          <div className="grid gap-4 md:grid-cols-2">
-            <UrlCard
-              storeUrl={storeUrl}
-              storeName={currentStore?.name || 'متجري'}
-              theme={currentStore?.theme || 'MODERN'}
-              copyToClipboard={copyToClipboard}
-            />
-            <PlanCard />
-          </div>
-
-          <div className="mx-auto w-full rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-center gap-2 md:justify-start">
-              <h2 className="text-center text-base font-semibold text-gray-900 md:text-end">
-                الطلبات الأخيرة
-              </h2>
-              <CiTimer className="text-lg font-bold text-gray-700" />
-            </div>
-
-            <div className="w-full divide-y divide-gray-200">
-              {latestOrder && latestOrder.length > 0 ? (
-                latestOrder.map(order => (
-                  <div key={order.id} className="rounded-lg px-2 py-3 hover:bg-gray-50">
-                    <div className="flex justify-between">
-                      <span className="text-sm font-medium text-gray-900">{order.fullName}</span>
-                      <span className="text-xs text-gray-500">
-                        {new Date(order.createdAt).toLocaleDateString()}
-                      </span>
-                    </div>
-                    <div className="mt-1 flex justify-between">
-                      <span className="text-xs font-medium text-gray-700">{order.location}</span>
-                      <span
-                        className={`rounded-full px-4 py-0.5 text-xs font-semibold ${
-                          order.status === 'CONFIRMED'
-                            ? 'bg-black text-white'
-                            : 'bg-gray-200 text-gray-700'
-                        }`}
-                      >
-                        {order.status === 'CONFIRMED' ? 'مكتملة' : 'قيد التنفيذ'}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="flex flex-col items-center justify-center py-10 text-gray-400">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M9 17v-2a4 4 0 014-4h3m4 0h-3a4 4 0 00-4 4v2m-4 0v-2a4 4 0 014-4h3m4 0h-3a4 4 0 00-4 4v2m-4 0h.01"
-                    />
-                  </svg>
-                  <p className="mt-2 text-sm">لا توجد طلبات حديثة</p>
+    <section dir="rtl" className="min-h-screen">
+      <main className="flex-1 space-y-4 px-1 py-2 pb-10">
+        {data.productCount === 0 && (
+          <div className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
+                <AlertCircle className="text-primary h-5 w-5" />
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="min-w-0 flex-1 text-right">
+                  <h3 className="text-foreground text-sm font-bold">{t.home.addFirstProduct}</h3>
+                  <p className="text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
+                    {t.home.addFirstProductDesc}
+                  </p>
                 </div>
-              )}
+              </div>
+              <div className="mt-3 flex items-center gap-2">
+                <Button
+                  onClick={() => router.push('Dashboard/ProductManagment/add-product')}
+                  size="sm"
+                  className="h-8 gap-1.5 rounded-lg text-xs"
+                >
+                  <Plus className="h-3.5 w-3.5" />
+                  {t.home.addProductNow}
+                </Button>
+              </div>
             </div>
           </div>
-        </main>
-      </div>
+        )}
+        <RevenueHeroCard
+          totalAmount={profit?.totalAmount ?? 0}
+          isLoading={profitLoading}
+          changePercent={12.5}
+        />
+
+        <div className="grid grid-cols-3 gap-3 md:grid-cols-3">
+          {stats.map((item, idx) => (
+            <StatCard key={idx} {...item} />
+          ))}
+        </div>
+
+        <QuickActionsGrid />
+
+        <PlanCard />
+
+        <RecentOrdersPanel orders={latestOrder ?? []} />
+      </main>
     </section>
   );
 }

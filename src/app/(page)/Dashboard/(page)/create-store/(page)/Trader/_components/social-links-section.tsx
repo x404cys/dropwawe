@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Input } from '@/components/ui/input';
 import { Facebook, Info, Instagram, Send } from 'lucide-react';
@@ -66,7 +66,7 @@ export function SocialLinksSection({
 
       {socialLinks.map(({ label, value, onChange, icon: Icon, field, placeholder }) => (
         <div key={field} className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">{label}</label>
+          <label className="text-sm font-medium text-foreground">{label}</label>
 
           <div className="relative">
             <Input
@@ -75,7 +75,7 @@ export function SocialLinksSection({
               placeholder={placeholder}
               className="pl-10"
             />
-            <Icon className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+            <Icon className="pointer-events-none absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
           </div>
 
           {fieldErrors[field] && <p className="mt-1 text-xs text-red-500">{fieldErrors[field]}</p>}
@@ -84,3 +84,4 @@ export function SocialLinksSection({
     </div>
   );
 }
+

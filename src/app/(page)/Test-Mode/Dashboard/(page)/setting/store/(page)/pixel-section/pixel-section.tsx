@@ -1,7 +1,7 @@
 'use client';
 
-import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
-import { RiLinksFill } from 'react-icons/ri';
+import CustomInput from '@/app/(page)/Dashboard/_components/forms/InputStyle';
+ import { RiLinksFill } from 'react-icons/ri';
 
 interface PixelSectionProps {
   facebookPixel: string | null;

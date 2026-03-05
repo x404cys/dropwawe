@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { IoAddSharp } from 'react-icons/io5';
@@ -23,12 +24,13 @@ export function ColorsSection({
   isExpanded,
   onToggle,
 }: ColorsSectionProps) {
+  const { t } = useLanguage();
   return (
     <div className="mb-3 max-w-92 space-y-1 overflow-y-auto rounded-2xl md:max-w-full">
       {colors.map((c, i) => (
         <div key={i} className="flex items-center gap-3 rounded-2xl p-3">
           <Input
-            placeholder="اسم اللون"
+            placeholder={t.inventory?.colorName || 'اسم اللون'}
             value={c.name}
             onChange={e => updateColor(i, 'name', e.target.value)}
             className="flex-1 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
@@ -43,7 +45,7 @@ export function ColorsSection({
           </div>
           <Input
             type="number"
-            placeholder="الكمية"
+            placeholder={t.inventory.quantity}
             value={c.stock === 0 ? '' : c.stock}
             onChange={e => {
               const val = e.target.value;
@@ -57,9 +59,7 @@ export function ColorsSection({
             variant="destructive"
             size="sm"
             onClick={() => removeColor(i)}
-          >
-            حذف
-          </Button>
+          > {t.delete} </Button>
         </div>
       ))}
 
@@ -70,7 +70,7 @@ export function ColorsSection({
         onClick={addColor}
       >
         <IoAddSharp className="h-4 w-4" />
-        <span>إضافة لون جديد</span>
+        <span>{t.inventory?.addNewColor || 'إضافة لون جديد'}</span>
       </Button>
     </div>
   );

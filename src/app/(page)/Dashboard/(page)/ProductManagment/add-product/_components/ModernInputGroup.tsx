@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import type React from 'react';
 import { Input } from '@/components/ui/input';
@@ -40,7 +40,7 @@ export function ModernInputGroup({
           onBlur={onBlur}
           disabled={disabled}
           placeholder={placeholder || label}
-          className="rounded-xl border bg-white pr-3 pl-10 font-light transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
+          className="rounded-xl border bg-card pr-3 pl-10 font-light transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500"
         />
         {icon && <span className="absolute top-1/2 left-3 -translate-y-1/2">{icon}</span>}
       </div>

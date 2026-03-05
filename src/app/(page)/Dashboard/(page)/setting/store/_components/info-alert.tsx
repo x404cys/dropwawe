@@ -1,4 +1,4 @@
-interface InfoAlertProps {
+﻿interface InfoAlertProps {
   message: string
   submessage?: string
 }
@@ -6,7 +6,7 @@ interface InfoAlertProps {
 export function InfoAlert({ message, submessage }: InfoAlertProps) {
   return (
     <div
-      className="flex items-center rounded-lg border border-gray-300 bg-gray-50 p-4 text-sm text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+      className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
       role="alert"
     >
       <svg
@@ -25,7 +25,7 @@ export function InfoAlert({ message, submessage }: InfoAlertProps) {
           {submessage && (
             <>
               <br />
-              <span className="text-xs text-gray-400">{submessage}</span>
+              <span className="text-xs text-muted-foreground">{submessage}</span>
             </>
           )}
         </span>
@@ -33,3 +33,4 @@ export function InfoAlert({ message, submessage }: InfoAlertProps) {
     </div>
   )
 }
+

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -19,8 +20,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { CiEdit } from 'react-icons/ci';
-import CustomInput from '../../../_components/InputStyle';
-import { TbPackageOff } from 'react-icons/tb';
+ import { TbPackageOff } from 'react-icons/tb';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,8 +32,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import CustomInput from '../../../_components/forms/InputStyle';
 
 export default function EditProductPage() {
+  const { t } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const router = useRouter();
   const [product, setProduct] = useState<
@@ -98,7 +100,7 @@ export default function EditProductPage() {
     <>
       <div
         dir="rtl"
-        className="mx-auto max-w-3xl bg-white py-4 text-black md:rounded-lg md:border md:px-4"
+        className="mx-auto max-w-3xl bg-card py-4 text-black md:rounded-lg md:border md:px-4"
       >
         <motion.div
           initial={{ opacity: 0, y: 40 }}
@@ -106,13 +108,13 @@ export default function EditProductPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="mb-2 flex items-center justify-between border-b py-2">
-            <h2 className="text-gray-900">تعديل المنتج</h2>
+            <h2 className="text-foreground">{t.inventory.editProduct}</h2>
 
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <button className="flex cursor-pointer items-center gap-2 rounded-md border-2 px-2 py-0.5 text-red-500 hover:bg-gray-200">
+                <button className="flex cursor-pointer items-center gap-2 rounded-md border-2 px-2 py-0.5 text-red-500 hover:bg-muted">
                   <TbPackageOff />
-                  <span>حذف</span>
+                  <span>{t.delete}</span>
                 </button>
               </AlertDialogTrigger>
 
@@ -128,10 +130,8 @@ export default function EditProductPage() {
                   <AlertDialogAction
                     className="bg-red-600 text-white hover:bg-red-700"
                     onClick={handleDelete}
-                  >
-                    حذف
-                  </AlertDialogAction>
-                  <AlertDialogCancel className="border">إلغاء</AlertDialogCancel>
+                  > {t.delete} </AlertDialogAction>
+                  <AlertDialogCancel className="border">{t.cancel}</AlertDialogCancel>
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
@@ -149,12 +149,12 @@ export default function EditProductPage() {
 
             <div className="space-y-2">
               <CustomInput
-                label="الكمية"
+                label={t.inventory.quantity}
                 required
                 type="number"
                 disabled={unlimited}
                 icon={<FaBox />}
-                value={unlimited ? 'غير محدود' : product.quantity || ''}
+                value={unlimited ? t.inventory.unlimited : product.quantity || ''}
                 onChange={e =>
                   setProduct({
                     ...product,
@@ -184,12 +184,12 @@ export default function EditProductPage() {
 
             <hr />
             <CustomInput
-              label="السعر"
+              label={t.inventory.price}
               type="number"
               icon={<FaPercent />}
               value={product.price || ''}
               onChange={e => setProduct({ ...product, price: Number(e.target.value) })}
-              placeholder="السعر"
+              placeholder={t.inventory.price}
             />
             <CustomInput
               label="الخصم"
@@ -218,15 +218,15 @@ export default function EditProductPage() {
             </div>
 
             <CustomInput
-              label="الصنف"
+              label={t.inventory.category}
               icon={<FaList />}
               value={product.category || ''}
               onChange={e => setProduct({ ...product, category: e.target.value })}
-              placeholder="الصنف"
+              placeholder={t.inventory.category}
             />
 
             <CustomInput
-              label="الوصف"
+              label={t.inventory.description}
               icon={<FaAlignLeft />}
               value={product.description || ''}
               onChange={e => setProduct({ ...product, description: e.target.value })}
@@ -239,7 +239,7 @@ export default function EditProductPage() {
               </label>
               <label
                 htmlFor="file-upload"
-                className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-black bg-gray-50 p-6 text-black transition hover:bg-gray-100"
+                className="flex cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-black bg-muted p-6 text-black transition hover:bg-muted"
               >
                 <input
                   id="file-upload"
@@ -263,7 +263,7 @@ export default function EditProductPage() {
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
-                  className="relative mt-3 overflow-hidden rounded-lg border border-black bg-white shadow-sm"
+                  className="relative mt-3 overflow-hidden rounded-lg border border-black bg-card shadow-sm"
                 >
                   <button
                     onClick={() =>
@@ -287,13 +287,12 @@ export default function EditProductPage() {
             <Button
               variant="outline"
               onClick={() => router.back()}
-              className="flex w-full items-center justify-center gap-2 border-black text-black hover:bg-gray-100 sm:w-1/2"
+              className="flex w-full items-center justify-center gap-2 border-black text-black hover:bg-muted sm:w-1/2"
             >
-              <MdClose size={22} /> إلغاء
-            </Button>
+              <MdClose size={22} /> {t.cancel} </Button>
             <Button
               onClick={saveEdit}
-              className="flex w-full items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 sm:w-1/2"
+              className="flex w-full items-center justify-center gap-2 bg-black text-white hover:bg-card sm:w-1/2"
             >
               <MdSave size={22} /> حفظ التعديلات
             </Button>

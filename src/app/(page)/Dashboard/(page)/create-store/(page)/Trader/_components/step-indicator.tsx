@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { PiStorefront } from 'react-icons/pi';
 import { LiaShippingFastSolid } from 'react-icons/lia';
@@ -61,7 +61,7 @@ export function StepIndicator({ activeSection, fieldErrors, onStepChange }: Step
                 className={`relative flex h-10 w-10 items-center justify-center rounded-full border-2 transition-colors ${
                   active || completed
                     ? 'border-sky-700 bg-sky-700'
-                    : 'border-sky-300 bg-white group-hover:border-sky-600'
+                    : 'border-sky-300 bg-card group-hover:border-sky-600'
                 } `}
               >
                 <span className={active || completed ? 'text-white' : 'text-sky-600'}>

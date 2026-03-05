@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
@@ -15,6 +16,7 @@ import { LiaShippingFastSolid } from 'react-icons/lia';
 import AddToCartButton from '../../ProductManagment/_components/Button/AddToCard';
 
 export default function ProductPage() {
+  const { t } = useLanguage();
   const path = usePathname();
   const id = path?.split('/').pop() || '';
   const router = useRouter();
@@ -55,17 +57,17 @@ export default function ProductPage() {
   if (loading) {
     return (
       <section dir="rtl" className="min-h-screen pb-20">
-        <div className="min-h-screen bg-white p-8">
+        <div className="min-h-screen bg-card p-8">
           <div className="flex flex-col md:flex-row md:gap-10 md:p-8">
-            <div className="relative aspect-[4/5] w-full animate-pulse rounded-lg bg-gray-200 md:w-1/2" />
+            <div className="relative aspect-[4/5] w-full animate-pulse rounded-lg bg-muted md:w-1/2" />
 
             <div className="mt-5 flex w-full flex-col gap-4 md:w-1/2">
-              <div className="h-6 w-3/4 animate-pulse rounded bg-gray-200" />
-              <div className="mt-2 h-6 w-1/2 animate-pulse rounded bg-gray-200" />
-              <div className="mt-4 h-24 animate-pulse rounded bg-gray-200" />
+              <div className="h-6 w-3/4 animate-pulse rounded bg-muted" />
+              <div className="mt-2 h-6 w-1/2 animate-pulse rounded bg-muted" />
+              <div className="mt-4 h-24 animate-pulse rounded bg-muted" />
               <div className="mt-4 flex gap-4">
-                <div className="h-10 w-24 animate-pulse rounded bg-gray-200" />
-                <div className="h-10 w-24 animate-pulse rounded bg-gray-200" />
+                <div className="h-10 w-24 animate-pulse rounded bg-muted" />
+                <div className="h-10 w-24 animate-pulse rounded bg-muted" />
               </div>
             </div>
           </div>
@@ -79,7 +81,7 @@ export default function ProductPage() {
 
   return (
     <section dir="rtl" className="mt-2 min-h-screen pb-20">
-      <div className="min-h-screen bg-white">
+      <div className="min-h-screen bg-card">
         <div className="flex flex-col md:flex-row md:gap-10 md:p-8">
           <div className="relative aspect-[4/5] w-full md:w-1/2">
             <Image
@@ -107,7 +109,7 @@ export default function ProductPage() {
                       {(product.price - (product.price * product.discount) / 100).toLocaleString()}{' '}
                       د.ع
                     </span>
-                    <span className="text-sm text-gray-400 line-through">
+                    <span className="text-sm text-muted-foreground line-through">
                       {product.price.toLocaleString()} د.ع
                     </span>
                   </>
@@ -120,13 +122,13 @@ export default function ProductPage() {
 
               {product.category && (
                 <div className="flex items-center gap-2 rounded-lg py-2 text-sm font-semibold">
-                  <span className="rounded-full bg-gray-200 px-2 py-1">{product.category}</span>
+                  <span className="rounded-full bg-muted px-2 py-1">{product.category}</span>
                 </div>
               )}
 
               <div className="col-span-1 rounded-lg p-4 md:col-span-2">
-                <h3 className="mb-2 text-sm text-gray-500 uppercase">الوصف</h3>
-                <p className="text-sm leading-relaxed text-gray-700">
+                <h3 className="mb-2 text-sm text-muted-foreground uppercase">{t.inventory.description}</h3>
+                <p className="text-sm leading-relaxed text-foreground">
                   {product.description || 'لا يوجد وصف متوفر لهذا المنتج.'}
                 </p>
               </div>
@@ -135,7 +137,7 @@ export default function ProductPage() {
                   <LiaShippingFastSolid className="text-green-600" size={20} />
                   <div className="flex flex-col">
                     <span>التوصيل</span>
-                    <span className="text-xs whitespace-normal text-gray-500">
+                    <span className="text-xs whitespace-normal text-muted-foreground">
                       {product.shippingType || 'لا توجد معلومات'}
                     </span>
                   </div>
@@ -145,7 +147,7 @@ export default function ProductPage() {
                   <TbTruckReturn className="text-red-500" size={20} />
                   <div className="flex flex-col">
                     <span>سياسة الاسترجاع</span>
-                    <span className="text-xs whitespace-normal text-gray-500">
+                    <span className="text-xs whitespace-normal text-muted-foreground">
                       {product.hasReturnPolicy || 'لا توجد معلومات'}
                     </span>
                   </div>
@@ -157,7 +159,7 @@ export default function ProductPage() {
               <div className="flex items-center justify-center gap-2 md:justify-start">
                 <button
                   onClick={() => setQty(prev => Math.max(prev - 1, 1))}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-gray-950 text-white hover:bg-red-600"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-background text-white hover:bg-red-600"
                 >
                   -
                 </button>
@@ -166,7 +168,7 @@ export default function ProductPage() {
 
                 <button
                   onClick={() => setQty(prev => prev + 1)}
-                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-gray-950 text-white hover:bg-green-600"
+                  className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-xl bg-background text-white hover:bg-green-600"
                 >
                   +
                 </button>
@@ -219,6 +221,7 @@ export default function ProductPage() {
                             quantity: product.quantity,
                             category: product.category,
                             discount: product.discount,
+                            priceBeforeDiscount: product.priceBeforeDiscount,
                           },
                           `fav/${userId}`
                         )
@@ -278,6 +281,7 @@ export default function ProductPage() {
                       quantity: product.quantity,
                       category: product.category,
                       discount: product.discount,
+                      priceBeforeDiscount: product.priceBeforeDiscount,
                     },
                     `fav/${userId}`
                   )

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
@@ -48,6 +49,7 @@ interface Region {
 }
 
 export default function LocationPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const orderId = params?.orderId as string;
   const router = useRouter();
@@ -169,8 +171,8 @@ export default function LocationPage() {
 
   return (
     <div dir="rtl" className="mx-auto max-w-xl space-y-8 p-6">
-      <div className="rounded-xl border bg-white">
-        <div className="border-b bg-gray-100 px-6 py-4">
+      <div className="rounded-xl border bg-card">
+        <div className="border-b bg-muted px-6 py-4">
           <h2 className="text-lg font-semibold">معلومات العميل</h2>
         </div>
 
@@ -178,7 +180,7 @@ export default function LocationPage() {
           <div className="flex items-start gap-3">
             <User className="mt-0.5 h-5 w-5 text-neutral-500" />
             <div className="flex-1">
-              <p className="text-xs text-neutral-500">الاسم</p>
+              <p className="text-xs text-neutral-500">{t.profile.name}</p>
               <p className="mt-1 font-medium">{order?.fullName}</p>
             </div>
           </div>
@@ -188,7 +190,7 @@ export default function LocationPage() {
           <div className="flex items-start gap-3">
             <Phone className="mt-0.5 h-5 w-5 text-neutral-500" />
             <div className="flex-1">
-              <p className="text-xs text-neutral-500">رقم الهاتف</p>
+              <p className="text-xs text-neutral-500">{t.profile.phone}</p>
               <p className="mt-1 font-medium" dir="ltr">
                 {order?.phone}
               </p>
@@ -248,7 +250,7 @@ export default function LocationPage() {
           />
 
           {showDropdown && regionSearch && filteredRegions.length > 0 && (
-            <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-white shadow-xl">
+            <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-card shadow-xl">
               {filteredRegions.map(region => (
                 <div
                   key={region.id}
@@ -266,9 +268,7 @@ export default function LocationPage() {
           )}
 
           {showDropdown && regionSearch && filteredRegions.length === 0 && (
-            <div className="absolute z-50 mt-1 w-full bg-white p-3 text-sm text-neutral-500">
-              لا توجد نتائج
-            </div>
+            <div className="absolute z-50 mt-1 w-full bg-card p-3 text-sm text-neutral-500"> {t.noResults} </div>
           )}
         </div>
 

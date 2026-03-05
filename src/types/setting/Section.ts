@@ -8,4 +8,5 @@ export type SectionType =
   | 'users'
   | 'create-another'
   | 'c-shipping'
-  | 'Coupon';
+  | 'Coupon'
+  | 'danger';

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -28,13 +29,14 @@ export function NavigationButtons({
   onNext,
   onSubmit,
 }: NavigationButtonsProps) {
+  const { t } = useLanguage();
   const [openConfirm, setOpenConfirm] = useState(false);
 
   return (
     <>
       <div className="mt-6 flex justify-between">
         <button
-          className={`cursor-pointer rounded-lg ${activeSection === 'basic' ? 'bg-white text-white' : 'block'} bg-gray-300 px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50`}
+          className={`cursor-pointer rounded-lg ${activeSection === 'basic' ? 'bg-card text-white' : 'block'} bg-muted px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50`}
           onClick={onPrevious}
           disabled={activeSection === 'basic'}
         >
@@ -43,7 +45,7 @@ export function NavigationButtons({
 
         {activeSection !== 'social' && (
           <button
-            className="rounded-lg bg-sky-600 px-6 py-2 text-white transition hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-50"
+            className="rounded-lg bg-sky-600 px-6 py-2 text-white transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onNext}
           >
             التالي
@@ -70,15 +72,13 @@ export function NavigationButtons({
         <DialogContent className="text-right" dir="rtl">
           <DialogHeader>
             <DialogTitle>هل أنت متأكد من إنشاء المتجر؟</DialogTitle>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-muted-foreground">
               بعد الانشاء، يمكنك تعديل الإعدادات لاحقاً من لوحة التحكم.
             </p>
           </DialogHeader>
 
           <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpenConfirm(false)} className="px-6">
-              إلغاء
-            </Button>
+            <Button variant="outline" onClick={() => setOpenConfirm(false)} className="px-6"> {t.cancel} </Button>
             <Button
               disabled={loading}
               onClick={() => {

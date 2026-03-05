@@ -17,8 +17,8 @@ import { PiStorefront } from 'react-icons/pi';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline } from 'react-icons/io5';
 import Image from 'next/image';
-import { fbEvent } from '@/app/(page)/Dashboard/_utils/pixel';
-type ServerErrorDetail = {
+import { fbEvent } from '@/app/(page)/Dashboard/utils/pixel';
+ type ServerErrorDetail = {
   field: string;
   message: string;
 };

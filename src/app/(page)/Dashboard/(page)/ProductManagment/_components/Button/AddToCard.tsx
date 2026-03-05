@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { useCart } from '@/app/lib/context/CartContext';
 import { Product } from '@/types/Products';
 import { FiShoppingBag } from 'react-icons/fi';
@@ -11,6 +12,7 @@ type Props = {
 };
 
 export default function AddToCartButton({ product, qty, userId }: Props) {
+  const { t } = useLanguage();
   const { addToCartWithQtyByKey } = useCart();
 
   const handleAddToCart = () => {
@@ -33,7 +35,7 @@ export default function AddToCartButton({ product, qty, userId }: Props) {
     };
 
     // addToCartWithQtyByKey(cartItem, qty, `cart/${userId}`);
-    toast.success(`تمت إضافة ${qty} قطع إلى السلة 🛒`);
+    toast.success(t.inventory?.addedToCart?.replace('{qty}', qty.toString()) || `تمت إضافة ${qty} قطع إلى السلة 🛒`);
   };
 
   return (
@@ -41,7 +43,7 @@ export default function AddToCartButton({ product, qty, userId }: Props) {
       onClick={handleAddToCart}
       className="flex w-full items-center justify-center gap-2 rounded-2xl bg-black py-3 text-base font-semibold text-white transition hover:bg-gray-900"
     >
-      <FiShoppingBag size={20} /> إضافة إلى السلة
+      <FiShoppingBag size={20} /> {t.inventory?.addToCart || 'إضافة إلى السلة'}
     </button>
   );
 }

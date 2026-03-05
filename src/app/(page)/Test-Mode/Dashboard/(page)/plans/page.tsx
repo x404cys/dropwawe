@@ -9,8 +9,8 @@ import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { LuMousePointerClick } from 'react-icons/lu';
-import { fbEvent } from '@/app/(page)/Dashboard/_utils/pixel';
-
+import { fbEvent } from '@/app/(page)/Dashboard/utils/pixel';
+ 
 export default function Plans() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();

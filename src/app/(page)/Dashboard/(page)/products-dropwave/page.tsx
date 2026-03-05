@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../context/LanguageContext';
 import axios from 'axios';
 import useSWR from 'swr';
 import { Boxes, Package, Search } from 'lucide-react';
@@ -10,6 +11,7 @@ import Loader from '@/components/Loader';
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function ProductsPage() {
+  const { t } = useLanguage();
   const { data, isLoading, error } = useSWR<Product[]>('/api/dropwave/get/products/get', fetcher);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -46,7 +48,7 @@ export default function ProductsPage() {
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
           <Package className="text-muted-foreground/40 mx-auto mb-3 h-10 w-10" />
-          <p className="text-muted-foreground text-sm">لا توجد منتجات بعد</p>
+          <p className="text-muted-foreground text-sm">{t.inventory.noProducts}</p>
         </div>
       </div>
     );
@@ -76,7 +78,7 @@ export default function ProductsPage() {
             </span>
             <input
               type="text"
-              placeholder="ابحث عن منتج..."
+              placeholder={t.inventory.searchPlaceholder}
               value={search}
               onChange={e => setSearch(e.target.value)}
               className="border-border bg-background placeholder:text-muted-foreground focus:border-foreground/20 focus:ring-foreground/5 w-full rounded-full border px-6 py-4 pl-14 text-sm transition-all focus:ring-4 focus:outline-none"
@@ -106,7 +108,7 @@ export default function ProductsPage() {
                   className={`rounded-xl px-4 py-2 text-center text-xs transition-all ${
                     categoryFilter === cat
                       ? 'bg-foreground text-background'
-                      : 'text-foreground hover:bg-muted bg-gray-200'
+                      : 'text-foreground hover:bg-muted bg-muted'
                   }`}
                 >
                   {cat}

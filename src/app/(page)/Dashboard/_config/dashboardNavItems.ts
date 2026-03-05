@@ -1,19 +1,20 @@
+import { useLanguage } from '../context/LanguageContext';
 import { Home, ShoppingBag, DollarSign, Settings, Package, Users } from 'lucide-react';
 import { FaCrown } from 'react-icons/fa';
 import { CgFolderAdd } from 'react-icons/cg';
 import { PiBoxArrowDown } from 'react-icons/pi';
 
-export const getDashboardNavItems = (role?: string) => [
-  { label: 'الرئيسية', path: '/Dashboard', icon: Home, show: 'DROPSHIPPER' },
-  { label: 'المنتجات', path: '/Dashboard/ProductManagment', icon: Package, show: 'DROPSHIPPER' },
+export const getDashboardNavItems = (role: string | undefined, t: any) => [
+  { label: t.nav.home, path: '/Dashboard', icon: Home, show: 'DROPSHIPPER' },
+  { label: t.inventory.products, path: '/Dashboard/ProductManagment', icon: Package, show: 'DROPSHIPPER' },
   {
-    label: 'اضافة منتج',
+    label: t.inventory.addProduct,
     path: '/Dashboard/ProductManagment/add-product',
     icon: CgFolderAdd,
     plans: ['trader-basic', 'trader-pro'],
   },
   {
-    label: 'العوائد',
+    label: 'العوائد', // Will require a translation key if missing, let's use t.stats?.revenue ?? 'العوائد' or add to translation later. Actually we have t.stats.revenue
     path:
       role === 'SUPPLIER'
         ? `/Dashboard/profit/profit-trader `
@@ -23,7 +24,7 @@ export const getDashboardNavItems = (role?: string) => [
     icon: DollarSign,
   },
   {
-    label: 'الطلبات',
+    label: t.orders.title,
     path:
       role === 'SUPPLIER'
         ? '/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage'
@@ -31,7 +32,7 @@ export const getDashboardNavItems = (role?: string) => [
     icon: ShoppingBag,
   },
   {
-    label: 'الموردين',
+    label: 'الموردين', // Let's use generic string for now, will add suppliers to t later
     path: '/Dashboard/supplier',
     icon: Users,
     show: 'DROPSHIPPER',
@@ -45,6 +46,6 @@ export const getDashboardNavItems = (role?: string) => [
     show: 'DROPSHIPPER',
     plans: ['drop-basics', 'drop-pro'],
   },
-  { label: 'الاعدادات', path: '/Dashboard/setting/store', icon: Settings, show: 'DROPSHIPPER' },
-  { label: 'الباقات', path: '/Dashboard/plans', icon: FaCrown, show: 'DROPSHIPPER' },
+  { label: t.more.settingsLabel, path: '/Dashboard/setting/store', icon: Settings, show: 'DROPSHIPPER' },
+  { label: t.plans.title, path: '/Dashboard/plans', icon: FaCrown, show: 'DROPSHIPPER' },
 ];

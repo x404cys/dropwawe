@@ -7,6 +7,7 @@ import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { PlanType } from '@/types/plans/Plans';
 import { useSubscriptions } from '@/app/(page)/Dashboard/context/useSubscription';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 type ThemeId = 'NORMAL' | 'MODERN' | 'RAMADAN';
 
@@ -19,34 +20,6 @@ type Theme = {
   allowedPlans: PlanType[];
 };
 
-const themes: Theme[] = [
-  {
-    id: 'NORMAL',
-    name: 'ثيم كلاسيكي',
-    description: 'تصميم بسيط وألوان هادئة',
-    image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
-    allowedPlans: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro', 'free-trial'],
-  },
-
-  {
-    id: 'MODERN',
-    name: 'ثيم عصري',
-    description: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
-    image: '/img-theme/iPhone-13-PRO-MODREN.webp',
-    badge: 'شائع',
-    allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
-  },
-
-  {
-    id: 'RAMADAN',
-    name: 'ثيم رمضان',
-    description: 'تصميم رمضاني يناسب متجرك في الموسم',
-    image: '/img-theme/IMG_6629.JPG',
-    badge: 'موسمي',
-    allowedPlans: ['ramadan-plan', 'free-trial'],
-  },
-];
-
 type ThemeResponse = {
   theme: ThemeId;
 };
@@ -54,8 +27,35 @@ type ThemeResponse = {
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function ThemeSection() {
+  const { t } = useLanguage();
   const [loadingTheme, setLoadingTheme] = useState<ThemeId | null>(null);
   const { userPlanType } = useSubscriptions();
+
+  const themes: Theme[] = [
+    {
+      id: 'NORMAL',
+      name: t.store?.classicTheme || 'ثيم كلاسيكي',
+      description: t.store?.classicThemeDesc || 'تصميم بسيط وألوان هادئة',
+      image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
+      allowedPlans: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro', 'free-trial'],
+    },
+    {
+      id: 'MODERN',
+      name: t.store?.modernTheme || 'ثيم عصري',
+      description: t.store?.modernThemeDesc || 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
+      image: '/img-theme/iPhone-13-PRO-MODREN.webp',
+      badge: t.store?.popularBadge || 'شائع',
+      allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
+    },
+    {
+      id: 'RAMADAN',
+      name: t.store?.ramadanTheme || 'ثيم رمضان',
+      description: t.store?.ramadanThemeDesc || 'تصميم رمضاني يناسب متجرك في الموسم',
+      image: '/img-theme/IMG_6629.JPG',
+      badge: t.store?.seasonalBadge || 'موسمي',
+      allowedPlans: ['ramadan-plan', 'free-trial'],
+    },
+  ];
 
   const { data, isLoading } = useSWR<ThemeResponse>('/api/dashboard/setting/get-theme', fetcher, {
     revalidateOnFocus: true,
@@ -87,20 +87,20 @@ export default function ThemeSection() {
       <div className="space-y-2">
         <div className="mb-6 flex items-center justify-center text-center">
           <div className="flex flex-col items-center gap-2 rounded-2xl border border-green-400 bg-green-50 px-8 py-0.5">
-            <h1 className="font-light text-green-400">قالب جديد بأنتظارك</h1>
+            <h1 className="font-light text-green-400">{t.store?.newThemeWaiting || 'قالب جديد بأنتظارك'}</h1>
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold tracking-tight">اختر ثيم متجرك</h2>
+        <h2 className="text-2xl font-bold tracking-tight">{t.store?.chooseStoreTheme || 'اختر ثيم متجرك'}</h2>
         <p className="text-muted-foreground">
-          حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي
+          {t.store?.chooseStoreThemeDesc || 'حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي'}
         </p>
       </div>
 
       <div className="flex items-center gap-4">
-        <span>الثيم الحالي:</span>
+        <span>{t.store?.currentTheme || 'الثيم الحالي:'}</span>
         <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium">
-          {data?.theme === 'NORMAL' ? 'ثيم كلاسيكي' : 'ثيم عصري'}
+          {data?.theme === 'NORMAL' ? (t.store?.classicTheme || 'ثيم كلاسيكي') : (t.store?.modernTheme || 'ثيم عصري')}
         </span>
       </div>
 
@@ -138,16 +138,16 @@ export default function ThemeSection() {
                   onClick={() => selectTheme(theme.id)}
                 >
                   {isLoadingBtn ? (
-                    'جارٍ التحديث...'
+                    t.store?.updatingTheme || 'جارٍ التحديث...'
                   ) : isActive ? (
                     <>
                       <Check className="ml-2 h-4 w-4" />
-                      مفعل
+                      {t.store?.activeTheme || 'مفعل'}
                     </>
                   ) : (
                     <>
                       <Sparkles className="ml-2 h-4 w-4" />
-                      اختر الثيم
+                      {t.store?.chooseTheme || 'اختر الثيم'}
                     </>
                   )}
                 </Button>

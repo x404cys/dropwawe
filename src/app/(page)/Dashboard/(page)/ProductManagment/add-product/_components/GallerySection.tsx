@@ -1,10 +1,9 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { TbUpload } from 'react-icons/tb';
 import { CollapsibleSection } from './CollapsibleSection';
-import { OptionalSection } from './Image-Section/SectionCard';
-import { GallerySectionForMobile } from './Image-Section/GallerySectionForMobile';
 
 interface GallerySectionProps {
   galleryFiles: File[];
@@ -25,10 +24,11 @@ export function GallerySection({
   onToggle,
   loading,
 }: GallerySectionProps) {
+  const { t } = useLanguage();
   return (
     <CollapsibleSection
-      title="صور إضافية"
-      subtitle={`${galleryFiles.length}/3 صور`}
+      title={t.inventory?.additionalImages || 'صور إضافية'}
+      subtitle={`${galleryFiles.length}/3 ${t.inventory?.images || 'صور'}`}
       isExpanded={isExpanded}
       onToggle={onToggle}
     >
@@ -43,7 +43,7 @@ export function GallerySection({
             <button
               type="button"
               onClick={() => removeGalleryImage(idx)}
-              className="absolute top-1 right-1 bg-black p-1 text-white transition hover:bg-gray-800"
+              className="absolute top-1 right-1 bg-black p-1 text-white transition hover:bg-card"
               disabled={loading}
             >
               <svg
@@ -65,9 +65,9 @@ export function GallerySection({
         ))}
 
         {galleryFiles.length < 3 && (
-          <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
+          <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-sky-500 hover:bg-sky-50">
             <TbUpload size={24} className="text-sky-500" />
-            <span className="text-xs font-medium">رفع صورة</span>
+            <span className="text-xs font-medium">{t.inventory?.uploadImage || 'رفع صورة'}</span>
             <input
               type="file"
               accept="image/jpeg,image/png,image/webp"

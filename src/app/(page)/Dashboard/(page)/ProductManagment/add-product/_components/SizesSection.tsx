@@ -1,4 +1,5 @@
-﻿'use client';
+'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import { IoAddSharp } from 'react-icons/io5';
 import { Button } from '@/components/ui/button';
@@ -21,19 +22,20 @@ export function SizesSection({
   isExpanded,
   onToggle,
 }: SizesSectionProps) {
+  const { t } = useLanguage();
   return (
-    <div className="my-4 max-w-92 md:max-w-full overflow-y-auto border-b border-gray-200 pb-4">
+    <div className="my-4 max-w-92 md:max-w-full overflow-y-auto border-b border-border pb-4">
       {sizes.map((s, i) => (
         <div key={i} className="flex items-center gap-3 p-1">
           <Input
-            placeholder="المقاس أو النوع"
+            placeholder={t.inventory?.sizeOrType || 'المقاس أو النوع'}
             value={s.size}
             onChange={e => updateSize(i, 'size', e.target.value)}
             className="flex-1 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
           />
           <Input
             type="number"
-            placeholder="الكمية"
+            placeholder={t.inventory.quantity}
             value={s.stock === 0 ? '' : s.stock}
             onChange={e => {
               const val = e.target.value;
@@ -47,9 +49,7 @@ export function SizesSection({
             variant="destructive"
             size="sm"
             onClick={() => removeSize(i)}
-          >
-            حذف
-          </Button>
+          > {t.delete} </Button>
         </div>
       ))}
 
@@ -60,7 +60,7 @@ export function SizesSection({
         onClick={addSize}
       >
         <IoAddSharp className="h-4 w-4" />
-        <span>إضافة حجم جديد</span>
+        <span>{t.inventory?.addNewSize || 'إضافة حجم جديد'}</span>
       </Button>
     </div>
   );

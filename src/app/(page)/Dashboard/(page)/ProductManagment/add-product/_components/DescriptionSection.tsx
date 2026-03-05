@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { Info } from 'lucide-react';
@@ -15,18 +16,19 @@ export function DescriptionSection({
   setNewProduct,
   loading,
 }: DescriptionSectionProps) {
+  const { t } = useLanguage();
   return (
     <div className=" ">
       <div className="p-6">
         <label
           htmlFor="product-description"
-          className="mb-2 flex items-center gap-1 text-sm font-medium text-gray-700"
+          className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground"
         >
-          <span>وصف المنتج</span> <span className="text-red-400">*</span>
+          <span>{t.inventory?.productDescription || 'وصف المنتج'}</span> <span className="text-red-400">*</span>
         </label>
         <textarea
-          className="min-h-[100px] w-full rounded-2xl border border-gray-300 bg-white p-4 font-light text-black transition placeholder:text-gray-400 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder="اكتب وصفاً تفصيلياً للمنتج... (مثال: قميص صيفي مصنوع من القطن الطبيعي 100%، مريح وخفيف)"
+          className="min-h-[100px] w-full rounded-2xl border border-gray-300 bg-card p-4 font-light text-black transition placeholder:text-muted-foreground focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder={t.inventory?.productDescriptionPlaceholder || 'اكتب وصفاً تفصيلياً للمنتج... '}
           value={newProduct.description}
           onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
           disabled={loading}

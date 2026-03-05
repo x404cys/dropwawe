@@ -17,6 +17,7 @@ export function useTrackVisitor(path: string) {
       body: JSON.stringify({
         visitorId,
         path,
+        referrer: document.referrer || null,
       }),
     });
   }, [path]);
@@ -37,6 +38,7 @@ export function useTrackVisitor4landing(path: string) {
       body: JSON.stringify({
         visitorId,
         path,
+        referrer: document.referrer || null,
       }),
     });
   }, [path]);

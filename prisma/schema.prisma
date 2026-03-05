@@ -313,6 +313,7 @@ model Visitor {
   userAgent String?
   createdAt DateTime @default(now())
   storeName String?
+  referrer  String?
 }
 //
 model Notification {

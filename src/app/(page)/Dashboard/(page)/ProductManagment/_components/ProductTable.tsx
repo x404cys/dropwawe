@@ -1,27 +1,42 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../context/LanguageContext';
+
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableHeader, TableRow, TableHead, TableBody } from '@/components/ui/table';
 import { useSession } from 'next-auth/react';
-import { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useProducts } from '../_hooks/useProducts';
 import Loader from '@/components/Loader';
 import ProductRow from './ProductRow';
 import ProductCard from './ProductCard';
-import EditProductRow from './EditProductRow';
 import { Product } from '@/types/Products';
 import { toast } from 'sonner';
 import { useDashboardData } from '../../../context/useDashboardData';
-import { Boxes, ChevronDown, Package, Search, ShoppingBag, Store, Truck } from 'lucide-react';
+import {
+  AlertTriangle,
+  BarChart3,
+  Boxes,
+  LayoutGrid,
+  Package,
+  Plus,
+  Search,
+  ShoppingBag,
+  Tag,
+  Truck,
+  X,
+} from 'lucide-react';
 import { LuPackagePlus } from 'react-icons/lu';
 import { useRouter } from 'next/navigation';
 import { useStoreProvider } from '../../../context/StoreContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function ProductTable() {
+  const { t } = useLanguage();
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const [products, setProducts] = useState<Product[]>([]);
   const router = useRouter();
-  const [open, setOpen] = useState(false);
   const [storeId, setStoreId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editData, setEditData] = useState<
@@ -30,27 +45,27 @@ export default function ProductTable() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
+  const [dismissedStockAlert, setDismissedStockAlert] = useState(false);
   const { currentStore } = useStoreProvider();
   const [loading, setLoading] = useState(false);
   const role = session?.user?.role;
   const isTraderOrSupplier = role === 'SUPPLIER' || role === 'TRADER';
 
-  const isDropshipper = role === 'DROPSHIPPER';
+  // ── Fetch products ────────────────────────────────────────────────────
+  useEffect(() => {
+    if (!currentStore?.id) return;
+    setLoading(true);
+    fetch(`/api/products/store/${currentStore.id}`)
+      .then(res => {
+        if (!res.ok) throw new Error(t.inventory?.fetchFailed || 'فشل في جلب المنتجات');
+        return res.json();
+      })
+      .then(setProducts)
+      .catch(err => console.error(err.message))
+      .finally(() => setLoading(false));
+  }, [currentStore?.id]);
 
-  if (!data?.Stores || data?.Stores.length > 0) {
-    useEffect(() => {
-      if (!currentStore?.id) return;
-      setLoading(true);
-      fetch(`/api/products/store/${currentStore?.id}`)
-        .then(res => {
-          if (!res.ok) throw new Error('فشل في جلب المنتجات');
-          return res.json();
-        })
-        .then(setProducts)
-        .catch(err => console.error(err.message))
-        .finally(() => setLoading(false));
-    }, [currentStore?.id]);
-  }
+  // ── Edit handlers ─────────────────────────────────────────────────────
   const startEditing = (product: Product) => {
     setEditingId(product.id);
     setEditData({ ...product, imagePreview: product.image });
@@ -63,19 +78,19 @@ export default function ProductTable() {
   };
 
   const deleteProduct = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+    if (!confirm(t.inventory.confirmDelete)) return;
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
       setProducts(products.filter(p => p.id !== id));
     } catch {
-      toast.success('فشل في حذف المنتج');
+      toast.error(t.inventory?.deleteFailed || 'فشل في حذف المنتج');
     }
   };
 
   const saveEdit = async () => {
     if (!editingId || !editData.name || !editData.price || !editData.quantity) {
-      toast.success('يرجى ملء جميع الحقول');
+      toast.error(t.inventory?.fillAllFields || 'يرجى ملء جميع الحقول');
       return;
     }
     try {
@@ -91,13 +106,38 @@ export default function ProductTable() {
       setProducts(products.map(p => (p.id === editingId ? updated : p)));
       closeEditDialog();
     } catch {
-      toast.success('فشل في تحديث المنتج');
+      toast.error(t.inventory?.updateFailed || 'فشل في تحديث المنتج');
     }
   };
 
+  // ── Derived data ──────────────────────────────────────────────────────
   const categories = useMemo(() => {
-    const cats = products.map(p => p.category);
-    return Array.from(new Set(cats));
+    return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
+  }, [products]);
+
+  const categoryCounts = useMemo(() => {
+    return products.reduce<Record<string, number>>((acc, p) => {
+      if (p.category) acc[p.category] = (acc[p.category] || 0) + 1;
+      return acc;
+    }, {});
+  }, [products]);
+
+  const lowStockProducts = useMemo(() => {
+    return products.filter(
+      p => !p.unlimited && p.quantity !== undefined && p.quantity < 5 && p.quantity > 0
+    );
+  }, [products]);
+
+  const outOfStockProducts = useMemo(() => {
+    return products.filter(p => !p.unlimited && p.quantity === 0);
+  }, [products]);
+
+  const totalValue = useMemo(() => {
+    return products.reduce((sum, p) => sum + (p.price ?? 0), 0);
+  }, [products]);
+
+  const discountedCount = useMemo(() => {
+    return products.filter(p => p.discount != null && p.discount > 0).length;
   }, [products]);
 
   const filteredProducts = useMemo(() => {
@@ -106,229 +146,283 @@ export default function ProductTable() {
       .filter(p => (categoryFilter ? p.category === categoryFilter : true));
   }, [products, search, categoryFilter]);
 
-  return (
-    <section className="">
-      <div className="my-3 block rounded-xl border bg-white px-4 py-3 transition-all duration-200 hover:shadow-md md:hidden">
-        <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-600">العدد الكلي للمنتجات</h3>
-          <div className="flex h-8 w-8 items-center justify-center rounded border bg-gray-100">
-            <Package className="h-5 w-5 text-gray-600" />
-          </div>
-        </div>
-        <div className="mt-1 text-xl font-bold text-gray-900">{products.length}</div>
-        <hr className="my-1" />
-
-        <div
-          dir="rtl"
-          className="mt-4 flex items-center justify-between text-xs font-medium text-gray-600"
-        >
-          {isTraderOrSupplier ? (
+  // ── Desktop ───────────────────────────────────────────────────────────
+  const DesktopTable = (
+    <Card className="border-border hidden rounded-2xl shadow-sm md:block">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between" dir="rtl">
+          <CardTitle className="text-foreground text-base font-bold">
+            {t.inventory?.products || 'قائمة المنتجات'} — {currentStore?.name}
+          </CardTitle>
+          {isTraderOrSupplier && (
             <button
               onClick={() => router.push('/Dashboard/ProductManagment/add-product')}
-              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
+              className="flex items-center gap-1.5 rounded-xl bg-[#04BAF6] px-3 py-2 text-xs font-semibold text-white transition-colors hover:bg-[#0288d1]"
             >
-              <LuPackagePlus className="h-5 w-5" />
-              <span>إضافة منتج</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => router.push('/Dashboard/products-dropwave')}
-              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
-            >
-              <LuPackagePlus className="h-5 w-5" />
-              <span>المخزن</span>
-            </button>
-          )}
-
-          <div className="h-8 w-px bg-gray-200" />
-
-          <button
-            onClick={() => router.push('/Dashboard/ProductManagment')}
-            className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
-          >
-            <Boxes className="h-5 w-5" />
-            <span>المنتجات</span>
-          </button>
-
-          <div className="h-8 w-px bg-gray-200" />
-
-          {session?.user?.role === 'SUPPLIER' ? (
-            <button
-              onClick={() => router.push('/Dashboard/OrderTrackingPage/SupplierOrderTrackingPage')}
-              className="flex flex-1 flex-col items-center gap-1 transition-colors hover:text-blue-600"
-            >
-              <ShoppingBag className="h-5 w-5" />
-              <span>الطلبات</span>
-            </button>
-          ) : (
-            <button
-              onClick={() => router.push('/Dashboard/supplier')}
-              className="group relative flex flex-1 flex-col items-center gap-1 overflow-hidden transition-colors hover:text-blue-600"
-            >
-              <span className="absolute top-0 left-0 h-full w-1 -skew-x-12 bg-blue-600 opacity-0 transition-opacity group-hover:opacity-100" />
-
-              <Truck className="h-5 w-5" />
-              <span>الموردين</span>
+              <Plus className="h-3.5 w-3.5" /> {t.inventory.addProduct}{' '}
             </button>
           )}
         </div>
-      </div>
-      <div className="">
-        <div className="my-1 block w-full md:hidden">
-          <select dir="rtl" className="w-full rounded-lg border-2 p-3" name="store" id="store">
-            {data?.Stores?.map(store => (
-              <option key={store.id} onChange={() => setStoreId(store.id)} value={store.id}>
+      </CardHeader>
+      <CardContent>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>{t.inventory.product}</TableHead>
+              <TableHead>{t.inventory.price}</TableHead>
+              <TableHead>{t.inventory.quantity}</TableHead>
+              <TableHead>{t.inventory.category}</TableHead>
+              <TableHead>{t.store?.logo || 'الصورة'}</TableHead>
+              <TableHead>{t.inventory?.actions || 'إجراءات'}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {filteredProducts.length === 0 ? (
+              <TableRow>
+                <td colSpan={9} className="py-12 text-center">
+                  <div className="text-muted-foreground flex flex-col items-center gap-2">
+                    <Package className="h-10 w-10 opacity-25" />
+                    <p className="text-sm font-medium">{t.inventory.noProducts}</p>
+                  </div>
+                </td>
+              </TableRow>
+            ) : (
+              filteredProducts.map(product => (
+                <ProductRow
+                  key={product.id}
+                  product={product}
+                  onEdit={startEditing}
+                  onDelete={deleteProduct}
+                />
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
+  );
+
+  // ── Main render ───────────────────────────────────────────────────────
+  return (
+    <section dir="rtl" className="min-h-screen">
+      <div className="space-y-4 p-4 pb-24">
+        {/* ── Page header ─────────────────────────────── */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-foreground text-lg font-bold">{'المخزن'}</h1>
+            <p className="text-muted-foreground text-xs">
+              {products.length} {t.inventory?.product || 'منتج'} — {currentStore?.name}
+            </p>
+          </div>
+          {isTraderOrSupplier ? (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/Dashboard/ProductManagment/add-product')}
+              className="flex items-center gap-1.5 rounded-xl bg-[#04BAF6] px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
+            >
+              <Plus className="h-4 w-4" /> {t.inventory.addProduct}{' '}
+            </motion.button>
+          ) : (
+            <motion.button
+              whileTap={{ scale: 0.95 }}
+              onClick={() => router.push('/Dashboard/products-dropwave')}
+              className="flex items-center gap-1.5 rounded-xl bg-[#04BAF6] px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
+            >
+              <LuPackagePlus className="h-4 w-4" />
+              {t.home?.dashboard || 'المخزن'}
+            </motion.button>
+          )}
+        </div>
+
+        {/* ── Summary stat cards ───────────────────────── */}
+        {products.length > 0 && (
+          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+            {[
+              {
+                label: t.inventory.products,
+                value: products.length,
+                icon: Package,
+                color: 'text-[#04BAF6]',
+                bg: 'bg-[#04BAF6]/10',
+              },
+              {
+                label: t.inventory.categories,
+                value: Object.keys(categoryCounts).length || 0,
+                icon: LayoutGrid,
+                color: 'text-purple-600',
+                bg: 'bg-purple-50',
+              },
+              {
+                label: t.stats?.totalRevenue || 'إجمالي الأسعار',
+                value: `${formatIQD(totalValue)} ${t.currency || 'د.ع'}`,
+                icon: BarChart3,
+                color: 'text-green-600',
+                bg: 'bg-green-50',
+                small: true,
+              },
+              {
+                label: t.inventory?.outOfStock || 'نفاد المخزون',
+                value: outOfStockProducts.length,
+                icon: Tag,
+                color: 'text-red-500',
+                bg: 'bg-red-50',
+              },
+            ].map(stat => {
+              const Icon = stat.icon;
+              return (
+                <div key={stat.label} className="bg-card border-border rounded-xl border p-2">
+                  <div
+                    className={`mb-2 inline-flex h-8 w-8 items-center justify-center rounded-lg`}
+                  >
+                    <Icon className={`h-4 w-4`} />
+                  </div>
+                  <div
+                    className={`text-foreground font-bold ${stat.small ? 'text-sm' : 'text-xl'}`}
+                  >
+                    {stat.value}
+                  </div>
+                  <div className="text-muted-foreground mt-0.5 text-[11px]">{stat.label}</div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* ── Low-stock alert banner ───────────────────── */}
+        <AnimatePresence>
+          {lowStockProducts.length > 0 && !dismissedStockAlert && (
+            <motion.div
+              initial={{ opacity: 0, y: -8 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8, height: 0 }}
+              className="flex items-center gap-3 rounded-xl border border-amber-200 bg-amber-50 p-3"
+            >
+              <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
+              <div className="min-w-0 flex-1">
+                <p className="text-foreground text-sm font-semibold">
+                  {t.inventory?.lowStock || 'منتجات قاربت على النفاد'}
+                </p>
+                <p className="text-muted-foreground truncate text-xs">
+                  {lowStockProducts.map(p => `${p.name} (${p.quantity})`).join('، ')}
+                </p>
+              </div>
+              <button
+                onClick={() => setDismissedStockAlert(true)}
+                className="flex-shrink-0 rounded-full p-1 transition-colors hover:bg-amber-100"
+              >
+                <X className="h-4 w-4 text-amber-500" />
+              </button>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Search bar ───────────────────────────────── */}
+        <div className="relative">
+          <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder={t.inventory.searchPlaceholder}
+            className="border-border bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 text-sm transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
+          />
+        </div>
+
+        {/* ── Category filter pills ─────────────────────── */}
+        {categories.length > 0 && (
+          <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+            <button
+              onClick={() => setCategoryFilter('')}
+              className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 ${
+                categoryFilter === ''
+                  ? 'bg-[#04BAF6] text-white shadow-sm shadow-[#04BAF6]/30'
+                  : 'bg-card border-border text-muted-foreground border hover:border-[#04BAF6]/50'
+              }`}
+            >
+              {t.all || 'الكل'} ({products.length})
+            </button>
+            {categories.map(cat => (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat)}
+                className={`flex-shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 ${
+                  categoryFilter === cat
+                    ? 'bg-[#04BAF6] text-white shadow-sm shadow-[#04BAF6]/30'
+                    : 'bg-card border-border text-muted-foreground border hover:border-[#04BAF6]/50'
+                }`}
+              >
+                {cat} ({categoryCounts[cat] ?? 0})
+              </button>
+            ))}
+          </div>
+        )}
+
+        {/* ── Store selector (mobile) ──────────────────── */}
+        {data?.Stores && data.Stores.length > 1 && (
+          <select
+            dir="rtl"
+            className="border-border bg-card w-full rounded-xl border p-3 text-sm md:hidden"
+            onChange={e => setStoreId(e.target.value)}
+          >
+            {data.Stores.map(store => (
+              <option key={store.id} value={store.id}>
                 {store.name}
               </option>
             ))}
           </select>
-        </div>
-        <div dir="rtl" className="mb-4 flex w-full flex-col gap-3 md:flex-row">
-          <div className="relative flex w-full md:w-[100%]">
-            <div className="relative">
-              <button
-                onClick={() => setOpen(!open)}
-                className="flex h-full items-center justify-between rounded-r-lg border border-gray-200 px-4 text-sm font-medium transition-all hover:bg-gray-100 focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-              >
-                {categoryFilter || 'كل الأصناف'}
-                <ChevronDown size={18} className="ml-1 text-gray-500" />
-              </button>
+        )}
 
-              {open && (
-                <div className="absolute right-0 z-10 mt-2 w-40 rounded-lg border bg-white">
-                  <ul className="max-h-60 overflow-auto p-1 text-sm">
-                    <li
-                      onClick={() => {
-                        setCategoryFilter('');
-                        setOpen(false);
-                      }}
-                      className="cursor-pointer rounded-md px-3 py-2 hover:bg-gray-100"
+        {/* ── Loading ──────────────────────────────────── */}
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <Loader />
+          </div>
+        ) : (
+          <>
+            {/* Desktop table */}
+            {DesktopTable}
+
+            {/* Mobile: Product cards grid */}
+            <div className="block md:hidden">
+              {filteredProducts.length === 0 ? (
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
+                  <Package className="mb-3 h-14 w-14 opacity-25" />
+                  <p className="text-sm font-semibold">
+                    {products.length === 0
+                      ? t.inventory.noProducts
+                      : t.noResults || 'لا يوجد نتائج'}
+                  </p>
+                  <p className="text-muted-foreground mt-1 text-xs">
+                    {products.length === 0
+                      ? t.inventory?.pressToStart || 'اضغط على إضافة منتج للبدء'
+                      : t.inventory?.changeCategoryOrSearch || 'جرب كلمة بحث أخرى أو غيّر الصنف'}
+                  </p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 gap-2.5">
+                  {filteredProducts.map((product, i) => (
+                    <motion.div
+                      key={product.id}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.25 }}
                     >
-                      كل الأصناف
-                    </li>
-                    {categories.map(cat => (
-                      <li
-                        key={cat}
-                        onClick={() => {
-                          setCategoryFilter(cat);
-                          setOpen(false);
+                      <ProductCard
+                        product={product}
+                        onEdit={p => {
+                          startEditing(p);
+                          setShowEditDialog(true);
                         }}
-                        className="cursor-pointer rounded-md px-3 py-2 hover:bg-gray-100"
-                      >
-                        {cat}
-                      </li>
-                    ))}
-                  </ul>
+                        onDelete={deleteProduct}
+                      />
+                    </motion.div>
+                  ))}
                 </div>
               )}
             </div>
-
-            <div className="relative w-full flex-1">
-              <span className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400">
-                <Search size={16} />
-              </span>
-              <input
-                type="text"
-                placeholder="ابحث عن منتج..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-                className="w-full rounded-l-lg border border-gray-200 p-3 font-medium transition-all focus:border-blue-400 focus:ring-2 focus:ring-blue-300"
-              />
-            </div>
-          </div>
-        </div>
+          </>
+        )}
       </div>
-
-      {loading ? (
-        <div className="flex justify-center">
-          <Loader />
-        </div>
-      ) : (
-        <>
-          <Card className="hidden md:block">
-            <CardHeader>
-              <CardTitle>قائمة المنتجات - {currentStore?.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>المنتج</TableHead>
-                    <TableHead>السعر</TableHead>
-                    <TableHead>الكمية</TableHead>
-                    <TableHead>الصنف</TableHead>
-                    <TableHead>الصورة</TableHead>
-                    <TableHead>إجراءات</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredProducts.length === 0 ? (
-                    <TableRow>
-                      <td colSpan={9} className="py-6 text-center text-gray-500">
-                        لا توجد منتجات (0)
-                      </td>
-                    </TableRow>
-                  ) : (
-                    filteredProducts.map(product => (
-                      <ProductRow
-                        key={product.id}
-                        product={product}
-                        onEdit={startEditing}
-                        onDelete={deleteProduct}
-                      />
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-
-          <div
-            dir="rtl"
-            className="mb-20 block max-h-[60vh] space-y-2 overflow-y-scroll rounded border md:hidden"
-          >
-            {filteredProducts.length === 0 ? (
-              <p className="text-center text-gray-500">لا توجد منتجات (0)</p>
-            ) : (
-              filteredProducts.map(product => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  onEdit={p => {
-                    startEditing(p);
-                    setShowEditDialog(true);
-                  }}
-                />
-              ))
-            )}
-          </div>
-
-          {showEditDialog && (
-            <div
-              dir="rtl"
-              className="bg-opacity-40 absolute inset-0 z-50 flex items-center justify-center"
-            >
-              <div className="mx-auto w-full max-w-md rounded bg-white p-6 shadow-lg">
-                <EditProductRow
-                  editData={editData}
-                  setEditData={setEditData}
-                  onEditImageChange={e => {
-                    const file = e.target.files?.[0];
-                    if (!file) return;
-                    setEditData({
-                      ...editData,
-                      imageFile: file,
-                      imagePreview: URL.createObjectURL(file),
-                    });
-                  }}
-                  saveEdit={saveEdit}
-                  cancelEditing={closeEditDialog}
-                />
-              </div>
-            </div>
-          )}
-        </>
-      )}
     </section>
   );
 }

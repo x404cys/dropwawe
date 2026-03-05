@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { PlusCircle } from 'lucide-react';
@@ -10,6 +11,8 @@ interface SubmitButtonProps {
 }
 
 export function SubmitButton({ loading, onClick }: SubmitButtonProps) {
+  const { t } = useLanguage();
+
   return (
     <Button
       onClick={onClick}
@@ -19,12 +22,12 @@ export function SubmitButton({ loading, onClick }: SubmitButtonProps) {
       {loading ? (
         <>
           <div className="h-5 w-5 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-          <span className="font-semibold">جاري الإضافة...</span>
+          <span className="font-semibold">{t.inventory?.adding || 'جاري الإضافة...'}</span>
         </>
       ) : (
         <>
           <PlusCircle className="h-5 w-5" />
-          <span className="font-semibold">إضافة المنتج</span>
+          <span className="font-semibold">{t.inventory?.addProduct || 'إضافة المنتج'}</span>
         </>
       )}
     </Button>

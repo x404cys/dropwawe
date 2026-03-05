@@ -1,7 +1,8 @@
 'use client';
 
-import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
+import CustomInput from '@/app/(page)/Dashboard/_components/forms/InputStyle';
 import { RiLinksFill } from 'react-icons/ri';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 interface PixelSectionProps {
   facebookPixel: string | null;
@@ -24,13 +25,14 @@ export default function PixelSection({
   onTiktokPixelChange,
   onSnapPixelChange,
 }: PixelSectionProps) {
+  const { t } = useLanguage();
   return (
     <div>
       <CustomInput
         type="text"
         placeholder=" "
         icon={<RiLinksFill className="h-4 w-4" />}
-        label="بيكسل الفيسبوك - FaceBoock Pixel"
+        label={t.store?.facebookPixel || 'Facebook Pixel'}
         value={facebookPixel || ''}
         onChange={e => onFacebookPixelChange(e.target.value)}
       />
@@ -38,7 +40,7 @@ export default function PixelSection({
         type="text"
         placeholder=" "
         icon={<RiLinksFill className="h-4 w-4" />}
-        label="بيكسل كوكل - Google Pixel"
+        label={t.store?.googlePixel || 'Google Analytics'}
         value={googlePixel || ''}
         onChange={e => onGooglePixelChange(e.target.value)}
       />
@@ -46,7 +48,7 @@ export default function PixelSection({
         type="text"
         placeholder="  "
         icon={<RiLinksFill className="h-4 w-4" />}
-        label="بيكسل تيك توك - TikTok Pixel"
+        label={t.store?.tiktokPixel || 'TikTok Pixel'}
         value={tiktokPixel || ''}
         onChange={e => onTiktokPixelChange(e.target.value)}
       />
@@ -54,7 +56,7 @@ export default function PixelSection({
         type="text"
         placeholder="  "
         icon={<RiLinksFill className="h-4 w-4" />}
-        label="بيكسل سناب - Snap Pixel"
+        label={t.store?.snapPixel || 'Snap Pixel'}
         value={snapPixel || ''}
         onChange={e => onSnapPixelChange(e.target.value)}
       />
@@ -63,12 +65,10 @@ export default function PixelSection({
         className="mt-5 mb-5 rounded-md border-s-4 border-blue-400 bg-blue-50 p-4 text-xs"
       >
         <div className="flex items-center gap-2 text-blue-400">
-          <strong className="text-xs font-medium">تابع زوار متجرك بدقة مع Pixel</strong>
+          <strong className="text-xs font-medium">{t.store?.pixelTrackingTitle || 'تابع زوار متجرك بدقة مع Pixel'}</strong>
         </div>
         <p className="mt-2 text-xs text-blue-400">
-          اعرف من يزور متجرك، المنتجات التي يهتم بها، وحسّن حملاتك الإعلانية على Facebook،
-          Instagram، Google وTikTok , SnapChat. كل خطوة يقوم بها زائرك تُسجل بدقة لتزيد مبيعاتك
-          وتحسن استهدافك
+          {t.store?.pixelTrackingDesc || 'اعرف من يزور متجرك، المنتجات التي يهتم بها، وحسّن حملاتك الإعلانية على Facebook، Instagram، Google وTikTok , SnapChat. كل خطوة يقوم بها زائرك تُسجل بدقة لتزيد مبيعاتك وتحسن استهدافك'}
         </p>
       </div>
     </div>

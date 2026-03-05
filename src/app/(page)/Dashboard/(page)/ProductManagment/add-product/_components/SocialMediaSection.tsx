@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { BsTelegram } from 'react-icons/bs';
@@ -22,16 +23,17 @@ export function SocialMediaSection({
   isExpanded,
   onToggle,
 }: SocialMediaSectionProps) {
+  const { t } = useLanguage();
   return (
     <CollapsibleSection
-      title="روابط التواصل الاجتماعي"
-      subtitle="اختياري - أضف روابط للمنتج"
+      title={t.store?.socialLinks || 'روابط التواصل'}
+      subtitle={t.inventory?.optionalSocialLinks || 'اختياري - أضف روابط للمنتج'}
       isExpanded={isExpanded}
       onToggle={onToggle}
     >
       <div className="space-y-4">
         <ModernInputGroup
-          label="رابط تيليجرام"
+          label={t.inventory?.telegramLink || 'رابط تيليجرام'}
           icon={<BsTelegram className="h-4 w-4 text-sky-500" />}
           value={newProduct.subInfo?.telegram || ''}
           onChange={value =>
@@ -45,8 +47,8 @@ export function SocialMediaSection({
         />
 
         <ModernInputGroup
-          label="رابط الفيديو"
-          icon={<ImageIcon className="h-4 w-4 text-gray-400" />}
+          label={t.inventory?.videoLink || 'رابط الفيديو'}
+          icon={<ImageIcon className="h-4 w-4 text-muted-foreground" />}
           value={newProduct.subInfo?.videoLink || ''}
           onChange={value =>
             setNewProduct({

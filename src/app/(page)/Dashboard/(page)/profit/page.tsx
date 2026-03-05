@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
@@ -148,7 +148,7 @@ export default function ProfitPage() {
     <section className="min-h-screen px-4 py-8 md:px-8">
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-card p-6">
             <div className="flex flex-col md:flex-row">
               <div className="">
                 <div className="flex items-center gap-2 text-neutral-600">
@@ -166,7 +166,7 @@ export default function ProfitPage() {
               <Nfc className="h-14 w-14 text-neutral-700" />
             </div>
           </div>
-          <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex items-center justify-between rounded-xl border border-neutral-200 bg-card p-6">
             <div className="">
               <div className="flex items-center gap-2 text-neutral-600">
                 <TrendingUp className="h-5 w-5" />
@@ -181,7 +181,7 @@ export default function ProfitPage() {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100">
               <ArrowDownToLine className="h-5 w-5 text-neutral-600" />
@@ -197,7 +197,7 @@ export default function ProfitPage() {
               handleWithdraw();
               router.push('/Dashboard/profit/payment-order');
             }}
-            className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-gray-300"
+            className="inline-flex items-center gap-2 rounded-lg bg-sky-600 px-4 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:bg-muted"
           >
             سحب الارباح
           </button>
@@ -206,7 +206,7 @@ export default function ProfitPage() {
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-neutral-700">اختر الأسبوع</label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
               onChange={e => setSelectedWeek(e.target.value || null)}
               value={selectedWeek || ''}
             >
@@ -222,7 +222,7 @@ export default function ProfitPage() {
           <div className="flex flex-col gap-2">
             <label className="text-sm font-medium text-neutral-700">اختر الشهر</label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
+              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10"
               onChange={e => setSelectedMonth(e.target.value || null)}
               value={selectedMonth || ''}
             >
@@ -237,7 +237,7 @@ export default function ProfitPage() {
         </div>
 
         {/* Weekly */}
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-neutral-200 bg-card p-6">
           <h2 className="mb-6 text-lg font-semibold">العائد الأسبوعي</h2>
           <ApexCharts
             type="area"
@@ -249,7 +249,7 @@ export default function ProfitPage() {
 
         {/* Monthly + Daily */}
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-neutral-200 bg-card p-6">
             <h2 className="mb-6 text-lg font-semibold">العائد الشهري</h2>
             <ApexCharts
               type="pie"
@@ -259,7 +259,7 @@ export default function ProfitPage() {
             />
           </div>
 
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-neutral-200 bg-card p-6">
             <h2 className="mb-6 flex items-center gap-2 text-lg font-semibold">
               <Clock className="h-5 w-5" /> العائد اليومي
             </h2>

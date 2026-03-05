@@ -1,18 +1,19 @@
 'use client';
+import { useLanguage } from '../../context/LanguageContext';
 import { PricingCard } from '@/components/pricing-card';
 import { Badge } from '@/components/ui/badge';
 import { Check, CornerLeftDown, Rocket } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { subscribePlan } from '../../_utils/subscribePlan';
-import { toast } from 'sonner';
+ import { toast } from 'sonner';
 import { useRouter } from 'next/navigation';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { LuMousePointerClick } from 'react-icons/lu';
-import { fbEvent } from '../../_utils/pixel';
-import Image from 'next/image';
+ import Image from 'next/image';
 import { IoMoonOutline } from 'react-icons/io5';
+import { fbEvent } from '../../utils/pixel';
 export default function Plans() {
+  const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { update } = useSession();
@@ -59,18 +60,18 @@ export default function Plans() {
   };
 
   return (
-    <div dir="rtl" className="bg-background min-h-screen">
-      <div className="container mx-auto px-4 py-2 md:py-5">
-        <div className="mb-16 text-center">
-          <Badge
-            variant="secondary"
-            className="bg-accent/20 text-accent-foreground border-accent/30 mb-6"
-          >
-            جديد
-          </Badge>
-          <h1 className="mb-4 text-4xl font-bold tracking-tight text-balance md:text-5xl lg:text-6xl">
+    <div dir="rtl" className="bg-muted min-h-screen">
+      <div className="container mx-auto px-4 py-6 max-w-7xl">
+        {/* Modern page header */}
+        <div className="mb-8 text-center space-y-2">
+          <div className="inline-flex items-center gap-2 bg-[#04BAF6]/10 border border-[#04BAF6]/20 rounded-full px-4 py-1.5 mb-2">
+            <Rocket className="h-3.5 w-3.5 text-[#04BAF6]" />
+            <span className="text-xs font-semibold text-[#04BAF6]">باقاتنا</span>
+          </div>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
             اختر الخطة المناسبة لك
           </h1>
+          <p className="text-sm text-muted-foreground">جميع الخطط تشمل إدارة كاملة للمتجر والطلبات</p>
         </div>
 
         <div className="mx-auto grid max-w-7xl gap-6 md:grid-cols-3 lg:gap-8">
@@ -91,7 +92,7 @@ export default function Plans() {
                 <div className="grid items-center gap-8 md:grid-cols-1">
                   <div className="flex gap-3 text-center md:mt-0 md:pt-0">
                     {[
-                      { label: 'يوم', value: timer.days },
+                      { label:t.plans.days, value: timer.days },
                       { label: 'ساعة', value: timer.hours },
                       { label: 'دقيقة', value: timer.minutes },
                       { label: 'ثانية', value: timer.seconds },
@@ -138,11 +139,11 @@ export default function Plans() {
                 <div className="text-right md:text-right">
                   <p className="text-muted-foreground">السعر الخاص</p>
 
-                  <p className="mt-2 text-xl text-gray-400 line-through">69,000 د.ع</p>
+                  <p className="mt-2 text-xl text-muted-foreground line-through">69,000 د.ع</p>
 
                   <h3 className="my-4 text-3xl font-extrabold">
                     39,000
-                    <span className="text-lg font-normal text-black"> د.ع</span>
+                    <span className="text-lg font-normal text-black"> {t.currency} </span>
                   </h3>
 
                   <p className="text-muted-foreground mb-6">العرض ينتهي خلال الوقت المتبقي</p>
@@ -298,3 +299,4 @@ export default function Plans() {
     </div>
   );
 }
+

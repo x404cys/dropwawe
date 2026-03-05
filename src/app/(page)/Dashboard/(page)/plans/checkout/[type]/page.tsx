@@ -1,15 +1,18 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import { useParams, useRouter } from 'next/navigation';
 import { plans } from '../../_data/plans';
 import { useState } from 'react';
 import { CheckCircle, ChevronDown, ChevronUp, Wallet } from 'lucide-react';
 import { MdPayment } from 'react-icons/md';
-import { fbEvent } from '@/app/(page)/Dashboard/_utils/pixel';
-import { subscribePlan } from '@/app/(page)/Dashboard/_utils/subscribePlan';
+ 
 import { toast } from 'sonner';
 import Image from 'next/image';
+import { fbEvent } from '@/app/(page)/Dashboard/utils/pixel';
+import { subscribePlan } from '@/app/(page)/Dashboard/services/subscribePlan';
 export default function PlanCheckout() {
+  const { t } = useLanguage();
   const params = useParams();
   const router = useRouter();
   const type = params?.type as string;
@@ -61,7 +64,7 @@ export default function PlanCheckout() {
   return (
     <div dir="rtl" className="min-h-screen bg-neutral-50 px-4 py-14">
       <div className="mx-auto grid max-w-5xl gap-8 md:grid-cols-[1.4fr_.6fr]">
-        <div className="relative rounded-xl bg-white p-10 ring-1 ring-neutral-200">
+        <div className="relative rounded-xl bg-card p-10 ring-1 ring-neutral-200">
           <p className="text-xs text-neutral-400">تفاصيل الاشتراك</p>
           <div className="absolute top-0 -left-3 z-50 flex text-3xl">
             <Image
@@ -97,7 +100,7 @@ export default function PlanCheckout() {
           </div>
         </div>
 
-        <div className="h-fit rounded-xl bg-white p-6 ring-1 ring-neutral-200">
+        <div className="h-fit rounded-xl bg-card p-6 ring-1 ring-neutral-200">
           <div className="flex items-center gap-2">
             <h2 className="text-lg font-semibold">الدفع</h2>
             <Wallet size={20} className="mt-1" />
@@ -129,7 +132,7 @@ export default function PlanCheckout() {
 
       {openDialog && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-xl bg-white p-7 shadow-xl">
+          <div className="w-full max-w-md rounded-xl bg-card p-7 shadow-xl">
             <h3 className="text-lg font-semibold">تأكيد الاشتراك</h3>
 
             <p className="mt-3 text-sm leading-relaxed text-neutral-500">
@@ -144,9 +147,7 @@ export default function PlanCheckout() {
                 disabled={loading}
                 onClick={() => setOpenDialog(false)}
                 className="w-full rounded-lg border py-2.5 text-sm hover:bg-neutral-50"
-              >
-                إلغاء
-              </button>
+              > {t.cancel} </button>
 
               <button
                 disabled={loading}

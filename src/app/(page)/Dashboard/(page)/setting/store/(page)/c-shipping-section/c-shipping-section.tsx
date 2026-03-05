@@ -7,6 +7,7 @@ import { MdPassword } from 'react-icons/md';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 interface ShippingSectionProps {
   phone: string;
@@ -32,6 +33,7 @@ export default function CShippingSection({
   onPhoneChange,
   onShippingPriceChange,
 }: ShippingSectionProps) {
+  const { t } = useLanguage();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -62,14 +64,14 @@ export default function CShippingSection({
       );
 
       if (res.data.status) {
-        toast.success(res.data.msg || 'تم تسجيل الدخول بنجاح');
+        toast.success(res.data.msg || t.store?.alwaseetLoginSuccess || 'تم تسجيل الدخول بنجاح');
         return;
       }
 
-      toast.error(res.data.msg || 'حدث خطأ');
+      toast.error(res.data.msg || t.error || 'خطأ');
     } catch (error) {
       const err = error as AxiosError<MerchantLoginResponse>;
-      toast.error(err.response?.data?.msg || 'خطأ بالشبكة');
+      toast.error(err.response?.data?.msg || t.store?.networkError || 'خطأ بالشبكة');
     } finally {
       setLoading(false);
     }
@@ -77,30 +79,30 @@ export default function CShippingSection({
 
   return (
     <div dir="rtl" className="space-y-6 rounded-lg border p-4">
-      <h3 className="text-sm font-semibold text-gray-800">ربط حساب شركة الوسيط</h3>
+      <h3 className="text-sm font-semibold text-foreground">{t.store?.linkAlwaseetAccount || 'ربط حساب شركة الوسيط'}</h3>
 
       <div className="space-y-2">
-        <label className="text-sm text-gray-700">اسم المستخدم</label>
+        <label className="text-sm text-foreground">{t.store?.alwaseetUsernameLabel || 'اسم المستخدم'}</label>
         <div className="relative">
           <Input
             value={username}
             onChange={e => setUsername(e.target.value)}
-            placeholder="اسم المستخدم في تطبيق الوسيط"
+            placeholder={t.store?.alwaseetUsernamePlaceholder || "اسم المستخدم في تطبيق الوسيط"}
           />
-          <User className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <User className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         </div>
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm text-gray-700">كلمة السر</label>
+        <label className="text-sm text-foreground">{t.store?.alwaseetPasswordLabel || 'كلمة السر'}</label>
         <div className="relative">
           <Input
             type="password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            placeholder="كلمة السر"
+            placeholder={t.store?.alwaseetPasswordPlaceholder || "كلمة السر"}
           />
-          <MdPassword className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
+          <MdPassword className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
         </div>
       </div>
 
@@ -109,12 +111,12 @@ export default function CShippingSection({
         disabled={loading}
         className="w-full bg-black text-white hover:bg-gray-900"
       >
-        {loading ? 'جاري تسجيل الدخول...' : 'تسجيل الدخول'}
+        {loading ? (t.store?.alwaseetLoggingIn || 'جاري تسجيل الدخول...') : (t.store?.alwaseetLoginBtn || 'تسجيل الدخول')}
       </Button>
 
       <span className="flex items-center pt-2">
         <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gray-300" />
-        <span className="px-3 text-xs text-gray-500">أو</span>
+        <span className="px-3 text-xs text-muted-foreground">{(t as any).or || 'أو'}</span>
         <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gray-300" />
       </span>
     </div>

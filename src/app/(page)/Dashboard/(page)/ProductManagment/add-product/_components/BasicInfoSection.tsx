@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { Package, DollarSign, Percent } from 'lucide-react';
@@ -13,24 +14,25 @@ interface BasicInfoSectionProps {
 }
 
 export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicInfoSectionProps) {
+  const { t } = useLanguage();
   return (
     <div className=" ">
       <div className="p-6">
         <div className="space-y-5">
           <ModernInputGroup
-            label="اسم المنتج"
-            icon={<Package className="h-4 w-4 text-gray-400" />}
+            label={t.inventory?.productName || 'اسم المنتج'}
+            icon={<Package className="h-4 w-4 text-muted-foreground" />}
             value={newProduct.name}
             onChange={(value: any) => setNewProduct({ ...newProduct, name: value })}
-            placeholder="أدخل اسم المنتج (مثال: تيشرت قطن)"
+            placeholder={t.inventory?.productNamePlaceholder || 'أدخل اسم المنتج (مثال: تيشرت قطن)'}
             disabled={loading}
             required
           />
 
           <div className="grid gap-5 sm:grid-cols-2">
             <ModernInputGroup
-              label="السعر"
-              icon={<DollarSign className="h-4 w-4 text-gray-400" />}
+              label={t.inventory.price}
+              icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
               type="number"
               value={newProduct.price ?? ''}
               onChange={(value: string) => {
@@ -49,8 +51,8 @@ export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicIn
               required
             />
             <ModernInputGroup
-              label="الخصم (%)"
-              icon={<Percent className="h-4 w-4 text-gray-400" />}
+              label={t.inventory?.discount || 'الخصم (%)'}
+              icon={<Percent className="h-4 w-4 text-muted-foreground" />}
               type="number"
               value={newProduct.discount === 0 ? '' : newProduct.discount}
               onChange={(value: string) => {
@@ -67,8 +69,8 @@ export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicIn
           {newProduct.discount! > 0 && (
             <div className="border border-sky-500 bg-sky-50 p-3">
               <span className="text-sm font-medium text-black">
-                السعر بعد الخصم:{' '}
-                {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)} د.ع
+                {t.inventory?.priceAfterDiscount || 'السعر بعد الخصم:'}{' '}
+                {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)} {t.currency || 'د.ع'}
               </span>
             </div>
           )}

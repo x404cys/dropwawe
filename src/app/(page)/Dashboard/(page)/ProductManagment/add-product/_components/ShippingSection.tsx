@@ -1,6 +1,7 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { TbTruckReturn } from 'react-icons/tb';
 
@@ -19,15 +20,6 @@ import { Check, ChevronDown } from 'lucide-react';
 import { ModernInputGroup } from './ModernInputGroup';
 import type { Product } from '@/types/Products';
 
-const SHIPPING_OPTIONS = [
-  'التوصيل خلال 24 ساعة',
-  'التوصيل خلال 2-3 أيام',
-  'التوصيل خلال 3-5 أيام',
-  'مخصص',
-];
-
-const RETURN_OPTIONS = ['لا يوجد استرجاع', 'استرجاع خلال 7 أيام', 'استرجاع خلال 14 يوم', 'مخصص'];
-
 export function ShippingSection({
   newProduct,
   setNewProduct,
@@ -37,6 +29,22 @@ export function ShippingSection({
   setNewProduct: (product: any) => void;
   loading: boolean;
 }) {
+  const { t } = useLanguage();
+  
+  const SHIPPING_OPTIONS = useMemo(() => [
+    t.inventory?.delivery24h || 'التوصيل خلال 24 ساعة',
+    t.inventory?.delivery2_3Days || 'التوصيل خلال 2-3 أيام',
+    t.inventory?.delivery3_5Days || 'التوصيل خلال 3-5 أيام',
+    t.inventory?.custom || 'مخصص',
+  ], [t]);
+
+  const RETURN_OPTIONS = useMemo(() => [
+    t.inventory?.noReturn || 'لا يوجد استرجاع',
+    t.inventory?.return7Days || 'استرجاع خلال 7 أيام',
+    t.inventory?.return14Days || 'استرجاع خلال 14 يوم',
+    t.inventory?.custom || 'مخصص'
+  ], [t]);
+
   const [openShipping, setOpenShipping] = useState(false);
   const [openReturn, setOpenReturn] = useState(false);
 
@@ -57,30 +65,30 @@ export function ShippingSection({
   );
 
   useEffect(() => {
-    if (selectedShipping === 'مخصص') {
+    if (selectedShipping === (t.inventory?.custom || 'مخصص')) {
       setNewProduct({ ...newProduct, shippingType: customShipping });
     }
-  }, [customShipping]);
+  }, [customShipping, selectedShipping, t]);
 
   useEffect(() => {
-    if (selectedReturn === 'مخصص') {
+    if (selectedReturn === (t.inventory?.custom || 'مخصص')) {
       setNewProduct({ ...newProduct, hasReturnPolicy: customReturn });
     }
-  }, [customReturn]);
+  }, [customReturn, selectedReturn, t]);
 
   return (
     <div className="space-y-6">
       {/* SHIPPING */}
       <div className="space-y-2">
         <label className="flex items-center gap-2 text-sm font-medium">
-          <LiaShippingFastSolid className="h-4 w-4 text-gray-400" />
-          مدة التوصيل
+          <LiaShippingFastSolid className="h-4 w-4 text-muted-foreground" />
+          {t.inventory?.deliveryTime || 'مدة التوصيل'}
         </label>
 
         <Popover open={openShipping} onOpenChange={setOpenShipping}>
           <PopoverTrigger asChild>
             <Button variant="outline" role="combobox" className="w-full justify-between rounded-xl">
-              {selectedShipping || 'اختر مدة التوصيل'}
+              {selectedShipping || t.inventory?.selectDeliveryTime || 'اختر مدة التوصيل'}
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
@@ -88,15 +96,14 @@ export function ShippingSection({
           <PopoverContent className="w-full p-0">
             <Command>
               <CommandList>
-                <CommandEmpty>لا يوجد خيار</CommandEmpty>
-
+ 
                 {SHIPPING_OPTIONS.map(option => (
                   <CommandItem
                     key={option}
                     value={option}
                     onSelect={() => {
                       setSelectedShipping(option);
-                      if (option !== 'مخصص') {
+                      if (option !== (t.inventory?.custom || 'مخصص')) {
                         setNewProduct({ ...newProduct, shippingType: option });
                         setCustomShipping('');
                       } else {
@@ -115,13 +122,13 @@ export function ShippingSection({
           </PopoverContent>
         </Popover>
 
-        {selectedShipping === 'مخصص' && (
+        {selectedShipping === (t.inventory?.custom || 'مخصص') && (
           <ModernInputGroup
             label=""
             type="text"
             value={customShipping}
             onChange={value => setCustomShipping(value)}
-            placeholder="اكتب مدة التوصيل"
+            placeholder={t.inventory?.enterDeliveryTime || 'اكتب مدة التوصيل'}
             disabled={loading}
           />
         )}
@@ -129,23 +136,23 @@ export function ShippingSection({
 
       <div className="space-y-2">
         <label className="flex items-center gap-2 text-sm font-medium">
-          <TbTruckReturn className="h-4 w-4 text-gray-400" />
-          سياسة الاسترجاع
+          <TbTruckReturn className="h-4 w-4 text-muted-foreground" />
+          {t.inventory?.returnPolicy || 'سياسة الاسترجاع'}
         </label>
 
         <Popover open={openReturn} onOpenChange={setOpenReturn}>
           <PopoverTrigger asChild>
             <Button variant="outline" role="combobox" className="w-full justify-between rounded-xl">
-              {selectedReturn || 'اختر سياسة الاسترجاع'}
+              {selectedReturn || t.inventory?.selectReturnPolicy || 'اختر سياسة الاسترجاع'}
               <ChevronDown className="h-4 w-4 opacity-50" />
             </Button>
           </PopoverTrigger>
 
           <PopoverContent className="w-full p-0">
             <Command>
-              <CommandInput placeholder="ابحث..." />
+              <CommandInput placeholder={t.search || 'ابحث...'} />
               <CommandList>
-                <CommandEmpty>لا يوجد خيار</CommandEmpty>
+                <CommandEmpty>{'لا يوجد خيار'}</CommandEmpty>
 
                 {RETURN_OPTIONS.map(option => (
                   <CommandItem
@@ -153,7 +160,7 @@ export function ShippingSection({
                     value={option}
                     onSelect={() => {
                       setSelectedReturn(option);
-                      if (option !== 'مخصص') {
+                      if (option !== (t.inventory?.custom || 'مخصص')) {
                         setNewProduct({ ...newProduct, hasReturnPolicy: option });
                         setCustomReturn('');
                       } else {
@@ -172,13 +179,13 @@ export function ShippingSection({
           </PopoverContent>
         </Popover>
 
-        {selectedReturn === 'مخصص' && (
+        {selectedReturn === (t.inventory?.custom || 'مخصص') && (
           <ModernInputGroup
             label=""
             type="text"
             value={customReturn}
             onChange={value => setCustomReturn(value)}
-            placeholder="اكتب سياسة الاسترجاع"
+            placeholder={t.inventory?.enterReturnPolicy || 'اكتب سياسة الاسترجاع'}
             disabled={loading}
           />
         )}

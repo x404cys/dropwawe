@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 import { useState, useEffect } from 'react';
 import {
   Heart,
@@ -28,6 +29,7 @@ import axios from 'axios';
 import { useSession } from 'next-auth/react';
 
 export default function ProductPage() {
+  const { t } = useLanguage();
   const params = useParams();
 
   const id = params?.productId as string;
@@ -117,7 +119,7 @@ export default function ProductPage() {
       toast.success('تم اضافة المنتج الى موقعك الالكتروني ');
       setOpenDailog(false);
     } catch (err) {
-      toast.error('حدث خطأ');
+      toast.error(t.error);
     }
   };
 
@@ -282,7 +284,7 @@ export default function ProductPage() {
             </div>
             {session.data?.user.role !== 'SUPPLIER' && openDaiolg && product.pricingDetails && (
               <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5 backdrop-blur-md">
-                <div className="animate-fadeIn w-full max-w-md rounded-xl bg-white p-6 shadow-lg">
+                <div className="animate-fadeIn w-full max-w-md rounded-xl bg-card p-6 shadow-lg">
                   <div className="flex items-center gap-3">
                     <svg
                       className="h-7 w-7 text-blue-500"
@@ -292,10 +294,10 @@ export default function ProductPage() {
                       <path d="M0 0h24v24H0V0z" fill="none" />
                       <path d="M11 7h2v2h-2zm0 4h2v6h-2zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                     </svg>
-                    <h2 className="text-lg font-semibold text-gray-800">تحديد السعر</h2>
+                    <h2 className="text-lg font-semibold text-foreground">تحديد السعر</h2>
                   </div>
 
-                  <p className="mt-3 text-sm text-gray-600">
+                  <p className="mt-3 text-sm text-muted-foreground">
                     أدخل السعر بين الحد الأدنى والحد الأقصى للمنتج.
                   </p>
 
@@ -309,7 +311,7 @@ export default function ProductPage() {
                     placeholder={`الحد الأدنى: ${product.pricingDetails.minPrice} ، الحد الأقصى: ${
                       product.pricingDetails.maxPrice
                     }`}
-                    className="mt-4 w-full rounded-md border px-3 py-2 text-gray-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                    className="mt-4 w-full rounded-md border px-3 py-2 text-foreground focus:ring-2 focus:ring-blue-500 focus:outline-none"
                   />
 
                   {error && <p className="mt-2 text-sm text-red-500">{error}</p>}
@@ -321,10 +323,8 @@ export default function ProductPage() {
                         setError(null);
                         setNewPrice('');
                       }}
-                      className="rounded-md bg-gray-100 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-200"
-                    >
-                      إلغاء
-                    </button>
+                      className="rounded-md bg-muted px-4 py-2 text-sm font-medium text-foreground hover:bg-muted"
+                    > {t.cancel} </button>
 
                     <button
                        onClick={() => {
@@ -351,10 +351,8 @@ export default function ProductPage() {
                         setOpenDailog(false);
                         setError(null);
                       }}
-                      className="rounded-md bg-gray-950 px-4 py-2 text-sm font-medium text-white hover:bg-gray-900"
-                    >
-                      تأكيد
-                    </button>
+                      className="rounded-md bg-background px-4 py-2 text-sm font-medium text-white hover:bg-gray-900"
+                    > {t.confirm} </button>
                   </div>
                 </div>
               </div>

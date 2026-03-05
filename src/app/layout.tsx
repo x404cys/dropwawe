@@ -67,10 +67,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ar">
+    <html lang="ar" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${ibmPlexArabic.className} antialiased`}
       >
+        {/* Apply saved theme before React hydrates to prevent flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('app-theme');if(t==='dark')document.documentElement.classList.add('dark');}catch(e){}})();`,
+          }}
+        />
         <MetaPixel />
 
         <div className="mx-auto overflow-hidden font-bold md:px-0">

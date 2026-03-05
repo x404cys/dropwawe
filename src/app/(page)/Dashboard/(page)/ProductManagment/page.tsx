@@ -1,17 +1,14 @@
 'use client';
+import { useLanguage } from '../../context/LanguageContext';
 
-import { useEffect, useState, ChangeEvent } from 'react';
+import { useEffect, useState } from 'react';
 import Toast from '@/components/Toast/Toast';
 import { Product } from '@/types/Products';
 import ProductTable from './_components/ProductTable';
-import StoreManagementPage from '../setting/store/page';
-import HeaderSectionsMobile from '@/components/HeaderSections/HeaderSectionMobile';
-import HeaderSections from '../../_components/HeaderSection';
-import { useUser } from '@/app/lib/context/UserIdContect';
-import UserActions from '../../_components/UserActions';
-import FloatingNavBarForProductManage from './_components/FloatingNavBarForProductManage';
+ import { useUser } from '@/app/lib/context/UserIdContect';
 
 export default function ProductManagementPage() {
+  const { t } = useLanguage();
   const [products, setProducts] = useState<Product[]>([]);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const [loading, setLoading] = useState(false);
@@ -37,7 +34,7 @@ export default function ProductManagementPage() {
       const data = await res.json();
       setProducts(data);
     } catch {
-      setToast({ type: 'error', message: 'فشل في جلب المنتجات' });
+      setToast({ type: 'error', message: t.inventory?.fetchFailed || 'فشل في جلب المنتجات' });
     } finally {
       setLoading(false);
     }
@@ -48,18 +45,18 @@ export default function ProductManagementPage() {
   }, []);
 
   const deleteProduct = async (id: string) => {
-    if (!confirm('هل أنت متأكد من حذف هذا المنتج؟')) return;
+    if (!confirm(t.inventory.confirmDelete)) return;
     try {
       const res = await fetch(`/api/products/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
-      setToast({ type: 'success', message: 'تم حذف المنتج بنجاح' });
+      setToast({ type: 'success', message: t.inventory?.deleteSuccess || 'تم حذف المنتج بنجاح' });
       setProducts(products.filter(p => p.id !== id));
       if (editingId === id) {
         setEditingId(null);
         setEditData({});
       }
     } catch {
-      setToast({ type: 'error', message: 'فشل في حذف المنتج' });
+      setToast({ type: 'error', message: t.inventory?.deleteFailed || 'فشل في حذف المنتج' });
     }
   };
 
@@ -76,7 +73,7 @@ export default function ProductManagementPage() {
   const saveEdit = async () => {
     if (!editingId) return;
     if (!editData.name || !editData.price || !editData.quantity) {
-      setToast({ type: 'error', message: 'يرجى ملء جميع الحقول' });
+      setToast({ type: 'error', message: t.inventory?.fillAllFields || 'يرجى ملء جميع الحقول' });
       return;
     }
     try {
@@ -95,16 +92,16 @@ export default function ProductManagementPage() {
 
       const updated = await res.json();
       setProducts(products.map(p => (p.id === editingId ? updated : p)));
-      setToast({ type: 'success', message: 'تم تحديث المنتج بنجاح' });
+      setToast({ type: 'success', message: t.inventory?.updateSuccess || 'تم تحديث المنتج بنجاح' });
       cancelEditing();
     } catch {
-      setToast({ type: 'error', message: 'فشل في تحديث المنتج' });
+      setToast({ type: 'error', message: t.inventory?.updateFailed || 'فشل في تحديث المنتج' });
     }
   };
 
   const addProduct = async () => {
     if (!newProduct.name || !newProduct.price || !newProduct.quantity || !newProduct.imageFile) {
-      setToast({ type: 'error', message: 'يرجى ملء جميع الحقول وتحميل صورة' });
+      setToast({ type: 'error', message: t.inventory?.fillAllAndImage || 'يرجى ملء جميع الحقول وتحميل صورة' });
       return;
     }
     try {
@@ -123,7 +120,7 @@ export default function ProductManagementPage() {
 
       const added = await res.json();
       setProducts([added, ...products]);
-      setToast({ type: 'success', message: 'تم إضافة المنتج بنجاح' });
+      setToast({ type: 'success', message: t.inventory?.addSuccess || 'تم إضافة المنتج بنجاح' });
       setNewProduct({
         name: '',
         price: 0,
@@ -132,7 +129,7 @@ export default function ProductManagementPage() {
         imagePreview: undefined,
       });
     } catch {
-      setToast({ type: 'error', message: 'فشل في إضافة المنتج' });
+      setToast({ type: 'error', message: t.inventory?.addFailed || 'فشل في إضافة المنتج' });
     }
   };
 

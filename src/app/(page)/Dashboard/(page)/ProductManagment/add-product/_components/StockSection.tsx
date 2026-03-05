@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { Package, Store, Infinity } from 'lucide-react';
@@ -31,6 +32,7 @@ export function StockSection({
   setStoreId,
   data,
 }: StockSectionProps) {
+  const { t } = useLanguage();
   const session = useSession();
 
   return (
@@ -43,8 +45,8 @@ export function StockSection({
       />{' '}
       <div className="grid grid-cols-[1fr_auto] items-end gap-3">
         <ModernInputGroup
-          label="الكمية المتوفرة"
-          icon={<Package className="h-4 w-4 text-gray-400" />}
+          label={t.inventory?.quantity || 'الكمية المتوفرة'}
+          icon={<Package className="h-4 w-4 text-muted-foreground" />}
           type="number"
           value={newProduct.unlimited ? '' : newProduct.quantity}
           onChange={value => {
@@ -55,7 +57,7 @@ export function StockSection({
               setNewProduct({ ...newProduct, quantity: 0 });
             }
           }}
-          placeholder="أدخل الكمية"
+          placeholder={t.inventory?.enterQuantity || 'أدخل الكمية'}
           disabled={loading || newProduct.unlimited}
           required
         />
@@ -72,23 +74,21 @@ export function StockSection({
             })
           }
         >
-          <Infinity className="h-4 w-4 text-xs" />
-          غير محدود
-        </Button>
+          <Infinity className="h-4 w-4 text-xs" /> {t.inventory.unlimited} </Button>
       </div>
       {session.data?.user.role === 'DROPSHIPPER' && (
         <div className="space-y-2">
-          <label className="flex items-center gap-2 text-sm text-gray-600">
+          <label className="flex items-center gap-2 text-sm text-muted-foreground">
             <Store className="h-4 w-4" />
-            اختر المتجر
+            {t.store?.storeDescPlaceholder || 'اختر المتجر'}
           </label>
 
           <select
-            className="w-full rounded-xl border border-gray-300 bg-white p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none"
+            className="w-full rounded-xl border border-gray-300 bg-card p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none"
             value={storeId || ''}
             onChange={e => setStoreId(e.target.value)}
           >
-            <option value="">الافتراضي</option>
+            <option value="">{t.store?.storeDescPlaceholder || 'الافتراضي'}</option>
 
             {data.Stores?.map((store: any) => (
               <option key={store.id} value={store.id}>

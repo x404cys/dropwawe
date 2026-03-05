@@ -1,4 +1,4 @@
-interface InfoAlertProps {
+﻿interface InfoAlertProps {
   message: string
   submessage?: string
   variant?: "info" | "warning"
@@ -12,7 +12,7 @@ export function InfoAlert({ message, submessage, variant = "info" }: InfoAlertPr
       className={`flex items-center rounded-lg border p-4 text-sm ${
         isWarning
           ? "border-green-600 border-s-4 bg-green-50 text-green-600"
-          : "border-gray-300 bg-gray-50 text-gray-800 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300"
+          : "border-gray-300 bg-muted text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
       }`}
       role="alert"
     >
@@ -32,7 +32,7 @@ export function InfoAlert({ message, submessage, variant = "info" }: InfoAlertPr
           {submessage && (
             <>
               <br />
-              <span className="text-xs text-gray-400">{submessage}</span>
+              <span className="text-xs text-muted-foreground">{submessage}</span>
             </>
           )}
         </span>
@@ -40,3 +40,4 @@ export function InfoAlert({ message, submessage, variant = "info" }: InfoAlertPr
     </div>
   )
 }
+

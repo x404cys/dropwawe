@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import { useRouter } from 'next/navigation';
 import { LuPackagePlus } from 'react-icons/lu';
@@ -7,22 +8,23 @@ import { LiaShippingFastSolid } from 'react-icons/lia';
 import React from 'react';
 
 export default function ProductManageOptions() {
+  const { t } = useLanguage();
   const router = useRouter();
 
   const items = [
     {
       icon: <LuPackagePlus size={18} />,
-      label: 'إضافة منتج',
+      label:t.inventory.addProduct,
       path: '/Dashboard/ProductManagment/add-product',
     },
     {
       icon: <AiOutlineProduct size={18} />,
-      label: 'المنتجات',
+      label:t.inventory.products,
       path: '/Dashboard/ProductManagment',
     },
     {
       icon: <LiaShippingFastSolid size={18} />,
-      label: 'الموردين',
+      label: t.inventory.supplierPrices || 'الموردين',
       path: '/Dashboard/ProductManagment',
     },
   ];
@@ -33,9 +35,9 @@ export default function ProductManageOptions() {
         <button
           key={idx}
           onClick={() => router.push(item.path)}
-          className="flex flex-col items-center gap-1 text-gray-700 transition hover:text-black"
+          className="flex flex-col items-center gap-1 text-foreground transition hover:text-black"
         >
-          <span className="flex h-10 w-10 items-center justify-center rounded-full border bg-gray-50 shadow-sm hover:bg-gray-100">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full border bg-muted shadow-sm hover:bg-muted">
             {item.icon}
           </span>
           <span className="text-[12px] font-medium">{item.label}</span>

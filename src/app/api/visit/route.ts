@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const { visitorId, path } = body;
+  const { visitorId, path, referrer } = body;
 
   if (!visitorId || !path) {
     return NextResponse.json({ error: 'Missing visitorId or path' }, { status: 400 });
@@ -18,6 +18,7 @@ export async function POST(req: Request) {
       ip,
       userAgent,
       storeName: path,
+      referrer: referrer as string,
     },
   });
 

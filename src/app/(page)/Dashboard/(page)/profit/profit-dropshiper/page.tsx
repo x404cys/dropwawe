@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
@@ -29,6 +30,7 @@ interface ProfitData {
 }
 
 export default function ProfitPage() {
+  const { t } = useLanguage();
   const { data: session } = useSession();
   const userId = session?.user.id;
 
@@ -150,7 +152,7 @@ export default function ProfitPage() {
     <section className="min-h-screen px-4 py-8 md:px-8">
       <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <TrendingUp className="h-5 w-5" />
               <span className="text-sm font-medium">الربح الكلي </span>
@@ -160,7 +162,7 @@ export default function ProfitPage() {
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <Wallet className="h-5 w-5" />
               <span className="text-sm font-medium">المتبقي</span>
@@ -168,7 +170,7 @@ export default function ProfitPage() {
             <p className="text-3xl font-bold">{formatCurrency(data.remaining)}</p>
           </div>
 
-          <div className="flex w-full flex-col gap-2 rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex w-full flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <ArrowDownToLine className="h-5 w-5" />
               <span className="text-sm font-medium">المسحوب</span>
@@ -176,7 +178,7 @@ export default function ProfitPage() {
             <p className="text-3xl font-bold">{formatCurrency(data.withdrawn)}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-white p-6 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100">
               <ArrowDownToLine className="h-5 w-5 text-neutral-600" />
@@ -202,9 +204,7 @@ export default function ProfitPage() {
               </DialogHeader>
               {error && <p className="mt-2 text-red-500">{error}</p>}
               <DialogFooter className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setError(null)}>
-                  إلغاء
-                </Button>
+                <Button variant="outline" onClick={() => setError(null)}> {t.cancel} </Button>
                 <Button onClick={handleWithdraw} disabled={loading}>
                   {loading ? 'Processing...' : 'تأكيد السحب '}
                 </Button>
@@ -218,7 +218,7 @@ export default function ProfitPage() {
               اختر الأسبوع | Select Week
             </label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
+              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
               onChange={e => setSelectedWeek(e.target.value || null)}
               value={selectedWeek || ''}
             >
@@ -236,7 +236,7 @@ export default function ProfitPage() {
               اختر الشهر | Select Month
             </label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-white px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
+              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
               onChange={e => setSelectedMonth(e.target.value || null)}
               value={selectedMonth || ''}
             >
@@ -250,7 +250,7 @@ export default function ProfitPage() {
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-200 bg-white p-6">
+        <div className="rounded-xl border border-neutral-200 bg-card p-6">
           <h2 className="mb-6 text-lg font-semibold text-neutral-900">
             العائد الأسبوعي | Weekly Profit
           </h2>
@@ -258,14 +258,14 @@ export default function ProfitPage() {
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-neutral-200 bg-card p-6">
             <h2 className="mb-6 text-lg font-semibold text-neutral-900">
               العائد الشهري | Monthly Profit
             </h2>
             <ApexCharts type="pie" series={monthlySeries} options={monthlyOptions} height={320} />
           </div>
 
-          <div className="rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="rounded-xl border border-neutral-200 bg-card p-6">
             <h2 className="mb-6 text-lg font-semibold text-neutral-900">
               العائد اليومي | Daily Profit
             </h2>

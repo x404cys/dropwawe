@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import type React from 'react';
 import { useState, type ChangeEvent, useEffect } from 'react';
@@ -381,7 +381,7 @@ export default function ProductAddPage() {
               data={data}
             />
 
-            <div className='mx-4'>
+            <div className="mx-4">
               <CollapsibleSection
                 title="التفاصيل المتقدمة (اختياري)"
                 subtitle="مثل المقاسات، الألوان، الشحن،  "

@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import { Button } from '@/components/ui/button';
 import { Product } from '@/types/Products';
@@ -11,6 +12,7 @@ interface ProductsCardDropWaveProps {
 }
 
 export default function ProductsCardDropWave({ product }: ProductsCardDropWaveProps) {
+  const { t } = useLanguage();
   const router = useRouter();
 
   const hasSale = !!product.discount && product.discount > 0;
@@ -43,7 +45,7 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
 
         {hasSale && (
           <div className="bg-foreground/90 text-background absolute top-3 left-3 rounded-full px-3 py-1 text-xs font-medium backdrop-blur-sm">
-            تخفيض
+            {t.inventory?.discount || 'تخفيض'}
           </div>
         )}
       </div>
@@ -55,12 +57,12 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
 
         <div className="mb-3 flex flex-wrap items-center gap-2">
           <span className="text-foreground text-lg font-semibold">
-            {formatIQD(displayPrice)} د.ع
+            {formatIQD(displayPrice)} {t.currency || 'د.ع'}
           </span>
 
           {hasSale && (
             <span className="text-muted-foreground text-xs font-medium line-through">
-              {formatIQD(product.price)} د.ع
+              {formatIQD(product.price)} {t.currency || 'د.ع'}
             </span>
           )}
 
@@ -71,7 +73,7 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
                 : 'bg-muted text-muted-foreground'
             }`}
           >
-            {inStock ? 'متوفر' : 'غير متوفر'}
+            {inStock ? t.inventory.available :t.inventory.unavailable}
           </span>
         </div>
 
@@ -84,7 +86,7 @@ export default function ProductsCardDropWave({ product }: ProductsCardDropWavePr
               router.push(`/Dashboard/products-dropwave/produt-overview/${product.id}`);
             }}
           >
-            التفاصيل
+            {t.inventory?.details || 'التفاصيل'}
           </Button>
 
           <Button

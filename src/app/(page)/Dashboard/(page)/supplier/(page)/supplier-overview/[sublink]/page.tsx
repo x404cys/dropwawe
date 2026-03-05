@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 import type { Product } from '@/types/Products';
 import type { StoreProps } from '@/types/store/StoreType';
 import type { Supplier } from '@/types/Supplier/SupplierType';
@@ -12,6 +13,7 @@ import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
 import ProductsCardSupplier from '@/components/Supplier/ProductsCard';
 
 export default function SupplierPageOverview() {
+  const { t } = useLanguage();
   const [subLink, setSubLink] = useState<string>('');
   const [search, setSearch] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
@@ -122,7 +124,7 @@ export default function SupplierPageOverview() {
                 priority
               />
             ) : (
-              <div className="bg-muted flex h-full w-full items-center justify-center text-xl font-bold text-gray-500 sm:text-2xl md:text-3xl lg:text-4xl">
+              <div className="bg-muted flex h-full w-full items-center justify-center text-xl font-bold text-muted-foreground sm:text-2xl md:text-3xl lg:text-4xl">
                 {data.supplier?.user?.name?.charAt(0) ?? 'م'}
               </div>
             )}
@@ -211,7 +213,7 @@ export default function SupplierPageOverview() {
         <div className="mb-6 flex w-full flex-col gap-4">
           <input
             type="text"
-            placeholder=" ابحث عن منتج..."
+            placeholder={t.inventory.searchPlaceholder}
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="border-border focus:ring-primary w-full rounded-lg border px-4 py-2 text-sm outline-none focus:ring-2"
@@ -222,11 +224,9 @@ export default function SupplierPageOverview() {
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                 selectedCategory === 'all'
                   ? 'bg-gray-900 text-white'
-                  : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                  : 'border border-border bg-muted text-foreground hover:bg-muted'
               }`}
-            >
-              الكل
-            </button>
+            > {t.all} </button>
 
             {categories.map(cat => (
               <button
@@ -235,7 +235,7 @@ export default function SupplierPageOverview() {
                 className={`rounded-full px-4 py-1.5 text-sm font-medium transition ${
                   selectedCategory === cat
                     ? 'bg-gray-900 text-white'
-                    : 'border border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100'
+                    : 'border border-border bg-muted text-foreground hover:bg-muted'
                 }`}
               >
                 {cat}

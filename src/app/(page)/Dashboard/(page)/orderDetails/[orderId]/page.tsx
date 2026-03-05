@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../context/LanguageContext';
 
 import { type JSX, use, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
@@ -31,8 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import CityRegionDialog from '../../../_components/Citys_and_regions';
-import { Product } from '@/types/Products';
+ import { Product } from '@/types/Products';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import axios from 'axios';
@@ -59,6 +59,7 @@ export type OrderDetails = {
 };
 
 export default function OrderDetailsPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const orderId = params?.orderId as string;
   const [order, setOrder] = useState<OrderDetails | null>(null);
@@ -100,7 +101,7 @@ export default function OrderDetailsPage() {
     CANCELLED: {
       color: 'text-red-700',
       bgColor: 'bg-red-50 border-red-200',
-      label: 'ملغي',
+      label:t.orders.cancelled,
       icon: <XCircle className="h-4 w-4" />,
     },
   };
@@ -189,9 +190,9 @@ export default function OrderDetailsPage() {
       <div dir="rtl" className="mb-12 min-h-screen py-8 md:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
-            <span className="hover:text-foreground cursor-pointer">الطلبات</span>
+            <span className="hover:text-foreground cursor-pointer">{t.orders.title}</span>
             <ChevronRight className="h-4 w-4" />
-            <span className="text-foreground">تفاصيل الطلب</span>
+            <span className="text-foreground">{t.orders.orderDetails}</span>
           </div>
 
           <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -241,7 +242,7 @@ export default function OrderDetailsPage() {
                         {item.product?.image ? (
                           <Image
                             src={item.product.image || '/placeholder.svg'}
-                            alt={item.product.name || 'منتج'}
+                            alt={item.product.name || t.inventory.product}
                             fill
                             className="object-cover"
                             sizes="96px"
@@ -256,7 +257,7 @@ export default function OrderDetailsPage() {
                       <div className="flex flex-1 flex-col justify-between">
                         <div>
                           <h3 className="text-foreground font-semibold">
-                            {item.product?.name || 'منتج'}
+                            {item.product?.name || t.inventory.product}
                           </h3>
                           <div className="text-muted-foreground mt-2 flex flex-wrap gap-3 text-sm">
                             {item.size && (
@@ -354,7 +355,7 @@ export default function OrderDetailsPage() {
                   <div className="flex items-start gap-3">
                     <User className="text-muted-foreground mt-0.5 h-5 w-5" />
                     <div className="flex-1">
-                      <p className="text-muted-foreground text-xs">الاسم</p>
+                      <p className="text-muted-foreground text-xs">{t.profile.name}</p>
                       <p className="text-foreground mt-1 font-medium">{order.fullName}</p>
                     </div>
                   </div>
@@ -362,7 +363,7 @@ export default function OrderDetailsPage() {
                   <div className="flex items-start gap-3">
                     <Phone className="text-muted-foreground mt-0.5 h-5 w-5" />
                     <div className="flex-1">
-                      <p className="text-muted-foreground text-xs">رقم الهاتف</p>
+                      <p className="text-muted-foreground text-xs">{t.profile.phone}</p>
                       <p className="text-foreground mt-1 font-medium" dir="ltr">
                         {order.phone}
                       </p>
@@ -403,7 +404,7 @@ export default function OrderDetailsPage() {
             </div>
             <Separator />
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">العميل</span>
+              <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
               <span className="font-semibold">{order.fullName}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -440,9 +441,7 @@ export default function OrderDetailsPage() {
                 التوصيل مع الوسيط
               </Button>
             )}
-            <Button variant="destructive" onClick={() => setOpenAccept(false)} className="flex-1">
-              إلغاء
-            </Button>
+            <Button variant="destructive" onClick={() => setOpenAccept(false)} className="flex-1"> {t.cancel} </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -464,7 +463,7 @@ export default function OrderDetailsPage() {
               </span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">العميل</span>
+              <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
               <span className="font-semibold">{order.fullName}</span>
             </div>
             <div className="flex items-center justify-between">
@@ -474,9 +473,7 @@ export default function OrderDetailsPage() {
           </div>
 
           <DialogFooter className="gap-4">
-            <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1">
-              رجوع
-            </Button>
+            <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1"> {t.back} </Button>
             <Button variant="destructive" onClick={handleDelete} className="flex-1">
               <XCircle className="ml-2 h-4 w-4" />
               نعم، إلغاء الطلب

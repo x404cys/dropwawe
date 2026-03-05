@@ -1,4 +1,5 @@
 'use client';
+import { useLanguage } from '../../../../../context/LanguageContext';
 import { useState, useEffect } from 'react';
 import {
   Heart,
@@ -31,13 +32,13 @@ import { RxShare2 } from 'react-icons/rx';
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
-import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
+ import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
-import PriceInput from '@/app/(page)/Dashboard/_components/PriceInput';
-//
+import PriceInput from '@/app/(page)/Dashboard/_components/forms/PriceInput';
+ //
 export default function ProductPage() {
+  const { t } = useLanguage();
   const params = useParams();
   const session = useSession();
   const id = params?.productId as string;
@@ -260,7 +261,7 @@ export default function ProductPage() {
                         <div>{sizeOption.size}</div>
                         {product.unlimited === false && (
                           <div className="text-xs opacity-75">
-                            {sizeOption.stock > 0 ? `${sizeOption.stock} متوفر` : 'غير متوفر'}
+                            {sizeOption.stock > 0 ? `${sizeOption.stock} متوفر` :t.inventory.unavailable}
                           </div>
                         )}
                       </div>
@@ -446,9 +447,7 @@ export default function ProductPage() {
                       variant="outline"
                       className="flex-1 cursor-pointer"
                       onClick={() => setOpen(false)}
-                    >
-                      إلغاء
-                    </Button>
+                    > {t.cancel} </Button>
                   </DialogFooter>
                 </DialogContent>
               </Dialog>

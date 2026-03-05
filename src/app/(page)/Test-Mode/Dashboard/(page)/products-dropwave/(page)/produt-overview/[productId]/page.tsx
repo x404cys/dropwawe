@@ -31,10 +31,10 @@ import { RxShare2 } from 'react-icons/rx';
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
-import CustomInput from '@/app/(page)/Dashboard/_components/InputStyle';
-import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
+ import CategoryDropdown from '../../../../ProductManagment/_components/InputForCatogery';
 import { useSession } from 'next-auth/react';
 import axios from 'axios';
+import CustomInput from '@/app/(page)/Dashboard/_components/forms/InputStyle';
 
 export default function ProductPage() {
   const params = useParams();

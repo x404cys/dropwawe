@@ -1,12 +1,12 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../context/LanguageContext';
+
 import { TableRow, TableCell } from '@/components/ui/table';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Pencil, Trash, Package, ShieldCheck, XCircle } from 'lucide-react';
+import { Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import type { Product } from '@/types/Products';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 interface Props {
   product: Product;
@@ -15,73 +15,148 @@ interface Props {
 }
 
 export default function ProductRow({ product, onEdit, onDelete }: Props) {
-  const router = useRouter();
+  const { t } = useLanguage();
+  const finalPrice =
+    product.discount != null && product.discount > 0
+      ? product.price - (product.price * product.discount) / 100
+      : product.price;
+
+  const isLowStock =
+    !product.unlimited &&
+    product.quantity !== undefined &&
+    product.quantity <= 5 &&
+    product.quantity > 0;
+  const isOutOfStock = !product.unlimited && product.quantity === 0;
 
   return (
-    <TableRow className="group hover:bg-muted/50 transition-colors">
-      <TableCell className="w-20">
-        <Link
-          href={`/Dashboard/products/${product.id}`}
-          className="ring-offset-background hover:ring-ring relative block overflow-hidden rounded-sm transition-all hover:ring-2 hover:ring-offset-2"
-        >
-          <Image
-            src={`${product.image}`}
-            alt={product.name}
-            width={64}
-            height={64}
-            className="h-16 w-16 object-cover transition-transform duration-300 group-hover:scale-110"
-          />
-        </Link>
+    <TableRow className="group hover:bg-muted transition-colors">
+      {/* Product image + name */}
+      <TableCell>
+        <div className="flex items-center gap-3">
+          <Link
+            href={`/Dashboard/products/${product.id}`}
+            className="border-border bg-muted relative block h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg border"
+          >
+            {product.image ? (
+              <img
+                src={product.image}
+                alt={product.name}
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-110"
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center text-gray-300">
+                <Package className="h-5 w-5" />
+              </div>
+            )}
+            {/* Discount badge on image */}
+            {product.discount != null && product.discount > 0 && (
+              <span className="absolute top-0 right-0 rounded-bl bg-red-500 px-1 py-0.5 text-[9px] font-bold text-white">
+                -{product.discount}%
+              </span>
+            )}
+          </Link>
+
+          <div className="min-w-0">
+            <Link
+              href={`/Dashboard/products/${product.id}`}
+              className="text-foreground block max-w-[160px] truncate text-sm font-semibold transition-colors hover:text-[#04BAF6]"
+            >
+              {product.name}
+            </Link>
+            {product.category && (
+              <span className="text-muted-foreground text-[11px]">{product.category}</span>
+            )}
+          </div>
+        </div>
       </TableCell>
 
       <TableCell>
-        <Link
-          href={`/Dashboard/products/${product.id}`}
-          className="text-foreground hover:text-primary font-medium transition-colors"
-        >
-          {product.name}
-        </Link>
-      </TableCell>
-
-      <TableCell>
-        <span className="text-lg font-semibold tabular-nums">{product.price}</span>
-        <span className="text-muted-foreground mr-1"> د.ع</span>
-      </TableCell>
-
-      <TableCell>
-        <div className="flex items-center gap-2">
-          <Package className="text-muted-foreground h-4 w-4" />
-          <span className="font-medium tabular-nums">{product.quantity}</span>
-          {product.quantity < 10 && (
-            <Badge variant="warning" className="text-xs">
-              مخزون منخفض
-            </Badge>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-sm font-bold text-[#04BAF6] tabular-nums">
+            {formatIQD(finalPrice)} {t.currency || 'د.ع'}
+          </span>
+          {product.discount != null && product.discount > 0 && (
+            <span className="text-muted-foreground text-[11px] tabular-nums line-through">
+              {product.price.toLocaleString('ar-IQ')}
+            </span>
           )}
         </div>
       </TableCell>
 
-      <TableCell className="max-w-xs">
-        <p className="text-muted-foreground line-clamp-2 text-sm leading-relaxed">
-          {product.description}
-        </p>
-      </TableCell>
-
+      {/* Quantity / stock */}
       <TableCell>
-        <Badge variant="secondary" className="font-normal">
-          {product.category}
-        </Badge>
+        {product.unlimited ? (
+          <span className="inline-flex items-center rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-medium text-green-700">
+            {' '}
+            {t.inventory.unlimited}{' '}
+          </span>
+        ) : (
+          <div className="flex items-center gap-1.5">
+            {(isLowStock || isOutOfStock) && (
+              <AlertTriangle
+                className={`h-3.5 w-3.5 flex-shrink-0 ${isOutOfStock ? 'text-red-500' : 'text-yellow-500'}`}
+              />
+            )}
+            <span
+              className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${
+                isOutOfStock
+                  ? 'bg-red-100 text-red-600'
+                  : isLowStock
+                    ? 'bg-yellow-100 text-yellow-600'
+                    : 'bg-green-100 text-green-700'
+              }`}
+            >
+              {isOutOfStock ? t.inventory?.outOfStock || 'نفد' : `${product.quantity}`}
+            </span>
+          </div>
+        )}
       </TableCell>
 
+      {/* Category */}
+      <TableCell>
+        <span className="text-muted-foreground bg-muted rounded-full px-2 py-0.5 text-xs">
+          {product.category || '—'}
+        </span>
+      </TableCell>
+
+      {/* Colors (replaces old image column) */}
+      <TableCell>
+        {product.colors && product.colors.length > 0 ? (
+          <div className="flex gap-0.5">
+            {product.colors.slice(0, 5).map(c => (
+              <span
+                key={c.id}
+                className="border-border h-4 w-4 rounded-full border"
+                style={{ backgroundColor: c.hex }}
+                title={c.name}
+              />
+            ))}
+          </div>
+        ) : (
+          <span className="text-xs text-gray-300">—</span>
+        )}
+      </TableCell>
+
+      {/* Actions */}
       <TableCell className="whitespace-nowrap">
-        <div className="flex items-center gap-2 rtl:flex-row-reverse">
+        <div className="flex items-center gap-1.5">
           <Button
             size="sm"
-            variant="outline"
-            onClick={() => router.push(`/Dashboard/edit/${product.id}`)}
-            className="hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all"
-            aria-label="تعديل المنتج"
+            variant="ghost"
+            onClick={() => onEdit(product)}
+            className="text-muted-foreground h-8 w-8 p-0 transition-colors hover:bg-[#04BAF6]/10 hover:text-[#04BAF6]"
+            aria-label={t.inventory?.editProduct || 'تعديل'}
           >
-            <Pencil className="h-4 w-4" />
+            <Pencil className="h-3.5 w-3.5" />
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => onDelete(product.id)}
+            className="text-muted-foreground h-8 w-8 p-0 transition-colors hover:bg-red-50 hover:text-red-500"
+            aria-label={t.inventory?.deleteProduct || 'حذف'}
+          >
+            <Trash2 className="h-3.5 w-3.5" />
           </Button>
         </div>
       </TableCell>

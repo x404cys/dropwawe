@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 import React from 'react';
 import { SlCloudUpload } from 'react-icons/sl';
@@ -21,12 +22,13 @@ export function MainImageSection({
   isCompressing,
   compressionProgress,
 }: MainImageSectionProps) {
+  const { t } = useLanguage();
   return (
     <div className="sticky top-0 left-2 z-10 mt-10 space-y-2 rounded-xl px-1">
       {isCompressing && (
         <div className="rounded-xl border border-sky-200 bg-sky-50 p-2">
           <p className="mb-1 text-[11px] font-medium text-sky-700">
-            تجهيز الصورة {compressionProgress}%
+            {t.inventory?.preparingImage || 'تجهيز الصورة'} {compressionProgress}%
           </p>
 
           <div className="h-1.5 w-full overflow-hidden rounded bg-sky-100">
@@ -39,7 +41,7 @@ export function MainImageSection({
       )}
 
       {newProduct.imagePreview ? (
-        <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-300 bg-gray-50">
+        <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-300 bg-muted">
           <img
             src={newProduct.imagePreview || '/placeholder.svg'}
             alt="Preview"
@@ -75,14 +77,14 @@ export function MainImageSection({
           </button>
         </div>
       ) : (
-        <label className="flex max-h-2/4 aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-gray-50 text-gray-600 transition hover:border-sky-500 hover:bg-sky-50">
+        <label className="flex max-h-2/4 aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-sky-500 hover:bg-sky-50">
           <div className="rounded-lg bg-sky-100 p-2.5">
             <SlCloudUpload size={20} className="text-sky-500" />
           </div>
 
           <div className="text-center leading-tight">
-            <span className="block text-xs font-semibold text-black">رفع الصورة</span>
-            <span className="text-[10px] text-gray-500">JPG / PNG / WEBP</span>
+            <span className="block text-xs font-semibold text-black">{t.inventory?.uploadImage || 'رفع الصورة'}</span>
+            <span className="text-[10px] text-muted-foreground">JPG / PNG / WEBP</span>
           </div>
 
           <input

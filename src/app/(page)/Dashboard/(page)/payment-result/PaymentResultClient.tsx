@@ -1,21 +1,20 @@
 'use client';
+import { useLanguage } from '../../context/LanguageContext';
 
 import useSWR from 'swr';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { CheckCircle2, XCircle, CreditCard } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { LuCopy } from 'react-icons/lu';
-import { CiShare1 } from 'react-icons/ci';
+ 
 import { toast } from 'sonner';
 import type { PaymentResult } from '@/types/api/PaymentRes';
-import { PDFDownloadLink } from '@react-pdf/renderer';
-import { PaymentPDF } from '../../_utils/PaymentPDFProps';
-import { useSession } from 'next-auth/react';
+  import { useSession } from 'next-auth/react';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function PaymentResultClient() {
+  const { t } = useLanguage();
   const params = useSearchParams();
   const tranRef = params.get('tranRef') ?? '';
   const respStatus = params.get('respStatus') ?? '';
@@ -62,7 +61,7 @@ export default function PaymentResultClient() {
     const url = window.location.href;
     if (navigator.share) {
       await navigator.share({
-        title: 'تفاصيل الطلب',
+        title:t.orders.orderDetails,
         text: `تفاصيل الطلب`,
         url,
       });
@@ -81,8 +80,8 @@ export default function PaymentResultClient() {
   return (
     <div dir="rtl" className="min-h-screen bg-gradient-to-br from-[#f8f8f8] to-white py-4">
       <div className="mx-auto max-w-3xl space-y-6">
-        <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-8 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#e5e5e5] bg-white">
+        <div className="rounded-[16px] border border-[#e5e5e5] bg-card p-8 text-center shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-[#e5e5e5] bg-card">
             {isSuccess ? (
               <CheckCircle2 className="h-9 w-9 text-[#111]" strokeWidth={2} />
             ) : (
@@ -133,7 +132,7 @@ export default function PaymentResultClient() {
           </div> */}
         </div>
 
-        <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+        <div className="rounded-[16px] border border-[#e5e5e5] bg-card p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
           <h2 className="mb-6 flex items-center gap-2 text-[18px] font-semibold text-[#111]">
             <CreditCard className="h-5 w-5 text-[#333]" strokeWidth={2} />
             تفاصيل المعاملة
@@ -143,7 +142,7 @@ export default function PaymentResultClient() {
             <div className="flex justify-between border-b border-[#e6e6e6] pb-3">
               <span className="text-[14px] text-[#555]">رقم المعاملة</span>
               <span className="font-mono text-[15px] font-medium text-[#111]">
-                {tranRef || 'غير متوفر'}
+                {tranRef || t.inventory.unavailable}
               </span>
             </div>
 
@@ -167,7 +166,7 @@ export default function PaymentResultClient() {
             <div className="flex justify-between pt-1">
               <span className="text-[14px] text-[#555]">معرف السلة</span>
               <span className="font-mono text-[15px] font-medium text-[#111]">
-                {cartId || 'غير متوفر'}
+                {cartId || t.inventory.unavailable}
               </span>
             </div>
           </div>
@@ -175,7 +174,7 @@ export default function PaymentResultClient() {
 
         <>
           {!isLoading && payment && (
-            <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+            <div className="rounded-[16px] border border-[#e5e5e5] bg-card p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
               <h2 className="mb-6 text-[18px] font-semibold text-[#111]">بيانات الدفع</h2>
 
               <div className="space-y-4">
@@ -211,7 +210,7 @@ export default function PaymentResultClient() {
           )}
           {!isLoading && payment && (
             <div className="space-y-6">
-              <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+              <div className="rounded-[16px] border border-[#e5e5e5] bg-card p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
                 <h2 className="mb-4 text-[18px] font-semibold text-[#111]">بيانات الاشتراك</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="flex flex-col">
@@ -222,7 +221,7 @@ export default function PaymentResultClient() {
                   </div>
 
                   <div className="flex flex-col">
-                    <span className="text-[14px] text-[#555]">تاريخ الانتهاء</span>
+                    <span className="text-[14px] text-[#555]">{t.plans.endDate}</span>
                     <span className="mt-1 font-mono text-[15px] font-medium text-[#111]">
                       {new Date(payment.userSubscription.endDate).toLocaleDateString('ar')}
                     </span>
@@ -233,7 +232,7 @@ export default function PaymentResultClient() {
                     <span className="mt-1 flex items-center gap-2 text-[15px] font-semibold text-[#111]">
                       {payment.userSubscription.isActive ? (
                         <>
-                          <span>نشط</span>
+                          <span>{t.plans.active}</span>
                           <CheckCircle2 className="h-4 w-4 text-green-500" />
                         </>
                       ) : (
@@ -254,7 +253,7 @@ export default function PaymentResultClient() {
                 </div>
               </div>
 
-              <div className="rounded-[16px] border border-[#e5e5e5] bg-white p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
+              <div className="rounded-[16px] border border-[#e5e5e5] bg-card p-6 shadow-[0_4px_12px_rgba(0,0,0,0.04)]">
                 <h2 className="mb-4 text-[18px] font-semibold text-[#111]">تفاصيل الخطة</h2>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <div className="flex flex-col">
@@ -272,7 +271,7 @@ export default function PaymentResultClient() {
                   </div>
 
                   <div className="flex flex-col">
-                    <span className="text-[14px] text-[#555]">السعر</span>
+                    <span className="text-[14px] text-[#555]">{t.inventory.price}</span>
                     <span className="mt-1 font-medium text-[#111]">
                       {payment.userSubscription.plan.price} IQD
                     </span>
@@ -323,7 +322,7 @@ export default function PaymentResultClient() {
                           ))}
                         </ul>
                       ) : (
-                        <p className="text-[14px] text-gray-500">لا توجد ميزات متاحة</p>
+                        <p className="text-[14px] text-muted-foreground">لا توجد ميزات متاحة</p>
                       )}
                     </ul>
                   </div>

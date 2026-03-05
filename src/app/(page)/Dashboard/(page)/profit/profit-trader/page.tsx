@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useEffect, useState, useMemo } from 'react';
 import axios from 'axios';
@@ -98,12 +98,12 @@ export default function ProfitPage() {
 
   if (loading)
     return (
-      <div className="flex min-h-screen justify-center bg-white py-50">
+      <div className="flex min-h-screen justify-center bg-card py-50">
         <Loader />
       </div>
     );
   if (error) return <p className="mt-6 text-center text-red-600">{error}</p>;
-  if (!data) return <p className="mt-6 text-center text-gray-600">No data available</p>;
+  if (!data) return <p className="mt-6 text-center text-muted-foreground">No data available</p>;
 
   const commonChartOptions = {
     chart: { toolbar: { show: false }, zoom: { enabled: false }, foreColor: '#000000' },
@@ -140,10 +140,10 @@ export default function ProfitPage() {
   const weeklySeries = [{ name: 'Profit', data: weeklyFiltered.map(w => w.profit) }];
 
   return (
-    <section className="min-h-screen bg-white py-4 text-black">
+    <section className="min-h-screen bg-card py-4 text-black">
       <div dir="rtl" className="mx-auto space-y-10 py-6">
         <div className="flex w-full flex-col justify-between gap-4 md:flex-row">
-          <div className="flex w-full justify-between rounded-xl border border-neutral-200 bg-white p-6 md:flex-row">
+          <div className="flex w-full justify-between rounded-xl border border-neutral-200 bg-card p-6 md:flex-row">
             <div className="">
               <div className="">
                 <div className="flex items-center gap-2 text-neutral-600">
@@ -160,7 +160,7 @@ export default function ProfitPage() {
               <WalletIcon className="h-14 w-14 text-neutral-700" />
             </div>
           </div>
-          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-white p-6">
+          <div className="flex w-full items-center justify-between rounded-xl border border-neutral-200 bg-card p-6">
             <div className="flex flex-col md:flex-row">
               <div className="">
                 <div className="flex items-center gap-2 text-neutral-600">
@@ -184,11 +184,11 @@ export default function ProfitPage() {
           </div>
         </div>
 
-        <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-gray-200/80 bg-gradient-to-br from-white to-gray-50/50 p-6 shadow-lg shadow-gray-200/50 backdrop-blur-sm md:flex-row md:items-center md:gap-6">
+        <div className="flex flex-col items-stretch gap-3 rounded-2xl border border-border/80 bg-gradient-to-br from-white to-gray-50/50 p-6 shadow-lg shadow-gray-200/50 backdrop-blur-sm md:flex-row md:items-center md:gap-6">
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">اختر الأسبوع</label>
+            <label className="text-sm font-semibold text-foreground">اختر الأسبوع</label>
             <select
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="rounded-xl border border-border bg-card px-4 py-3 text-foreground shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
               onChange={e => setSelectedWeek(e.target.value || null)}
               value={selectedWeek || ''}
             >
@@ -204,9 +204,9 @@ export default function ProfitPage() {
           <div className="hidden h-12 w-px bg-gradient-to-b from-transparent via-gray-300 to-transparent md:block" />
 
           <div className="flex flex-1 flex-col gap-2">
-            <label className="text-sm font-semibold text-gray-700">اختر الشهر</label>
+            <label className="text-sm font-semibold text-foreground">اختر الشهر</label>
             <select
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-gray-900 shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
+              className="rounded-xl border border-border bg-card px-4 py-3 text-foreground shadow-sm transition-all duration-200 outline-none hover:border-gray-300 hover:shadow-md focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
               onChange={e => setSelectedMonth(e.target.value || null)}
               value={selectedMonth || ''}
             >
@@ -220,18 +220,18 @@ export default function ProfitPage() {
           </div>
         </div>
 
-        <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
+        <div className="-lg rounded-2xl border border-border bg-card p-6 text-black">
           <h2 className="mb-4 font-semibold">العائد الأسبوعي | Weekly Profit</h2>
           <ApexCharts type="line" series={weeklySeries} options={weeklyOptions} height={300} />
         </div>
 
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-          <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
+          <div className="-lg rounded-2xl border border-border bg-card p-6 text-black">
             <h2 className="mb-4 font-semibold">العائد الشهري | Monthly Profit</h2>
             <ApexCharts type="pie" series={monthlySeries} options={monthlyOptions} height={300} />
           </div>
 
-          <div className="-lg rounded-2xl border border-gray-200 bg-white p-6 text-black">
+          <div className="-lg rounded-2xl border border-border bg-card p-6 text-black">
             <h2 className="mb-4 flex items-center gap-2 font-semibold">
               <FiClock className="text-xl" /> العائد اليومي | Daily Profit
             </h2>

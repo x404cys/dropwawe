@@ -1,4 +1,5 @@
-'use client';
+﻿'use client';
+import { useLanguage } from '../../context/LanguageContext';
 
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
@@ -6,10 +7,11 @@ import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
 import { useDashboardData } from '../../context/useDashboardData';
-import Loader from '@/components/Loader';
-import { Search, ShoppingBag } from 'lucide-react';
+import { Search, ShoppingBag, Trash2, ChevronLeft } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useStoreProvider } from '../../context/StoreContext';
+import { Skeleton } from '@/components/ui/skeleton';
+import { motion } from 'framer-motion';
 
 interface Order {
   id: string;
@@ -30,7 +32,38 @@ const fetcher = (url: string) =>
     return res.json();
   });
 
+const STATUS_STYLES: Record<string, string> = {
+  PRE_ORDER: 'bg-[#04BAF6]/10 text-[#04BAF6]',
+  CONFIRMED: 'bg-green-100 text-green-700',
+  CANCELLED: 'bg-red-50 text-red-600',
+  TRANSIT: 'bg-amber-100 text-amber-700',
+};
+
+const DATE_FILTERS = [
+  { key: 'week', label: 'أسبوع' },
+  { key: 'month', label: 'شهر' },
+  { key: '3months', label: '3 أشهر' },
+  { key: 'year', label: 'سنة' },
+];
+
 export default function OrderSummaryPage() {
+  const { t } = useLanguage();
+
+  const STATUS_TABS = [
+    { key: 'all', label: t.all },
+    { key: 'PRE_ORDER', label: 'مسبق' },
+    { key: 'TRANSIT', label: 'قيد الشحن' },
+    { key: 'CONFIRMED', label: t.orders.completed },
+    { key: 'CANCELLED', label: t.orders.cancelled },
+  ];
+
+  const STATUS_LABELS: Record<string, string> = {
+    PRE_ORDER: 'طلب مسبق',
+    CONFIRMED: 'تم التأكيد',
+    CANCELLED: t.orders.cancelled,
+    TRANSIT: 'قيد الشحن',
+  };
+
   const { data: session } = useSession();
   const router = useRouter();
   const { data } = useDashboardData(session?.user?.id);
@@ -53,29 +86,18 @@ export default function OrderSummaryPage() {
     let result = [...orders];
 
     if (statusFilter !== 'all') {
-      result = result.filter(o => o.status === statusFilter.toUpperCase());
+      result = result.filter(o => o.status === statusFilter);
     }
 
     const now = new Date();
     const from = new Date();
-
     switch (dateFilter) {
-      case 'month':
-        from.setMonth(now.getMonth() - 1);
-        break;
-      case '3months':
-        from.setMonth(now.getMonth() - 3);
-        break;
-      case '6months':
-        from.setMonth(now.getMonth() - 6);
-        break;
-      case 'year':
-        from.setFullYear(now.getFullYear() - 1);
-        break;
-      default:
-        from.setDate(now.getDate() - 7);
+      case 'month': from.setMonth(now.getMonth() - 1); break;
+      case '3months': from.setMonth(now.getMonth() - 3); break;
+      case '6months': from.setMonth(now.getMonth() - 6); break;
+      case 'year': from.setFullYear(now.getFullYear() - 1); break;
+      default: from.setDate(now.getDate() - 7);
     }
-
     result = result.filter(o => new Date(o.createdAt) >= from);
 
     if (search.trim()) {
@@ -95,43 +117,22 @@ export default function OrderSummaryPage() {
 
   const deleteOrder = async (id: string) => {
     await axios.delete(`/api/orders/details/delete/${id}`);
-    mutate(`/api/orders/store/${storeId}`);
+    mutate(`/api/orders/store/${currentStore?.id}`);
   };
 
-  const translateStatus = (status: string) => {
-    switch (status) {
-      case 'PRE_ORDER':
-        return 'طلب مسبق';
-      case 'CONFIRMED':
-        return 'تم التأكيد';
-      case 'CANCELLED':
-        return 'ملغي';
-      case 'TRANSIT':
-        return 'قيد الشحن';
-      default:
-        return status;
-    }
-  };
-
-  const getStatusStyle = (status: string) => {
-    switch (status) {
-      case 'PRE_ORDER':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200';
-      case 'CONFIRMED':
-        return 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200';
-      case 'CANCELLED':
-        return 'bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200';
-      case 'TRANSIT':
-        return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200';
-      default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200';
-    }
-  };
-
+  // ── Loading state ─────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <section className="flex h-screen items-center justify-center">
-        <Loader />
+      <section dir="rtl" className="p-4 space-y-3">
+        <Skeleton className="h-11 w-full rounded-xl bg-gray-200" />
+        <div className="flex gap-2">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <Skeleton key={i} className="h-8 w-16 rounded-full bg-gray-200" />
+          ))}
+        </div>
+        {Array.from({ length: 5 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full rounded-xl bg-gray-200" />
+        ))}
       </section>
     );
   }
@@ -140,212 +141,154 @@ export default function OrderSummaryPage() {
     return <div className="p-6 text-center text-red-500">فشل تحميل الطلبات</div>;
   }
 
+  // ── UI ────────────────────────────────────────────────────────────────
   return (
-    <>
-      {isLoading ? (
-        <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center space-y-4 bg-white/70 backdrop-blur-sm">
-          <Loader />
+    <section dir="rtl" className="bg-gray-50 min-h-screen">
+      <div className="p-4 space-y-4 pb-10">
+
+        {/* Page header */}
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-lg font-bold text-gray-900">{t.orders.title}</h1>
+            <p className="text-xs text-gray-400">{orders.length} طلب إجمالي</p>
+          </div>
+          {data?.Stores && data.Stores.length > 1 && (
+            <select
+              value={storeId || fiestoreId}
+              onChange={e => setStoreId(e.target.value)}
+              className="text-xs rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-700"
+            >
+              <option value="">كل المتاجر</option>
+              {data?.Stores?.map(store => (
+                <option key={store.id} value={store.id}>{store.name}</option>
+              ))}
+            </select>
+          )}
         </div>
-      ) : (
-        <>
-          <section className="w-full bg-white py-2 md:py-2 dark:bg-gray-900" dir="rtl">
-            <div className="max-w-full">
-              <div className="max-w-full">
-                <div className="mb-6 rounded-lg border bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
-                  <div className="grid grid-cols-1 gap-4 md:grid-cols-12 md:items-end">
-                    <div className="relative md:col-span-5">
-                      <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                        البحث
-                      </label>
-                      <input
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        placeholder="اسم، رقم طلب، هاتف، موقع، منتج"
-                        className="w-full rounded-lg border bg-white p-2.5 pr-10 focus:border-gray-900 focus:ring-0 dark:bg-gray-700 dark:text-white"
-                      />
-                      <Search size={18} className="absolute top-[34px] left-3 text-gray-400" />
-                    </div>
 
-                    {data.Stores && data.Stores.length > 0 && (
-                      <div className="md:col-span-2">
-                        <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                          المتجر
-                        </label>
-                        <select
-                          value={storeId || fiestoreId}
-                          onChange={e => setStoreId(e.target.value)}
-                          className="w-full rounded-lg border bg-white p-2.5 text-sm dark:bg-gray-700"
-                        >
-                          <option value="">كل المتاجر</option>
-                          {data?.Stores?.map(store => (
-                            <option key={store.id} value={store.id}>
-                              {store.name}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-                    )}
+        {/* Search bar */}
+        <div className="relative">
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <input
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="ابحث بالاسم، الهاتف، الموقع..."
+            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20 outline-none transition"
+          />
+        </div>
 
-                    <div className="md:col-span-2">
-                      <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                        حالة الطلب
-                      </label>
-                      <select
-                        value={statusFilter}
-                        onChange={e => setStatusFilter(e.target.value)}
-                        className="w-full rounded-lg border bg-white p-2.5 text-sm dark:bg-gray-700"
+        {/* Status filter tabs */}
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {STATUS_TABS.map(tab => (
+            <button
+              key={tab.key}
+              onClick={() => setStatusFilter(tab.key)}
+              className={`flex-shrink-0 cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+                statusFilter === tab.key
+                  ? 'bg-[#04BAF6] text-white shadow-sm shadow-[#04BAF6]/30'
+                  : 'bg-white border border-gray-200 text-gray-600 hover:border-[#04BAF6]/50'
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Period filter pills */}
+        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+          {DATE_FILTERS.map(f => (
+            <button
+              key={f.key}
+              onClick={() => setDateFilter(f.key)}
+              className={`flex-shrink-0 cursor-pointer px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+                dateFilter === f.key
+                  ? 'bg-gray-900 text-white'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Orders list */}
+        {filteredOrders.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+            <ShoppingBag className="h-14 w-14 mb-3 opacity-25" />
+            <p className="text-sm font-medium">{t.orders.noOrders}</p>
+          </div>
+        ) : (
+          <div className="space-y-2.5">
+            {filteredOrders.map((order, i) => (
+              <motion.div
+                key={order.id}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.04, duration: 0.25 }}
+                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+              >
+                <div
+                  onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
+                  className="flex items-center gap-3 px-4 py-3.5 cursor-pointer"
+                >
+                  {/* Avatar */}
+                  <div className="w-10 h-10 rounded-full bg-[#04BAF6]/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-[#04BAF6]">
+                      {order.fullName?.charAt(0) ?? '؟'}
+                    </span>
+                  </div>
+
+                  {/* Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm font-semibold text-gray-900 truncate">
+                        {order.fullName}
+                      </span>
+                      <span
+                        className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
+                          STATUS_STYLES[order.status] ?? 'bg-gray-100 text-gray-600'
+                        }`}
                       >
-                        <option value="all">الكل</option>
-                        <option value="PRE_ORDER">طلب مسبق</option>
-                        <option value="TRANSIT">قيد الشحن</option>
-                        <option value="CONFIRMED">تم التأكيد</option>
-                        <option value="CANCELLED">ملغي</option>
-                      </select>
+                        {STATUS_LABELS[order.status] ?? order.status}
+                      </span>
                     </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="text-[11px] text-gray-400">{order.location}</span>
+                      <span className="text-[11px] text-gray-300">•</span>
+                      <span className="text-[11px] text-gray-400">
+                        {new Date(order.createdAt).toLocaleDateString('ar-EG', {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    </div>
+                  </div>
 
-                    <div className="md:col-span-3">
-                      <label className="mb-1 block text-xs font-medium text-gray-600 dark:text-gray-300">
-                        الفترة الزمنية
-                      </label>
-                      <select
-                        value={dateFilter}
-                        onChange={e => setDateFilter(e.target.value)}
-                        className="w-full rounded-lg border bg-white p-2.5 text-sm dark:bg-gray-700"
-                      >
-                        <option value="week">هذا الأسبوع</option>
-                        <option value="month">هذا الشهر</option>
-                        <option value="3months">آخر 3 أشهر</option>
-                        <option value="6months">آخر 6 أشهر</option>
-                        <option value="year">هذه السنة</option>
-                      </select>
+                  {/* Amount + chevron */}
+                  <div className="text-left flex-shrink-0 flex items-center gap-2">
+                    <div>
+                      <p className="text-sm font-bold text-gray-900">
+                        {formatIQD(order.price)}
+                      </p>
+                      <p className="text-[10px] text-gray-400 text-left">{order.phone}</p>
                     </div>
+                    <ChevronLeft className="h-4 w-4 text-gray-300" />
                   </div>
                 </div>
 
-                <div className="hidden overflow-auto rounded-lg shadow md:block">
-                  <table className="w-full divide-y divide-gray-200 text-sm dark:divide-gray-700">
-                    <thead className="bg-gray-50 dark:bg-gray-700">
-                      <tr>
-                        <th className="px-4 py-3">رقم الطلب</th>
-                        <th className="px-4 py-3">التاريخ</th>
-                        <th className="px-4 py-3">السعر</th>
-                        <th className="px-4 py-3">الحالة</th>
-                        <th className="px-4 py-3">الزبون</th>
-                        <th className="px-4 py-3">الهاتف</th>
-                        <th className="px-4 py-3">الموقع</th>
-                        <th className="px-4 py-3">الإجراءات</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-gray-600">
-                      {filteredOrders.length === 0 ? (
-                        <tr>
-                          <td colSpan={8}>
-                            <div className="flex min-h-[300px] w-full flex-col items-center justify-center gap-4">
-                              <ShoppingBag className="h-24 w-24 text-gray-400 dark:text-gray-600" />
-
-                              <h1 className="text-xl font-semibold text-gray-700 dark:text-gray-200">
-                                لا توجد طلبات
-                              </h1>
-
-                              <p className="max-w-xs text-center text-sm text-gray-500 dark:text-gray-400">
-                                حالياً لا يوجد أي طلبات
-                              </p>
-                            </div>
-                          </td>
-                        </tr>
-                      ) : (
-                        filteredOrders.map(e => (
-                          <tr key={e.id} className="hover:bg-gray-50 dark:hover:bg-gray-600">
-                            <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
-                              {e.id.slice(0, 6)}
-                            </td>
-                            <td className="px-4 py-3 text-gray-500 dark:text-gray-300">
-                              {new Date(e.createdAt).toLocaleDateString()}
-                            </td>
-                            <td className="px-4 py-3 text-gray-500 dark:text-gray-300">
-                              ${e.price}
-                            </td>
-                            <td className="px-4 py-3">
-                              <span
-                                className={`inline-block rounded px-2 py-1 text-xs font-semibold ${getStatusStyle(
-                                  e.status
-                                )}`}
-                              >
-                                {translateStatus(e.status)}
-                              </span>
-                            </td>
-                            <td className="px-4 py-3">{e.fullName}</td>
-                            <td className="px-4 py-3">{e.phone}</td>
-                            <td className="px-4 py-3">{e.location}</td>
-                            <td className="px-4 py-3">
-                              <div className="flex gap-2">
-                                <button
-                                  onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
-                                  className="rounded bg-gray-900 px-2 py-1 text-xs text-white"
-                                >
-                                  تفاصيل
-                                </button>
-                                <button
-                                  onClick={() => deleteOrder(e.id)}
-                                  className="rounded bg-red-500 px-2 py-1 text-xs text-white"
-                                >
-                                  حذف
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
+                {/* Delete strip */}
+                <div className="border-t border-gray-50 px-4 py-2 flex justify-end">
+                  <button
+                    onClick={e => { e.stopPropagation(); deleteOrder(order.id); }}
+                    className="flex items-center gap-1 text-[11px] text-red-400 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 className="h-3 w-3" /> {t.delete} </button>
                 </div>
-
-                <div className="space-y-4 md:hidden">
-                  {filteredOrders.map(e => (
-                    <div
-                      key={e.id}
-                      className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800"
-                    >
-                      <div className="mb-2 text-sm font-semibold text-gray-800 dark:text-white">
-                        رقم الطلب: {e.id.slice(0, 6)}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        التاريخ: {new Date(e.createdAt).toLocaleDateString()}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        السعر: {formatIQD(e.price)}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        الحالة:{' '}
-                        <span
-                          className={`inline-block rounded px-2 py-1 text-xs font-semibold ${getStatusStyle(e.status)}`}
-                        >
-                          {translateStatus(e.status)}
-                        </span>
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        الزبون: {e.fullName}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        الهاتف: {e.phone}
-                      </div>
-                      <div className="text-sm text-gray-600 dark:text-gray-300">
-                        الموقع: {e.location}
-                      </div>
-                      <button
-                        onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
-                        className="mt-2 inline-block w-full rounded-lg bg-gray-950 py-2 text-sm text-white hover:underline dark:text-blue-400"
-                      >
-                        التفاصيل
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </section>
-        </>
-      )}
-    </>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
