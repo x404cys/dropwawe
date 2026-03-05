@@ -467,7 +467,7 @@ export default function StatsPage() {
                           border: '1px solid hsl(200,20%,90%)',
                           backgroundColor: 'hsl(var(--card))',
                         }}
-                        formatter={(value: ValueType) => {
+                        formatter={(value: string | number | readonly (string | number)[] | undefined) => {
                           const v = typeof value === 'number' ? value : Number(value) || 0;
 
                           return [
