@@ -511,7 +511,9 @@ export default function StatsPage() {
                         border: '1px solid hsl(200,20%,90%)',
                         backgroundColor: 'hsl(var(--card))',
                       }}
-                      formatter={(v: string | number | readonly (string | number)[] | undefined) => [`${typeof v === 'number' ? v : Number(v) || 0} طلب`, 'الطلبات']}
+                      formatter={(
+                        v: string | number | readonly (string | number)[] | undefined
+                      ) => [`${typeof v === 'number' ? v : Number(v) || 0} طلب`, 'الطلبات']}
                     />
                     <Bar dataKey="value" fill="hsl(191, 80%, 42%)" radius={[6, 6, 0, 0]} />
                   </BarChart>
@@ -519,7 +521,6 @@ export default function StatsPage() {
               </div>
             </div>
 
-            {/* Top Products */}
             {topProducts.length > 0 && (
               <div className="bg-card border-border rounded-xl border">
                 <div className="p-4 pb-3">
@@ -671,10 +672,10 @@ export default function StatsPage() {
                                 </Pie>
                                 <Tooltip
                                   contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                                  formatter={(v: string | number | readonly (string | number)[] | undefined, n: string | number | undefined) => [
-                                    `${typeof v === 'number' ? v : Number(v) || 0}%`,
-                                    n ?? '',
-                                  ]}
+                                  formatter={(
+                                    v: string | number | readonly (string | number)[] | undefined,
+                                    n: string | number | undefined
+                                  ) => [`${typeof v === 'number' ? v : Number(v) || 0}%`, n ?? '']}
                                 />
                               </PieChart>
                               {deviceData[0] && (
@@ -832,10 +833,10 @@ export default function StatsPage() {
                                 </Pie>
                                 <Tooltip
                                   contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                                  formatter={(v: string | number | readonly (string | number)[] | undefined, n: string | number | undefined) => [
-                                    `${typeof v === 'number' ? v : Number(v) || 0}%`,
-                                    n ?? '',
-                                  ]}
+                                  formatter={(
+                                    v: string | number | readonly (string | number)[] | undefined,
+                                    n: string | number | undefined
+                                  ) => [`${typeof v === 'number' ? v : Number(v) || 0}%`, n ?? '']}
                                 />
                               </PieChart>
                             </div>
