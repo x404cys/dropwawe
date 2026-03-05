@@ -671,8 +671,8 @@ export default function StatsPage() {
                                 </Pie>
                                 <Tooltip
                                   contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                                  formatter={(v: number | undefined, n: string | undefined) => [
-                                    `${v ?? 0}%`,
+                                  formatter={(v: string | number | readonly (string | number)[] | undefined, n: string | number | undefined) => [
+                                    `${typeof v === 'number' ? v : Number(v) || 0}%`,
                                     n ?? '',
                                   ]}
                                 />
@@ -832,8 +832,8 @@ export default function StatsPage() {
                                 </Pie>
                                 <Tooltip
                                   contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                                  formatter={(v: number | undefined, n: string | undefined) => [
-                                    `${v ?? 0}%`,
+                                  formatter={(v: string | number | readonly (string | number)[] | undefined, n: string | number | undefined) => [
+                                    `${typeof v === 'number' ? v : Number(v) || 0}%`,
                                     n ?? '',
                                   ]}
                                 />
