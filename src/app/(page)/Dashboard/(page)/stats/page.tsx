@@ -4,20 +4,43 @@ import { useState, useMemo } from 'react';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import {
-  BarChart3, TrendingUp, TrendingDown, ShoppingCart, Users,
-  DollarSign, Package, Wallet, CheckCircle2, MapPin, Smartphone,
-  Monitor, Tablet, Eye, Globe, Search, Crown,
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
+  ShoppingCart,
+  Users,
+  DollarSign,
+  Package,
+  Wallet,
+  CheckCircle2,
+  MapPin,
+  Smartphone,
+  Monitor,
+  Tablet,
+  Eye,
+  Globe,
+  Search,
+  Crown,
 } from 'lucide-react';
 import {
-  BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Tooltip,
-  AreaChart, Area, PieChart, Pie, Cell,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  ResponsiveContainer,
+  Tooltip,
+  AreaChart,
+  Area,
+  PieChart,
+  Pie,
+  Cell,
 } from 'recharts';
 import { toast } from 'sonner';
 import { useLanguage } from '../../context/LanguageContext';
 import { useStoreProvider } from '../../context/StoreContext';
 import { Skeleton } from '@/components/ui/skeleton';
+import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 
- 
 const PERIODS = ['اليوم', 'هذا الأسبوع', 'هذا الشهر', 'هذه السنة'];
 
 // Icon lookup — maps the string the API returns to a Lucide component
@@ -48,9 +71,9 @@ interface StatsResponse {
   monthlyChart: { day: string; revenue: number }[];
   // Real analytics
   governorateData: { name: string; orders: number; percentage: number }[];
-  deviceData:      { name: string; value: number; color: string; icon: string }[];
-  deviceBrands:    { name: string; percentage: number; color: string }[];
-  trafficSources:  { name: string; value: number; color: string; emoji: string }[];
+  deviceData: { name: string; value: number; color: string; icon: string }[];
+  deviceBrands: { name: string; percentage: number; color: string }[];
+  trafficSources: { name: string; value: number; color: string; emoji: string }[];
 }
 
 // ─── Component ─────────────────────────────────────────────────────────────────
@@ -63,7 +86,9 @@ export default function StatsPage() {
   const [period, setPeriod] = useState('هذا الأسبوع');
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawOpen, setWithdrawOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'governorate' | 'device' | 'pages' | 'sources'>('governorate');
+  const [activeTab, setActiveTab] = useState<'governorate' | 'device' | 'pages' | 'sources'>(
+    'governorate'
+  );
   const [customerSearch, setCustomerSearch] = useState('');
 
   const fetcher = (url: string) => fetch(url).then(r => r.json());
@@ -107,25 +132,28 @@ export default function StatsPage() {
   const topProducts = stats?.topProducts ?? [];
   const visitCount = stats?.visitCount ?? 0;
 
-  const filteredCustomers = useMemo(() =>
-    customers.filter(c =>
-      !customerSearch || c.name.includes(customerSearch) || c.phone.includes(customerSearch)
-    ), [customers, customerSearch]);
+  const filteredCustomers = useMemo(
+    () =>
+      customers.filter(
+        c => !customerSearch || c.name.includes(customerSearch) || c.phone.includes(customerSearch)
+      ),
+    [customers, customerSearch]
+  );
 
-  const topBuyer = customers.length > 0
-    ? customers.reduce((a, b) => (a.total > b.total ? a : b))
-    : null;
+  const topBuyer =
+    customers.length > 0 ? customers.reduce((a, b) => (a.total > b.total ? a : b)) : null;
 
   const totalCustomerSpent = customers.reduce((s, c) => s + c.total, 0);
 
   const summaryStats = [
     {
       label: t.stats?.revenue || 'الإيرادات',
-      value: availableBalance >= 1_000_000
-        ? `${(availableBalance / 1_000_000).toFixed(1)}M`
-        : availableBalance >= 1_000
-          ? `${(availableBalance / 1_000).toFixed(0)}K`
-          : `${availableBalance}`,
+      value:
+        availableBalance >= 1_000_000
+          ? `${(availableBalance / 1_000_000).toFixed(1)}M`
+          : availableBalance >= 1_000
+            ? `${(availableBalance / 1_000).toFixed(0)}K`
+            : `${availableBalance}`,
       sub: t.currency,
       change: 12.5,
       icon: DollarSign,
@@ -178,13 +206,15 @@ export default function StatsPage() {
       <section dir="rtl" className="min-h-screen">
         <main className="flex-1 space-y-4 px-1 py-2 pb-16">
           <Skeleton className="h-8 w-40 rounded-xl" />
-          <div className="flex gap-1 bg-muted/50 rounded-xl p-1">
-            <Skeleton className="flex-1 h-10 rounded-lg" />
-            <Skeleton className="flex-1 h-10 rounded-lg" />
+          <div className="bg-muted/50 flex gap-1 rounded-xl p-1">
+            <Skeleton className="h-10 flex-1 rounded-lg" />
+            <Skeleton className="h-10 flex-1 rounded-lg" />
           </div>
           <Skeleton className="h-24 w-full rounded-xl" />
           <div className="grid grid-cols-2 gap-3">
-            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
+            {[1, 2, 3, 4].map(i => (
+              <Skeleton key={i} className="h-24 rounded-xl" />
+            ))}
           </div>
           <Skeleton className="h-48 w-full rounded-xl" />
           <Skeleton className="h-40 w-full rounded-xl" />
@@ -196,14 +226,15 @@ export default function StatsPage() {
   return (
     <section dir="rtl" className="min-h-screen">
       <main className="flex-1 space-y-4 px-1 py-2 pb-16">
-
         {/* ── Page header ── */}
         <div className="flex items-center justify-between px-1 pt-1">
           <div>
             <h1 className="text-foreground text-xl font-bold">
-              {mainTab === 'stats' ? t.stats?.title || 'الإحصائيات' : t.customers?.title || 'العملاء'}
+              {mainTab === 'stats'
+                ? t.stats?.title || 'الإحصائيات'
+                : t.customers?.title || 'العملاء'}
             </h1>
-            <p className="text-muted-foreground text-xs mt-0.5">
+            <p className="text-muted-foreground mt-0.5 text-xs">
               {mainTab === 'stats'
                 ? t.more?.statsDesc || 'تقارير المبيعات والأداء'
                 : `${customers.length} ${t.customers?.customer || 'عميل'}`}
@@ -215,17 +246,17 @@ export default function StatsPage() {
         </div>
 
         {/* ── Main tabs ── */}
-        <div className="flex gap-1 bg-muted/50 rounded-xl p-1">
+        <div className="bg-muted/50 flex gap-1 rounded-xl p-1">
           <button
             onClick={() => setMainTab('stats')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold transition-all ${mainTab === 'stats' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all ${mainTab === 'stats' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
           >
             <BarChart3 className="h-3.5 w-3.5" />
             {t.stats?.title || 'الإحصائيات'}
           </button>
           <button
             onClick={() => setMainTab('customers')}
-            className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-semibold transition-all ${mainTab === 'customers' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2.5 text-xs font-semibold transition-all ${mainTab === 'customers' ? 'bg-card text-foreground shadow-sm' : 'text-muted-foreground'}`}
           >
             <Users className="h-3.5 w-3.5" />
             {t.customers?.title || 'العملاء'}
@@ -237,72 +268,78 @@ export default function StatsPage() {
           <>
             {/* Summary cards */}
             <div className="grid grid-cols-3 gap-2">
-              <div className="bg-card border border-border rounded-lg p-3 text-center">
-                <Users className="h-4 w-4 text-primary mx-auto mb-1" />
-                <span className="text-lg font-bold text-foreground block">{customers.length}</span>
-                <span className="text-[10px] text-muted-foreground">{t.customers?.title}</span>
+              <div className="bg-card border-border rounded-lg border p-3 text-center">
+                <Users className="text-primary mx-auto mb-1 h-4 w-4" />
+                <span className="text-foreground block text-lg font-bold">{customers.length}</span>
+                <span className="text-muted-foreground text-[10px]">{t.customers?.title}</span>
               </div>
-              <div className="bg-card border border-border rounded-lg p-3 text-center">
-                <Crown className="h-4 w-4 text-yellow-500 mx-auto mb-1" />
-                <span className="text-xs font-bold text-foreground block truncate">{topBuyer?.name ?? '-'}</span>
-                <span className="text-[10px] text-muted-foreground">{t.customers?.topBuyer}</span>
+              <div className="bg-card border-border rounded-lg border p-3 text-center">
+                <Crown className="mx-auto mb-1 h-4 w-4 text-yellow-500" />
+                <span className="text-foreground block truncate text-xs font-bold">
+                  {topBuyer?.name ?? '-'}
+                </span>
+                <span className="text-muted-foreground text-[10px]">{t.customers?.topBuyer}</span>
               </div>
-              <div className="bg-card border border-border rounded-lg p-3 text-center">
-                <TrendingUp className="h-4 w-4 text-green-500 mx-auto mb-1" />
-                <span className="text-xs font-bold text-foreground block">
+              <div className="bg-card border-border rounded-lg border p-3 text-center">
+                <TrendingUp className="mx-auto mb-1 h-4 w-4 text-green-500" />
+                <span className="text-foreground block text-xs font-bold">
                   {totalCustomerSpent >= 1_000_000
                     ? `${(totalCustomerSpent / 1_000_000).toFixed(1)}M`
                     : `${(totalCustomerSpent / 1_000).toFixed(0)}K`}
                 </span>
-                <span className="text-[10px] text-muted-foreground">{t.customers?.totalSpent}</span>
+                <span className="text-muted-foreground text-[10px]">{t.customers?.totalSpent}</span>
               </div>
             </div>
 
             {/* Search */}
             <div className="relative">
-              <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
               <input
                 value={customerSearch}
                 onChange={e => setCustomerSearch(e.target.value)}
                 placeholder={t.customers?.searchPlaceholder || 'ابحث عن عميل...'}
-                className="w-full border border-border bg-card rounded-xl px-4 py-2.5 pr-10 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-xl border px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:outline-none"
               />
             </div>
 
             {/* Customer list */}
-            <div className="bg-card border border-border rounded-xl divide-y divide-border">
+            <div className="bg-card border-border divide-border divide-y rounded-xl border">
               {filteredCustomers.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-                  <Users className="h-12 w-12 mb-3 opacity-30" />
-                  <p className="text-sm font-medium">{t.customers?.noCustomers || 'لا يوجد عملاء'}</p>
+                <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
+                  <Users className="mb-3 h-12 w-12 opacity-30" />
+                  <p className="text-sm font-medium">
+                    {t.customers?.noCustomers || 'لا يوجد عملاء'}
+                  </p>
                 </div>
               ) : (
                 filteredCustomers.map((customer, idx) => (
                   <div key={idx} className="flex items-center gap-3 px-4 py-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <span className="text-sm font-bold text-primary">{customer.name.charAt(0)}</span>
+                    <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
+                      <span className="text-primary text-sm font-bold">
+                        {customer.name.charAt(0)}
+                      </span>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-foreground">{customer.name}</p>
-                      <div className="flex items-center gap-2 mt-0.5">
-                        <span className="text-[11px] text-muted-foreground">{customer.phone}</span>
-                        <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                          <ShoppingCart className="h-2.5 w-2.5" />{customer.orders} {t.orders?.order}
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground text-sm font-medium">{customer.name}</p>
+                      <div className="mt-0.5 flex items-center gap-2">
+                        <span className="text-muted-foreground text-[11px]">{customer.phone}</span>
+                        <span className="text-muted-foreground flex items-center gap-0.5 text-[11px]">
+                          <ShoppingCart className="h-2.5 w-2.5" />
+                          {customer.orders} {t.orders?.order}
                         </span>
                       </div>
                     </div>
                     <div className="text-left">
-                      <span className="text-sm font-bold text-foreground block">
+                      <span className="text-foreground block text-sm font-bold">
                         {customer.total.toLocaleString('ar-IQ')}
                       </span>
-                      <span className="text-[10px] text-muted-foreground">{t.currency}</span>
+                      <span className="text-muted-foreground text-[10px]">{t.currency}</span>
                     </div>
                   </div>
                 ))
               )}
             </div>
           </>
-
         ) : (
           /* ════════ STATS TAB ════════ */
           <>
@@ -312,7 +349,7 @@ export default function StatsPage() {
                 <button
                   key={p}
                   onClick={() => setPeriod(p)}
-                  className={`flex-shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-colors ${period === p ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
+                  className={`flex-shrink-0 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ${period === p ? 'bg-primary text-primary-foreground' : 'bg-secondary text-secondary-foreground'}`}
                 >
                   {p}
                 </button>
@@ -320,12 +357,12 @@ export default function StatsPage() {
             </div>
 
             {/* Balance + Withdraw */}
-            <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+            <div className="bg-card border-border flex items-center justify-between rounded-xl border p-4">
               <div>
-                <p className="text-[11px] text-muted-foreground">الرصيد المتاح للسحب</p>
-                <p className="text-lg font-bold text-foreground">
+                <p className="text-muted-foreground text-[11px]">الرصيد المتاح للسحب</p>
+                <p className="text-foreground text-lg font-bold">
                   {availableBalance.toLocaleString('ar-IQ')}
-                  <span className="text-[10px] text-muted-foreground mr-1">{t.currency}</span>
+                  <span className="text-muted-foreground mr-1 text-[10px]">{t.currency}</span>
                 </p>
               </div>
               <div className="relative">
@@ -333,35 +370,41 @@ export default function StatsPage() {
                   onClick={() => setWithdrawOpen(o => !o)}
                   className="bg-primary text-primary-foreground flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold"
                 >
-                  <Wallet className="h-4 w-4" />طلب سحب
+                  <Wallet className="h-4 w-4" />
+                  طلب سحب
                 </button>
                 {withdrawOpen && (
-                  <div className="absolute left-0 top-11 z-50 bg-card border border-border rounded-2xl p-4 shadow-xl w-64 space-y-3">
-                    <p className="text-sm font-bold text-foreground text-center">طلب سحب أرباح</p>
+                  <div className="bg-card border-border absolute top-11 left-0 z-50 w-64 space-y-3 rounded-2xl border p-4 shadow-xl">
+                    <p className="text-foreground text-center text-sm font-bold">طلب سحب أرباح</p>
                     <div className="bg-secondary/50 rounded-xl p-3 text-center">
-                      <p className="text-[11px] text-muted-foreground">الرصيد المتاح</p>
-                      <p className="text-xl font-bold text-foreground">
+                      <p className="text-muted-foreground text-[11px]">الرصيد المتاح</p>
+                      <p className="text-foreground text-xl font-bold">
                         {availableBalance.toLocaleString('ar-IQ')}
-                        <span className="text-xs text-muted-foreground mr-1">{t.currency}</span>
+                        <span className="text-muted-foreground mr-1 text-xs">{t.currency}</span>
                       </p>
                     </div>
                     <div>
-                      <label className="text-xs font-medium text-foreground mb-1.5 block">المبلغ المطلوب ({t.currency})</label>
+                      <label className="text-foreground mb-1.5 block text-xs font-medium">
+                        المبلغ المطلوب ({t.currency})
+                      </label>
                       <input
                         type="number"
                         placeholder="أدخل المبلغ"
                         value={withdrawAmount}
                         onChange={e => setWithdrawAmount(e.target.value)}
-                        className="w-full border border-border bg-background rounded-lg px-3 py-2 text-center text-lg font-bold text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+                        className="border-border bg-background text-foreground focus:ring-primary/30 w-full rounded-lg border px-3 py-2 text-center text-lg font-bold focus:ring-2 focus:outline-none"
                       />
                     </div>
                     <button
                       onClick={handleWithdraw}
-                      className="bg-primary text-primary-foreground w-full flex items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold"
+                      className="bg-primary text-primary-foreground flex w-full items-center justify-center gap-2 rounded-lg py-2 text-sm font-semibold"
                     >
-                      <CheckCircle2 className="h-4 w-4" />تأكيد طلب السحب
+                      <CheckCircle2 className="h-4 w-4" />
+                      تأكيد طلب السحب
                     </button>
-                    <p className="text-[10px] text-muted-foreground text-center">سيتم تحويل المبلغ خلال 24-48 ساعة عمل</p>
+                    <p className="text-muted-foreground text-center text-[10px]">
+                      سيتم تحويل المبلغ خلال 24-48 ساعة عمل
+                    </p>
                   </div>
                 )}
               </div>
@@ -370,29 +413,37 @@ export default function StatsPage() {
             {/* Summary stat cards */}
             <div className="grid grid-cols-2 gap-3">
               {summaryStats.map(stat => (
-                <div key={stat.label} className="bg-card border border-border rounded-xl p-3.5">
-                  <div className="flex items-center justify-between mb-1.5">
+                <div key={stat.label} className="bg-card border-border rounded-xl border p-3.5">
+                  <div className="mb-1.5 flex items-center justify-between">
                     <stat.icon className={`h-4 w-4 ${stat.color}`} />
-                    <span className={`text-[10px] font-medium flex items-center gap-0.5 ${stat.change >= 0 ? 'text-green-500' : 'text-destructive'}`}>
-                      {stat.change >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                    <span
+                      className={`flex items-center gap-0.5 text-[10px] font-medium ${stat.change >= 0 ? 'text-green-500' : 'text-destructive'}`}
+                    >
+                      {stat.change >= 0 ? (
+                        <TrendingUp className="h-3 w-3" />
+                      ) : (
+                        <TrendingDown className="h-3 w-3" />
+                      )}
                       {Math.abs(stat.change)}%
                     </span>
                   </div>
-                  <span className="text-lg font-bold text-foreground block">
+                  <span className="text-foreground block text-lg font-bold">
                     {stat.value}
                     {'sub' in stat && stat.sub && (
-                      <span className="text-[10px] text-muted-foreground mr-1">{stat.sub}</span>
+                      <span className="text-muted-foreground mr-1 text-[10px]">{stat.sub}</span>
                     )}
                   </span>
-                  <span className="text-[11px] text-muted-foreground">{stat.label}</span>
+                  <span className="text-muted-foreground text-[11px]">{stat.label}</span>
                 </div>
               ))}
             </div>
 
             {/* Revenue Area Chart (last 7 days) */}
             {revenueChartData.length > 0 && (
-              <div className="bg-card border border-border rounded-xl p-4">
-                <h3 className="text-sm font-semibold text-foreground mb-4">{t.stats?.revenue || 'الإيرادات'}</h3>
+              <div className="bg-card border-border rounded-xl border p-4">
+                <h3 className="text-foreground mb-4 text-sm font-semibold">
+                  {t.stats?.revenue || 'الإيرادات'}
+                </h3>
                 <div className="h-48">
                   <ResponsiveContainer width="100%" height="100%">
                     <AreaChart data={revenueChartData}>
@@ -402,13 +453,36 @@ export default function StatsPage() {
                           <stop offset="95%" stopColor="hsl(191, 80%, 42%)" stopOpacity={0} />
                         </linearGradient>
                       </defs>
-                      <XAxis dataKey="day" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                      <XAxis
+                        dataKey="day"
+                        tick={{ fontSize: 10 }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
                       <YAxis hide />
                       <Tooltip
-                        contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(200,20%,90%)', backgroundColor: 'hsl(var(--card))' }}
-                        formatter={(v: number | undefined) => [`${(v ?? 0).toLocaleString('ar-IQ')} ${t.currency}`, t.stats?.revenue || 'الإيرادات']}
+                        contentStyle={{
+                          fontSize: 12,
+                          borderRadius: 8,
+                          border: '1px solid hsl(200,20%,90%)',
+                          backgroundColor: 'hsl(var(--card))',
+                        }}
+                        formatter={(value: ValueType) => {
+                          const v = typeof value === 'number' ? value : Number(value) || 0;
+
+                          return [
+                            `${v.toLocaleString('ar-IQ')} ${t.currency}`,
+                            t.stats?.revenue || 'الإيرادات',
+                          ];
+                        }}
                       />
-                      <Area type="monotone" dataKey="value" stroke="hsl(191, 80%, 42%)" strokeWidth={2} fill="url(#revenueGrad)" />
+                      <Area
+                        type="monotone"
+                        dataKey="value"
+                        stroke="hsl(191, 80%, 42%)"
+                        strokeWidth={2}
+                        fill="url(#revenueGrad)"
+                      />
                     </AreaChart>
                   </ResponsiveContainer>
                 </div>
@@ -416,15 +490,27 @@ export default function StatsPage() {
             )}
 
             {/* Orders Bar Chart */}
-            <div className="bg-card border border-border rounded-xl p-4">
-              <h3 className="text-sm font-semibold text-foreground mb-4">{t.orders?.title || 'الطلبات'}</h3>
+            <div className="bg-card border-border rounded-xl border p-4">
+              <h3 className="text-foreground mb-4 text-sm font-semibold">
+                {t.orders?.title || 'الطلبات'}
+              </h3>
               <div className="h-40">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={ordersChartData}>
-                    <XAxis dataKey="day" tick={{ fontSize: 10 }} axisLine={false} tickLine={false} />
+                    <XAxis
+                      dataKey="day"
+                      tick={{ fontSize: 10 }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
                     <YAxis hide allowDecimals={false} />
                     <Tooltip
-                      contentStyle={{ fontSize: 12, borderRadius: 8, border: '1px solid hsl(200,20%,90%)', backgroundColor: 'hsl(var(--card))' }}
+                      contentStyle={{
+                        fontSize: 12,
+                        borderRadius: 8,
+                        border: '1px solid hsl(200,20%,90%)',
+                        backgroundColor: 'hsl(var(--card))',
+                      }}
                       formatter={(v: number | undefined) => [`${v ?? 0} طلب`, 'الطلبات']}
                     />
                     <Bar dataKey="value" fill="hsl(191, 80%, 42%)" radius={[6, 6, 0, 0]} />
@@ -435,23 +521,25 @@ export default function StatsPage() {
 
             {/* Top Products */}
             {topProducts.length > 0 && (
-              <div className="bg-card border border-border rounded-xl">
+              <div className="bg-card border-border rounded-xl border">
                 <div className="p-4 pb-3">
-                  <h3 className="text-sm font-semibold text-foreground">{t.stats?.topProducts || 'أكثر المنتجات مبيعاً'}</h3>
+                  <h3 className="text-foreground text-sm font-semibold">
+                    {t.stats?.topProducts || 'أكثر المنتجات مبيعاً'}
+                  </h3>
                 </div>
-                <div className="divide-y divide-border">
+                <div className="divide-border divide-y">
                   {topProducts.map((p, i) => (
                     <div key={i} className="flex items-center gap-3 px-4 py-3">
-                      <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-[11px] font-bold text-primary flex-shrink-0">
+                      <span className="bg-primary/10 text-primary flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-bold">
                         {i + 1}
                       </span>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
-                        <p className="text-[11px] text-muted-foreground">{p.sales} مبيعة</p>
+                      <div className="min-w-0 flex-1">
+                        <p className="text-foreground truncate text-sm font-medium">{p.name}</p>
+                        <p className="text-muted-foreground text-[11px]">{p.sales} مبيعة</p>
                       </div>
-                      <span className="text-sm font-bold text-foreground whitespace-nowrap">
+                      <span className="text-foreground text-sm font-bold whitespace-nowrap">
                         {p.revenue.toLocaleString('ar-IQ')}
-                        <span className="text-[9px] text-muted-foreground mr-1">{t.currency}</span>
+                        <span className="text-muted-foreground mr-1 text-[9px]">{t.currency}</span>
                       </span>
                     </div>
                   ))}
@@ -461,9 +549,9 @@ export default function StatsPage() {
 
             {/* ══ Advanced Analytics ══ */}
             <div className="pt-2">
-              <div className="flex items-center gap-2 mb-4">
-                <BarChart3 className="h-5 w-5 text-primary" />
-                <h2 className="text-base font-bold text-foreground">تحليلات متقدمة</h2>
+              <div className="mb-4 flex items-center gap-2">
+                <BarChart3 className="text-primary h-5 w-5" />
+                <h2 className="text-foreground text-base font-bold">تحليلات متقدمة</h2>
               </div>
 
               {/* Tabs */}
@@ -472,9 +560,11 @@ export default function StatsPage() {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-1.5 flex-shrink-0 px-3.5 py-2 rounded-xl text-xs font-medium transition-all ${activeTab === tab.id
-                      ? 'bg-primary text-primary-foreground shadow-sm'
-                      : 'bg-card border border-border text-muted-foreground hover:text-foreground'}`}
+                    className={`flex flex-shrink-0 items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-medium transition-all ${
+                      activeTab === tab.id
+                        ? 'bg-primary text-primary-foreground shadow-sm'
+                        : 'bg-card border-border text-muted-foreground hover:text-foreground border'
+                    }`}
                   >
                     <tab.icon className="h-3.5 w-3.5" />
                     {tab.label}
@@ -486,200 +576,307 @@ export default function StatsPage() {
               {/* ── pull real arrays from API with safe fallbacks ── */}
               {(() => {
                 const governorateData = stats?.governorateData ?? [];
-                const deviceData      = stats?.deviceData      ?? [];
-                const deviceBrands    = stats?.deviceBrands    ?? [];
-                const trafficSources  = stats?.trafficSources  ?? [];
+                const deviceData = stats?.deviceData ?? [];
+                const deviceBrands = stats?.deviceBrands ?? [];
+                const trafficSources = stats?.trafficSources ?? [];
 
                 return (
                   <>
-              {activeTab === 'governorate' && (
-                <div className="bg-card border border-border rounded-2xl overflow-hidden">
-                  <div className="p-4 pb-3 border-b border-border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">الطلبات حسب المحافظة</h3>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">توزيع الطلبات الجغرافي</p>
-                      </div>
-                      <div className="bg-primary/10 rounded-lg px-2.5 py-1">
-                        <span className="text-[11px] font-bold text-primary">
-                          {stats?.orderCount ?? 0} طلب
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-4 space-y-2.5">
-                    {governorateData.length === 0 ? (
-                      <p className="text-center text-xs text-muted-foreground py-4">لا توجد طلبات بعد</p>
-                    ) : governorateData.map((gov, i) => (
-                      <div key={gov.name}>
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className={`w-5 h-5 rounded-md flex items-center justify-center text-[10px] font-bold ${i === 0 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}>
-                              {i + 1}
-                            </span>
-                            <span className="text-xs font-medium text-foreground">{gov.name}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-[11px] text-muted-foreground">{gov.orders} طلب</span>
-                            <span className="text-[11px] font-bold text-foreground w-8 text-left">{gov.percentage}%</span>
+                    {activeTab === 'governorate' && (
+                      <div className="bg-card border-border overflow-hidden rounded-2xl border">
+                        <div className="border-border border-b p-4 pb-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-foreground text-sm font-semibold">
+                                الطلبات حسب المحافظة
+                              </h3>
+                              <p className="text-muted-foreground mt-0.5 text-[11px]">
+                                توزيع الطلبات الجغرافي
+                              </p>
+                            </div>
+                            <div className="bg-primary/10 rounded-lg px-2.5 py-1">
+                              <span className="text-primary text-[11px] font-bold">
+                                {stats?.orderCount ?? 0} طلب
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                          <div
-                            className={`h-full rounded-full transition-all duration-700 ${i === 0 ? 'bg-primary' : i === 1 ? 'bg-primary/70' : 'bg-primary/40'}`}
-                            style={{ width: `${gov.percentage}%` }}
-                          />
+                        <div className="space-y-2.5 p-4">
+                          {governorateData.length === 0 ? (
+                            <p className="text-muted-foreground py-4 text-center text-xs">
+                              لا توجد طلبات بعد
+                            </p>
+                          ) : (
+                            governorateData.map((gov, i) => (
+                              <div key={gov.name}>
+                                <div className="mb-1 flex items-center justify-between">
+                                  <div className="flex items-center gap-2">
+                                    <span
+                                      className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-bold ${i === 0 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'}`}
+                                    >
+                                      {i + 1}
+                                    </span>
+                                    <span className="text-foreground text-xs font-medium">
+                                      {gov.name}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-muted-foreground text-[11px]">
+                                      {gov.orders} طلب
+                                    </span>
+                                    <span className="text-foreground w-8 text-left text-[11px] font-bold">
+                                      {gov.percentage}%
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                                  <div
+                                    className={`h-full rounded-full transition-all duration-700 ${i === 0 ? 'bg-primary' : i === 1 ? 'bg-primary/70' : 'bg-primary/40'}`}
+                                    style={{ width: `${gov.percentage}%` }}
+                                  />
+                                </div>
+                              </div>
+                            ))
+                          )}
                         </div>
                       </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                    )}
 
-              {/* Tab: Devices */}
-              {activeTab === 'device' && (
-                <div className="bg-card border border-border rounded-2xl overflow-hidden">
-                  <div className="p-4 pb-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">نوع الأجهزة</h3>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">الأجهزة المستخدمة لتصفح المتجر</p>
-                  </div>
-                  <div className="p-4">
-                    <div className="flex items-center justify-center mb-5">
-                      <div className="relative w-[200px] h-[200px]">
-                        <PieChart width={200} height={200}>
-                          <Pie data={deviceData} cx={100} cy={100} innerRadius={60} outerRadius={90} paddingAngle={4} dataKey="value" strokeWidth={0}>
-                            {deviceData.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                            formatter={(v: number | undefined, n: string | undefined) => [`${v ?? 0}%`, n ?? '']}
-                          />
-                        </PieChart>
-                        {deviceData[0] && (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                            <Smartphone className="h-5 w-5 text-primary mb-0.5" />
-                            <span className="text-xl font-bold text-foreground">{deviceData[0].value}%</span>
-                            <span className="text-[10px] text-muted-foreground">{deviceData[0].name}</span>
+                    {/* Tab: Devices */}
+                    {activeTab === 'device' && (
+                      <div className="bg-card border-border overflow-hidden rounded-2xl border">
+                        <div className="border-border border-b p-4 pb-3">
+                          <h3 className="text-foreground text-sm font-semibold">نوع الأجهزة</h3>
+                          <p className="text-muted-foreground mt-0.5 text-[11px]">
+                            الأجهزة المستخدمة لتصفح المتجر
+                          </p>
+                        </div>
+                        <div className="p-4">
+                          <div className="mb-5 flex items-center justify-center">
+                            <div className="relative h-[200px] w-[200px]">
+                              <PieChart width={200} height={200}>
+                                <Pie
+                                  data={deviceData}
+                                  cx={100}
+                                  cy={100}
+                                  innerRadius={60}
+                                  outerRadius={90}
+                                  paddingAngle={4}
+                                  dataKey="value"
+                                  strokeWidth={0}
+                                >
+                                  {deviceData.map((entry, i) => (
+                                    <Cell key={i} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <Tooltip
+                                  contentStyle={{ fontSize: 11, borderRadius: 8 }}
+                                  formatter={(v: number | undefined, n: string | undefined) => [
+                                    `${v ?? 0}%`,
+                                    n ?? '',
+                                  ]}
+                                />
+                              </PieChart>
+                              {deviceData[0] && (
+                                <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
+                                  <Smartphone className="text-primary mb-0.5 h-5 w-5" />
+                                  <span className="text-foreground text-xl font-bold">
+                                    {deviceData[0].value}%
+                                  </span>
+                                  <span className="text-muted-foreground text-[10px]">
+                                    {deviceData[0].name}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           </div>
+                          {deviceData.length === 0 ? (
+                            <p className="text-muted-foreground py-2 text-center text-xs">
+                              لا توجد بيانات بعد
+                            </p>
+                          ) : (
+                            <div className="space-y-3">
+                              {deviceData.map(device => {
+                                const Icon = DEVICE_ICON_MAP[device.icon] ?? Smartphone;
+                                return (
+                                  <div
+                                    key={device.name}
+                                    className="bg-muted/30 flex items-center gap-3 rounded-xl p-3"
+                                  >
+                                    <div
+                                      className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg"
+                                      style={{ backgroundColor: `${device.color}15` }}
+                                    >
+                                      <Icon className="h-4 w-4" style={{ color: device.color }} />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                      <div className="mb-1 flex items-center justify-between">
+                                        <span className="text-foreground text-xs font-medium">
+                                          {device.name}
+                                        </span>
+                                        <span className="text-foreground text-xs font-bold">
+                                          {device.value}%
+                                        </span>
+                                      </div>
+                                      <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                                        <div
+                                          className="h-full rounded-full"
+                                          style={{
+                                            width: `${device.value}%`,
+                                            backgroundColor: device.color,
+                                          }}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+                          {deviceBrands.length > 0 && (
+                            <div className="border-border mt-5 border-t pt-4">
+                              <h4 className="text-foreground mb-3 text-xs font-semibold">
+                                الأنظمة والعلامات التجارية
+                              </h4>
+                              <div className="space-y-2.5">
+                                {deviceBrands.map(brand => (
+                                  <div key={brand.name} className="flex items-center gap-3">
+                                    <span className="text-foreground w-20 flex-shrink-0 truncate text-xs font-medium">
+                                      {brand.name}
+                                    </span>
+                                    <div className="bg-muted h-2 flex-1 overflow-hidden rounded-full">
+                                      <div
+                                        className="h-full rounded-full"
+                                        style={{
+                                          width: `${brand.percentage}%`,
+                                          backgroundColor: brand.color,
+                                        }}
+                                      />
+                                    </div>
+                                    <span className="text-foreground w-8 flex-shrink-0 text-left text-[11px] font-bold">
+                                      {brand.percentage}%
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tab: Page Visits */}
+                    {activeTab === 'pages' && (
+                      <div className="bg-card border-border overflow-hidden rounded-2xl border">
+                        <div className="border-border border-b p-4 pb-3">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <h3 className="text-foreground text-sm font-semibold">
+                                زيارات المتجر
+                              </h3>
+                              <p className="text-muted-foreground mt-0.5 text-[11px]">
+                                إجمالي زيارات متجرك
+                              </p>
+                            </div>
+                            <div className="rounded-lg bg-green-500/10 px-2.5 py-1">
+                              <span className="text-[11px] font-bold text-green-600">
+                                {visitCount.toLocaleString('ar-IQ')} زيارة
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-center justify-center gap-2 p-6">
+                          <Eye className="text-primary h-10 w-10 opacity-70" />
+                          <p className="text-foreground text-2xl font-extrabold">
+                            {visitCount.toLocaleString('ar-IQ')}
+                          </p>
+                          <p className="text-muted-foreground text-xs">إجمالي الزيارات</p>
+                          <p className="text-muted-foreground mt-1 text-[11px]">
+                            {Math.round(visitCount * 0.75).toLocaleString('ar-IQ')} زائر فريد
+                            تقريباً
+                          </p>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Tab: Traffic Sources */}
+                    {activeTab === 'sources' && (
+                      <div className="bg-card border-border overflow-hidden rounded-2xl border">
+                        <div className="border-border border-b p-4 pb-3">
+                          <h3 className="text-foreground text-sm font-semibold">مصادر الزيارات</h3>
+                          <p className="text-muted-foreground mt-0.5 text-[11px]">
+                            من أين يأتي زبائنك
+                          </p>
+                        </div>
+                        {trafficSources.length === 0 ? (
+                          <p className="text-muted-foreground py-8 text-center text-xs">
+                            لا توجد بيانات بعد
+                          </p>
+                        ) : (
+                          <>
+                            <div className="flex items-center justify-center py-4">
+                              <PieChart width={200} height={200}>
+                                <Pie
+                                  data={trafficSources}
+                                  cx={100}
+                                  cy={100}
+                                  innerRadius={50}
+                                  outerRadius={85}
+                                  paddingAngle={3}
+                                  dataKey="value"
+                                  strokeWidth={0}
+                                >
+                                  {trafficSources.map((entry, i) => (
+                                    <Cell key={i} fill={entry.color} />
+                                  ))}
+                                </Pie>
+                                <Tooltip
+                                  contentStyle={{ fontSize: 11, borderRadius: 8 }}
+                                  formatter={(v: number | undefined, n: string | undefined) => [
+                                    `${v ?? 0}%`,
+                                    n ?? '',
+                                  ]}
+                                />
+                              </PieChart>
+                            </div>
+                            <div className="space-y-2 px-4 pb-4">
+                              {trafficSources.map(source => (
+                                <div
+                                  key={source.name}
+                                  className="bg-muted/30 flex items-center gap-3 rounded-xl p-3"
+                                >
+                                  <div
+                                    className="flex h-9 w-9 items-center justify-center rounded-lg text-lg"
+                                    style={{ backgroundColor: `${source.color}12` }}
+                                  >
+                                    {source.emoji}
+                                  </div>
+                                  <div className="flex-1">
+                                    <div className="mb-1 flex items-center justify-between">
+                                      <span className="text-foreground text-xs font-medium">
+                                        {source.name}
+                                      </span>
+                                      <span className="text-foreground text-xs font-bold">
+                                        {source.value}%
+                                      </span>
+                                    </div>
+                                    <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                                      <div
+                                        className="h-full rounded-full"
+                                        style={{
+                                          width: `${source.value}%`,
+                                          backgroundColor: source.color,
+                                        }}
+                                      />
+                                    </div>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </>
                         )}
                       </div>
-                    </div>
-                    {deviceData.length === 0 ? (
-                      <p className="text-center text-xs text-muted-foreground py-2">لا توجد بيانات بعد</p>
-                    ) : (
-                      <div className="space-y-3">
-                        {deviceData.map(device => {
-                          const Icon = DEVICE_ICON_MAP[device.icon] ?? Smartphone;
-                          return (
-                            <div key={device.name} className="flex items-center gap-3 bg-muted/30 rounded-xl p-3">
-                              <div className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0" style={{ backgroundColor: `${device.color}15` }}>
-                                <Icon className="h-4 w-4" style={{ color: device.color }} />
-                              </div>
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center justify-between mb-1">
-                                  <span className="text-xs font-medium text-foreground">{device.name}</span>
-                                  <span className="text-xs font-bold text-foreground">{device.value}%</span>
-                                </div>
-                                <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                  <div className="h-full rounded-full" style={{ width: `${device.value}%`, backgroundColor: device.color }} />
-                                </div>
-                              </div>
-                            </div>
-                          );
-                        })}
-                      </div>
                     )}
-                    {deviceBrands.length > 0 && (
-                      <div className="mt-5 pt-4 border-t border-border">
-                        <h4 className="text-xs font-semibold text-foreground mb-3">الأنظمة والعلامات التجارية</h4>
-                        <div className="space-y-2.5">
-                          {deviceBrands.map(brand => (
-                            <div key={brand.name} className="flex items-center gap-3">
-                              <span className="text-xs font-medium text-foreground w-20 flex-shrink-0 truncate">{brand.name}</span>
-                              <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full rounded-full" style={{ width: `${brand.percentage}%`, backgroundColor: brand.color }} />
-                              </div>
-                              <span className="text-[11px] font-bold text-foreground w-8 text-left flex-shrink-0">{brand.percentage}%</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Page Visits */}
-              {activeTab === 'pages' && (
-                <div className="bg-card border border-border rounded-2xl overflow-hidden">
-                  <div className="p-4 pb-3 border-b border-border">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <h3 className="text-sm font-semibold text-foreground">زيارات المتجر</h3>
-                        <p className="text-[11px] text-muted-foreground mt-0.5">إجمالي زيارات متجرك</p>
-                      </div>
-                      <div className="bg-green-500/10 rounded-lg px-2.5 py-1">
-                        <span className="text-[11px] font-bold text-green-600">
-                          {visitCount.toLocaleString('ar-IQ')} زيارة
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="p-6 flex flex-col items-center justify-center gap-2">
-                    <Eye className="h-10 w-10 text-primary opacity-70" />
-                    <p className="text-2xl font-extrabold text-foreground">{visitCount.toLocaleString('ar-IQ')}</p>
-                    <p className="text-xs text-muted-foreground">إجمالي الزيارات</p>
-                    <p className="text-[11px] text-muted-foreground mt-1">
-                      {Math.round(visitCount * 0.75).toLocaleString('ar-IQ')} زائر فريد تقريباً
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {/* Tab: Traffic Sources */}
-              {activeTab === 'sources' && (
-                <div className="bg-card border border-border rounded-2xl overflow-hidden">
-                  <div className="p-4 pb-3 border-b border-border">
-                    <h3 className="text-sm font-semibold text-foreground">مصادر الزيارات</h3>
-                    <p className="text-[11px] text-muted-foreground mt-0.5">من أين يأتي زبائنك</p>
-                  </div>
-                  {trafficSources.length === 0 ? (
-                    <p className="text-center text-xs text-muted-foreground py-8">لا توجد بيانات بعد</p>
-                  ) : (
-                    <>
-                      <div className="flex items-center justify-center py-4">
-                        <PieChart width={200} height={200}>
-                          <Pie data={trafficSources} cx={100} cy={100} innerRadius={50} outerRadius={85} paddingAngle={3} dataKey="value" strokeWidth={0}>
-                            {trafficSources.map((entry, i) => <Cell key={i} fill={entry.color} />)}
-                          </Pie>
-                          <Tooltip
-                            contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                            formatter={(v: number | undefined, n: string | undefined) => [`${v ?? 0}%`, n ?? '']}
-                          />
-                        </PieChart>
-                      </div>
-                      <div className="px-4 pb-4 space-y-2">
-                        {trafficSources.map(source => (
-                          <div key={source.name} className="flex items-center gap-3 bg-muted/30 rounded-xl p-3">
-                            <div className="w-9 h-9 rounded-lg flex items-center justify-center text-lg" style={{ backgroundColor: `${source.color}12` }}>
-                              {source.emoji}
-                            </div>
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs font-medium text-foreground">{source.name}</span>
-                                <span className="text-xs font-bold text-foreground">{source.value}%</span>
-                              </div>
-                              <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-                                <div className="h-full rounded-full" style={{ width: `${source.value}%`, backgroundColor: source.color }} />
-                              </div>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-              )}
                   </>
                 );
               })()}
