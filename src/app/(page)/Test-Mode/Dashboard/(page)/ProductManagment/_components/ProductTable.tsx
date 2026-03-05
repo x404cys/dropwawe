@@ -25,6 +25,7 @@ const FAKE_PRODUCTS: Product[] = [
     shippingType: 'COURIER',
     hasReturnPolicy: 'لا يوجد',
     discount: 10,
+    priceBeforeDiscount: 1050000,
     image: '/img-landing-page/9.png',
   },
   {
@@ -37,6 +38,7 @@ const FAKE_PRODUCTS: Product[] = [
     shippingType: 'COURIER',
     hasReturnPolicy: 'لا يوجد',
     discount: 10,
+    priceBeforeDiscount: 860000,
     image: '/img-landing-page/9.png',
   },
   {
@@ -49,6 +51,7 @@ const FAKE_PRODUCTS: Product[] = [
     shippingType: 'COURIER',
     hasReturnPolicy: 'لا يوجد',
     discount: 10,
+    priceBeforeDiscount: 1320000,
     image: '/img-landing-page/10.png',
   },
   {
@@ -61,6 +64,7 @@ const FAKE_PRODUCTS: Product[] = [
     shippingType: 'COURIER',
     hasReturnPolicy: 'لا يوجد',
     discount: 10,
+    priceBeforeDiscount: 1210000,
     image: '/img-landing-page/10.png',
   },
 ];
