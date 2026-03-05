@@ -40,6 +40,7 @@ import { useLanguage } from '../../context/LanguageContext';
 import { useStoreProvider } from '../../context/StoreContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 const PERIODS = ['اليوم', 'هذا الأسبوع', 'هذا الشهر', 'هذه السنة'];
 
@@ -467,13 +468,12 @@ export default function StatsPage() {
                           border: '1px solid hsl(200,20%,90%)',
                           backgroundColor: 'hsl(var(--card))',
                         }}
-                        formatter={(value: string | number | readonly (string | number)[] | undefined) => {
+                        formatter={(
+                          value: string | number | readonly (string | number)[] | undefined
+                        ) => {
                           const v = typeof value === 'number' ? value : Number(value) || 0;
 
-                          return [
-                            `${v.toLocaleString('ar-IQ')} ${t.currency}`,
-                            t.stats?.revenue || 'الإيرادات',
-                          ];
+                          return [`${formatIQD(v)} ${t.currency}`, t.stats?.revenue || 'الإيرادات'];
                         }}
                       />
                       <Area
@@ -511,7 +511,7 @@ export default function StatsPage() {
                         border: '1px solid hsl(200,20%,90%)',
                         backgroundColor: 'hsl(var(--card))',
                       }}
-                      formatter={(v: number | undefined) => [`${v ?? 0} طلب`, 'الطلبات']}
+                      formatter={(v: string | number | readonly (string | number)[] | undefined) => [`${typeof v === 'number' ? v : Number(v) || 0} طلب`, 'الطلبات']}
                     />
                     <Bar dataKey="value" fill="hsl(191, 80%, 42%)" radius={[6, 6, 0, 0]} />
                   </BarChart>
