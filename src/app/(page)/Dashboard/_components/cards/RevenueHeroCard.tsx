@@ -105,8 +105,8 @@ export default function RevenueHeroCard({
                 fontSize: 11,
                 color: 'hsl(var(--foreground))',
               }}
-              formatter={(value: number | undefined) => [
-                `${(value ?? 0).toLocaleString(lang === 'ar' ? 'ar-IQ' : 'en-US')} ${t?.currency || 'د.ع'}`,
+              formatter={(value: string | number | readonly (string | number)[] | undefined) => [
+                `${(typeof value === 'number' ? value : Number(value) || 0).toLocaleString(lang === 'ar' ? 'ar-IQ' : 'en-US')} ${t?.currency || 'د.ع'}`,
                 t.stats?.revenue || 'العوائد',
               ]}
             />
