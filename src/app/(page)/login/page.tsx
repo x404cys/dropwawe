@@ -36,9 +36,9 @@ export default function SignInPage() {
         <div className="w-full max-w-sm space-y-8 text-center">
            <div className="space-y-3">
             <div className="w-20 h-20 rounded-2xl overflow-hidden mx-auto">
-              <img src={'./Logo-Matager/Matager-logo1.PNG'} alt="ماتاجر" className="w-full h-full object-cover" />
+              <img src={'./Logo-Matager/Matager-logo1.PNG'} alt="متاجر" className="w-full h-full object-cover" />
             </div>
-            <h1 className="text-2xl font-bold text-foreground">ماتاجر</h1>
+            <h1 className="text-2xl font-bold text-foreground">متاجر</h1>
             <p className="text-sm text-muted-foreground leading-relaxed">
               أنشئ متجرك الإلكتروني في دقائق وابدأ البيع فوراً
             </p>
