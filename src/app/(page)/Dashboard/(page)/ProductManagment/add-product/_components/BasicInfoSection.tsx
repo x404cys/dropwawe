@@ -16,12 +16,12 @@ interface BasicInfoSectionProps {
 export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicInfoSectionProps) {
   const { t } = useLanguage();
   return (
-    <div className=" ">
+    <div className=" text-foreground">
       <div className="p-6">
         <div className="space-y-5">
           <ModernInputGroup
             label={t.inventory?.productName || 'اسم المنتج'}
-            icon={<Package className="h-4 w-4 text-muted-foreground" />}
+            icon={<Package className="h-4 w-4 text-foreground" />}
             value={newProduct.name}
             onChange={(value: any) => setNewProduct({ ...newProduct, name: value })}
             placeholder={t.inventory?.productNamePlaceholder || 'أدخل اسم المنتج (مثال: تيشرت قطن)'}

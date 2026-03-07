@@ -328,7 +328,7 @@ export default function ProductAddPage() {
   };
 
   return (
-    <div className="mb-20 min-h-screen bg-white" dir="rtl">
+    <div className="mb-20 min-h-screen bg-background text-foreground" dir="rtl">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-2 lg:grid-cols-3">
           <div className="lg:col-span-2">

@@ -23,12 +23,18 @@ export async function proxy(req: NextRequest) {
         url.pathname = url.pathname.startsWith('/login') ? url.pathname : `/login${url.pathname}`;
         return NextResponse.rewrite(url);
 
-      case 'dashboard':
-        url.pathname = url.pathname.startsWith('/Dashboard')
-          ? url.pathname
-          : `/Dashboard${url.pathname}`;
-        return NextResponse.rewrite(url);
+      case 'dashboard': {
+        const hostname = req.headers.get('host') || '';
+        const subdomain = hostname.split('.')[0]; // افترض subdomain.domain.com
 
+        if (subdomain === 'dashboard') {
+          url.pathname = url.pathname.startsWith('/Dashboard')
+            ? url.pathname
+            : `/Dashboard${url.pathname}`;
+        }
+
+        return NextResponse.rewrite(url);
+      }
       case 'supplier':
         url.pathname = url.pathname.startsWith('/Supplier/Dashboard')
           ? url.pathname

@@ -17,7 +17,7 @@ export function SubmitButton({ loading, onClick }: SubmitButtonProps) {
     <Button
       onClick={onClick}
       disabled={loading}
-      className="mt-6 w-full gap-2 rounded-2xl bg-sky-500 py-6 text-white transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="mt-6 w-full gap-2 rounded-2xl bg-primary py-6 text-foreground transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {loading ? (
         <>

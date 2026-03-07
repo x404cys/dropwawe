@@ -27,8 +27,8 @@ export function ModernInputGroup({
   onBlur,
 }: ModernInputGroupProps) {
   return (
-    <div className="flex w-full flex-col gap-2 rounded-2xl">
-      <label className="text-sm text-black">
+    <div className="flex w-full text-foreground flex-col gap-2 rounded-2xl">
+      <label className="text-sm text-foreground">
         {label} {required && <span className="text-red-500">*</span>}
       </label>
 
