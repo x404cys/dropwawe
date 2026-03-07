@@ -3,6 +3,7 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import { z } from 'zod';
+import { ca } from 'date-fns/locale';
 
 const storeSchema = z.object({
   name: z
@@ -45,6 +46,7 @@ const storeSchema = z.object({
   snapPixel: z.string().optional(),
   storeId: z.string().optional(),
   image: z.string().optional(),
+  category: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -110,6 +112,7 @@ export async function POST(req: Request) {
           tiktokPixel: parsed.data.tiktokPixel ?? '',
           googlePixel: parsed.data.googlePixel ?? '',
           snapPixel: parsed.data.snapPixel ?? '',
+          category: parsed.data.category ?? '',
           ...(parsed.data.image ? { image: parsed.data.image } : {}),
         },
       });
@@ -129,6 +132,7 @@ export async function POST(req: Request) {
           telegram: parsed.data.telegram,
           description: parsed.data.description,
           active: parsed.data.active ?? true,
+          category: parsed.data.category ?? '',
           ...(parsed.data.image ? { image: parsed.data.image } : {}),
           users: {
             create: {

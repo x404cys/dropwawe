@@ -228,7 +228,7 @@ export default function StoreSetupPage() {
                   )}
                 </div>
                 <span
-                  className={`text-xs font-bold transition-colors duration-500 md:text-sm ${progress >= 30 ? 'text-foreground' : 'text-primary'}`}
+                  className={`md: text-xs font-bold transition-colors duration-500 ${progress >= 30 ? 'text-foreground' : 'text-primary'}`}
                 >
                   معالجة البيانات
                 </span>
@@ -244,7 +244,7 @@ export default function StoreSetupPage() {
                   ) : null}
                 </div>
                 <span
-                  className={`text-xs transition-colors duration-500 md:text-sm ${progress >= 70 ? 'text-foreground font-bold' : progress >= 30 ? 'text-primary font-bold' : 'text-muted-foreground font-medium'}`}
+                  className={`md: text-xs transition-colors duration-500 ${progress >= 70 ? 'text-foreground font-bold' : progress >= 30 ? 'text-primary font-bold' : 'text-muted-foreground font-medium'}`}
                 >
                   تأسيس المتجر
                 </span>
@@ -260,7 +260,7 @@ export default function StoreSetupPage() {
                   ) : null}
                 </div>
                 <span
-                  className={`text-xs transition-colors duration-500 md:text-sm ${progress >= 100 ? 'text-foreground font-bold' : progress >= 95 ? 'text-primary font-bold' : 'text-muted-foreground font-medium'}`}
+                  className={`md: text-xs transition-colors duration-500 ${progress >= 100 ? 'text-foreground font-bold' : progress >= 95 ? 'text-primary font-bold' : 'text-muted-foreground font-medium'}`}
                 >
                   إطلاق الواجهة
                 </span>
@@ -316,14 +316,14 @@ export default function StoreSetupPage() {
                 </div>
                 <div>
                   <h3 className="mb-0.5 text-base font-bold text-white">{feature.title}</h3>
-                  <p className="text-primary-foreground/70 text-sm">{feature.desc}</p>
+                  <p className="text-primary-foreground/70">{feature.desc}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
 
-        <div className="text-primary-foreground/60 relative z-10 text-sm">
+        <div className="text-primary-foreground/60 relative z-10">
           © {new Date().getFullYear()} متاجر. جميع الحقوق محفوظة.
         </div>
       </div>
@@ -345,9 +345,7 @@ export default function StoreSetupPage() {
             <h2 className="text-foreground text-3xl font-extrabold tracking-tight">
               قم بإعداد متجرك
             </h2>
-            <p className="text-muted-foreground mt-2 text-sm">
-              خطوة واحدة تفصلك عن إطلاق متجرك المتكامل.
-            </p>
+            <p className="text-muted-foreground mt-2">خطوة واحدة تفصلك عن إطلاق متجرك المتكامل.</p>
           </div>
 
           <div className="space-y-5">
@@ -372,7 +370,7 @@ export default function StoreSetupPage() {
                       }
                     }}
                     placeholder="متجر الأناقة"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 text-sm focus:ring-1 ${fieldErrors.name ? 'border-destructive focus:border-destructive' : ''}`}
+                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.name ? 'border-destructive focus:border-destructive' : ''}`}
                   />
                 </div>
                 {fieldErrors.name && (
@@ -399,7 +397,7 @@ export default function StoreSetupPage() {
                       setStoreSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
                     }
                     placeholder="mystore"
-                    className="text-foreground placeholder:text-muted-foreground h-full w-full min-w-0 flex-1 bg-transparent px-3 text-sm outline-none"
+                    className="text-foreground placeholder:text-muted-foreground h-full w-full min-w-0 flex-1 bg-transparent px-3 outline-none"
                     dir="ltr"
                   />
                 </div>
@@ -443,7 +441,7 @@ export default function StoreSetupPage() {
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="07XXXXXXXXX"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 text-sm focus:ring-1 ${fieldErrors.phone ? 'border-destructive focus:border-destructive' : ''}`}
+                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.phone ? 'border-destructive focus:border-destructive' : ''}`}
                     dir="ltr"
                     type="tel"
                   />
@@ -463,7 +461,7 @@ export default function StoreSetupPage() {
                     value={shippingPrice}
                     onChange={e => setShippingPrice(e.target.value)}
                     placeholder="5000"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 text-sm focus:ring-1 ${fieldErrors.shippingPrice ? 'border-destructive focus:border-destructive' : ''}`}
+                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.shippingPrice ? 'border-destructive focus:border-destructive' : ''}`}
                     dir="ltr"
                     type="number"
                   />
@@ -482,7 +480,7 @@ export default function StoreSetupPage() {
                 value={storeDescription}
                 onChange={e => setStoreDescription(e.target.value)}
                 placeholder="اكتب وصفاً جذاباً عن متجرك وما تقدمه لعملائك..."
-                className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 min-h-[100px] resize-none rounded-xl p-4 text-sm focus:ring-1 ${fieldErrors.description ? 'border-destructive focus:border-destructive' : ''}`}
+                className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 min-h-[100px] resize-none rounded-xl p-4 focus:ring-1 ${fieldErrors.description ? 'border-destructive focus:border-destructive' : ''}`}
                 maxLength={200}
               />
               <div className="mt-1 flex items-center justify-between">
@@ -502,7 +500,7 @@ export default function StoreSetupPage() {
             <Button
               onClick={handleComplete}
               disabled={loading}
-              className="h-12 w-full rounded-xl text-sm font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
+              className="h-12 w-full rounded-xl font-bold shadow-md transition-all hover:shadow-lg active:scale-[0.98]"
             >
               {loading ? (
                 <span className="flex items-center gap-2">
