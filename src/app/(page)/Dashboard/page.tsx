@@ -22,7 +22,6 @@ import { OrderDetails } from '../Test-Mode/Dashboard/(page)/orderDetails/[orderI
 import { TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { useDashboardTour } from '@/lib/tour/useDashboardTour';
 import { MapPin } from 'lucide-react';
 
 type ProfitResponse = {
@@ -37,7 +36,6 @@ export default function Dashboard() {
   const { currentStore } = useStoreProvider();
 
   const { data, loading } = useDashboardData(userId);
-  const { startTour } = useDashboardTour();
 
   const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -156,15 +154,6 @@ export default function Dashboard() {
       <section dir="rtl" className="min-h-screen md:hidden">
         <main className="flex-1 space-y-4 px-1 py-2 pb-10">
           {/* Start Tour Button — mobile */}
-          <div className="flex justify-end">
-            <button
-              onClick={startTour}
-              className="text-primary hover:text-primary/80 hover:bg-primary/10 flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold transition-colors"
-            >
-              <MapPin className="h-3.5 w-3.5" />
-              ابدأ الجولة
-            </button>
-          </div>
 
           <div id="mobile-revenue-card">
             <RevenueHeroCard />

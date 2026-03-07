@@ -1,5 +1,4 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
 
 import type React from 'react';
 import { useState } from 'react';
@@ -25,6 +24,7 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 interface PaymentMethod {
   id: string;
@@ -187,7 +187,7 @@ export default function StoreSetupSupplier() {
     onRemove: () => void;
   }) => (
     <div className="space-y-2">
-      <label className="text-sm font-medium text-foreground">{label}</label>
+      <label className="text-foreground text-sm font-medium">{label}</label>
       <div className="group relative">
         <input
           id={id}
@@ -200,7 +200,7 @@ export default function StoreSetupSupplier() {
           }}
         />
         {preview ? (
-          <div className="relative overflow-hidden rounded-xl border-2 border-border">
+          <div className="border-border relative overflow-hidden rounded-xl border-2">
             <img
               src={preview || '/placeholder.svg'}
               alt="Preview"
@@ -209,19 +209,19 @@ export default function StoreSetupSupplier() {
             <button
               type="button"
               onClick={onRemove}
-              className="absolute top-2 right-2 rounded-full bg-card/90 p-1.5 shadow-lg transition hover:bg-card"
+              className="bg-card/90 hover:bg-card absolute top-2 right-2 rounded-full p-1.5 shadow-lg transition"
             >
-              <X className="h-4 w-4 text-foreground" />
+              <X className="text-foreground h-4 w-4" />
             </button>
           </div>
         ) : (
           <label
             htmlFor={id}
-            className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-muted transition hover:border-gray-400 hover:bg-muted"
+            className="bg-muted hover:bg-muted flex h-40 cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-gray-300 transition hover:border-gray-400"
           >
-            <Upload className="mb-2 h-8 w-8 text-muted-foreground" />
-            <p className="text-sm font-medium text-foreground">اضغط لرفع الصورة</p>
-            <p className="text-xs text-muted-foreground">PNG, JPG, GIF</p>
+            <Upload className="text-muted-foreground mb-2 h-8 w-8" />
+            <p className="text-foreground text-sm font-medium">اضغط لرفع الصورة</p>
+            <p className="text-muted-foreground text-xs">PNG, JPG, GIF</p>
           </label>
         )}
       </div>
@@ -232,8 +232,8 @@ export default function StoreSetupSupplier() {
     <div dir="rtl" className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
       <div className="mx-auto max-w-3xl">
         <div className="mb-8 text-center">
-          <h1 className="mb-2 text-3xl font-bold text-foreground">سجل كمورّد</h1>
-          <p className="text-balance text-muted-foreground">
+          <h1 className="text-foreground mb-2 text-3xl font-bold">سجل كمورّد</h1>
+          <p className="text-muted-foreground text-balance">
             انضم كمورّد الآن في دقائق، وابدأ بعرض منتجاتك للتجار والمتاجر بسهولة{' '}
           </p>
         </div>
@@ -245,7 +245,7 @@ export default function StoreSetupSupplier() {
                 <div className="flex flex-col items-center">
                   <button
                     onClick={() => setActiveSection(index)}
-                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${index <= activeSection ? 'border-black bg-black text-white' : 'border-gray-300 bg-card text-muted-foreground'} `}
+                    className={`flex h-10 w-10 items-center justify-center rounded-full border-2 transition-all ${index <= activeSection ? 'border-black bg-black text-white' : 'bg-card text-muted-foreground border-gray-300'} `}
                   >
                     {index < activeSection ? (
                       <Check className="h-5 w-5" />
@@ -254,7 +254,7 @@ export default function StoreSetupSupplier() {
                     )}
                   </button>
 
-                  <span className="mt-2 hidden text-[11px] font-medium text-muted-foreground sm:block">
+                  <span className="text-muted-foreground mt-2 hidden text-[11px] font-medium sm:block">
                     {step.label}
                   </span>
                 </div>
@@ -269,7 +269,7 @@ export default function StoreSetupSupplier() {
           </div>
         </div>
 
-        <div className="rounded-2xl bg-card p-6 shadow-lg sm:p-8">
+        <div className="bg-card rounded-2xl p-6 shadow-lg sm:p-8">
           {Object.keys(fieldErrors).length > 0 && (
             <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
               <p className="text-sm font-medium text-red-800">يرجى تصحيح الأخطاء التالية:</p>
@@ -286,7 +286,7 @@ export default function StoreSetupSupplier() {
               <div className="space-y-6">
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       رابط المتجر
                     </label>
                     <div className="relative">
@@ -301,9 +301,9 @@ export default function StoreSetupSupplier() {
                         placeholder="متجري"
                         className={`pr-10 ${fieldErrors.subLink ? 'border-red-500' : ''}`}
                       />
-                      <Link2 className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Link2 className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">
+                    <p className="text-muted-foreground mt-1 text-xs">
                       {storeSlug || 'متجري'}.matager.store
                     </p>
                     {fieldErrors.subLink && (
@@ -312,7 +312,10 @@ export default function StoreSetupSupplier() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground"> {t.profile.storeName} </label>
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {' '}
+                      {t.profile.storeName}{' '}
+                    </label>
                     <div className="relative">
                       <Input
                         value={storeName}
@@ -320,7 +323,7 @@ export default function StoreSetupSupplier() {
                         placeholder="متجر الإلكترونيات"
                         className={`pr-10 ${fieldErrors.name ? 'border-red-500' : ''}`}
                       />
-                      <Store className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Store className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
                     {fieldErrors.name && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.name}</p>
@@ -328,7 +331,10 @@ export default function StoreSetupSupplier() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground"> {t.profile.storeDesc} </label>
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {' '}
+                      {t.profile.storeDesc}{' '}
+                    </label>
                     <Textarea
                       value={description}
                       onChange={e => setDescription(e.target.value)}
@@ -384,7 +390,10 @@ export default function StoreSetupSupplier() {
               <div className="space-y-6">
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground"> {t.profile.phone} </label>
+                    <label className="text-foreground mb-2 block text-sm font-medium">
+                      {' '}
+                      {t.profile.phone}{' '}
+                    </label>
                     <div className="relative">
                       <Input
                         value={phone}
@@ -392,7 +401,7 @@ export default function StoreSetupSupplier() {
                         placeholder="07xxxxxxxxx"
                         className={`pr-10 ${fieldErrors.phone ? 'border-red-500' : ''}`}
                       />
-                      <Phone className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Phone className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
                     {fieldErrors.phone && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.phone}</p>
@@ -400,7 +409,7 @@ export default function StoreSetupSupplier() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       سعر التوصيل
                     </label>
                     <div className="relative">
@@ -410,9 +419,9 @@ export default function StoreSetupSupplier() {
                         placeholder="5000"
                         className={`pr-10 ${fieldErrors.shippingPrice ? 'border-red-500' : ''}`}
                       />
-                      <Truck className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Truck className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
-                    <p className="mt-1 text-xs text-muted-foreground">بالدينار العراقي</p>
+                    <p className="text-muted-foreground mt-1 text-xs">بالدينار العراقي</p>
                     {fieldErrors.shippingPrice && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.shippingPrice}</p>
                     )}
@@ -423,12 +432,12 @@ export default function StoreSetupSupplier() {
 
             {activeSection === 2 && (
               <div className="space-y-6">
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   أضف روابط حساباتك الاجتماعية لزيادة التواصل مع العملاء
                 </p>
                 <div className="space-y-4">
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       فيسبوك (اختياري)
                     </label>
                     <div className="relative">
@@ -438,7 +447,7 @@ export default function StoreSetupSupplier() {
                         placeholder="https://facebook.com/yourpage"
                         className={`pr-10 ${fieldErrors.facebookLink ? 'border-red-500' : ''}`}
                       />
-                      <Facebook className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Facebook className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
                     {fieldErrors.facebookLink && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.facebookLink}</p>
@@ -446,7 +455,7 @@ export default function StoreSetupSupplier() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       إنستغرام (اختياري)
                     </label>
                     <div className="relative">
@@ -456,7 +465,7 @@ export default function StoreSetupSupplier() {
                         placeholder="https://instagram.com/yourpage"
                         className={`pr-10 ${fieldErrors.instaLink ? 'border-red-500' : ''}`}
                       />
-                      <Instagram className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Instagram className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
                     {fieldErrors.instaLink && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.instaLink}</p>
@@ -464,7 +473,7 @@ export default function StoreSetupSupplier() {
                   </div>
 
                   <div>
-                    <label className="mb-2 block text-sm font-medium text-foreground">
+                    <label className="text-foreground mb-2 block text-sm font-medium">
                       تيليجرام (اختياري)
                     </label>
                     <div className="relative">
@@ -474,7 +483,7 @@ export default function StoreSetupSupplier() {
                         placeholder="https://t.me/yourpage"
                         className={`pr-10 ${fieldErrors.telegram ? 'border-red-500' : ''}`}
                       />
-                      <Send className="absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                      <Send className="text-muted-foreground absolute top-1/2 right-3 h-5 w-5 -translate-y-1/2" />
                     </div>
                     {fieldErrors.telegram && (
                       <p className="mt-1 text-xs text-red-600">{fieldErrors.telegram}</p>
@@ -487,8 +496,8 @@ export default function StoreSetupSupplier() {
             {activeSection === 3 && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="mb-2 text-lg font-semibold text-foreground">طرق الدفع المتاحة</h3>
-                  <p className="text-sm text-muted-foreground">اختر طرق الدفع التي تدعمها</p>
+                  <h3 className="text-foreground mb-2 text-lg font-semibold">طرق الدفع المتاحة</h3>
+                  <p className="text-muted-foreground text-sm">اختر طرق الدفع التي تدعمها</p>
                 </div>
                 <div className="grid gap-4 sm:grid-cols-2">
                   {paymentMethods.map(method => (
@@ -498,7 +507,7 @@ export default function StoreSetupSupplier() {
                       onClick={() => toggleMethod(method.id)}
                       className={`flex items-center gap-4 rounded-xl border-2 p-4 transition-all ${
                         selectedMethods.includes(method.id)
-                          ? 'border-black bg-muted'
+                          ? 'bg-muted border-black'
                           : 'border-border bg-card hover:border-gray-300'
                       }`}
                     >
@@ -511,8 +520,8 @@ export default function StoreSetupSupplier() {
                         />
                       </div>
                       <div className="flex-1 text-right">
-                        <p className="font-medium text-foreground">{method.nameAr}</p>
-                        <p className="text-xs text-muted-foreground">{method.nameEn}</p>
+                        <p className="text-foreground font-medium">{method.nameAr}</p>
+                        <p className="text-muted-foreground text-xs">{method.nameEn}</p>
                       </div>
                       <div
                         className={`flex h-6 w-6 items-center justify-center rounded-full border-2 ${
@@ -549,13 +558,13 @@ export default function StoreSetupSupplier() {
               <Button
                 onClick={handleSubmit}
                 disabled={loading}
-                className="gap-2 bg-black hover:bg-card"
+                className="hover:bg-card gap-2 bg-black"
               >
                 {loading ? 'جاري الحفظ...' : 'حفظ المتجر'}
                 <Check className="h-4 w-4" />
               </Button>
             ) : (
-              <Button onClick={handleNext} className="gap-2 bg-black hover:bg-card">
+              <Button onClick={handleNext} className="hover:bg-card gap-2 bg-black">
                 التالي
                 <ChevronLeft className="h-4 w-4" />
               </Button>

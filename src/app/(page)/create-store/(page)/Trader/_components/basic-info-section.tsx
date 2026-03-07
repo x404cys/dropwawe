@@ -1,10 +1,10 @@
 'use client';
-import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Store, FileText, Link } from 'lucide-react';
 import { InfoAlert } from './info-alert';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 interface BasicInfoSectionProps {
   storeSlug: string;
@@ -29,8 +29,9 @@ export function BasicInfoSection({
   return (
     <>
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">
-          رابط المتجر <span className="text-xs text-muted-foreground">{storeSlug}.matager.store</span>
+        <label className="text-foreground text-sm font-medium">
+          رابط المتجر{' '}
+          <span className="text-muted-foreground text-xs">{storeSlug}.matager.store</span>
         </label>
         <div className="relative">
           <Input
@@ -43,33 +44,33 @@ export function BasicInfoSection({
             }}
             placeholder="store1.matager.store"
           />
-          <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Link className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
         </div>
         {fieldErrors.subLink && <p className="mt-1 text-xs text-red-500">{fieldErrors.subLink}</p>}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">{t.profile.storeName}</label>
+        <label className="text-foreground text-sm font-medium">{t.profile.storeName}</label>
         <div className="relative">
           <Input
             value={storeName}
             onChange={e => onStoreNameChange(e.target.value)}
             placeholder={t.profile.storeName}
           />
-          <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+          <Store className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
         </div>
         {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
       </div>
 
       <div className="space-y-2">
-        <label className="text-sm font-medium text-foreground">{t.inventory.description}</label>
+        <label className="text-foreground text-sm font-medium">{t.inventory.description}</label>
         <div className="relative">
           <Textarea
             value={description}
             onChange={e => onDescriptionChange(e.target.value)}
             placeholder="صف متجرك للعملاء..."
           />
-          <FileText className="absolute top-3 left-3 h-5 w-5 text-muted-foreground" />
+          <FileText className="text-muted-foreground absolute top-3 left-3 h-5 w-5" />
         </div>
         {fieldErrors.description && (
           <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
@@ -78,4 +79,3 @@ export function BasicInfoSection({
     </>
   );
 }
-

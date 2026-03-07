@@ -14,7 +14,7 @@ const fbEvent = (name: string, options = {}) => {
 };
 export default function SignInPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const callbackUrl = 'https://dashboard.matager.store/Dashboard/create-store';
+  const callbackUrl = 'https://dashboard.matager.store/create-store';
   useEffect(() => {
     fbEvent('ViewContent', {
       content_name: 'Sign In Page',

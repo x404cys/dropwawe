@@ -1,5 +1,4 @@
 'use client';
-import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -11,6 +10,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 type StepId = 'basic' | 'shipping' | 'social';
 
@@ -45,7 +45,7 @@ export function NavigationButtons({
 
         {activeSection !== 'social' && (
           <button
-            className="rounded-lg bg-sky-600 px-6 py-2 text-white transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50"
+            className="hover:bg-card rounded-lg bg-sky-600 px-6 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-50"
             onClick={onNext}
           >
             التالي
@@ -72,13 +72,16 @@ export function NavigationButtons({
         <DialogContent className="text-right" dir="rtl">
           <DialogHeader>
             <DialogTitle>هل أنت متأكد من إنشاء المتجر؟</DialogTitle>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               بعد الانشاء، يمكنك تعديل الإعدادات لاحقاً من لوحة التحكم.
             </p>
           </DialogHeader>
 
           <DialogFooter className="flex justify-end gap-2">
-            <Button variant="outline" onClick={() => setOpenConfirm(false)} className="px-6"> {t.cancel} </Button>
+            <Button variant="outline" onClick={() => setOpenConfirm(false)} className="px-6">
+              {' '}
+              {t.cancel}{' '}
+            </Button>
             <Button
               disabled={loading}
               onClick={() => {
