@@ -25,12 +25,12 @@ export async function proxy(req: NextRequest) {
 
       case 'dashboard': {
         const hostname = req.headers.get('host') || '';
-        const subdomain = hostname.split('.')[0]; // افترض subdomain.domain.com
+        const subdomain = hostname.split('.')[0];
 
         if (subdomain === 'dashboard') {
-          url.pathname = url.pathname.startsWith('/Dashboard')
-            ? url.pathname
-            : `/Dashboard${url.pathname}`;
+          if (url.pathname === '/' || url.pathname === '') {
+            url.pathname = '/Dashboard';
+          }
         }
 
         return NextResponse.rewrite(url);
