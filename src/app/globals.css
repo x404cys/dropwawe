@@ -1,5 +1,82 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
+@import 'driver.js/dist/driver.css';
+
+/* ── Driver.js Design System Overrides ── */
+.driver-popover {
+  border-radius: 1rem !important;
+  border: 1px solid var(--border) !important;
+  background: var(--card) !important;
+  color: var(--card-foreground) !important;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15) !important;
+  font-family: var(--font-custom, inherit) !important;
+  max-width: min(260px, calc(100vw - 32px)) !important;
+  direction: rtl !important;
+  padding: 1rem !important;
+}
+@media (min-width: 768px) {
+  .driver-popover {
+    max-width: 320px !important;
+  }
+}
+.driver-popover-title {
+  font-size: 0.875rem !important;
+  font-weight: 700 !important;
+  color: var(--foreground) !important;
+  margin-bottom: 0.5rem !important;
+}
+.driver-popover-description {
+  font-size: 0.75rem !important;
+  color: var(--muted-foreground) !important;
+  line-height: 1.6 !important;
+}
+.driver-popover-footer {
+  margin-top: 1rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 0.5rem;
+}
+.driver-popover-footer .driver-popover-navigation-btns {
+  display: flex !important;
+  gap: 0.5rem !important;
+  justify-content: flex-end !important;
+  flex: 1 !important;
+}
+.driver-popover-footer button {
+  font-family: inherit !important;
+}
+.driver-popover-next-btn {
+  background: var(--primary) !important;
+  color: var(--primary-foreground) !important;
+  border-radius: 0.65rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 700 !important;
+  padding: 0.45rem 1rem !important;
+  border: none !important;
+  text-shadow: none !important;
+}
+.driver-popover-next-btn:hover { opacity: 0.88; }
+.driver-popover-prev-btn {
+  background: transparent !important;
+  color: var(--muted-foreground) !important;
+  border-radius: 0.65rem !important;
+  font-size: 0.75rem !important;
+  font-weight: 600 !important;
+  padding: 0.45rem 0.8rem !important;
+  border: 1px solid var(--border) !important;
+  text-shadow: none !important;
+}
+.driver-popover-prev-btn:hover { background: var(--muted) !important; }
+.driver-popover-close-btn {
+  color: var(--muted-foreground) !important;
+}
+
+/* Dark mode */
+.dark .driver-popover {
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5) !important;
+}
+
 
 @custom-variant dark (&:is(.dark *));
 

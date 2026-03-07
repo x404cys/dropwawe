@@ -95,7 +95,7 @@ model Store {
   createdAt       DateTime  @default(now())
   products        Product[]
   users     StoreUser[]
-
+  category        String?
   facebookPixel   String?
   instagramPixel  String?
   tiktokPixel     String?

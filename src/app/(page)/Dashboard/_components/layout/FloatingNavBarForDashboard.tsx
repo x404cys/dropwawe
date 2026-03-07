@@ -42,12 +42,11 @@ export default function FloatingNavBarForDashboard() {
         ? '/Dashboard/profit/profit-dropshiper'
         : '/Dashboard/profit';
 
-  const baseStyle = 'flex cursor-pointer flex-col items-center justify-center gap-0.5 transition';
+  const baseStyle =
+    'group relative flex min-w-[3.5rem] flex-1 cursor-pointer flex-col items-center justify-start gap-1 p-1 transition-all duration-300';
 
-  const activeStyle =
-    "text-primary relative after:content-[''] after:absolute after:-bottom-1.5 after:left-1/2 after:h-[3px] after:w-8 after:-translate-x-1/2 after:bg-primary after:rounded-full transition-all duration-200";
-
-  const inactiveStyle = 'text-muted-foreground hover:text-foreground transition-all duration-200';
+  const activeStyle = 'text-primary';
+  const inactiveStyle = 'text-muted-foreground hover:text-foreground';
 
   const isActive = (path: string) => pathname === path;
 
@@ -57,64 +56,96 @@ export default function FloatingNavBarForDashboard() {
     <>
       <div
         dir="rtl"
-        className={`${hidden ? 'hidden' : 'fixed'} bottom-0 left-1/2 z-50 -translate-x-1/2 md:hidden`}
+        className={`${hidden ? 'hidden' : 'fixed'} bottom-0 left-0 right-0 z-50 md:hidden`}
       >
-        <div className="border-border bg-card flex items-center gap-1 border px-4 py-2 shadow-lg shadow-black/10 backdrop-blur-sm">
+        <div className="border-border/60 bg-background/85 flex items-end justify-around overflow-x-auto no-scrollbar border-t px-1 pb-4 pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.06)] backdrop-blur-2xl dark:shadow-[0_-8px_30px_rgba(0,0,0,0.3)]">
           {/* Home */}
           <button
             onClick={() => handleNavigate('/Dashboard')}
-            className={`${baseStyle} px-3 py-1 ${isActive('/Dashboard') ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive('/Dashboard') ? activeStyle : inactiveStyle}`}
           >
-            <Home size={20} />
-            <span className="text-[10px] font-medium">{t.nav.home}</span>
+            <div className="flex flex-col items-center justify-center">
+              <Home size={22} strokeWidth={2} />
+              <span className="mt-1 text-[10px] font-medium">{t.nav.home}</span>
+            </div>
+            {isActive('/Dashboard') && (
+              <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
           </button>
 
           {/* Products */}
           <button
             onClick={() => handleNavigate('/Dashboard/ProductManagment')}
-            className={`${baseStyle} px-3 py-1 ${isActive('/Dashboard/ProductManagment') ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive('/Dashboard/ProductManagment') ? activeStyle : inactiveStyle}`}
           >
-            <AiOutlineProduct size={20} />
-            <span className="text-[10px] font-medium">{t.inventory.products}</span>
+            <div className="flex flex-col items-center justify-center">
+              <AiOutlineProduct size={22} />
+              <span className="mt-1 text-[10px] font-medium">{t.inventory.products}</span>
+            </div>
+            {isActive('/Dashboard/ProductManagment') && (
+              <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
           </button>
 
           {/* Orders */}
           <button
             onClick={() => handleNavigate('/Dashboard/OrderTrackingPage')}
-            className={`${baseStyle} relative px-3 py-1 ${isActive('/Dashboard/OrderTrackingPage') ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive('/Dashboard/OrderTrackingPage') ? activeStyle : inactiveStyle}`}
           >
-            <ShoppingBag size={20} />
-            {pendingCount > 0 && (
-              <span className="absolute -top-1 right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white">
-                {pendingCount > 9 ? '9+' : pendingCount}
-              </span>
+            <div className="relative flex flex-col items-center justify-center">
+              <ShoppingBag size={22} strokeWidth={2} />
+              {pendingCount > 0 && (
+                <span className="absolute -right-2 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2 ring-background">
+                  {pendingCount > 9 ? '9+' : pendingCount}
+                </span>
+              )}
+              <span className="mt-1 text-[10px] font-medium">{t.orders.title}</span>
+            </div>
+            {isActive('/Dashboard/OrderTrackingPage') && (
+              <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
             )}
-            <span className="text-[10px] font-medium">{t.orders.title}</span>
           </button>
 
           {/* Revenue */}
           <button
             onClick={() => handleNavigate(profitPath)}
-            className={`${baseStyle} px-3 py-1 ${isActive(profitPath) ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive(profitPath) ? activeStyle : inactiveStyle}`}
           >
-            <DollarSign size={20} />
-            <span className="text-[10px] font-medium">{t.stats.revenue}</span>
+            <div className="flex flex-col items-center justify-center">
+              <DollarSign size={22} strokeWidth={2} />
+              <span className="mt-1 text-[10px] font-medium">{t.stats.revenue}</span>
+            </div>
+            {isActive(profitPath) && (
+               <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
           </button>
+          
+          {/* Stats */}
           <button
             onClick={() => handleNavigate('/Dashboard/stats')}
-            className={`${baseStyle} px-3 py-1 ${isActive('/Dashboard/stats') ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive('/Dashboard/stats') ? activeStyle : inactiveStyle}`}
           >
-            <BarChart3 size={20} />
-            <span className="text-[10px] font-medium">{t.stats?.title || 'الإحصائيات'}</span>
+            <div className="flex flex-col items-center justify-center">
+              <BarChart3 size={22} strokeWidth={2} />
+              <span className="mt-1 text-[10px] font-medium">{t.stats?.title || 'الإحصائيات'}</span>
+            </div>
+            {isActive('/Dashboard/stats') && (
+               <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
           </button>
 
           {/* Settings */}
           <button
             onClick={() => handleNavigate('/Dashboard/setting/store')}
-            className={`${baseStyle} px-3 py-1 ${isActive('/Dashboard/setting/store') ? activeStyle : inactiveStyle}`}
+            className={`${baseStyle} ${isActive('/Dashboard/setting/store') ? activeStyle : inactiveStyle}`}
           >
-            <Settings size={20} />
-            <span className="text-[10px] font-medium">{t.more.settingsLabel}</span>
+            <div className="flex flex-col items-center justify-center">
+              <Settings size={22} strokeWidth={2} />
+              <span className="mt-1 text-[10px] font-medium">{t.more.settingsLabel}</span>
+            </div>
+            {isActive('/Dashboard/setting/store') && (
+               <span className="absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full bg-primary shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
           </button>
         </div>
       </div>

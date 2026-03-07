@@ -6,30 +6,67 @@ import { AreaChart, Area, ResponsiveContainer, Tooltip, XAxis } from 'recharts';
 import { motion } from 'framer-motion';
 import { format } from 'path';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import useSWR from 'swr';
+import { useStoreProvider } from '../../context/StoreContext';
 
-interface RevenueHeroCardProps {
-  totalAmount?: number;
-  isLoading?: boolean;
-  changePercent?: number;
-}
-
-export default function RevenueHeroCard({
-  totalAmount = 0,
-  isLoading = false,
-  changePercent = 12.5,
-}: RevenueHeroCardProps) {
+export default function RevenueHeroCard() {
+  const { currentStore } = useStoreProvider();
+  const fetcher = (url: string) => fetch(url).then(res => res.json());
+  const { data, isLoading } = useSWR(
+    `/api/dashboard/profit/Revenue?storeId=${currentStore?.id}`,
+    fetcher
+  );
   const { t, lang } = useLanguage();
+  const changePercent: number = data?.changePercent ?? 0;
   const isPositive = changePercent >= 0;
 
-  const WEEKLY_DATA = [
-    { day: lang === 'en' ? 'Sat' : lang === 'ku' ? 'شەممە' : 'السبت', value: 320000 },
-    { day: lang === 'en' ? 'Sun' : lang === 'ku' ? 'یەکشەممە' : 'الأحد', value: 450000 },
-    { day: lang === 'en' ? 'Mon' : lang === 'ku' ? 'دووشەممە' : 'الاثنين', value: 280000 },
-    { day: lang === 'en' ? 'Tue' : lang === 'ku' ? 'سێشەممە' : 'الثلاثاء', value: 520000 },
-    { day: lang === 'en' ? 'Wed' : lang === 'ku' ? 'چوارشەممە' : 'الأربعاء', value: 390000 },
-    { day: lang === 'en' ? 'Thu' : lang === 'ku' ? 'پێنجشەممە' : 'الخميس', value: 610000 },
-    { day: lang === 'en' ? 'Fri' : lang === 'ku' ? 'هەینی' : 'الجمعة', value: 480000 },
-  ];
+  const weeklyData =
+    data?.weekly?.map((item: any) => ({
+      day:
+        item.day === 'Saturday'
+          ? lang === 'en'
+            ? 'Sat'
+            : lang === 'ku'
+              ? 'شەممە'
+              : 'السبت'
+          : item.day === 'Sunday'
+            ? lang === 'en'
+              ? 'Sun'
+              : lang === 'ku'
+                ? 'یەکشەممە'
+                : 'الأحد'
+            : item.day === 'Monday'
+              ? lang === 'en'
+                ? 'Mon'
+                : lang === 'ku'
+                  ? 'دووشەممە'
+                  : 'الاثنين'
+              : item.day === 'Tuesday'
+                ? lang === 'en'
+                  ? 'Tue'
+                  : lang === 'ku'
+                    ? 'سێشەممە'
+                    : 'الثلاثاء'
+                : item.day === 'Wednesday'
+                  ? lang === 'en'
+                    ? 'Wed'
+                    : lang === 'ku'
+                      ? 'چوارشەممە'
+                      : 'الأربعاء'
+                  : item.day === 'Thursday'
+                    ? lang === 'en'
+                      ? 'Thu'
+                      : lang === 'ku'
+                        ? 'پێنجشەممە'
+                        : 'الخميس'
+                    : lang === 'en'
+                      ? 'Fri'
+                      : lang === 'ku'
+                        ? 'هەینی'
+                        : 'الجمعة',
+
+      value: item.profit,
+    })) || [];
 
   if (isLoading) {
     return (
@@ -42,6 +79,7 @@ export default function RevenueHeroCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
+      id="revenue-card"
       className="from-primary/15 via-primary/8 to-primary/1 border-primary/20 overflow-hidden rounded-2xl border bg-gradient-to-l"
     >
       <div className="px-5 pt-5 pb-3">
@@ -67,13 +105,13 @@ export default function RevenueHeroCard({
               <TrendingDown className="h-3.5 w-3.5" />
             )}
             {isPositive ? '+' : ''}
-            {changePercent}%
+            {changePercent.toFixed(1)}%
           </span>
         </div>
 
         <div className="mt-2">
           <span className="text-foreground text-3xl font-extrabold tracking-tight">
-            {formatIQD(totalAmount)}
+            {formatIQD(data.totalProfit)}
           </span>
           <span className="text-muted-foreground mr-1.5 text-sm">{t?.currency || 'د.ع'}</span>
         </div>
@@ -84,7 +122,7 @@ export default function RevenueHeroCard({
 
       <div className="h-36 px-2 pb-3">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={WEEKLY_DATA} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <AreaChart data={weeklyData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#04BAF6" stopOpacity={0.25} />

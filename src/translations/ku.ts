@@ -65,6 +65,8 @@ export const ku = {
     linkCopyFailed: 'لەبەرگرتنەوەی بەستەرەکە شکستی هێنا',
     copyLink: 'لەبەرگرتنەوەی بەستەر',
     viewStore: 'پیشاندانی فرۆشگا',
+    active: 'چالاکە',
+    storeInfo: 'زانیاری فرۆشگا',
   },
 
   // Orders
@@ -273,10 +275,13 @@ export const ku = {
     chooseStoreThemeDesc: 'ئەو ڕووکارە هەڵبژێرە کە گونجاوە بۆ فرۆشگاکەت و دەست بکە بە فرۆشتنی بەرهەمەکانت بە شێوەیەکی پیشەیی',
     currentTheme: 'ڕووکاری ئێستا:',
     updatingTheme: 'نوێدەکرێتەوە...',
+    themeUpdated: 'ڕووکار بەردەوام نوێ کرایەوە',
+    themeUpdateError: 'نوێکردنەوەی ڕووکار سەرکەوتوو نەبوو',
     activeTheme: 'چالاکە',
     chooseTheme: 'ڕووکار هەڵبژێرە',
     deliveryCompanyIntegration: 'بەستنەوەی کۆمپانیای گەیاندن',
     linkAlwaseetAccount: 'بەستنەوەی هەژماری کۆمپانیای ئەلوەسیت',
+    alwaseetDesc: 'چوونە ژوورەوە بۆ بەستنەوە بە پلاتفۆرمی گەیاندنی ئەلوەسیت',
     alwaseetUsernameLabel: 'ناوی بەکارهێنەر',
     alwaseetUsernamePlaceholder: 'ناوی بەکارهێنەر لە ئەپی ئەلوەسیت',
     alwaseetPasswordLabel: 'تێپەڕەوشە',

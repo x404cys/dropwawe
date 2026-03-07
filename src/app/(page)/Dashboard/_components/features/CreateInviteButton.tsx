@@ -5,9 +5,9 @@ import useSWR from 'swr';
 import Image from 'next/image';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Copy, Link2, Loader2, UserPlus, Users, ShieldCheck } from 'lucide-react';
+import { Copy, Link2, Loader2, UserPlus, Users, ShieldCheck, Check } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { motion, AnimatePresence } from 'framer-motion';
 
 type MultiUser = {
   createdAt: string;
@@ -24,6 +24,7 @@ export default function CreateInvitePage() {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const inviteLink = inviteCode && `https://login.drop-wave.com/login/invite/${inviteCode}`;
 
@@ -59,98 +60,138 @@ export default function CreateInvitePage() {
   const copyToClipboard = () => {
     if (!inviteLink) return;
     navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
     toast.success(t.teamSettings?.inviteCopied || 'تم نسخ رابط الدعوة');
+    setTimeout(() => setCopied(false), 2000);
   };
 
   return (
-    <div dir="rtl" className="mx-auto max-w-3xl space-y-12">
-      <div className="space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-600/10 text-sky-600">
-            <UserPlus className="h-5 w-5" />
-          </div>
-          <h1 className="text-xl font-bold sm:text-2xl">
+    <div dir="rtl" className="space-y-6">
+
+      {/* Header section */}
+      <div className="flex items-start gap-3">
+        <div className="flex-shrink-0 w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
+          <UserPlus className="w-5 h-5 text-primary" />
+        </div>
+        <div>
+          <h2 className="text-lg font-bold text-foreground">
             {t.teamSettings?.title || 'دعوة أعضاء لإدارة المتجر'}
-          </h1>
-        </div>
-        <p className="text-muted-foreground max-w-xl text-sm leading-relaxed">
-          {t.teamSettings?.subtitle ||
-            'أضف أعضاء إلى فريقك وامنحهم صلاحيات لإدارة الطلبات والمخزون، والعمل الجماعي يساعدك على إدارة متجرك بكفاءة أعلى.'}
-        </p>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="bg-background rounded-xl border p-4 text-center">
-          <Users className="mx-auto h-6 w-6 text-sky-600" />
-          <p className="mt-2 text-sm font-medium">{t.teamSettings?.teamwork || 'عمل جماعي'}</p>
-          <span className="text-muted-foreground text-xs">
-            {t.teamSettings?.teamworkDesc || 'إدارة المتجر مع فريقك بسهولة'}
-          </span>
-        </div>
-
-        <div className="bg-background rounded-xl border p-4 text-center">
-          <UserPlus className="mx-auto h-6 w-6 text-sky-600" />
-          <p className="mt-2 text-sm font-medium">{t.teamSettings?.quickInvite || 'دعوة سريعة'}</p>
-          <span className="text-muted-foreground text-xs">
-            {t.teamSettings?.quickInviteDesc || 'إضافة أعضاء برابط واحد'}
-          </span>
+          </h2>
+          <p className="text-sm text-muted-foreground leading-relaxed mt-1">
+            {t.teamSettings?.subtitle ||
+              'أضف أعضاء إلى فريقك وامنحهم صلاحيات لإدارة الطلبات والمخزون.'}
+          </p>
         </div>
       </div>
 
-      <div className="from-background to-muted/40 border-none bg-gradient-to-br">
-        <div className="space-y-6 p-6">
-          <Button
-            onClick={handleCreateInvite}
-            disabled={loading}
-            className="h-12 w-full rounded-lg bg-gradient-to-l from-sky-600 to-blue-600 text-sm font-semibold text-white hover:opacity-90 sm:text-base"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="ml-2 h-5 w-5 animate-spin" />
-                {t.teamSettings?.creatingInvite || 'جارٍ إنشاء رابط الدعوة...'}
-              </>
-            ) : (
-              t.teamSettings?.createInvite || 'إنشاء رابط دعوة جديد'
-            )}
-          </Button>
-        </div>
-        {inviteCode && (
-          <div className="w-auto space-y-3">
-            <div className="rounded-xl border p-4">
-              <div>
-                <p className="text-muted-foreground text-xs">
-                  {t.teamSettings?.inviteCode || 'كود الدعوة'}
-                </p>
-                <p className="font-mono text-sm font-semibold">{inviteCode}</p>
-              </div>
-
-              <div className="bg-muted/40 flex items-center justify-between gap-3 rounded-lg border p-3">
-                <div className="flex min-w-0 items-center gap-2 text-sm">
-                  <Link2 className="text-muted-foreground h-4 w-4" />
-                  <span className="truncate" dir="ltr">
-                    {inviteLink}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <Button
-              size="icon"
-              variant="outline"
-              onClick={copyToClipboard}
-              className="w-full hover:bg-sky-600/10"
-            >
-              <span>{t.teamSettings?.copyInviteLink || 'نسخ رابط الدعوة'}</span>
-              <Copy className="h-4 w-4" />
-            </Button>
+      {/* Feature highlights */}
+      <div className="grid grid-cols-2 gap-3">
+        <div className="rounded-2xl border border-border bg-card p-4 text-center space-y-2">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
+            <Users className="w-4 h-4 text-primary" />
           </div>
-        )}
+          <div>
+            <p className="text-xs font-bold text-foreground">{t.teamSettings?.teamwork || 'عمل جماعي'}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {t.teamSettings?.teamworkDesc || 'إدارة المتجر بالتعاون'}
+            </p>
+          </div>
+        </div>
+
+        <div className="rounded-2xl border border-border bg-card p-4 text-center space-y-2">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-foreground">{t.teamSettings?.quickInvite || 'دعوة سريعة'}</p>
+            <p className="text-[11px] text-muted-foreground mt-0.5">
+              {t.teamSettings?.quickInviteDesc || 'إضافة أعضاء برابط'}
+            </p>
+          </div>
+        </div>
       </div>
 
-      <div className="space-y-4">
-        <h2 className="text-lg">{t.teamSettings?.addedMembers || 'الأعضاء المضافون'}</h2>
+      {/* Invite button */}
+      <Button
+        onClick={handleCreateInvite}
+        disabled={loading}
+        className="w-full h-12 rounded-xl font-bold text-base active:scale-[0.98] transition-all"
+        size="lg"
+      >
+        {loading ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            {t.teamSettings?.creatingInvite || 'جارٍ إنشاء رابط الدعوة...'}
+          </span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <Link2 className="w-4 h-4" />
+            {t.teamSettings?.createInvite || 'إنشاء رابط دعوة جديد'}
+          </span>
+        )}
+      </Button>
+
+      {/* Invite link result */}
+      <AnimatePresence>
+        {inviteCode && (
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-3"
+          >
+            <div className="flex items-center justify-between">
+              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                {t.teamSettings?.inviteCode || 'كود الدعوة'}
+              </p>
+              <span className="font-mono text-sm font-bold text-foreground bg-card border border-border/50 px-2.5 py-0.5 rounded-lg">
+                {inviteCode}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-2 bg-card border border-border/50 rounded-xl p-3">
+              <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <span className="text-xs text-muted-foreground truncate flex-1" dir="ltr">
+                {inviteLink}
+              </span>
+            </div>
+
+            <Button
+              onClick={copyToClipboard}
+              variant="outline"
+              className="w-full h-11 rounded-xl font-bold gap-2"
+            >
+              {copied ? (
+                <>
+                  <Check className="w-4 h-4 text-emerald-500" />
+                  <span className="text-emerald-600">تم النسخ!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-4 h-4" />
+                  {t.teamSettings?.copyInviteLink || 'نسخ رابط الدعوة'}
+                </>
+              )}
+            </Button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Members list */}
+      <div className="space-y-3 pt-2">
+        <div className="flex items-center gap-2">
+          <h3 className="text-sm font-bold text-foreground">
+            {t.teamSettings?.addedMembers || 'الأعضاء المضافون'}
+          </h3>
+          {data && data.length > 0 && (
+            <span className="bg-muted text-muted-foreground text-[11px] font-bold px-2 py-0.5 rounded-full">
+              {data.length}
+            </span>
+          )}
+        </div>
 
         {data && data.length > 0 ? (
-          <div className="grid gap-3">
+          <div className="space-y-2">
             {data.map(item => {
               const initials =
                 item.user.name
@@ -163,42 +204,48 @@ export default function CreateInvitePage() {
               return (
                 <div
                   key={item.user.id}
-                  className="bg-background flex flex-col gap-3 rounded-xl border p-4 transition hover:shadow-sm sm:flex-row sm:items-center sm:justify-between"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:shadow-sm transition-shadow"
                 >
-                  <div className="flex min-w-0 items-center gap-3">
-                    {item.user.image ? (
-                      <Image
-                        src={item.user.image}
-                        alt={item.user.name}
-                        width={40}
-                        height={40}
-                        className="rounded-2xl object-cover"
-                      />
-                    ) : (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-600/10 text-sm font-semibold text-sky-600">
-                        {initials}
-                      </div>
-                    )}
-
-                    <div className="min-w-0">
-                      <p className="truncate font-medium">{item.user.name}</p>
-                      <p className="text-muted-foreground truncate text-sm">{item.user.email}</p>
+                  {item.user.image ? (
+                    <Image
+                      src={item.user.image}
+                      alt={item.user.name}
+                      width={40}
+                      height={40}
+                      className="rounded-xl object-cover flex-shrink-0"
+                    />
+                  ) : (
+                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                      {initials}
                     </div>
+                  )}
+
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{item.user.name}</p>
+                    <p className="text-xs text-muted-foreground truncate">{item.user.email}</p>
                   </div>
 
-                  <span className="text-muted-foreground text-xs">
-                    {t.teamSettings?.joinDate || 'تاريخ الانضمام:'}{' '}
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </span>
-                  <span>{item.role}</span>
+                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                    <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                      {item.role}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">
+                      {new Date(item.createdAt).toLocaleDateString('ar-IQ')}
+                    </span>
+                  </div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            {t.teamSettings?.noMembers || 'لا يوجد أعضاء مضافون حتى الآن.'}
-          </p>
+          <div className="text-center py-10 space-y-2">
+            <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto">
+              <Users className="w-6 h-6 text-muted-foreground" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t.teamSettings?.noMembers || 'لا يوجد أعضاء مضافون حتى الآن.'}
+            </p>
+          </div>
         )}
       </div>
     </div>

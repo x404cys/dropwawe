@@ -3,12 +3,14 @@ import { useLanguage } from '../../../../context/LanguageContext';
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Pencil, Save, Facebook, Instagram, Send } from 'lucide-react';
+import { Pencil, Save, Facebook, Instagram, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import Loader from '@/components/Loader';
 import SocialLinksSection from '../(page)/social-links-section/social-links-section';
 import { useStoreSettings } from '../_hooks/useStoreSettings';
+import SettingsPageHeader from '../../_components/settings-page-header';
+import SettingsSectionCard from '../../_components/settings-section-card';
 
 function InfoRow({
   icon: Icon,
@@ -33,13 +35,13 @@ function InfoRow({
           href={value}
           target="_blank"
           rel="noreferrer"
-          className="bg-muted block truncate rounded-xl px-3 py-2.5 text-sm text-[#04BAF6] hover:underline"
+          className="bg-muted block truncate rounded-lg px-3 py-2.5 text-sm text-primary hover:underline"
           dir="ltr"
         >
           {value}
         </a>
       ) : (
-        <p className="bg-muted text-muted-foreground rounded-xl px-3 py-2.5 text-sm">
+        <p className="bg-muted text-muted-foreground rounded-lg px-3 py-2.5 text-sm">
           {notAddedText}
         </p>
       )}
@@ -72,41 +74,33 @@ export default function SocialSettingsPage() {
     } else toast.error(result.message || t.error || 'يرجى مراجعة الأخطاء');
   };
 
+  const headerAction = editing ? (
+    <Button
+      size="sm"
+      onClick={handleSave}
+      disabled={loading}
+      className="h-8 gap-1.5 text-xs bg-primary hover:bg-primary/90"
+    >
+      <Save className="h-3.5 w-3.5" />
+      {loading ? t.store?.saving || 'جارٍ الحفظ...' : t.save}
+    </Button>
+  ) : (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => setEditing(true)}
+      className="h-8 gap-1.5 text-xs"
+    >
+      <Pencil className="h-3.5 w-3.5" /> {t.edit}
+    </Button>
+  );
+
   return (
-    <section dir="rtl" className="min-h-screen">
-      <div className="bg-card border-border sticky top-0 z-10 flex items-center justify-between border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="hover:bg-muted rounded-lg p-1.5 transition-colors"
-          >
-            <ArrowRight className="text-muted-foreground h-5 w-5" />
-          </button>
-          <h1 className="text-foreground text-base font-bold">
-            {t.store?.socialLinks || 'روابط التواصل'}
-          </h1>
-        </div>
-        {editing ? (
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={loading}
-            className="h-8 gap-1.5 bg-[#04BAF6] text-xs hover:bg-[#0288d1]"
-          >
-            <Save className="h-3.5 w-3.5" />
-            {loading ? t.store?.saving || 'جارٍ الحفظ...' : t.save}
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setEditing(true)}
-            className="h-8 gap-1.5 text-xs"
-          >
-            <Pencil className="h-3.5 w-3.5" /> {t.edit}{' '}
-          </Button>
-        )}
-      </div>
+    <section dir="rtl" className="min-h-screen bg-background pb-28">
+      <SettingsPageHeader
+        title={t.store?.socialLinks || 'روابط التواصل'}
+        action={headerAction}
+      />
 
       <div className="mx-auto max-w-xl space-y-4 px-4 pt-4">
         {isLoading ? (
@@ -114,7 +108,7 @@ export default function SocialSettingsPage() {
             <Loader />
           </div>
         ) : editing ? (
-          <div className="bg-card border-border space-y-4 rounded-xl border p-4 shadow-sm">
+          <SettingsSectionCard className="space-y-4">
             <SocialLinksSection
               facebookLink={facebookLink}
               instaLink={instaLink}
@@ -124,9 +118,9 @@ export default function SocialSettingsPage() {
               onInstagramChange={setInstagram}
               onTelegramChange={setTelegram}
             />
-          </div>
+          </SettingsSectionCard>
         ) : (
-          <div className="bg-card border-border space-y-4 rounded-xl border p-4 shadow-sm">
+          <SettingsSectionCard className="space-y-4">
             <InfoRow
               icon={Facebook}
               label="Facebook"
@@ -148,7 +142,7 @@ export default function SocialSettingsPage() {
               color="text-sky-500"
               notAddedText={t.store?.notAddedYet || 'لم يُضف بعد'}
             />
-          </div>
+          </SettingsSectionCard>
         )}
       </div>
     </section>

@@ -65,6 +65,8 @@ export const en = {
     linkCopyFailed: 'Failed to copy link',
     copyLink: 'Copy Link',
     viewStore: 'View Store',
+    active: 'Active',
+    storeInfo: 'Store Info',
   },
 
   // Orders
@@ -273,10 +275,13 @@ export const en = {
     chooseStoreThemeDesc: 'Select the theme that suits your store and start selling your products professionally',
     currentTheme: 'Current Theme:',
     updatingTheme: 'Updating...',
+    themeUpdated: 'Theme updated successfully',
+    themeUpdateError: 'Failed to update theme',
     activeTheme: 'Active',
     chooseTheme: 'Choose Theme',
     deliveryCompanyIntegration: 'Delivery Company Integration',
     linkAlwaseetAccount: 'Link Al-Waseet Account',
+    alwaseetDesc: 'Login to link with Al-Waseet delivery platform',
     alwaseetUsernameLabel: 'Username',
     alwaseetUsernamePlaceholder: 'Username in Al-Waseet app',
     alwaseetPasswordLabel: 'Password',

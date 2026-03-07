@@ -21,6 +21,9 @@ export function useStoreSettings() {
   const [storeName, setStoreName] = useState('');
   const [shippingPrice, setShippingPrice] = useState('');
   const [description, setDescription] = useState('');
+  const [image, setImage] = useState('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [phone, setPhone] = useState('');
   const [facebookLink, setFacebook] = useState('');
   const [instaLink, setInstagram] = useState('');
@@ -45,6 +48,8 @@ export function useStoreSettings() {
     setFacebookPixel(store.facebookPixel ?? '');
     setGooglePixel(store.googlePixel ?? '');
     setTiktokPixel(store.tiktokPixel ?? '');
+    setImage(store.image ?? '');
+    setImagePreview(store.image ?? null);
   }, [store]);
 
   const save = async () => {
@@ -54,6 +59,26 @@ export function useStoreSettings() {
     try {
       setSaving(true);
       setFieldErrors({});
+
+      let finalImageUrl = image;
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('image', imageFile);
+        const uploadRes = await fetch('/api/storev2/upload-image', {
+          method: 'POST',
+          body: formData,
+        });
+        if (uploadRes.ok) {
+          const { url } = await uploadRes.json();
+          finalImageUrl = url;
+          setImage(url);
+          setImageFile(null);  
+        } else {
+          setSaving(false);
+          return { ok: false, errors: {}, message: 'حدث خطأ أثناء رفع الصورة' };
+        }
+      }
+
       const payload = {
         storeId: currentStore?.id,
         subLink: storeSlug,
@@ -70,6 +95,7 @@ export function useStoreSettings() {
         facebookPixel,
         googlePixel,
         tiktokPixel,
+        ...(finalImageUrl ? { image: finalImageUrl } : {}),
       };
       const res = await fetch('/api/storev2/create', {
         method: 'POST',
@@ -108,6 +134,9 @@ export function useStoreSettings() {
     googlePixel, setGooglePixel,
     snapPixel, setSnapPixel,
     tiktokPixel, setTiktokPixel,
+    image, setImage,
+    imageFile, setImageFile,
+    imagePreview, setImagePreview,
     fieldErrors, loading,
     save,
   };

@@ -22,6 +22,8 @@ import { OrderDetails } from '../Test-Mode/Dashboard/(page)/orderDetails/[orderI
 import { TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
+import { useDashboardTour } from '@/lib/tour/useDashboardTour';
+import { MapPin } from 'lucide-react';
 
 type ProfitResponse = {
   totalAmount: number;
@@ -35,6 +37,7 @@ export default function Dashboard() {
   const { currentStore } = useStoreProvider();
 
   const { data, loading } = useDashboardData(userId);
+  const { startTour } = useDashboardTour();
 
   const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -61,24 +64,24 @@ export default function Dashboard() {
 
   if (status !== 'authenticated' || loading || !data) {
     return (
-      <section dir="rtl" className="bg-muted flex min-h-screen flex-col p-4">
+      <section dir="rtl" className="flex min-h-screen flex-col p-4">
         <main className="mx-auto w-full max-w-7xl flex-1 space-y-4 px-2 py-6">
-          <Skeleton className="bg-muted h-48 w-full rounded-2xl" />
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <Skeleton className="h-48 w-full rounded-2xl" />
+          <div className="md:grid0-cols-4 grid grid-cols-2 gap-3">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="bg-muted h-28 rounded-2xl" />
+              <Skeleton key={i} className="h-28 rounded-2xl" />
             ))}
           </div>
           <div className="grid grid-cols-4 gap-2.5">
             {Array.from({ length: 4 }).map((_, i) => (
-              <Skeleton key={i} className="bg-muted h-20 rounded-xl" />
+              <Skeleton key={i} className="h-20 rounded-xl" />
             ))}
           </div>
           <div className="grid gap-4 md:grid-cols-2">
-            <Skeleton className="bg-muted h-52 rounded-2xl" />
-            <Skeleton className="bg-muted h-52 rounded-2xl" />
+            <Skeleton className="h-52 rounded-2xl" />
+            <Skeleton className="h-52 rounded-2xl" />
           </div>
-          <Skeleton className="bg-muted h-40 rounded-2xl" />
+          <Skeleton className="h-40 rounded-2xl" />
         </main>
       </section>
     );
@@ -86,75 +89,249 @@ export default function Dashboard() {
 
   const storeUrl = `https://${currentStore?.subLink}.matager.store`;
 
+  const handleCopyUrl = () => {
+    navigator.clipboard.writeText(storeUrl);
+    toast.success(t.home?.linkCopied || 'تم نسخ الرابط');
+  };
+
   const stats: StatCardProps[] = [
     {
       title: t.inventory.products,
       value: `${data.productCount}`,
-      icon: <Package size={15} />,
+      icon: <Package />,
       href: '/Dashboard/ProductManagment',
     },
     {
       title: t.home?.visitors || 'الزيارات',
       value: `${visited?.count ?? 0}`,
-      icon: <Users size={15} />,
+      icon: <Users />,
     },
 
     {
       title: t.orders.title,
       value: pendingData?.length ?? 0,
-      icon: <ShoppingBag size={15} />,
+      icon: <ShoppingBag />,
       href: '/Dashboard/OrderTrackingPage',
+    },
+    {
+      title: t.home.revenue,
+      value: formatIQD(profit?.totalAmount ?? 0),
+      icon: <DollarSign />,
     },
   ];
 
   return (
-    <section dir="rtl" className="min-h-screen">
-      <main className="flex-1 space-y-4 px-1 py-2 pb-10">
-        {data.productCount === 0 && (
-          <div className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4">
-            <div className="flex items-start justify-between gap-3">
-              <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
-                <AlertCircle className="text-primary h-5 w-5" />
-              </div>
-              <div className="flex items-start gap-3">
-                <div className="min-w-0 flex-1 text-right">
-                  <h3 className="text-foreground text-sm font-bold">{t.home.addFirstProduct}</h3>
-                  <p className="text-muted-foreground mt-0.5 text-[11px] leading-relaxed">
-                    {t.home.addFirstProductDesc}
-                  </p>
-                </div>
-              </div>
-              <div className="mt-3 flex items-center gap-2">
-                <Button
-                  onClick={() => router.push('Dashboard/ProductManagment/add-product')}
-                  size="sm"
-                  className="h-8 gap-1.5 rounded-lg text-xs"
-                >
-                  <Plus className="h-3.5 w-3.5" />
-                  {t.home.addProductNow}
-                </Button>
+    <>
+      {data.productCount == 0 && (
+        <div
+          dir="rtl"
+          className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
+        >
+          <div className="flex items-start justify-between gap-3">
+            <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
+              <AlertCircle className="text-primary h-5 w-5" />
+            </div>
+            <div className="flex items-start gap-3">
+              <div className="min-w-0 flex-1 text-right">
+                <h3 className="text-foreground text-sm font-bold">{t.home.addFirstProduct}</h3>
+                <p className="te-foreground mt-0.5 text-[11px] leading-relaxed">
+                  {t.home.addFirstProductDesc}
+                </p>
               </div>
             </div>
+            <div className="mt-3 flex items-center gap-2">
+              <Button
+                onClick={() => router.push('Dashboard/ProductManagment/add-product')}
+                size="sm"
+                className="h-8 gap-1.5 rounded-lg text-xs"
+              >
+                <Plus className="h-3.5 w-3.5" />
+                {t.home.addProductNow}
+              </Button>
+            </div>
           </div>
-        )}
-        <RevenueHeroCard
-          totalAmount={profit?.totalAmount ?? 0}
-          isLoading={profitLoading}
-          changePercent={12.5}
-        />
-
-        <div className="grid grid-cols-3 gap-3 md:grid-cols-3">
-          {stats.map((item, idx) => (
-            <StatCard key={idx} {...item} />
-          ))}
         </div>
+      )}
+      {/* ─── Mobile Layout ─── */}
+      <section dir="rtl" className="min-h-screen md:hidden">
+        <main className="flex-1 space-y-4 px-1 py-2 pb-10">
+          {/* Start Tour Button — mobile */}
+          <div className="flex justify-end">
+            <button
+              onClick={startTour}
+              className="text-primary hover:text-primary/80 hover:bg-primary/10 flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-semibold transition-colors"
+            >
+              <MapPin className="h-3.5 w-3.5" />
+              ابدأ الجولة
+            </button>
+          </div>
 
-        <QuickActionsGrid />
+          <div id="mobile-revenue-card">
+            <RevenueHeroCard />
+          </div>
 
-        <PlanCard />
+          <div id="mobile-stats-cards" className="grid grid-cols-3 gap-3">
+            {stats.slice(0, 3).map((item, idx) => (
+              <StatCard key={idx} {...item} />
+            ))}
+          </div>
 
-        <RecentOrdersPanel orders={latestOrder ?? []} />
-      </main>
-    </section>
+          <div id="mobile-quick-actions">
+            <QuickActionsGrid />
+          </div>
+
+          <div id="mobile-plan-card">
+            <PlanCard />
+          </div>
+
+          <div id="mobile-recent-orders">
+            <RecentOrdersPanel orders={latestOrder ?? []} />
+          </div>
+
+          {data.productCount > 0 && (
+            <div className="bg-card border-border rounded-xl border">
+              <div className="flex items-center justify-between p-4 pb-3">
+                <h2 className="text-foreground text-sm font-semibold">{t.home.recentProducts}</h2>
+                <button className="text-primary text-xs font-medium">{t.home.viewAll}</button>
+              </div>
+              <div className="divide-border divide-y">
+                {data?.lastProducts?.map(p => (
+                  <div key={p.id} className="flex items-center gap-3 px-4 py-3">
+                    <div className="bg-muted sw-10 h-10 flex-shrink-0 overflow-hidden rounded-lg">
+                      <img
+                        src={p.images?.[0]?.url || ''}
+                        alt={p.name}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-foreground truncate text-sm font-medium">{p.name}</p>
+                      <p className="text-muted-foreground text-[11px]">{p.category}</p>
+                    </div>
+                    <span className="text-foreground text-sm font-bold whitespace-nowrap">
+                      {(p.discount
+                        ? p.price - (p.price * p.discount) / 100
+                        : p.price
+                      ).toLocaleString('ar-IQ')}
+                      <span className="text-muted-foreground mr-0.5 text-[9px]">{t.currency}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </main>
+      </section>
+
+      <section dir="rtl" className="hidden min-h-screen overflow-hidden md:block">
+        <main className="flex-1 space-y-4 px-1 py-2 pb-10">
+          <div id="desktop-stats-cards" className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+            {stats.map((item, idx) => (
+              <StatCard key={idx} {...item} />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="space-y-4 lg:col-span-2">
+              {data.productCount === 0 && (
+                <div className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
+                      <AlertCircle className="text-primary h-5 w-5" />
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <div className="min-w-0 flex-1 text-right">
+                        <h3 className="text-foreground text-sm font-bold">
+                          {t.home.addFirstProduct}
+                        </h3>
+                        <p className="te-foreground mt-0.5 text-[11px] leading-relaxed">
+                          {t.home.addFirstProductDesc}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-3 flex items-center gap-2">
+                      <Button
+                        onClick={() => router.push('Dashboard/ProductManagment/add-product')}
+                        size="sm"
+                        className="h-8 gap-1.5 rounded-lg text-xs"
+                      >
+                        <Plus className="h-3.5 w-3.5" />
+                        {t.home.addProductNow}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              <div id="desktop-plan-card">
+                <PlanCard />
+              </div>
+
+              <div id="desktop-revenue-card">
+                <RevenueHeroCard />
+              </div>
+
+              <div id="desktop-recent-orders">
+                <RecentOrdersPanel orders={latestOrder ?? []} />
+              </div>
+            </div>
+
+            <div className="space-y-4 lg:col-span-1">
+              <div id="desktop-url-card">
+                <UrlCard
+                  storeUrl={storeUrl}
+                  copyToClipboard={handleCopyUrl}
+                  theme={currentStore?.theme || ''}
+                  storeName={currentStore?.name || ''}
+                />
+              </div>
+
+              <div id="desktop-quick-actions">
+                <QuickActionsGrid />
+              </div>
+
+              {data.productCount > 0 && (
+                <div className="bg-card border-border rounded-xl border">
+                  <div className="flex items-center justify-between p-4 pb-3">
+                    <h2 className="text-foreground text-sm font-semibold">
+                      {t.home.recentProducts}
+                    </h2>
+                    <button
+                      onClick={() => router.push('/Dashboard/ProductManagment')}
+                      className="text-primary cursor-pointer text-xs font-medium"
+                    >
+                      {t.home.viewAll}
+                    </button>
+                  </div>
+                  <div className="divide-border divide-y">
+                    {data?.lastProducts?.map(p => (
+                      <div key={p.id} className="flex items-center gap-3 px-4 py-3">
+                        <div className="bg-muted sw-10 h-10 flex-shrink-0 overflow-hidden rounded-lg">
+                          <img
+                            src={p.images?.[0]?.url || ''}
+                            alt={p.name}
+                            className="h-full w-full object-cover"
+                          />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-foreground truncate text-sm font-medium">{p.name}</p>
+                          <p className="text-muted-foreground text-[11px]">{p.category}</p>
+                        </div>
+                        <span className="text-foreground text-sm font-bold whitespace-nowrap">
+                          {formatIQD(p.discount ? p.price - (p.price * p.discount) / 100 : p.price)}
+                          <span className="text-muted-foreground mr-0.5 text-[9px]">
+                            {t.currency}
+                          </span>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </main>
+      </section>
+    </>
   );
 }

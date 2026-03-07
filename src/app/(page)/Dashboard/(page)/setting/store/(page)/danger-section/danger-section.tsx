@@ -1,7 +1,7 @@
 ﻿'use client';
 
 import { useState } from 'react';
-import { Trash2, AlertTriangle } from 'lucide-react';
+import { Trash2, AlertTriangle, ShieldAlert } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import { useStoreProvider } from '../../../../../context/StoreContext';
@@ -32,24 +32,61 @@ export default function DangerSection() {
 
   return (
     <div className="space-y-4">
-      <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <AlertTriangle className="h-4 w-4 text-red-500 flex-shrink-0" />
-          <h3 className="text-sm font-bold text-red-600">{t.store?.dangerZone}</h3>
+      {/* Warning banner */}
+      <div className="flex items-start gap-3 rounded-xl bg-destructive/5 border border-destructive/20 p-4">
+        <ShieldAlert className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-bold text-destructive">
+            {t.store?.dangerZone || 'منطقة الخطر'}
+          </p>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            {t.store?.deleteWarning || 'هذه الإجراءات لا يمكن التراجع عنها. يرجى الحذر الشديد قبل المتابعة.'}
+          </p>
         </div>
-        <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
-          {t.store?.deleteWarning || 'هذه الإجراءات لا يمكن التراجع عنها. يرجى الحذر الشديد قبل المتابعة.'}
-        </p>
+      </div>
 
-        {confirmDelete ? (
-          <div className="space-y-3">
-            <div className="bg-card border border-red-200 rounded-lg p-3">
-              <p className="text-xs font-semibold text-red-600 text-center">
-                {t.store?.confirmDeleteStore?.replace('{name}', currentStore?.name || '') || `هل أنت متأكد من حذف متجر "${currentStore?.name}"؟`}
+      {/* Delete store card */}
+      <div className="rounded-xl border border-destructive/20 bg-card overflow-hidden">
+        <div className="px-4 py-4 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-destructive/10 flex-shrink-0">
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </div>
+            <div>
+              <p className="text-sm font-semibold text-foreground">
+                {t.store?.deleteStore || 'حذف المتجر'}
               </p>
-              <p className="text-[11px] text-muted-foreground text-center mt-1">
-                {t.store?.deleteStoreEffects || 'سيتم حذف جميع المنتجات والطلبات المرتبطة بهذا المتجر.'}
+              <p className="text-[11px] text-muted-foreground">
+                {t.store?.deleteStoreDesc || 'حذف دائم لا يمكن التراجع عنه'}
               </p>
+            </div>
+          </div>
+          {!confirmDelete && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-destructive border-destructive/30 hover:bg-destructive/5 hover:text-destructive gap-1.5"
+              onClick={() => setConfirmDelete(true)}
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+              {t.store?.deleteStore || 'حذف'}
+            </Button>
+          )}
+        </div>
+
+        {confirmDelete && (
+          <div className="border-t border-destructive/20 bg-destructive/5 px-4 py-4 space-y-3">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="h-4 w-4 text-destructive flex-shrink-0 mt-0.5" />
+              <div>
+                <p className="text-xs font-semibold text-destructive">
+                  {t.store?.confirmDeleteStore?.replace('{name}', currentStore?.name || '') ||
+                    `هل أنت متأكد من حذف "${currentStore?.name}"؟`}
+                </p>
+                <p className="text-[11px] text-muted-foreground mt-0.5">
+                  {t.store?.deleteStoreEffects || 'سيتم حذف جميع المنتجات والطلبات المرتبطة بهذا المتجر نهائياً.'}
+                </p>
+              </div>
             </div>
             <div className="flex gap-2">
               <Button
@@ -60,7 +97,9 @@ export default function DangerSection() {
                 onClick={handleDeleteStore}
               >
                 <Trash2 className="h-3.5 w-3.5" />
-                {loading ? (t.store?.deleting || 'جارٍ الحذف...') : (t.store?.yesDeleteStore || 'نعم، احذف المتجر')}
+                {loading
+                  ? t.store?.deleting || 'جارٍ الحذف...'
+                  : t.store?.yesDeleteStore || 'نعم، احذف المتجر'}
               </Button>
               <Button
                 variant="outline"
@@ -72,14 +111,6 @@ export default function DangerSection() {
               </Button>
             </div>
           </div>
-        ) : (
-          <Button
-            variant="outline"
-            className="w-full text-red-600 hover:text-red-700 border-red-300 hover:bg-red-50 gap-2"
-            onClick={() => setConfirmDelete(true)}
-          >
-            <Trash2 className="h-4 w-4" /> {t.store?.deleteStore}
-          </Button>
         )}
       </div>
     </div>

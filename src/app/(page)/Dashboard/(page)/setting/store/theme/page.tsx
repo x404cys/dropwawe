@@ -1,29 +1,21 @@
 ﻿'use client';
 
-import { useRouter } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
 import ThemeSection from '../(page)/theme-section/theme-section';
 import { useLanguage } from '../../../../context/LanguageContext';
+import SettingsPageHeader from '../../_components/settings-page-header';
 
 export default function ThemeSettingsPage() {
   const { t } = useLanguage();
-  const router = useRouter();
   return (
-    <section dir="rtl" className="min-h-screen pb-28">
-      <div className="bg-card border-border sticky top-0 z-10 flex items-center gap-2 border-b px-4 py-3">
-        <button
-          onClick={() => router.back()}
-          className="hover:bg-muted rounded-lg p-1.5 transition-colors"
-        >
-          <ArrowRight className="text-muted-foreground h-5 w-5" />
-        </button>
-        <h1 className="text-foreground text-base font-bold">
-          {t.store?.themeCustomization || 'تخصيص القالب والمظهر'}
-        </h1>
-      </div>
-
-      <ThemeSection />
+    <section dir="rtl" className="min-h-screen bg-background pb-28">
+      <SettingsPageHeader
+        title={t.store?.themeCustomization || 'القوالب'}
+        subtitle={t.store?.chooseStoreThemeDesc || 'اختر قالب لمتجرك لتغيير الهوية البصرية'}
+      />
       
+      <main className="max-w-4xl mx-auto px-4 pt-4">
+        <ThemeSection />
+      </main>
     </section>
   );
 }

@@ -6,7 +6,9 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { useLanguage } from '../../../context/LanguageContext';
- 
+import SettingsPageHeader from '../_components/settings-page-header';
+import SettingsSectionCard from '../_components/settings-section-card';
+
 interface DeliveryCompany {
   id: string;
   name: string;
@@ -20,7 +22,7 @@ interface DeliveryCompany {
 
 export default function DeliverySettingsPage() {
   const { t } = useLanguage();
-  
+
   const DEFAULT_COMPANIES: DeliveryCompany[] = [
     {
       id: '1', name: t.deliverySettings?.iraqFastPost || 'بريد العراق السريع', emoji: '🚚',
@@ -68,64 +70,75 @@ export default function DeliverySettingsPage() {
 
   const activeCount = companies.filter(c => c.active).length;
 
+  const headerAction = (
+    <Button
+      size="sm"
+      onClick={() => setShowForm(!showForm)}
+      className="h-8 gap-1.5 text-xs bg-primary hover:bg-primary/90"
+    >
+      <Plus className="h-3.5 w-3.5" />
+      {t.deliverySettings?.addCompany || 'إضافة شركة'}
+    </Button>
+  );
+
   return (
-    <section dir="rtl" className="min-h-screen bg-muted pb-28">
-      {/* Header */}
-      <div className="sticky top-0 z-10 bg-card border-b border-border px-4 py-3 flex items-center justify-between">
-        <div>
-          <h1 className="text-base font-bold text-foreground">{t.deliverySettings?.title || 'إعدادات التوصيل'}</h1>
-          <p className="text-[11px] text-muted-foreground">{activeCount} {t.deliverySettings?.activeCompanies || 'شركة نشطة من'} {companies.length}</p>
-        </div>
-        <Button
-          size="sm"
-          onClick={() => setShowForm(!showForm)}
-          className="gap-1.5 h-8 text-xs bg-[#04BAF6] hover:bg-[#0288d1]"
-        >
-          <Plus className="h-3.5 w-3.5" />
-          {t.deliverySettings?.addCompany || 'إضافة شركة'}
-        </Button>
-      </div>
+    <section dir="rtl" className="min-h-screen bg-background pb-28">
+      <SettingsPageHeader
+        title={t.deliverySettings?.title || 'إعدادات التوصيل'}
+        subtitle={`${activeCount} ${t.deliverySettings?.activeCompanies || 'شركة نشطة من'} ${companies.length}`}
+        action={headerAction}
+      />
 
       <div className="px-4 pt-4 space-y-4 max-w-xl mx-auto">
         {/* Add form */}
         {showForm && (
-          <div className="bg-card border border-border rounded-xl p-4 space-y-3 shadow-sm">
-            <h3 className="text-sm font-semibold text-foreground">{t.deliverySettings?.addDeliveryCompany || 'إضافة شركة توصيل جديدة'}</h3>
+          <SettingsSectionCard className="space-y-3">
+            <h3 className="text-sm font-semibold text-foreground">
+              {t.deliverySettings?.addDeliveryCompany || 'إضافة شركة توصيل جديدة'}
+            </h3>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">{t.deliverySettings?.companyName || 'اسم الشركة *'}</label>
+              <label className="text-[11px] text-muted-foreground mb-1 block">
+                {t.deliverySettings?.companyName || 'اسم الشركة *'}
+              </label>
               <Input
                 value={form.name}
                 onChange={e => setForm({ ...form, name: e.target.value })}
-                placeholder={t.deliverySettings?.companyNamePlaceholder || "اسم شركة التوصيل"}
+                placeholder={t.deliverySettings?.companyNamePlaceholder || 'اسم شركة التوصيل'}
                 className="h-10"
               />
             </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t.deliverySettings?.deliveryFee || 'رسوم التوصيل (د.ع)'}</label>
+                <label className="text-[11px] text-muted-foreground mb-1 block">
+                  {t.deliverySettings?.deliveryFee || 'رسوم التوصيل (د.ع)'}
+                </label>
                 <Input
                   type="number"
                   value={form.baseFee}
                   onChange={e => setForm({ ...form, baseFee: e.target.value })}
-                  placeholder={t.deliverySettings?.deliveryFeePlaceholder || "5000"}
+                  placeholder={t.deliverySettings?.deliveryFeePlaceholder || '5000'}
                   className="h-10"
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">{t.deliverySettings?.deliveryTime || 'مدة التوصيل'}</label>
+                <label className="text-[11px] text-muted-foreground mb-1 block">
+                  {t.deliverySettings?.deliveryTime || 'مدة التوصيل'}
+                </label>
                 <Input
                   value={form.estimatedDays}
                   onChange={e => setForm({ ...form, estimatedDays: e.target.value })}
-                  placeholder={t.deliverySettings?.deliveryTimePlaceholder || "1-3 أيام"}
+                  placeholder={t.deliverySettings?.deliveryTimePlaceholder || '1-3 أيام'}
                   className="h-10"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs text-muted-foreground mb-1 block">{t.profile?.phone || 'رقم التلفون'}</label>
+              <label className="text-[11px] text-muted-foreground mb-1 block">
+                {t.profile?.phone || 'رقم التلفون'}
+              </label>
               <Input
                 value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
@@ -136,20 +149,22 @@ export default function DeliverySettingsPage() {
             </div>
 
             <div className="flex gap-2 pt-1">
-              <Button onClick={addCompany} size="sm" className="flex-1 bg-[#04BAF6] hover:bg-[#0288d1]"> {t.add} </Button>
-              <Button onClick={() => setShowForm(false)} variant="outline" size="sm"> {t.cancel} </Button>
+              <Button onClick={addCompany} size="sm" className="flex-1 bg-primary hover:bg-primary/90">
+                {t.add}
+              </Button>
+              <Button onClick={() => setShowForm(false)} variant="outline" size="sm">
+                {t.cancel}
+              </Button>
             </div>
-          </div>
+          </SettingsSectionCard>
         )}
 
         {/* Company list */}
         <div className="space-y-3">
           {companies.map(company => (
-            <div
+            <SettingsSectionCard
               key={company.id}
-              className={`bg-card border rounded-xl p-4 transition-all ${
-                company.active ? 'border-border' : 'border-border opacity-60'
-              }`}
+              className={`transition-all ${!company.active ? 'opacity-60' : ''}`}
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
@@ -183,22 +198,24 @@ export default function DeliverySettingsPage() {
                       </span>
                     ))
                   ) : (
-                    <span className="text-[11px] text-muted-foreground">{t.deliverySettings?.noAreasDefined || 'لا توجد مناطق محددة'}</span>
+                    <span className="text-[11px] text-muted-foreground">
+                      {t.deliverySettings?.noAreasDefined || 'لا توجد مناطق محددة'}
+                    </span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-[#04BAF6]">
+                  <span className="text-xs font-bold text-primary">
                     {company.baseFee.toLocaleString('ar-IQ')} {t.deliverySettings?.iqd || 'د.ع'}
                   </span>
                   <button
                     onClick={() => deleteCompany(company.id)}
-                    className="text-muted-foreground hover:text-red-500 transition-colors p-1"
+                    className="text-muted-foreground hover:text-destructive transition-colors p-1"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
                 </div>
               </div>
-            </div>
+            </SettingsSectionCard>
           ))}
         </div>
       </div>

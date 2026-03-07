@@ -33,10 +33,10 @@ const fetcher = (url: string) =>
   });
 
 const STATUS_STYLES: Record<string, string> = {
-  PRE_ORDER: 'bg-[#04BAF6]/10 text-[#04BAF6]',
-  CONFIRMED: 'bg-green-100 text-green-700',
-  CANCELLED: 'bg-red-50 text-red-600',
-  TRANSIT: 'bg-amber-100 text-amber-700',
+  PRE_ORDER: 'bg-primary/10 text-primary',
+  CONFIRMED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  CANCELLED: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+  TRANSIT: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
 };
 
 const DATE_FILTERS = [
@@ -124,14 +124,14 @@ export default function OrderSummaryPage() {
   if (isLoading) {
     return (
       <section dir="rtl" className="p-4 space-y-3">
-        <Skeleton className="h-11 w-full rounded-xl bg-gray-200" />
+        <Skeleton className="h-11 w-full rounded-xl bg-muted" />
         <div className="flex gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-16 rounded-full bg-gray-200" />
+            <Skeleton key={i} className="h-8 w-16 rounded-full bg-muted" />
           ))}
         </div>
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 w-full rounded-xl bg-gray-200" />
+          <Skeleton key={i} className="h-20 w-full rounded-xl bg-muted" />
         ))}
       </section>
     );
@@ -143,20 +143,20 @@ export default function OrderSummaryPage() {
 
   // ── UI ────────────────────────────────────────────────────────────────
   return (
-    <section dir="rtl" className="bg-gray-50 min-h-screen">
+    <section dir="rtl" className="bg-background min-h-screen">
       <div className="p-4 space-y-4 pb-10">
 
         {/* Page header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-gray-900">{t.orders.title}</h1>
-            <p className="text-xs text-gray-400">{orders.length} طلب إجمالي</p>
+            <h1 className="text-lg font-bold text-foreground">{t.orders.title}</h1>
+            <p className="text-xs text-muted-foreground">{orders.length} طلب إجمالي</p>
           </div>
           {data?.Stores && data.Stores.length > 1 && (
             <select
               value={storeId || fiestoreId}
               onChange={e => setStoreId(e.target.value)}
-              className="text-xs rounded-xl border border-gray-200 bg-white px-3 py-2 text-gray-700"
+              className="text-xs rounded-xl border border-border bg-card px-3 py-2 text-foreground"
             >
               <option value="">كل المتاجر</option>
               {data?.Stores?.map(store => (
@@ -168,12 +168,12 @@ export default function OrderSummaryPage() {
 
         {/* Search bar */}
         <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="ابحث بالاسم، الهاتف، الموقع..."
-            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20 outline-none transition"
+            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
           />
         </div>
 
@@ -185,8 +185,8 @@ export default function OrderSummaryPage() {
               onClick={() => setStatusFilter(tab.key)}
               className={`flex-shrink-0 cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
                 statusFilter === tab.key
-                  ? 'bg-[#04BAF6] text-white shadow-sm shadow-[#04BAF6]/30'
-                  : 'bg-white border border-gray-200 text-gray-600 hover:border-[#04BAF6]/50'
+                  ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/30'
+                  : 'bg-card border border-border text-muted-foreground hover:border-primary/50'
               }`}
             >
               {tab.label}
@@ -202,8 +202,8 @@ export default function OrderSummaryPage() {
               onClick={() => setDateFilter(f.key)}
               className={`flex-shrink-0 cursor-pointer px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
                 dateFilter === f.key
-                  ? 'bg-gray-900 text-white'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                  ? 'bg-foreground text-background'
+                  : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
               }`}
             >
               {f.label}
@@ -213,7 +213,7 @@ export default function OrderSummaryPage() {
 
         {/* Orders list */}
         {filteredOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-400">
+          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
             <ShoppingBag className="h-14 w-14 mb-3 opacity-25" />
             <p className="text-sm font-medium">{t.orders.noOrders}</p>
           </div>
@@ -225,15 +225,15 @@ export default function OrderSummaryPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.25 }}
-                className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:border-border/80 transition-all"
               >
                 <div
                   onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
                   className="flex items-center gap-3 px-4 py-3.5 cursor-pointer"
                 >
                   {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-[#04BAF6]/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-[#04BAF6]">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <span className="text-sm font-bold text-primary">
                       {order.fullName?.charAt(0) ?? '؟'}
                     </span>
                   </div>
@@ -241,21 +241,21 @@ export default function OrderSummaryPage() {
                   {/* Details */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-gray-900 truncate">
+                      <span className="text-sm font-semibold text-foreground truncate">
                         {order.fullName}
                       </span>
                       <span
                         className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
-                          STATUS_STYLES[order.status] ?? 'bg-gray-100 text-gray-600'
+                          STATUS_STYLES[order.status] ?? 'bg-secondary text-secondary-foreground'
                         }`}
                       >
                         {STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-gray-400">{order.location}</span>
-                      <span className="text-[11px] text-gray-300">•</span>
-                      <span className="text-[11px] text-gray-400">
+                      <span className="text-[11px] text-muted-foreground">{order.location}</span>
+                      <span className="text-[11px] text-muted-foreground/50">•</span>
+                      <span className="text-[11px] text-muted-foreground">
                         {new Date(order.createdAt).toLocaleDateString('ar-EG', {
                           month: 'short',
                           day: 'numeric',
@@ -267,20 +267,20 @@ export default function OrderSummaryPage() {
                   {/* Amount + chevron */}
                   <div className="text-left flex-shrink-0 flex items-center gap-2">
                     <div>
-                      <p className="text-sm font-bold text-gray-900">
+                      <p className="text-sm font-bold text-foreground">
                         {formatIQD(order.price)}
                       </p>
-                      <p className="text-[10px] text-gray-400 text-left">{order.phone}</p>
+                      <p className="text-[10px] text-muted-foreground text-left">{order.phone}</p>
                     </div>
-                    <ChevronLeft className="h-4 w-4 text-gray-300" />
+                    <ChevronLeft className="h-4 w-4 text-muted-foreground/50" />
                   </div>
                 </div>
 
                 {/* Delete strip */}
-                <div className="border-t border-gray-50 px-4 py-2 flex justify-end">
+                <div className="border-t border-border/50 px-4 py-2 flex justify-end bg-card/50">
                   <button
                     onClick={e => { e.stopPropagation(); deleteOrder(order.id); }}
-                    className="flex items-center gap-1 text-[11px] text-red-400 hover:text-red-600 transition-colors"
+                    className="flex items-center gap-1 text-[11px] text-red-500 hover:text-red-600 transition-colors"
                   >
                     <Trash2 className="h-3 w-3" /> {t.delete} </button>
                 </div>

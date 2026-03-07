@@ -44,6 +44,7 @@ const storeSchema = z.object({
   googlePixel: z.string().optional(),
   snapPixel: z.string().optional(),
   storeId: z.string().optional(),
+  image: z.string().optional(),
 });
 
 export async function POST(req: Request) {
@@ -109,6 +110,7 @@ export async function POST(req: Request) {
           tiktokPixel: parsed.data.tiktokPixel ?? '',
           googlePixel: parsed.data.googlePixel ?? '',
           snapPixel: parsed.data.snapPixel ?? '',
+          ...(parsed.data.image ? { image: parsed.data.image } : {}),
         },
       });
 
@@ -127,6 +129,7 @@ export async function POST(req: Request) {
           telegram: parsed.data.telegram,
           description: parsed.data.description,
           active: parsed.data.active ?? true,
+          ...(parsed.data.image ? { image: parsed.data.image } : {}),
           users: {
             create: {
               userId: user.id,

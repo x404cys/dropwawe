@@ -9,21 +9,23 @@ export interface StatCardProps {
   icon: ReactNode;
   change?: number; // بدل desc
   href?: string;
+  color?: string;
 }
 
-export default function StatCard({ title, value, icon, change, href }: StatCardProps) {
+export default function StatCard({ title, value, icon, change, href, color = 'text-muted-foreground' }: StatCardProps) {
   const card = (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
-      className="bg-card border-border rounded-xl border p-3.5 transition-all hover:shadow-sm"
+      dir="rtl"
+      className="bg-card border border-border rounded-xl p-3.5 transition-all hover:shadow-sm"
     >
-      {/* Top row */}
-      <div className="mb-1.5 flex items-center justify-between">
-        <div className="text-muted-foreground h-3.5 w-3.5">{icon}</div>
-
+      <div className="flex items-center justify-between mb-1.5">
+        <div className={`flex items-center justify-center [&>svg]:h-4 [&>svg]:w-4 md:[&>svg]:h-6 md:[&>svg]:w-6 md:w-9 md:h-9 md:rounded-lg md:bg-primary/15 md:p-2 md:text-primary ${color}`}>
+          {icon}
+        </div>
         {change !== undefined && (
           <span
             className={`flex items-center gap-0.5 text-[10px] font-medium ${
@@ -31,22 +33,21 @@ export default function StatCard({ title, value, icon, change, href }: StatCardP
             }`}
           >
             {change >= 0 ? (
-              <TrendingUp className="h-1 w-1" />
+              <TrendingUp className="h-2.5 w-2.5" />
             ) : (
-              <TrendingDown className="h-1 w-1" />
+              <TrendingDown className="h-2.5 w-2.5" />
             )}
             {Math.abs(change)}%
           </span>
         )}
       </div>
 
-      {/* Value */}
-      <span className="text-foreground block text-lg font-bold">
-        {typeof value === 'number' ? value.toLocaleString('ar-IQ') : value}
+      <span className="text-lg font-bold text-foreground block">
+        {typeof value === 'number' ? value : value}
       </span>
-
-      {/* Title */}
-      <span className="text-muted-foreground text-[10px]">{title}</span>
+      <span className="text-[10px] text-muted-foreground block mt-0.5">
+        {title}
+      </span>
     </motion.div>
   );
 

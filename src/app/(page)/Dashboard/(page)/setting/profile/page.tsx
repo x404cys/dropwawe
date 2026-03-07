@@ -17,6 +17,7 @@ import {
   MessageCircle,
   FileText,
   Languages,
+  Pencil,
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -24,6 +25,9 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useTheme } from '../../../context/ThemeContext';
 import { useLanguage, type Lang } from '../../../context/LanguageContext';
+import SettingsPageHeader from '../_components/settings-page-header';
+import SettingsSectionCard from '../_components/settings-section-card';
+import SettingsSectionHeading from '../_components/settings-section-heading';
 
 const getFAQs = (t: any) => [
   {
@@ -78,13 +82,39 @@ export default function ProfileSettingsPage() {
     toast.success(t.profile?.savedDesc || 'تم حفظ التغييرات');
   };
 
+  const headerAction =
+    activeTab === 'account' ? (
+      editing ? (
+        <Button
+          size="sm"
+          onClick={saveProfile}
+          className="h-8 gap-1.5 text-xs bg-primary hover:bg-primary/90"
+        >
+          <Save className="h-3.5 w-3.5" />
+          {t.save}
+        </Button>
+      ) : (
+        <Button
+          size="sm"
+          variant="outline"
+          onClick={() => setEditing(true)}
+          className="h-8 gap-1.5 text-xs"
+        >
+          <Pencil className="h-3.5 w-3.5" />
+          {t.edit}
+        </Button>
+      )
+    ) : undefined;
+
   return (
     <section dir="rtl" className="bg-background min-h-screen pb-28">
-      <div className="bg-card border-border sticky top-0 z-10 flex items-center justify-between border-b px-4 py-3">
-        <h1 className="text-foreground text-base font-bold">{t.nav?.profile || 'الملف الشخصي'}</h1>
-      </div>
+      <SettingsPageHeader
+        title={t.nav?.profile || 'الملف الشخصي'}
+        action={headerAction}
+      />
 
       <div className="mx-auto max-w-xl space-y-5 px-4 pt-4">
+        {/* Tab bar */}
         <div className="scrollbar-none flex gap-2 overflow-x-auto pb-1">
           {TABS.map(tab => (
             <button
@@ -109,7 +139,7 @@ export default function ProfileSettingsPage() {
         {activeTab === 'account' && (
           <div className="space-y-4">
             {/* Avatar + basic info */}
-            <div className="bg-card border-border rounded-xl border p-5">
+            <SettingsSectionCard>
               <div className="flex items-center gap-4">
                 <div className="relative">
                   {session?.user?.image ? (
@@ -141,24 +171,20 @@ export default function ProfileSettingsPage() {
                   </span>
                 </div>
               </div>
-            </div>
+            </SettingsSectionCard>
 
             {/* Personal info */}
-            <div className="bg-card border-border space-y-4 rounded-xl border p-4">
-              <h3 className="text-muted-foreground text-xs font-semibold tracking-wide uppercase">
+            <SettingsSectionCard className="space-y-4">
+              <SettingsSectionHeading icon={User}>
                 {t.profile?.accountInfo || 'المعلومات الشخصية'}
-              </h3>
+              </SettingsSectionHeading>
               <div className="space-y-3">
                 <div>
                   <label className="text-muted-foreground mb-1 flex items-center gap-1 text-[11px]">
-                    <User className="h-3 w-3" /> {t.profile?.name || 'الاسم'}{' '}
+                    <User className="h-3 w-3" /> {t.profile?.name || 'الاسم'}
                   </label>
                   {editing ? (
-                    <Input
-                      value={name}
-                      onChange={e => setName(e.target.value)}
-                      className="h-10 text-sm"
-                    />
+                    <Input value={name} onChange={e => setName(e.target.value)} className="h-10 text-sm" />
                   ) : (
                     <p className="text-foreground bg-muted rounded-lg px-3 py-2 text-sm">
                       {session?.user?.name ?? '—'}
@@ -167,33 +193,34 @@ export default function ProfileSettingsPage() {
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 flex items-center gap-1 text-[11px]">
-                    <Mail className="h-3 w-3" /> {t.profile?.email || 'البريد الإلكتروني'}{' '}
+                    <Mail className="h-3 w-3" /> {t.profile?.email || 'البريد الإلكتروني'}
                   </label>
                   <p className="text-foreground bg-muted rounded-lg px-3 py-2 text-sm" dir="ltr">
                     {session?.user?.email ?? '—'}
                   </p>
                 </div>
               </div>
-            </div>
+            </SettingsSectionCard>
 
             {/* Security + logout */}
-            <div className="bg-card border-border divide-border divide-y rounded-xl border">
+            <SettingsSectionCard noPadding>
               <button className="hover:bg-muted/50 flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors">
                 <Shield className="text-muted-foreground h-4 w-4" />
                 <p className="text-foreground flex-1 text-sm font-medium">
                   {t.profile?.changePassword || 'تغيير كلمة المرور'}
                 </p>
               </button>
+              <div className="border-t border-border" />
               <button
                 onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                className="flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors hover:bg-red-500/5"
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors hover:bg-destructive/5"
               >
-                <LogOut className="h-4 w-4 text-red-500" />
-                <p className="text-sm font-medium text-red-500">
+                <LogOut className="h-4 w-4 text-destructive" />
+                <p className="text-sm font-medium text-destructive">
                   {t.profile?.logout || 'تسجيل الخروج'}
                 </p>
               </button>
-            </div>
+            </SettingsSectionCard>
           </div>
         )}
 
@@ -201,10 +228,10 @@ export default function ProfileSettingsPage() {
         {activeTab === 'settings' && (
           <div className="space-y-4">
             {/* Language Selection */}
-            <div className="bg-card border-border space-y-3 rounded-xl border p-4">
-              <h3 className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
-                <Languages className="h-3 w-3" /> {t.profile?.language || 'لغة الواجهة'}
-              </h3>
+            <SettingsSectionCard className="space-y-3">
+              <SettingsSectionHeading icon={Languages}>
+                {t.profile?.language || 'لغة الواجهة'}
+              </SettingsSectionHeading>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
                 {LANG_OPTIONS.map(option => (
                   <button
@@ -221,13 +248,13 @@ export default function ProfileSettingsPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </SettingsSectionCard>
 
             {/* Appearance */}
-            <div className="bg-card border-border space-y-3 rounded-xl border p-4">
-              <h3 className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
-                <Sun className="h-3 w-3" /> {t.profile?.appearance || 'المظهر'}
-              </h3>
+            <SettingsSectionCard className="space-y-3">
+              <SettingsSectionHeading icon={Sun}>
+                {t.profile?.appearance || 'المظهر'}
+              </SettingsSectionHeading>
               <div className="grid grid-cols-2 gap-2">
                 {(
                   [
@@ -249,15 +276,14 @@ export default function ProfileSettingsPage() {
                   </button>
                 ))}
               </div>
-            </div>
+            </SettingsSectionCard>
 
             {/* Notifications */}
-            <div className="bg-card border-border divide-border divide-y rounded-xl border">
+            <SettingsSectionCard noPadding>
               <div className="p-4 pb-3">
-                <h3 className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
-                  <Bell className="h-3 w-3" />{' '}
-                  {t.profile?.notificationSettings || 'إعدادات الإشعارات'}{' '}
-                </h3>
+                <SettingsSectionHeading icon={Bell}>
+                  {t.profile?.notificationSettings || 'إعدادات الإشعارات'}
+                </SettingsSectionHeading>
               </div>
               {[
                 {
@@ -275,55 +301,60 @@ export default function ProfileSettingsPage() {
                   label: t.profile?.emailUpdates || 'تقارير البريد',
                   desc: t.profile?.emailUpdatesDesc || 'تقارير أسبوعية وشهرية',
                 },
-              ].map(s => (
-                <div key={s.key} className="flex items-center justify-between px-4 py-3">
-                  <div>
-                    <p className="text-foreground text-sm font-medium">{s.label}</p>
-                    <p className="text-muted-foreground text-[11px]">{s.desc}</p>
+              ].map((s, idx) => (
+                <div key={s.key}>
+                  {idx > 0 && <div className="border-t border-border" />}
+                  <div className="flex items-center justify-between px-4 py-3">
+                    <div>
+                      <p className="text-foreground text-sm font-medium">{s.label}</p>
+                      <p className="text-muted-foreground text-[11px]">{s.desc}</p>
+                    </div>
+                    <Switch
+                      checked={notifSettings[s.key]}
+                      onCheckedChange={v => setNotifSettings({ ...notifSettings, [s.key]: v })}
+                    />
                   </div>
-                  <Switch
-                    checked={notifSettings[s.key]}
-                    onCheckedChange={v => setNotifSettings({ ...notifSettings, [s.key]: v })}
-                  />
                 </div>
               ))}
-            </div>
+            </SettingsSectionCard>
           </div>
         )}
 
         {/* ═══ HELP TAB ═══ */}
         {activeTab === 'help' && (
           <div className="space-y-4">
-            <div className="bg-card border-border space-y-2 rounded-xl border p-4">
-              <h3 className="text-muted-foreground mb-3 text-xs font-semibold tracking-wide uppercase">
+            <SettingsSectionCard className="space-y-2">
+              <SettingsSectionHeading>
                 {t.profile?.contactUs || 'تواصل معنا'}
-              </h3>
-              <Button
-                variant="outline"
-                className="h-12 w-full justify-start gap-3"
-                onClick={() => window.open('https://wa.me/9647700000000', '_blank')}
-              >
-                <MessageCircle className="h-4 w-4 text-green-500" />
-                <span className="text-sm">
-                  {t.profile?.whatsappSupport || 'واتساب — الدعم الفني'}
-                </span>
-                <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
-              </Button>
-              <Button
-                variant="outline"
-                className="h-12 w-full justify-start gap-3"
-                onClick={() => window.open('mailto:support@drop-wave.com')}
-              >
-                <Mail className="text-primary h-4 w-4" />
-                <span className="text-sm">support@drop-wave.com</span>
-                <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
-              </Button>
-            </div>
+              </SettingsSectionHeading>
+              <div className="space-y-2 pt-2">
+                <Button
+                  variant="outline"
+                  className="h-12 w-full justify-start gap-3"
+                  onClick={() => window.open('https://wa.me/9647700000000', '_blank')}
+                >
+                  <MessageCircle className="h-4 w-4 text-green-500" />
+                  <span className="text-sm">
+                    {t.profile?.whatsappSupport || 'واتساب — الدعم الفني'}
+                  </span>
+                  <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
+                </Button>
+                <Button
+                  variant="outline"
+                  className="h-12 w-full justify-start gap-3"
+                  onClick={() => window.open('mailto:support@drop-wave.com')}
+                >
+                  <Mail className="text-primary h-4 w-4" />
+                  <span className="text-sm">support@drop-wave.com</span>
+                  <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
+                </Button>
+              </div>
+            </SettingsSectionCard>
 
-            <div className="bg-card border-border space-y-3 rounded-xl border p-4">
-              <h3 className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
-                <HelpCircle className="h-3 w-3" /> {t.profile?.commonQuestions || 'الأسئلة الشائعة'}
-              </h3>
+            <SettingsSectionCard className="space-y-3">
+              <SettingsSectionHeading icon={HelpCircle}>
+                {t.profile?.commonQuestions || 'الأسئلة الشائعة'}
+              </SettingsSectionHeading>
               <div className="divide-border divide-y">
                 {FAQS.map(faq => (
                   <div key={faq.q} className="py-3 first:pt-0 last:pb-0">
@@ -332,7 +363,7 @@ export default function ProfileSettingsPage() {
                   </div>
                 ))}
               </div>
-            </div>
+            </SettingsSectionCard>
 
             <Button
               variant="outline"

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
+import { Check, Eye, Palette, Sparkles, Crown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Check, Sparkles } from 'lucide-react';
+import { toast } from 'sonner';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { PlanType } from '@/types/plans/Plans';
@@ -11,150 +12,207 @@ import { useLanguage } from '../../../../../context/LanguageContext';
 
 type ThemeId = 'NORMAL' | 'MODERN' | 'RAMADAN';
 
-type Theme = {
+interface Template {
   id: ThemeId;
   name: string;
   description: string;
-  image?: string;
-  badge?: string;
+  category: 'مجاني' | 'مميز';
+  colors: string[];
+  features: string[];
+  popular?: boolean;
   allowedPlans: PlanType[];
-};
-
-type ThemeResponse = {
-  theme: ThemeId;
-};
+}
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function ThemeSection() {
   const { t } = useLanguage();
-  const [loadingTheme, setLoadingTheme] = useState<ThemeId | null>(null);
   const { userPlanType } = useSubscriptions();
+  const [loadingTheme, setLoadingTheme] = useState<ThemeId | null>(null);
+  const [activeCategory, setActiveCategory] = useState<string>('الكل');
 
-  const themes: Theme[] = [
-    {
-      id: 'NORMAL',
-      name: t.store?.classicTheme || 'ثيم كلاسيكي',
-      description: t.store?.classicThemeDesc || 'تصميم بسيط وألوان هادئة',
-      image: '/img-theme/iPhone-13-PRO-NORMAL.webp',
-      allowedPlans: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro', 'free-trial'],
-    },
-    {
-      id: 'MODERN',
-      name: t.store?.modernTheme || 'ثيم عصري',
-      description: t.store?.modernThemeDesc || 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
-      image: '/img-theme/iPhone-13-PRO-MODREN.webp',
-      badge: t.store?.popularBadge || 'شائع',
-      allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
-    },
-    {
-      id: 'RAMADAN',
-      name: t.store?.ramadanTheme || 'ثيم رمضان',
-      description: t.store?.ramadanThemeDesc || 'تصميم رمضاني يناسب متجرك في الموسم',
-      image: '/img-theme/IMG_6629.JPG',
-      badge: t.store?.seasonalBadge || 'موسمي',
-      allowedPlans: ['ramadan-plan', 'free-trial'],
-    },
-  ];
-
-  const { data, isLoading } = useSWR<ThemeResponse>('/api/dashboard/setting/get-theme', fetcher, {
+  const { data, isLoading } = useSWR<{ theme: ThemeId }>('/api/dashboard/setting/get-theme', fetcher, {
     revalidateOnFocus: true,
     revalidateOnMount: true,
   });
 
-  const selectTheme = async (themeId: ThemeId) => {
+  const TEMPLATES: Template[] = [
+    {
+      id: 'NORMAL',
+      name: t.store?.classicTheme || 'بسيط',
+      description: t.store?.classicThemeDesc || 'تصميم نظيف وبسيط يركز على المنتجات مع تنقل سهل',
+      category: 'مجاني',
+      colors: ['#FFFFFF', '#000000', '#0EA5E9'],
+      features: ['تصميم متجاوب', 'عرض شبكي', 'تصفح سريع'],
+      allowedPlans: ['trader-basic', 'trader-pro', 'drop-basics', 'drop-pro', 'free-trial'],
+    },
+    {
+      id: 'MODERN',
+      name: t.store?.modernTheme || 'عصري',
+      description: t.store?.modernThemeDesc || 'تصميم عصري وجذاب مناسب للمتاجر الحديثة والأنيقة',
+      category: 'مميز',
+      colors: ['#1A1A2E', '#E2B857', '#FFFFFF'],
+      features: ['أنيميشن سلس', 'عرض المنتج بالكامل', 'أقسام حيوية'],
+      popular: true,
+      allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
+    },
+    {
+      id: 'RAMADAN',
+      name: t.store?.ramadanTheme || 'رمضان',
+      description: t.store?.ramadanThemeDesc || 'تصميم رمضاني مخصص يناسب متجرك في الموسم',
+      category: 'مميز',
+      colors: ['#efe3e3', '#833334', '#f9f6f3'],
+      features: ['هوية رمضانية', 'زخارف إسلامية', 'فانوس الإشعارات'],
+      allowedPlans: ['ramadan-plan', 'free-trial'],
+    },
+  ];
+
+  const visibleTemplates = TEMPLATES.filter(t => {
+    if (!userPlanType) return false;
+    return t.allowedPlans.includes(userPlanType);
+  });
+
+  const filtered = visibleTemplates.filter(t => activeCategory === 'الكل' || t.category === activeCategory);
+
+  const applyTemplate = async (themeId: ThemeId) => {
     setLoadingTheme(themeId);
-
     try {
-      await axios.post('/api/dashboard/setting/update', {
-        theme: themeId,
-      });
-
+      await axios.post('/api/dashboard/setting/update', { theme: themeId });
       await mutate('/api/dashboard/setting/get-theme');
+      toast.success(t.store?.themeUpdated || 'تم تطبيق القالب بنجاح');
     } catch (error) {
       console.error('خطأ أثناء تحديث الثيم:', error);
+      toast.error(t.store?.themeUpdateError || 'فشل في تحديث الثيم');
     } finally {
       setLoadingTheme(null);
     }
   };
-  const visibleThemes = themes.filter(theme => {
-    if (!userPlanType) return false;
-    return theme.allowedPlans.includes(userPlanType);
-  });
 
-  return (
-    <div className="space-y-8">
-      <div className="space-y-2">
-        <div className="mb-6 flex items-center justify-center text-center">
-          <div className="flex flex-col items-center gap-2 rounded-2xl border border-green-400 bg-green-50 px-8 py-0.5">
-            <h1 className="font-light text-green-400">{t.store?.newThemeWaiting || 'قالب جديد بأنتظارك'}</h1>
+  const renderTemplateCard = (template: Template) => {
+    const isSelected = data?.theme === template.id;
+    const isLoadingBtn = loadingTheme === template.id;
+
+    return (
+      <div
+        key={template.id}
+        className={`bg-card border rounded-xl overflow-hidden transition-all ${
+          isSelected ? 'border-primary shadow-sm ring-1 ring-primary/50' : 'border-border hover:border-primary/30'
+        }`}
+      >
+        <div className="h-28 relative flex">
+          {template.colors.map((color, i) => (
+            <div key={i} className="flex-1" style={{ backgroundColor: color }} />
+          ))}
+          {template.popular && (
+            <span className="absolute top-2 right-2 flex items-center gap-1 text-[10px] font-bold bg-background/90 text-foreground px-2 py-0.5 rounded-full shadow-sm">
+              <Sparkles className="h-3 w-3 text-amber-500" /> شائع
+            </span>
+          )}
+          {template.category === 'مميز' && (
+            <span className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-bold bg-primary text-primary-foreground px-2 py-0.5 rounded-full shadow-sm">
+              <Crown className="h-3 w-3" /> مميز
+            </span>
+          )}
+          {isSelected && (
+           <div className="absolute top-2 left-2 flex items-center gap-1 text-[10px] font-bold bg-green-400 text-white px-2 py-0.5 rounded-full shadow-sm">
+            <Check className="h-3.5 w-3.5" /> مُطبق
+           </div>
+          )}
+        </div>
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-sm font-bold text-foreground">{template.name}</h3>
+            <div className="flex items-center gap-1">
+              {template.colors.map((color, i) => (
+                <span
+                  key={i}
+                  className="w-4 h-4 rounded-full border border-border/20 shadow-sm"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </div>
+          <p className="text-[11px] text-muted-foreground mt-1.5 leading-relaxed line-clamp-2">
+            {template.description}
+          </p>
+          <div className="flex flex-wrap gap-1.5 mt-3">
+            {template.features.map(feature => (
+              <span key={feature} className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground border border-border/50">
+                {feature}
+              </span>
+            ))}
+          </div>
+          <div className="flex gap-2 mt-4 pt-4 border-t border-border/50">
+            <Button
+              onClick={() => applyTemplate(template.id)}
+              disabled={isLoadingBtn || isLoading}
+              size="sm"
+              variant={isSelected ? 'secondary' : 'default'}
+              className="flex-1 gap-1.5 text-xs font-medium"
+            >
+              {isLoadingBtn ? (
+                t.store?.updatingTheme || 'جارٍ التحديث...'
+              ) : isSelected ? (
+                <>
+                  <Check className="h-3.5 w-3.5" /> مُطبق
+                </>
+              ) : (
+                <>
+                  <Palette className="h-3.5 w-3.5" /> تطبيق
+                </>
+              )}
+            </Button>
+            <Button variant="outline" size="sm" className="gap-1.5 text-xs font-medium px-4">
+              <Eye className="h-3.5 w-3.5" /> معاينة
+            </Button>
           </div>
         </div>
+      </div>
+    );
+  };
 
-        <h2 className="text-2xl font-bold tracking-tight">{t.store?.chooseStoreTheme || 'اختر ثيم متجرك'}</h2>
-        <p className="text-muted-foreground">
-          {t.store?.chooseStoreThemeDesc || 'حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي'}
-        </p>
+  const freeTemplates = filtered.filter(t => t.category === 'مجاني');
+  const premiumTemplates = filtered.filter(t => t.category === 'مميز');
+
+  return (
+    <div className="space-y-5">
+      {/* Filters */}
+      <div className="flex gap-2">
+        {['الكل', 'مجاني', 'مميز'].map(cat => (
+          <button
+            key={cat}
+            onClick={() => setActiveCategory(cat)}
+            className={`px-4 py-1.5 rounded-full text-xs font-medium transition-colors ${
+              activeCategory === cat
+                ? 'bg-primary text-primary-foreground shadow-sm'
+                : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
+            }`}
+          >
+            {cat}
+          </button>
+        ))}
       </div>
 
-      <div className="flex items-center gap-4">
-        <span>{t.store?.currentTheme || 'الثيم الحالي:'}</span>
-        <span className="rounded-full bg-blue-100 px-3 py-1 text-sm font-medium">
-          {data?.theme === 'NORMAL' ? (t.store?.classicTheme || 'ثيم كلاسيكي') : (t.store?.modernTheme || 'ثيم عصري')}
-        </span>
-      </div>
+      <div className="space-y-6">
+        {/* Free templates */}
+        {freeTemplates.length > 0 && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {freeTemplates.map(renderTemplateCard)}
+          </div>
+        )}
 
-      <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
-        {visibleThemes.map(theme => {
-          const isActive = data?.theme === theme.id;
-          const isLoadingBtn = loadingTheme === theme.id;
-
-          return (
-            <div
-              key={theme.id}
-              className={`relative overflow-hidden rounded-xl border transition-all duration-300 ${
-                isActive
-                  ? 'border-primary ring-primary/30 shadow-lg ring-2'
-                  : 'border-border hover:border-primary/50 hover:shadow-md'
-              }`}
-            >
-              {theme.image && <img src={theme.image} alt={theme.name} className="w-full" />}
-
-              {theme.badge && (
-                <span className="bg-primary absolute top-3 left-3 rounded-full px-3 py-1 text-xs text-white">
-                  {theme.badge}
-                </span>
-              )}
-
-              <div className="space-y-4 p-5">
-                <h3 className="text-lg font-semibold">{theme.name}</h3>
-                <p className="text-muted-foreground text-sm">{theme.description}</p>
-
-                <Button
-                  className="w-full"
-                  size="sm"
-                  variant={isActive ? 'secondary' : 'default'}
-                  disabled={isLoadingBtn || isLoading}
-                  onClick={() => selectTheme(theme.id)}
-                >
-                  {isLoadingBtn ? (
-                    t.store?.updatingTheme || 'جارٍ التحديث...'
-                  ) : isActive ? (
-                    <>
-                      <Check className="ml-2 h-4 w-4" />
-                      {t.store?.activeTheme || 'مفعل'}
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="ml-2 h-4 w-4" />
-                      {t.store?.chooseTheme || 'اختر الثيم'}
-                    </>
-                  )}
-                </Button>
-              </div>
+        {/* Premium templates */}
+        {premiumTemplates.length > 0 && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 px-1">
+              <Crown className="h-4 w-4 text-amber-500" />
+              <h3 className="text-sm font-bold text-foreground">قوالب مميزة</h3>
             </div>
-          );
-        })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {premiumTemplates.map(renderTemplateCard)}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

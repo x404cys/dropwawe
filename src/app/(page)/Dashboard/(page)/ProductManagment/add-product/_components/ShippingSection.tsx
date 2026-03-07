@@ -2,7 +2,7 @@
 import { useLanguage } from '../../../../context/LanguageContext';
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { LiaShippingFastSolid } from 'react-icons/lia';
+ import { LiaShippingFastSolid } from 'react-icons/lia';
 import { TbTruckReturn } from 'react-icons/tb';
 
 import { Button } from '@/components/ui/button';
@@ -65,16 +65,16 @@ export function ShippingSection({
   );
 
   useEffect(() => {
-    if (selectedShipping === (t.inventory?.custom || 'مخصص')) {
+    if (selectedShipping === 'مخصص') {
       setNewProduct({ ...newProduct, shippingType: customShipping });
     }
-  }, [customShipping, selectedShipping, t]);
+  }, [customShipping]);
 
   useEffect(() => {
-    if (selectedReturn === (t.inventory?.custom || 'مخصص')) {
+    if (selectedReturn === 'مخصص') {
       setNewProduct({ ...newProduct, hasReturnPolicy: customReturn });
     }
-  }, [customReturn, selectedReturn, t]);
+  }, [customReturn]);
 
   return (
     <div className="space-y-6">

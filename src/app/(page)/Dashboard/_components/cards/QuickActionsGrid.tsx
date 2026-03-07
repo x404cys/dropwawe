@@ -57,25 +57,25 @@ export default function QuickActionsGrid() {
             onClick={() => router.push(getPath(action.path))}
             className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-3 transition-all duration-200 ${
               isPrimary
-                ? 'bg-primary/55 text-primary-foreground border-primary/10 shadow-sm'
-                : 'bg-card border-border hover:bg-muted/50'
+                ? 'bg-card text-primary-foreground border-primary/10 shadow-sm'
+                : 'bg-card border-border hover:bg-muted/50 border-primary/10'
             } `}
           >
             <div
               className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 ${
-                isPrimary ? 'bg-white/20' : 'bg-muted'
+                isPrimary ? 'bg-primary/10' : 'bg-muted'
               } `}
             >
               <Icon
                 className={`h-5 w-5 ${
-                  isPrimary ? 'text-primary-foreground' : 'text-muted-foreground'
+                  isPrimary ? 'text-primary' : 'text-muted-foreground'
                 }`}
               />
             </div>
 
             <span
               className={`text-center text-[11px] leading-tight font-semibold ${
-                isPrimary ? 'text-primary-foreground' : 'text-foreground'
+                isPrimary ? 'text-muted-foreground' : 'text-foreground'
               }`}
             >
               {action.label}

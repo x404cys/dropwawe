@@ -37,7 +37,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 <Sidebar>{children}</Sidebar>
               </main>
 
-              <div className="mb-18 block px-2 lg:hidden">{children}</div>
+              <div className="mb-18 block lg:hidden">{children}</div>
 
               <FloatingNavBarForDashboard />
             </section>

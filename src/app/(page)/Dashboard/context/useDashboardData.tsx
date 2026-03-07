@@ -1,7 +1,7 @@
 'use client';
 import useSWR from 'swr';
 import axios from 'axios';
-import { UserProps } from '@/types/Products';
+import { Product, UserProps } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
 import { Supplier } from '@/types/Supplier/SupplierType';
 import { SubscriptionResponse } from '@/types/users/User';
@@ -19,6 +19,7 @@ interface DashboardData {
   supplier: Supplier;
   subscription: SubscriptionResponse;
   Stores?: StoreProps[];
+  lastProducts?: Product[];
 }
 
 const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
@@ -120,6 +121,11 @@ export const useDashboardData = (userId?: string) => {
       revalidateOnMount: true,
     }
   );
+  const { data: lastProducts } = useSWR<Product[]>('/api/products/latest', fetcher, {
+    revalidateOnFocus: true,
+    refreshInterval: 5000,
+    revalidateOnMount: true,
+  });
   const { data: stores } = useSWR<StoreProps[]>('/api/dashboard/store/get-stores', fetcher, {
     revalidateOnFocus: true,
     refreshInterval: 5000,
@@ -138,6 +144,7 @@ export const useDashboardData = (userId?: string) => {
     user: userData,
     subscription: subscription!,
     Stores: stores,
+    lastProducts: lastProducts,
   };
 
   const loading = roleLoading;

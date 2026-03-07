@@ -23,6 +23,7 @@ interface Section {
   desc: string;
   icon: ElementType;
   path: string;
+  color?: string;
   allowedPlans?: PlanType[];
   danger?: boolean;
 }
@@ -60,7 +61,7 @@ export default function SettingOptions() {
           label: t.store?.generalSettings || 'الإعدادات العامة',
           desc: 'معلومات الحساب , المضهر , واللغة ',
           icon: Settings,
-          path: `${baseToProfile}`,
+           path: `${baseToProfile}`,
         },
       ],
     },
@@ -71,19 +72,19 @@ export default function SettingOptions() {
           label: t.store?.generalSettings || 'الإعدادات العامة',
           desc: t.store?.generalSettingsDesc || 'اسم المتجر، الرابط، الوصف',
           icon: LuUserRoundPen,
-          path: `${base}/basic`,
+           path: `${base}/basic`,
         },
         {
           label: 'الشحن والتوصيل',
           desc: 'سعر الشحن ورقم التواصل',
           icon: LiaShippingFastSolid,
-          path: `${base}/shipping`,
+           path: `${base}/shipping`,
         },
         {
           label: t.store?.socialLinks || 'روابط التواصل',
           desc: t.store?.socialLinksDesc || 'فيسبوك، انستغرام، تيليغرام',
           icon: IoShareSocialOutline,
-          path: `${base}/social`,
+           path: `${base}/social`,
         },
       ],
     },
@@ -94,7 +95,7 @@ export default function SettingOptions() {
           label: t.more?.templates || 'تخصيص القالب والمظهر',
           desc: t.more?.templatesDesc || 'ألوان وشكل صفحة المتجر',
           icon: MdOutlineStyle,
-          path: `${base}/theme`,
+           path: `${base}/theme`,
           allowedPlans: [
             'drop-basics',
             'trader-basic',
@@ -108,14 +109,14 @@ export default function SettingOptions() {
           label: t.store?.team || 'إضافة مستخدم للمتجر',
           desc: t.store?.teamDesc || 'منح صلاحيات لأعضاء فريقك',
           icon: FaUsersCog,
-          path: `${base}/users`,
+           path: `${base}/users`,
           allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
         },
         {
           label: t.store?.coupons || 'كوبونات الخصم',
           desc: t.store?.couponsDesc || 'إنشاء وإدارة كوبونات للعملاء',
           icon: BiSolidDiscount,
-          path: `${base}/coupon`,
+           path: `${base}/coupon`,
           allowedPlans: [
             'drop-basics',
             'trader-basic',
@@ -129,7 +130,7 @@ export default function SettingOptions() {
           label: t.more?.stores || 'إنشاء متجر إضافي',
           desc: t.more?.storesDesc || 'أدر أكثر من متجر من حساب واحد',
           icon: IoStorefrontOutline,
-          path: `${base}/create-another`,
+           path: `${base}/create-another`,
           allowedPlans: ['drop-pro'],
         },
       ],
@@ -141,6 +142,7 @@ export default function SettingOptions() {
           label: t.store?.tracking || 'البيكسل والتتبع الإعلاني',
           desc: t.store?.trackingDesc || 'فيسبوك، جوجل، تيك توك، سناب',
           icon: PiShootingStarThin,
+          color: 'bg-orange-500/10 text-orange-500',
           path: `${base}/pixel`,
           allowedPlans: ['trader-basic', 'trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
         },
@@ -148,6 +150,7 @@ export default function SettingOptions() {
           label: t.store?.deliveryIntegration || 'الربط مع شركة التوصيل',
           desc: t.store?.deliveryIntegrationDesc || 'توصيل تلقائي عبر شركات الشحن',
           icon: FaShippingFast,
+          color: 'bg-sky-500/10 text-sky-500',
           path: `${base}/c-shipping`,
           allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro', 'ramadan-plan'],
         },
@@ -191,22 +194,26 @@ export default function SettingOptions() {
                     disabled={!allowed}
                     onClick={() => allowed && router.push(section.path)}
                     className={`flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors ${
-                      !allowed ? 'bg-muted cursor-not-allowed opacity-50' : 'hover:bg-muted/50'
+                      !allowed ? 'cursor-not-allowed opacity-50' : 'hover:bg-muted/50'
                     }`}
                   >
                     <div
-                      className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${section.danger ? 'bg-red-500/10' : 'bg-muted'}`}
+                      className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
+                        section.danger ? 'bg-destructive/10' : section.color ?? 'bg-muted'
+                      }`}
                     >
                       <section.icon
                         size={17}
-                        className={section.danger ? 'text-red-500' : 'text-muted-foreground'}
+                        className={section.danger ? 'text-destructive' : undefined}
                       />
                     </div>
 
                     <div className="min-w-0 flex-1 text-right">
                       <div className="flex items-center gap-2">
                         <p
-                          className={`text-sm font-medium ${section.danger ? 'text-red-600' : 'text-foreground'}`}
+                          className={`text-sm font-medium ${
+                            section.danger ? 'text-destructive' : 'text-foreground'
+                          }`}
                         >
                           {section.label}
                         </p>
@@ -218,7 +225,9 @@ export default function SettingOptions() {
                         )}
                       </div>
                       <p
-                        className={`mt-0.5 text-[11px] ${section.danger ? 'text-red-400' : 'text-muted-foreground'}`}
+                        className={`mt-0.5 text-[11px] ${
+                          section.danger ? 'text-destructive/60' : 'text-muted-foreground'
+                        }`}
                       >
                         {section.desc}
                       </p>
@@ -226,7 +235,9 @@ export default function SettingOptions() {
 
                     <ChevronLeft
                       size={16}
-                      className={`flex-shrink-0 ${section.danger ? 'text-red-300' : 'text-muted-foreground/40'}`}
+                      className={`flex-shrink-0 ${
+                        section.danger ? 'text-destructive/30' : 'text-muted-foreground/40'
+                      }`}
                     />
                   </button>
                 );

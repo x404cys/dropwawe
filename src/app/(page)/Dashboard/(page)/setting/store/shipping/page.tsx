@@ -2,9 +2,7 @@
 import { useLanguage } from '../../../../context/LanguageContext';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import {
-  ArrowRight,
   CircleDollarSign,
   Info,
   Pencil,
@@ -21,6 +19,8 @@ import { toast } from 'sonner';
 import Loader from '@/components/Loader';
 import ShippingSection from '../(page)/shipping-section/shipping-section';
 import { useStoreSettings } from '../_hooks/useStoreSettings';
+import SettingsPageHeader from '../../_components/settings-page-header';
+import SettingsSectionCard from '../../_components/settings-section-card';
 
 function InfoRow({
   icon: Icon,
@@ -34,21 +34,20 @@ function InfoRow({
   hint?: string;
 }) {
   return (
-    <div className="border-border/80 bg-background/70 rounded-xl border p-3">
+    <div>
       <label className="text-muted-foreground mb-1 flex items-center gap-1 text-[11px]">
         <Icon className="h-3 w-3" /> {label}
       </label>
-      <p className="bg-muted/70 text-foreground min-h-[40px] rounded-lg px-3 py-2.5 text-sm">
+      <p className="bg-muted text-foreground min-h-[40px] rounded-lg px-3 py-2.5 text-sm">
         {value || <span className="text-muted-foreground">غير متوفر</span>}
       </p>
-      {hint && <p className="text-muted-foreground mt-2 text-[11px]">{hint}</p>}
+      {hint && <p className="text-muted-foreground mt-1 text-[11px]">{hint}</p>}
     </div>
   );
 }
 
 export default function ShippingSettingsPage() {
   const { t, dir, lang } = useLanguage();
-  const router = useRouter();
   const [editing, setEditing] = useState(false);
   const {
     phone,
@@ -78,68 +77,36 @@ export default function ShippingSettingsPage() {
     }
   };
 
+  const headerAction = editing ? (
+    <Button
+      size="sm"
+      onClick={handleSave}
+      disabled={loading}
+      className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
+    >
+      <Save className="h-3.5 w-3.5" />
+      {loading ? t.store?.saving || 'جارٍ الحفظ...' : t.save}
+    </Button>
+  ) : (
+    <Button
+      size="sm"
+      variant="outline"
+      onClick={() => setEditing(true)}
+      className="h-8 gap-1.5 text-xs"
+    >
+      <Pencil className="h-3.5 w-3.5" /> {t.edit}
+    </Button>
+  );
+
   return (
-    <section dir={dir} className="min-h-screen pb-28">
-      <div className="border-border bg-card sticky top-0 z-10 flex items-center justify-between border-b px-4 py-3">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => router.back()}
-            className="hover:bg-muted rounded-lg p-1.5 transition-colors"
-          >
-            <ArrowRight className="text-muted-foreground h-5 w-5" />
-          </button>
-          <h1 className="text-foreground text-base font-bold">
-            {t.store?.selfDelivery || 'معلومات الشحن'}
-          </h1>
-        </div>
+    <section dir={dir} className="bg-background min-h-screen pb-28">
+      <SettingsPageHeader title={t.store?.selfDelivery || 'معلومات الشحن'} action={headerAction} />
 
-        {editing ? (
-          <Button
-            size="sm"
-            onClick={handleSave}
-            disabled={loading}
-            className="h-8 gap-1.5 bg-[#04BAF6] text-xs hover:bg-[#0288d1]"
-          >
-            <Save className="h-3.5 w-3.5" />
-            {loading ? t.store?.saving || 'جارٍ الحفظ...' : t.save}
-          </Button>
-        ) : (
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setEditing(true)}
-            className="h-8 gap-1.5 text-xs"
-          >
-            <Pencil className="h-3.5 w-3.5" /> {t.edit}
-          </Button>
-        )}
-      </div>
+      <div className="mx-auto max-w-xl space-y-4 px-4 pt-4">
+        {/* Status banner */}
 
-      <div className="mx-auto max-w-2xl space-y-4 px-4 pt-4">
-        <div className="border-border bg-card rounded-2xl border p-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-sky-100 text-sky-700">
-                <Truck className="h-5 w-5" />
-              </div>
-              <div className="space-y-1">
-                <h2 className="text-foreground text-sm font-semibold">
-                  {t.store?.selfDelivery || 'التوصيل الذاتي'}
-                </h2>
-                <p className="text-muted-foreground text-xs">
-                  {t.store?.deliveryIntegrationDesc ||
-                    'حدّث بيانات التواصل ورسوم الشحن لتظهر بوضوح للعميل أثناء إتمام الطلب.'}
-                </p>
-              </div>
-            </div>
-
-            <Badge variant={isProfileComplete ? 'success' : 'warning'} className="px-2.5 py-1">
-              {isProfileComplete ? 'الإعداد مكتمل' : 'ينقصك إكمال البيانات'}
-            </Badge>
-          </div>
-        </div>
-
-        <Alert className="border border-sky-200 bg-sky-50/80 text-sky-900">
+        {/* Info alert */}
+        <Alert className="border border-sky-200 bg-sky-50/80 text-sky-900 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
           <Info className="mt-0.5 h-4 w-4" />
           <AlertTitle>{editing ? 'نصيحة قبل الحفظ' : 'معلومة مهمة'}</AlertTitle>
           <AlertDescription>
@@ -155,7 +122,7 @@ export default function ShippingSettingsPage() {
           </div>
         ) : editing ? (
           <div className="space-y-4">
-            <div className="border-border bg-card rounded-2xl border p-4">
+            <SettingsSectionCard>
               <ShippingSection
                 phone={phone}
                 shippingPrice={shippingPrice}
@@ -163,9 +130,9 @@ export default function ShippingSettingsPage() {
                 onPhoneChange={setPhone}
                 onShippingPriceChange={setShippingPrice}
               />
-            </div>
+            </SettingsSectionCard>
 
-            <div className="border-border bg-card/70 rounded-2xl border border-dashed p-4">
+            <SettingsSectionCard>
               <div className="mb-3 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
                 <h3 className="text-foreground text-sm font-semibold">إرشادات سريعة</h3>
@@ -175,7 +142,7 @@ export default function ShippingSettingsPage() {
                 <p>ضع رسوم الشحن الفعلية لتجنب إلغاء الطلبات بعد التأكيد.</p>
                 <p>يمكنك تعديل هذه المعلومات في أي وقت وسيتم تحديثها فورًا.</p>
               </div>
-            </div>
+            </SettingsSectionCard>
           </div>
         ) : (
           <div className="space-y-4">
@@ -194,7 +161,7 @@ export default function ShippingSettingsPage() {
               />
             </div>
 
-            <div className="border-border bg-card rounded-2xl border p-4">
+            <SettingsSectionCard>
               <div className="mb-2 flex items-center gap-2">
                 <Truck className="text-muted-foreground h-4 w-4" />
                 <h3 className="text-foreground text-sm font-semibold">
@@ -205,7 +172,7 @@ export default function ShippingSettingsPage() {
                 تظهر رسوم التوصيل في صفحة إتمام الطلب، بينما يظهر رقم الهاتف كوسيلة دعم وتنسيق عند
                 الحاجة. وجود بيانات دقيقة يقلل التأخير ويرفع رضا العميل.
               </p>
-            </div>
+            </SettingsSectionCard>
           </div>
         )}
       </div>

@@ -65,6 +65,8 @@ export const ar = {
     linkCopyFailed: 'فشل في نسخ الرابط',
     copyLink: 'نسخ الرابط',
     viewStore: 'عرض المتجر',
+    active: 'نشط',
+    storeInfo: 'معلومات المتجر',
   },
 
   // Orders
@@ -274,10 +276,13 @@ export const ar = {
     chooseStoreThemeDesc: 'حدد الثيم الذي يناسب متجرك وابدأ بيع منتجاتك بشكل احترافي',
     currentTheme: 'الثيم الحالي:',
     updatingTheme: 'جارٍ التحديث...',
+    themeUpdated: 'تم تحديث الثيم بنجاح',
+    themeUpdateError: 'فشل في تحديث الثيم',
     activeTheme: 'مفعل',
     chooseTheme: 'اختر الثيم',
     deliveryCompanyIntegration: 'الربط مع شركة التوصيل',
     linkAlwaseetAccount: 'ربط حساب شركة الوسيط',
+    alwaseetDesc: 'سجّل دخولك للربط مع منصة الوسيط للتوصيل',
     alwaseetUsernameLabel: 'اسم المستخدم',
     alwaseetUsernamePlaceholder: 'اسم المستخدم في تطبيق الوسيط',
     alwaseetPasswordLabel: 'كلمة السر',
@@ -513,7 +518,7 @@ export const ar = {
   stats: {
     title: 'الإحصائيات',
     revenue: 'الإيرادات',
-    totalRevenue: 'إجمالي الإيرادات',
+    totalRevenue: 'إجمالي الارباح',
     totalOrders: 'إجمالي الطلبات',
     totalCustomers: 'إجمالي العملاء',
     totalProducts: 'إجمالي المنتجات',

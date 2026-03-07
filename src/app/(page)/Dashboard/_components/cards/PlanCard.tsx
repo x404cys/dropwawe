@@ -9,14 +9,14 @@ import { useRouter } from 'next/navigation';
 import { format, differenceInDays } from 'date-fns';
 import { BiTestTube } from 'react-icons/bi';
 import { RiFireLine } from 'react-icons/ri';
-import { Rocket, Calendar, Clock, Crown, ChevronRight, CreditCard } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Rocket, ChevronRight, CreditCard, Sparkles } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { SubscriptionResponse } from '@/types/users/User';
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
-  TRIAL_ACTIVE: <BiTestTube className="text-[#27a9d6]" />,
-  ACTIVE: <Rocket size={18} className="text-[#27a9d6]" />,
-  NEED_SUBSCRIPTION: <RiFireLine className="text-[#27a9d6]" />,
+  TRIAL_ACTIVE: <BiTestTube className="h-5 w-5 text-primary" />,
+  ACTIVE: <Rocket className="h-5 w-5 text-primary" />,
+  NEED_SUBSCRIPTION: <RiFireLine className="h-5 w-5 text-destructive" />,
 };
 
 export default function PlanCard() {
@@ -39,11 +39,10 @@ export default function PlanCard() {
   );
 
   if (isLoading) {
-    return <div className="h-24 animate-pulse rounded-xl border border-[#cfeaf3] bg-[#f7fafc]" />;
+    return <div className="h-24 w-full animate-pulse rounded-2xl border border-border bg-card shadow-sm" />;
   }
 
   const startDate = data?.subscription?.startDate ? new Date(data.subscription.startDate) : null;
-
   const endDate = data?.subscription?.endDate ? new Date(data.subscription.endDate) : null;
 
   const formattedStart = startDate ? format(startDate, 'dd/MM/yyyy') : '-';
@@ -51,9 +50,7 @@ export default function PlanCard() {
 
   const remainingDays =
     startDate && endDate ? Math.max(0, differenceInDays(endDate, new Date()) + 1) : null;
-
   const totalDays = startDate && endDate ? Math.max(1, differenceInDays(endDate, startDate)) : 30;
-
   const progressPercent =
     remainingDays !== null ? Math.min(100, (remainingDays / totalDays) * 100) : 0;
 
@@ -72,108 +69,128 @@ export default function PlanCard() {
           : t.plans?.trialEnded || 'انتهت الفترة التجريبية';
 
   return (
-    <div dir="rtl" className="w-full">
-      <div className="overflow-hidden rounded-xl border border-[#cfeaf3] bg-[#f7fafc] transition">
-        <button
-          onClick={() => setOpen(!open)}
-          className="flex w-full items-center justify-between px-4 py-3 text-right transition hover:bg-[#eef7fb]"
-        >
-          <div className="flex items-center gap-3">
-            <div className="flex h-9 w-12 items-center justify-center rounded-full bg-[#dff3fa]">
-              {STATUS_ICON[status] ?? <CreditCard className="h-4 w-4 text-[#27a9d6]" />}
-            </div>
-
-            <div>
-              <p className="text-sm font-bold text-[#1f2937]">{planName}</p>
-              <p className="text-xs text-[#6b7280]">{description}</p>
-            </div>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      dir="rtl"
+      className="w-full rounded-2xl border  shadow-sm border-border border-primary/10 bg-card md:shadow transition-all duration-300 flex flex-col"
+    >
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex w-full items-center justify-between p-4 px-4 md:px-5 text-right transition hover:bg-muted/50 rounded-2xl outline-none gap-3"
+      >
+        <div className="flex items-center gap-3 w-full min-w-0">
+          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm border border-primary/10">
+            {STATUS_ICON[status] ?? <CreditCard className="h-5 w-5 text-primary" />}
           </div>
 
-          <ChevronRight
-            className={`h-4 w-4 text-[#6b7280] transition-transform duration-300 ${
-              open ? 'rotate-90' : ''
-            }`}
-          />
-        </button>
-
-        {open && <div className="border-t border-[#e6f3f8]" />}
-
-        <motion.div
-          initial={false}
-          animate={{
-            height: open ? 'auto' : 0,
-            opacity: open ? 1 : 0,
-          }}
-          transition={{ duration: 0.3 }}
-          className="overflow-hidden"
-        >
-          <div className="space-y-4 px-4 py-4">
-            <span
-              className={`inline-block rounded-full px-3 py-1 text-[11px] font-semibold ${
-                isExpiringSoon ? 'bg-red-100 text-red-600' : 'bg-primary/10 text-primary'
-              }`}
-            >
-              {STATUS_LABEL[status]}
-              {isExpiringSoon && ` · ${t.plans?.expiringSoon || 'ينتهي قريباً'}`}
-            </span>
-
-            {data?.subscription && status !== 'SUB_USER' && (
-              <div className="grid grid-cols-2 gap-4 text-sm">
-                <div>
-                  <p className="text-xs text-gray-500">{t.plans?.startDate || 'البداية'}</p>
-                  <p className="font-semibold">{formattedStart}</p>
-                </div>
-
-                <div>
-                  <p className="text-xs text-gray-500">{t.plans?.endDate || 'الانتهاء'}</p>
-                  <p className="font-semibold">{formattedEnd}</p>
-                </div>
-              </div>
-            )}
-
-            {remainingDays !== null && status !== 'SUB_USER' && (
-              <div>
-                <div className="mb-1 flex justify-between text-xs">
-                  <span>{t.plans?.remaining || 'المتبقي'}</span>
-                  <span className="font-semibold">
-                    {remainingDays === 0 ? 'منتهي' : `${remainingDays} ${t.plans?.days || 'يوم'}`}
-                  </span>
-                </div>
-
-                <div className="h-2 w-full rounded-full bg-gray-200">
-                  <div
-                    className={`h-2 rounded-full transition-all ${
-                      isExpiringSoon ? 'bg-red-400' : 'bg-primary/50'
-                    }`}
-                    style={{
-                      width: `${progressPercent}%`,
-                    }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {status !== 'SUB_USER' && (
-              <div className="flex gap-2 pt-2">
-                <Button
-                  onClick={() => router.push('/Dashboard/plans')}
-                  className="bg-primary/60 hover:bg-primary/70 flex-1 cursor-pointer rounded-lg text-xs text-white"
-                >
-                  {t.plans?.viewPlans || 'عرض الباقات'}
-                </Button>
-
-                <Button
-                  onClick={() => router.push('/Dashboard/plans')}
-                  variant="outline"
-                  className="hover:bg-primary flex-1 cursor-pointer rounded-lg text-xs"
-                >
-                  {t.plans?.renew || 'تجديد'}
-                </Button>
-              </div>
-            )}
+          <div className="flex flex-col flex-1 min-w-0">
+            <h3 className="text-sm md:text-base font-bold text-foreground flex items-center gap-2">
+              <span className="truncate">{planName}</span>
+              {status === 'ACTIVE' && <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />}
+            </h3>
+            <p className="text-xs md:text-sm text-muted-foreground truncate font-medium mt-0.5">{description}</p>
           </div>
-        </motion.div>
-      </div>
-    </div>
+        </div>
+
+        <ChevronRight
+          className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform duration-300 ${
+            open ? 'rotate-90' : 'rotate-180'
+          }`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-border/50 px-4 md:px-5 pb-5 pt-3 mt-1 space-y-5">
+              {/* Status Badge */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <span className="text-sm font-semibold text-foreground">
+                  {t.home?.planAndSub || 'الباقة والاشتراك'}
+                </span>
+                <span
+                  className={`inline-flex items-center justify-center rounded-full px-3 py-1 text-[11px] font-bold tracking-wide ${
+                    status === 'NEED_SUBSCRIPTION' || isExpiringSoon
+                      ? 'bg-destructive/10 text-destructive dark:bg-destructive/20 dark:text-red-400'
+                      : 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400'
+                  }`}
+                >
+                  {STATUS_LABEL[status]}
+                  {isExpiringSoon && status !== 'NEED_SUBSCRIPTION' && ` · ${t.plans?.expiringSoon || 'ينتهي قريباً'}`}
+                </span>
+              </div>
+
+              {/* Dates */}
+              {data?.subscription && status !== 'SUB_USER' && (
+                <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-between text-right rounded-xl bg-muted/50 p-4 border border-border/50">
+                  <div className="space-y-1">
+                    <p className="text-xs font-medium text-muted-foreground">{t.plans?.startDate || 'البداية'}</p>
+                    <p className="text-sm font-semibold text-foreground">{formattedStart}</p>
+                  </div>
+                  <div className="hidden sm:block w-px h-8 bg-primary/20 mx-4" />
+                  <div className="space-y-1 border-t sm:border-t-0 border-border/50 pt-3 sm:pt-0 sm:text-right">
+                    <p className="text-xs font-medium text-muted-foreground">{t.plans?.endDate || 'الانتهاء'}</p>
+                    <p className="text-sm font-semibold text-foreground">{formattedEnd}</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Progress */}
+              {remainingDays !== null && status !== 'SUB_USER' && (
+                <div className="space-y-2.5">
+                  <div className="flex justify-between items-end">
+                    <span className="text-sm font-medium text-muted-foreground">
+                      {t.plans?.remaining || 'المتبقي'}
+                    </span>
+                    <span className={`text-sm font-bold ${isExpiringSoon ? 'text-destructive' : 'text-primary'}`}>
+                      {remainingDays === 0 ? 'منتهي' : `${remainingDays} ${t.plans?.days || 'يوم'}`}
+                    </span>
+                  </div>
+
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercent}%` }}
+                      transition={{ duration: 1, ease: 'easeOut' }}
+                      className={`h-full rounded-full ${
+                        isExpiringSoon ? 'bg-destructive' : 'bg-primary'
+                      }`}
+                    />
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              {status !== 'SUB_USER' && (
+                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                  <Button
+                    onClick={() => router.push('/Dashboard/plans')}
+                    className="flex-1 w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-11 transition-colors"
+                  >
+                    {t.plans?.viewPlans || 'عرض الباقات'}
+                  </Button>
+
+                  <Button
+                    onClick={() => router.push('/Dashboard/plans')}
+                    variant="outline"
+                    className="flex-1 w-full bg-card hover:bg-muted text-foreground border border-border/50 font-semibold rounded-xl h-11 transition-colors"
+                  >
+                    {t.plans?.renew || 'تجديد'}
+                  </Button>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }

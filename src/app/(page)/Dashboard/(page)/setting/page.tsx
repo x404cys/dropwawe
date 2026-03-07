@@ -21,14 +21,14 @@ export default function SettingsHubPage() {
           title: t.store?.title || 'إعدادات المتجر',
           desc: t.more?.storesDesc || 'الاسم، الرابط، الشحن، الروابط الاجتماعية والمظهر',
           icon: Store,
-          color: 'bg-[#04BAF6]/10 text-[#04BAF6]',
+          color: 'bg-primary/10 text-primary',
           href: '/Dashboard/setting/store',
         },
         {
           title: t.more?.delivery || 'شركات الشحن',
           desc: t.more?.deliveryDesc || 'إدارة شركات الشحن وأسعارها ومناطق التغطية',
           icon: Truck,
-          color: 'bg-purple-100 text-purple-600',
+          color: 'bg-violet-500/10 text-violet-500',
           href: '/Dashboard/setting/delivery',
         },
       ],
@@ -40,14 +40,14 @@ export default function SettingsHubPage() {
           title: t.nav?.profile || 'البروفايل',
           desc: t.profile?.accountInfo || 'معلومات حسابك، وكلمة المرور، وتسجيل الخروج',
           icon: User,
-          color: 'bg-green-100 text-green-600',
+          color: 'bg-emerald-500/10 text-emerald-500',
           href: '/Dashboard/setting/profile',
         },
         {
           title: t.profile?.notificationSettings || 'الإشعارات والمظهر',
           desc: t.more?.settingsDesc || 'تفضيلات الإشعارات والوضع الليلي',
           icon: Bell,
-          color: 'bg-amber-100 text-amber-600',
+          color: 'bg-amber-500/10 text-amber-500',
           href: '/Dashboard/setting/profile?tab=settings',
         },
       ],
@@ -59,7 +59,7 @@ export default function SettingsHubPage() {
           title: t.more?.help || 'المساعدة والدعم',
           desc: t.more?.helpDesc || 'الأسئلة الشائعة والتواصل مع فريق الدعم',
           icon: Shield,
-          color: 'bg-rose-100 text-rose-600',
+          color: 'bg-rose-500/10 text-rose-500',
           href: '/Dashboard/setting/profile?tab=help',
         },
       ],
@@ -67,12 +67,12 @@ export default function SettingsHubPage() {
   ];
 
   return (
-    <section dir="rtl" className="min-h-screen bg-muted pb-28">
+    <section dir="rtl" className="min-h-screen bg-background pb-28">
       {/* Header */}
       <div className="bg-card border-b border-border px-4 py-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#04BAF6]/10 flex items-center justify-center">
-            <Settings className="h-5 w-5 text-[#04BAF6]" />
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <Settings className="h-5 w-5 text-primary" />
           </div>
           <div>
             <h1 className="text-base font-bold text-foreground">{t.more?.settingsLabel || 'الإعدادات'}</h1>
@@ -89,12 +89,12 @@ export default function SettingsHubPage() {
             <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider px-1 mb-2">
               {section.group}
             </p>
-            <div className="bg-card rounded-xl border border-border overflow-hidden divide-y divide-border">
+            <div className="bg-card rounded-xl border border-border overflow-hidden divide-y divide-border shadow-sm">
               {section.items.map(item => (
                 <button
                   key={item.href}
                   onClick={() => router.push(item.href)}
-                  className="flex w-full items-center gap-3 px-4 py-4 hover:bg-muted transition-colors text-right cursor-pointer"
+                  className="flex w-full items-center gap-3 px-4 py-4 hover:bg-muted/50 transition-colors text-right cursor-pointer"
                 >
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${item.color}`}>
                     <item.icon className="h-5 w-5" />
@@ -103,7 +103,7 @@ export default function SettingsHubPage() {
                     <p className="text-sm font-semibold text-foreground">{item.title}</p>
                     <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{item.desc}</p>
                   </div>
-                  <ChevronLeft className="h-4 w-4 text-gray-300 flex-shrink-0" />
+                  <ChevronLeft className="h-4 w-4 text-muted-foreground/40 flex-shrink-0" />
                 </button>
               ))}
             </div>
