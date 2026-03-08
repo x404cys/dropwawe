@@ -34,7 +34,9 @@ function classifyReferrer(ref: string | null): string {
   if (!ref) return 'مباشر';
   const r = ref.toLowerCase();
   if (r.includes('google') || r.includes('bing') || r.includes('yahoo') || r.includes('duckduckgo')) return 'محركات بحث';
-  if (r.includes('facebook') || r.includes('fb.') || r.includes('instagram') || r.includes('tiktok') || r.includes('twitter') || r.includes('t.co') || r.includes('snapchat') || r.includes('telegram')) return 'سوشيال ميديا';
+  if (r.includes('facebook') || r.includes('fb.')) return 'فيسبوك';
+  if (r.includes('instagram')) return 'انستغرام';
+  if (r.includes('tiktok') || r.includes('twitter') || r.includes('t.co') || r.includes('snapchat') || r.includes('telegram')) return 'سوشيال ميديا';
   return 'إحالة';
 }
 
@@ -274,6 +276,8 @@ export async function GET(req: Request) {
       'مباشر': 0,
       'محركات بحث': 0,
       'سوشيال ميديا': 0,
+      'فيسبوك': 0,
+      'انستغرام': 0,
       'إحالة': 0,
     };
 
@@ -286,6 +290,8 @@ export async function GET(req: Request) {
     const SOURCE_META: Record<string, { color: string; emoji: string }> = {
       'مباشر':        { color: 'hsl(191,80%,42%)', emoji: '🔗' },
       'سوشيال ميديا': { color: 'hsl(280,70%,60%)', emoji: '📱' },
+      'فيسبوك':       { color: 'hsl(214,89%,52%)', emoji: '📘' },
+      'انستغرام':     { color: 'hsl(340,82%,52%)', emoji: '📸' },
       'محركات بحث':   { color: 'hsl(40,90%,55%)',  emoji: '🔍' },
       'إحالة':        { color: 'hsl(0,70%,55%)',   emoji: '📣' },
     };
