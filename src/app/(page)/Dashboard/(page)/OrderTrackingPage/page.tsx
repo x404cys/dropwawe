@@ -92,11 +92,20 @@ export default function OrderSummaryPage() {
     const now = new Date();
     const from = new Date();
     switch (dateFilter) {
-      case 'month': from.setMonth(now.getMonth() - 1); break;
-      case '3months': from.setMonth(now.getMonth() - 3); break;
-      case '6months': from.setMonth(now.getMonth() - 6); break;
-      case 'year': from.setFullYear(now.getFullYear() - 1); break;
-      default: from.setDate(now.getDate() - 7);
+      case 'month':
+        from.setMonth(now.getMonth() - 1);
+        break;
+      case '3months':
+        from.setMonth(now.getMonth() - 3);
+        break;
+      case '6months':
+        from.setMonth(now.getMonth() - 6);
+        break;
+      case 'year':
+        from.setFullYear(now.getFullYear() - 1);
+        break;
+      default:
+        from.setDate(now.getDate() - 7);
     }
     result = result.filter(o => new Date(o.createdAt) >= from);
 
@@ -123,15 +132,15 @@ export default function OrderSummaryPage() {
   // ── Loading state ─────────────────────────────────────────────────────
   if (isLoading) {
     return (
-      <section dir="rtl" className="p-4 space-y-3">
-        <Skeleton className="h-11 w-full rounded-xl bg-muted" />
+      <section dir="rtl" className="space-y-3 p-4">
+        <Skeleton className="bg-muted h-11 w-full rounded-xl" />
         <div className="flex gap-2">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Skeleton key={i} className="h-8 w-16 rounded-full bg-muted" />
+            <Skeleton key={i} className="bg-muted h-8 w-16 rounded-full" />
           ))}
         </div>
         {Array.from({ length: 5 }).map((_, i) => (
-          <Skeleton key={i} className="h-20 w-full rounded-xl bg-muted" />
+          <Skeleton key={i} className="bg-muted h-20 w-full rounded-xl" />
         ))}
       </section>
     );
@@ -144,23 +153,24 @@ export default function OrderSummaryPage() {
   // ── UI ────────────────────────────────────────────────────────────────
   return (
     <section dir="rtl" className="bg-background min-h-screen">
-      <div className="p-4 space-y-4 pb-10">
-
+      <div className="space-y-4 p-4 pb-10">
         {/* Page header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-lg font-bold text-foreground">{t.orders.title}</h1>
-            <p className="text-xs text-muted-foreground">{orders.length} طلب إجمالي</p>
+            <h1 className="text-foreground text-lg font-bold">{t.orders.title}</h1>
+            <p className="text-muted-foreground text-xs">{orders.length} طلب إجمالي</p>
           </div>
           {data?.Stores && data.Stores.length > 1 && (
             <select
               value={storeId || fiestoreId}
               onChange={e => setStoreId(e.target.value)}
-              className="text-xs rounded-xl border border-border bg-card px-3 py-2 text-foreground"
+              className="border-border bg-card text-foreground rounded-xl border px-3 py-2 text-xs"
             >
               <option value="">كل المتاجر</option>
               {data?.Stores?.map(store => (
-                <option key={store.id} value={store.id}>{store.name}</option>
+                <option key={store.id} value={store.id}>
+                  {store.name}
+                </option>
               ))}
             </select>
           )}
@@ -168,25 +178,25 @@ export default function OrderSummaryPage() {
 
         {/* Search bar */}
         <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="ابحث بالاسم، الهاتف، الموقع..."
-            className="w-full pr-10 pl-4 py-2.5 rounded-xl border border-border bg-card text-foreground text-sm focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition"
+            className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:ring-2"
           />
         </div>
 
         {/* Status filter tabs */}
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {STATUS_TABS.map(tab => (
             <button
               key={tab.key}
               onClick={() => setStatusFilter(tab.key)}
-              className={`flex-shrink-0 cursor-pointer px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-200 ${
+              className={`flex-shrink-0 cursor-pointer rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all duration-200 ${
                 statusFilter === tab.key
-                  ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/30'
-                  : 'bg-card border border-border text-muted-foreground hover:border-primary/50'
+                  ? 'bg-primary text-primary-foreground shadow-primary/30 shadow-sm'
+                  : 'bg-card border-border text-muted-foreground hover:border-primary/50 border'
               }`}
             >
               {tab.label}
@@ -195,12 +205,12 @@ export default function OrderSummaryPage() {
         </div>
 
         {/* Period filter pills */}
-        <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {DATE_FILTERS.map(f => (
             <button
               key={f.key}
               onClick={() => setDateFilter(f.key)}
-              className={`flex-shrink-0 cursor-pointer px-3 py-1 rounded-full text-[11px] font-medium transition-all ${
+              className={`flex-shrink-0 cursor-pointer rounded-full px-3 py-1 text-[11px] font-medium transition-all ${
                 dateFilter === f.key
                   ? 'bg-foreground text-background'
                   : 'bg-secondary text-secondary-foreground hover:bg-secondary/80'
@@ -213,8 +223,8 @@ export default function OrderSummaryPage() {
 
         {/* Orders list */}
         {filteredOrders.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <ShoppingBag className="h-14 w-14 mb-3 opacity-25" />
+          <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
+            <ShoppingBag className="mb-3 h-14 w-14 opacity-25" />
             <p className="text-sm font-medium">{t.orders.noOrders}</p>
           </div>
         ) : (
@@ -225,37 +235,37 @@ export default function OrderSummaryPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.25 }}
-                className="bg-card border border-border rounded-xl overflow-hidden hover:shadow-md hover:border-border/80 transition-all"
+                className="bg-card border-border hover:border-border/80 overflow-hidden rounded-xl border transition-all hover:shadow-md"
               >
                 <div
                   onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
-                  className="flex items-center gap-3 px-4 py-3.5 cursor-pointer"
+                  className="flex cursor-pointer items-center gap-3 px-4 py-3.5"
                 >
                   {/* Avatar */}
-                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-primary">
+                  <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
+                    <span className="text-primary text-sm font-bold">
                       {order.fullName?.charAt(0) ?? '؟'}
                     </span>
                   </div>
 
                   {/* Details */}
-                  <div className="flex-1 min-w-0">
+                  <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-sm font-semibold text-foreground truncate">
+                      <span className="text-foreground truncate text-sm font-semibold">
                         {order.fullName}
                       </span>
                       <span
-                        className={`text-[10px] px-2 py-0.5 rounded-full font-semibold flex-shrink-0 ${
+                        className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
                           STATUS_STYLES[order.status] ?? 'bg-secondary text-secondary-foreground'
                         }`}
                       >
                         {STATUS_LABELS[order.status] ?? order.status}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[11px] text-muted-foreground">{order.location}</span>
-                      <span className="text-[11px] text-muted-foreground/50">•</span>
-                      <span className="text-[11px] text-muted-foreground">
+                    <div className="mt-0.5 flex items-center gap-2">
+                      <span className="text-muted-foreground text-[11px]">{order.location}</span>
+                      <span className="text-muted-foreground/50 text-[11px]">•</span>
+                      <span className="text-muted-foreground text-[11px]">
                         {new Date(order.createdAt).toLocaleDateString('ar-EG', {
                           month: 'short',
                           day: 'numeric',
@@ -265,24 +275,26 @@ export default function OrderSummaryPage() {
                   </div>
 
                   {/* Amount + chevron */}
-                  <div className="text-left flex-shrink-0 flex items-center gap-2">
+                  <div className="flex flex-shrink-0 items-center gap-2 text-left">
                     <div>
-                      <p className="text-sm font-bold text-foreground">
-                        {formatIQD(order.price)}
-                      </p>
-                      <p className="text-[10px] text-muted-foreground text-left">{order.phone}</p>
+                      <p className="text-foreground text-sm font-bold">{formatIQD(order.price)}</p>
+                      <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
                     </div>
-                    <ChevronLeft className="h-4 w-4 text-muted-foreground/50" />
+                    <ChevronLeft className="text-muted-foreground/50 h-4 w-4" />
                   </div>
                 </div>
 
                 {/* Delete strip */}
-                <div className="border-t border-border/50 px-4 py-2 flex justify-end bg-card/50">
+                <div className="border-border/50 bg-card/50 flex justify-end border-t px-4 py-2">
                   <button
-                    onClick={e => { e.stopPropagation(); deleteOrder(order.id); }}
-                    className="flex items-center gap-1 text-[11px] text-red-500 hover:text-red-600 transition-colors"
+                    onClick={e => {
+                      e.stopPropagation();
+                      deleteOrder(order.id);
+                    }}
+                    className="flex items-center gap-1 text-[11px] text-red-500 transition-colors hover:text-red-600"
                   >
-                    <Trash2 className="h-3 w-3" /> {t.delete} </button>
+                    <Trash2 className="h-3 w-3" /> {t.delete}{' '}
+                  </button>
                 </div>
               </motion.div>
             ))}

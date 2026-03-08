@@ -1,12 +1,17 @@
 import { useLanguage } from '../context/LanguageContext';
-import { Home, ShoppingBag, DollarSign, Settings, Package, Users } from 'lucide-react';
+import { Home, ShoppingBag, DollarSign, Settings, Package, Users, BarChart3 } from 'lucide-react';
 import { FaCrown } from 'react-icons/fa';
 import { CgFolderAdd } from 'react-icons/cg';
 import { PiBoxArrowDown } from 'react-icons/pi';
 
 export const getDashboardNavItems = (role: string | undefined, t: any) => [
   { label: t.nav.home, path: '/Dashboard', icon: Home, show: 'DROPSHIPPER' },
-  { label: t.inventory.products, path: '/Dashboard/ProductManagment', icon: Package, show: 'DROPSHIPPER' },
+  {
+    label: t.inventory.products,
+    path: '/Dashboard/ProductManagment',
+    icon: Package,
+    show: 'DROPSHIPPER',
+  },
   {
     label: t.inventory.addProduct,
     path: '/Dashboard/ProductManagment/add-product',
@@ -46,6 +51,12 @@ export const getDashboardNavItems = (role: string | undefined, t: any) => [
     show: 'DROPSHIPPER',
     plans: ['drop-basics', 'drop-pro'],
   },
-  { label: t.more.settingsLabel, path: '/Dashboard/setting/store', icon: Settings, show: 'DROPSHIPPER' },
+  { label: t.more.stats,  path: '/Dashboard/stats', icon: BarChart3 },
+  {
+    label: t.more.settingsLabel,
+    path: '/Dashboard/setting/store',
+    icon: Settings,
+    show: 'DROPSHIPPER',
+  },
   { label: t.plans.title, path: '/Dashboard/plans', icon: FaCrown, show: 'DROPSHIPPER' },
 ];

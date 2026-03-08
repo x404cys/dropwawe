@@ -77,11 +77,13 @@ export default function RecentOrdersPanel({ orders = [] }: RecentOrdersPanelProp
         <h2 className="text-foreground flex items-center gap-2 font-bold">
           {t.orders?.title || 'أحدث الطلبات'}
         </h2>
-                    <button
-                              onClick={() => router.push('/Dashboard/OrderTrackingPage')}
-
-                    className="text-primary cursor-pointer text-xs font-medium">{t.home.viewAll}</button>
-       </div>
+        <button
+          onClick={() => router.push('/Dashboard/OrderTrackingPage')}
+          className="text-primary cursor-pointer text-xs font-medium"
+        >
+          {t.home.viewAll}
+        </button>
+      </div>
 
       <div className="divide-y">
         {orders.length === 0 ? (

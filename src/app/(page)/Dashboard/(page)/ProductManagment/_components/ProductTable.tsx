@@ -110,7 +110,7 @@ export default function ProductTable() {
     }
   };
 
-   const categories = useMemo(() => {
+  const categories = useMemo(() => {
     return Array.from(new Set(products.map(p => p.category).filter(Boolean)));
   }, [products]);
 
@@ -145,14 +145,13 @@ export default function ProductTable() {
       .filter(p => (categoryFilter ? p.category === categoryFilter : true));
   }, [products, search, categoryFilter]);
 
-   const DesktopTable = (
+  const DesktopTable = (
     <Card className="border-border hidden rounded-2xl shadow-sm md:block">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between" dir="rtl">
           <CardTitle className="text-foreground text-base font-bold">
             {t.inventory?.products || 'قائمة المنتجات'} — {currentStore?.name}
           </CardTitle>
-           
         </div>
       </CardHeader>
       <CardContent>
@@ -173,7 +172,7 @@ export default function ProductTable() {
                 <td colSpan={9} className="py-12 text-center">
                   <div className="text-muted-foreground flex flex-col items-center gap-2">
                     <Package className="h-10 w-10 opacity-25" />
-                    <p className="text-sm font-medium">{t.inventory.noProducts}</p>
+                    <p className="font-medium">{t.inventory.noProducts}</p>
                   </div>
                 </td>
               </TableRow>
@@ -193,10 +192,10 @@ export default function ProductTable() {
     </Card>
   );
 
-   return (
+  return (
     <section dir="rtl" className="min-h-screen">
       <div className="space-y-4 p-4 pb-24">
-         <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-foreground text-lg font-bold">{'المخزن'}</h1>
             <p className="text-muted-foreground text-xs">
@@ -207,7 +206,7 @@ export default function ProductTable() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/Dashboard/ProductManagment/add-product')}
-              className="flex items-center gap-1.5  rounded-xl bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
+              className="bg-primary flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
             >
               <Plus className="h-4 w-4" /> {t.inventory.addProduct}{' '}
             </motion.button>
@@ -215,7 +214,7 @@ export default function ProductTable() {
             <motion.button
               whileTap={{ scale: 0.95 }}
               onClick={() => router.push('/Dashboard/products-dropwave')}
-              className="flex items-center gap-1.5 rounded-xl bg-primary px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
+              className="bg-primary flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-white shadow-sm shadow-[#04BAF6]/30 transition-colors hover:bg-[#0288d1]"
             >
               <LuPackagePlus className="h-4 w-4" />
               {t.home?.dashboard || 'المخزن'}
@@ -223,7 +222,7 @@ export default function ProductTable() {
           )}
         </div>
 
-         {products.length > 0 && (
+        {products.length > 0 && (
           <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
             {[
               {
@@ -264,9 +263,7 @@ export default function ProductTable() {
                   >
                     <Icon className={`h-4 w-4`} />
                   </div>
-                  <div
-                    className={`text-foreground font-bold ${stat.small ? 'text-sm' : 'text-xl'}`}
-                  >
+                  <div className={`text-foreground font-bold ${stat.small ? '' : 'text-xl'}`}>
                     {stat.value}
                   </div>
                   <div className="text-muted-foreground mt-0.5 text-[11px]">{stat.label}</div>
@@ -276,7 +273,7 @@ export default function ProductTable() {
           </div>
         )}
 
-         <AnimatePresence>
+        <AnimatePresence>
           {lowStockProducts.length > 0 && !dismissedStockAlert && (
             <motion.div
               initial={{ opacity: 0, y: -8 }}
@@ -286,10 +283,10 @@ export default function ProductTable() {
             >
               <AlertTriangle className="h-5 w-5 flex-shrink-0 text-amber-500" />
               <div className="min-w-0 flex-1">
-                <p className="text-muted-foreground font-bold dark:text-muted text-sm font-semibold">
+                <p className="text-muted-foreground dark:text-muted font-bold font-semibold">
                   {t.inventory?.lowStock || 'منتجات قاربت على النفاد'}
                 </p>
-                <p className="text-muted-foreground font-bold dark:text-muted text-sm font-light">
+                <p className="text-muted-foreground dark:text-muted font-bold font-light">
                   {lowStockProducts.map(p => `${p.name} (${p.quantity})`).join('، ')}
                 </p>
               </div>
@@ -303,18 +300,18 @@ export default function ProductTable() {
           )}
         </AnimatePresence>
 
-         <div className="relative">
+        <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           <input
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t.inventory.searchPlaceholder}
-            className="border-border bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 text-sm transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
+            className="border-border bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
           />
         </div>
 
-         {categories.length > 0 && (
+        {categories.length > 0 && (
           <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
             <button
               onClick={() => setCategoryFilter('')}
@@ -342,10 +339,10 @@ export default function ProductTable() {
           </div>
         )}
 
-         {data?.Stores && data.Stores.length > 1 && (
+        {data?.Stores && data.Stores.length > 1 && (
           <select
             dir="rtl"
-            className="border-border bg-card w-full rounded-xl border p-3 text-sm md:hidden"
+            className="border-border bg-card w-full rounded-xl border p-3 md:hidden"
             onChange={e => setStoreId(e.target.value)}
           >
             {data.Stores.map(store => (
@@ -356,19 +353,19 @@ export default function ProductTable() {
           </select>
         )}
 
-         {loading ? (
+        {loading ? (
           <div className="flex justify-center py-12">
             <Loader />
           </div>
         ) : (
           <>
-             {DesktopTable}
+            {DesktopTable}
 
-             <div className="block md:hidden">
+            <div className="block md:hidden">
               {filteredProducts.length === 0 ? (
                 <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
                   <Package className="mb-3 h-14 w-14 opacity-25" />
-                  <p className="text-sm font-semibold">
+                  <p className="font-semibold">
                     {products.length === 0
                       ? t.inventory.noProducts
                       : t.noResults || 'لا يوجد نتائج'}

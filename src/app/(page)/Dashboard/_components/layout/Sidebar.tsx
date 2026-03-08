@@ -26,13 +26,13 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
   const { hasAccess } = useSubscriptions();
 
   return (
-    <section dir="rtl" className="hidden min-h-screen bg-background md:flex transition-colors duration-200">
-      {/* ── Sidebar ── */}
-      <aside className="flex w-64 flex-col border-l border-border/60 bg-card">
-
-        {/* Logo */}
-        <div className="flex items-center gap-3 px-5 py-4 border-b border-border/60">
-          <Link href="/" className="flex items-center gap-2.5 group">
+    <section
+      dir="rtl"
+      className="bg-background hidden min-h-screen transition-colors duration-200 md:flex"
+    >
+      <aside className="border-border/60 bg-card flex w-64 flex-col border-l">
+        <div className="border-border/60 flex items-center gap-3 border-b px-5 py-4">
+          <Link href="/" className="group flex items-center gap-2.5">
             <Image
               src="/Logo-Matager/Matager-logo2.PNG"
               alt="Matager"
@@ -40,35 +40,34 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
               height={34}
               className="rounded-xl transition-transform group-hover:scale-105"
             />
-            <span className="text-base font-bold text-foreground tracking-tight">Matager</span>
+            <span className="text-foreground text-base font-bold tracking-tight">Matager</span>
           </Link>
         </div>
 
-        {/* Store switcher */}
-        <div className="px-4 py-3 border-b border-border/60">
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+        <div className="border-border/60 border-b px-4 py-3">
+          <p className="text-muted-foreground mb-2 px-1 text-[10px] font-bold tracking-widest uppercase">
             {t.more.stores}
           </p>
           <div dir="rtl" className="relative w-full">
             <Listbox value={currentStore ?? undefined} onChange={setCurrentStore}>
               <div className="relative">
                 <Listbox.Button className="group relative w-full">
-                  <div className="flex items-center gap-2.5 rounded-xl border border-border/60 bg-background/60 px-3 py-2.5 transition-all duration-200 group-hover:border-primary/40 group-hover:bg-background">
-                    <div className="flex-shrink-0 w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <FaStore className="h-3.5 w-3.5 text-primary" />
+                  <div className="border-border/60 bg-background/60 group-hover:border-primary/40 group-hover:bg-background flex items-center gap-2.5 rounded-xl border px-3 py-2.5 transition-all duration-200">
+                    <div className="bg-primary/10 flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg">
+                      <FaStore className="text-primary h-3.5 w-3.5" />
                     </div>
-                    <span className="flex-1 text-right text-sm font-semibold text-foreground truncate">
+                    <span className="text-foreground flex-1 truncate text-right text-sm font-semibold">
                       {currentStore?.name ?? t.home.openStore}
                     </span>
-                    <PiCaretDown className="group-ui-open:rotate-180 h-3.5 w-3.5 flex-shrink-0 text-muted-foreground transition-transform duration-200" />
+                    <PiCaretDown className="group-ui-open:rotate-180 text-muted-foreground h-3.5 w-3.5 flex-shrink-0 transition-transform duration-200" />
                   </div>
                 </Listbox.Button>
 
                 <Listbox.Options
                   dir="rtl"
-                  className="absolute top-full z-20 mt-1.5 w-full overflow-hidden rounded-xl border border-border/60 bg-card shadow-xl shadow-black/10"
+                  className="border-border/60 bg-card absolute top-full z-20 mt-1.5 w-full overflow-hidden rounded-xl border shadow-xl shadow-black/10"
                 >
-                  <div className="max-h-56 overflow-y-auto py-1.5 px-1.5 space-y-0.5">
+                  <div className="max-h-56 space-y-0.5 overflow-y-auto px-1.5 py-1.5">
                     {stores.map(store => (
                       <Listbox.Option
                         key={store.id}
@@ -93,7 +92,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
                               />
                               <span className="font-medium">{store.name}</span>
                             </div>
-                            {selected && <PiCheck className="h-4 w-4 flex-shrink-0 text-primary" />}
+                            {selected && <PiCheck className="text-primary h-4 w-4 flex-shrink-0" />}
                           </>
                         )}
                       </Listbox.Option>
@@ -105,8 +104,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-        {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-1">
+         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
           <NavSection
             title={t.more.general}
             items={navItems}
@@ -117,16 +115,16 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           />
         </nav>
 
-        {/* Bottom: version */}
-        <div className="px-4 py-3 border-t border-border/60">
-          <p className="text-[10px] text-muted-foreground/50 text-center">Matager v2.0 · drop-wave.com</p>
+         <div className="border-border/60 border-t px-4 py-3">
+          <p className="text-muted-foreground/50 text-center text-[10px]">
+            Matager v2.0 · drop-wave.com
+          </p>
         </div>
       </aside>
 
-      {/* ── Main area ── */}
-      <div className="flex flex-1 flex-col overflow-hidden">
+       <div className="flex flex-1 flex-col overflow-hidden">
         <NavBarForDesktop />
-        <main className="flex-1 overflow-y-auto bg-background p-2">{children}</main>
+        <main className="bg-background flex-1 overflow-y-auto p-2">{children}</main>
       </div>
     </section>
   );
@@ -157,7 +155,7 @@ function NavSection({
 
   return (
     <div className="space-y-0.5">
-      <p className="mb-2 px-2 text-[10px] font-bold text-muted-foreground/70 uppercase tracking-widest">
+      <p className="text-muted-foreground/70 mb-2 px-2 text-[10px] font-bold tracking-widest uppercase">
         {title}
       </p>
       {filteredItems.map(item => {
@@ -172,17 +170,15 @@ function NavSection({
             className={clsx(
               'group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-all duration-150',
               active
-                ? 'bg-primary text-primary-foreground shadow-sm shadow-primary/25'
+                ? 'bg-primary text-primary-foreground shadow-primary/25 shadow-sm'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
             )}
           >
             {/* Icon container */}
             <span
               className={clsx(
-                'flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg transition-colors',
-                active
-                  ? 'bg-white/15'
-                  : 'bg-muted/0 group-hover:bg-muted'
+                'flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg transition-colors',
+                active ? 'bg-white/15' : 'bg-muted/0 group-hover:bg-muted'
               )}
             >
               <Icon size={15} />
@@ -198,9 +194,7 @@ function NavSection({
             )}
 
             {/* Active indicator dot */}
-            {active && (
-              <span className="w-1.5 h-1.5 rounded-full bg-white/60 flex-shrink-0" />
-            )}
+            {active && <span className="h-1.5 w-1.5 flex-shrink-0 rounded-full bg-white/60" />}
           </Link>
         );
       })}

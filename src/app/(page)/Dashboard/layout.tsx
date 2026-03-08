@@ -30,14 +30,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <ThemeProvider>
         <StoreProvider>
           <SubscriptionProvider>
-            <section className="min-h-screen bg-background font-medium transition-colors duration-200">
+            <section className="bg-background min-h-screen font-medium transition-colors duration-200">
               <UserActions />
 
-              <main className="mb-18 hidden bg-background lg:block">
+              <main className="bg-background mb-18 hidden lg:block">
                 <Sidebar>{children}</Sidebar>
               </main>
 
-              <div className="mb-18 block lg:hidden">{children}</div>
+              <div className="mb-18 block px-2 lg:hidden">{children}</div>
 
               <FloatingNavBarForDashboard />
             </section>

@@ -12,7 +12,7 @@ export default function QuickActionsGrid() {
 
   const actions = [
     {
-      path: '/Dashboard/add-product',
+      path: '/Dashboard/ProductManagment/add-product',
       label: 'إضافة منتج',
       icon: Plus,
       primary: true,

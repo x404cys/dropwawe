@@ -11,10 +11,12 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useTheme } from '../../context/ThemeContext';
+import { useStoreProvider } from '../../hooks';
 
 export default function UserActions() {
   const { t, lang } = useLanguage();
   const { data: session } = useSession();
+  const { currentStore } = useStoreProvider();
   const router = useRouter();
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -99,7 +101,7 @@ export default function UserActions() {
 
       <div className="flex items-center gap-2">
         <button
-          onClick={() => window.open(`https://matager.store`, '_blank')}
+          onClick={() => window.open(`https://${currentStore?.subLink}.matager.store`, '_blank')}
           className="bg-primary/10 border-primary/20 hover:bg-primary/15 flex h-8 items-center gap-1.5 rounded-full border px-3 transition-colors"
         >
           <ExternalLink className="text-primary h-3 w-3" />

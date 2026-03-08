@@ -22,13 +22,16 @@ export function DescriptionSection({
       <div className="p-6">
         <label
           htmlFor="product-description"
-          className="mb-2 flex items-center gap-1 text-sm font-medium text-foreground"
+          className="text-foreground mb-2 flex items-center gap-1 text-sm font-medium"
         >
-          <span>{t.inventory?.productDescription || 'وصف المنتج'}</span> <span className="text-red-400">*</span>
+          <span>{t.inventory?.productDescription || 'وصف المنتج'}</span>{' '}
+          <span className="text-red-400">*</span>
         </label>
         <textarea
-          className="min-h-[100px] w-full rounded-2xl border border-gray-300 bg-card p-4 font-light text-black transition placeholder:text-muted-foreground focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
-          placeholder={t.inventory?.productDescriptionPlaceholder || 'اكتب وصفاً تفصيلياً للمنتج... '}
+          className="bg-card text-foreground placeholder:text-muted-foreground min-h-[100px] w-full rounded-2xl border border-gray-300 p-4 font-light transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          placeholder={
+            t.inventory?.productDescriptionPlaceholder || 'اكتب وصفاً تفصيلياً للمنتج... '
+          }
           value={newProduct.description}
           onChange={e => setNewProduct({ ...newProduct, description: e.target.value })}
           disabled={loading}

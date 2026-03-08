@@ -4,8 +4,7 @@ import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
 import { toast } from 'sonner';
 import { AlertCircle, DollarSign, Package, Plus, ShoppingBag, Sparkles, Users } from 'lucide-react';
-
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import Image from 'next/image';
 import { Order } from '@/types/Products';
 import { useLanguage } from './context/LanguageContext';
 import { useStoreProvider } from './context/StoreContext';
@@ -120,10 +119,10 @@ export default function Dashboard() {
 
   return (
     <>
-      {data.productCount == 0 && (
+      {data.productCount && (
         <div
           dir="rtl"
-          className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
+          className="from-primary/10 via-primary/5 border-primary/20 relative mt-2 overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
@@ -296,7 +295,7 @@ export default function Dashboard() {
                     {data?.lastProducts?.map(p => (
                       <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                         <div className="bg-muted sw-10 h-10 flex-shrink-0 overflow-hidden rounded-lg">
-                          <img
+                          <Image
                             src={p.images?.[0]?.url || ''}
                             alt={p.name}
                             className="h-full w-full object-cover"
