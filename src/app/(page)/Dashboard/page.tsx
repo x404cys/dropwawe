@@ -119,7 +119,7 @@ export default function Dashboard() {
 
   return (
     <>
-      {data.productCount && (
+      {data.productCount === 0 && (
         <div
           dir="rtl"
           className="from-primary/10 via-primary/5 border-primary/20 relative mt-2 overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
