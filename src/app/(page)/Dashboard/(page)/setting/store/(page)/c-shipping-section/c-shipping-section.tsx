@@ -82,27 +82,28 @@ export default function CShippingSection({
   return (
     <div dir="rtl" className="space-y-6">
       {/* Header */}
-      <div className="flex items-center gap-3 p-4 rounded-2xl bg-primary/5 border border-primary/15">
-        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-          <Truck className="h-5 w-5 text-primary" />
+      <div className="bg-primary/5 border-primary/15 flex items-center gap-3 rounded-2xl border p-4">
+        <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
+          <Truck className="text-primary h-5 w-5" />
         </div>
         <div>
-          <p className="text-sm font-bold text-foreground">
+          <p className="text-foreground font-bold">
             {t.store?.linkAlwaseetAccount || 'ربط حساب شركة الوسيط'}
           </p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">
+          <p className="text-muted-foreground mt-0.5 text-[11px]">
             {t.store?.alwaseetDesc || 'سجّل دخولك للربط مع منصة الوسيط للتوصيل'}
           </p>
         </div>
         {linked && (
-          <span className="mr-auto flex-shrink-0 text-[10px] font-bold bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 px-2.5 py-1 rounded-full">
-            مرتبط           </span>
+          <span className="mr-auto flex-shrink-0 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-600">
+            مرتبط{' '}
+          </span>
         )}
       </div>
 
-       <div className="space-y-2">
-        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-          <User className="w-3 h-3" />
+      <div className="space-y-2">
+        <label className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
+          <User className="h-3 w-3" />
           {t.store?.alwaseetUsernameLabel || 'اسم المستخدم'}
         </label>
         <div className="relative">
@@ -110,15 +111,15 @@ export default function CShippingSection({
             value={username}
             onChange={e => setUsername(e.target.value)}
             placeholder={t.store?.alwaseetUsernamePlaceholder || 'اسم المستخدم في تطبيق الوسيط'}
-            className="h-11 text-sm pl-10"
+            className="h-11 pl-10"
           />
-          <User className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         </div>
       </div>
 
-       <div className="space-y-2">
-        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
-          <MdPassword className="w-3 h-3" />
+      <div className="space-y-2">
+        <label className="text-muted-foreground flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
+          <MdPassword className="h-3 w-3" />
           {t.store?.alwaseetPasswordLabel || 'كلمة السر'}
         </label>
         <div className="relative">
@@ -127,15 +128,15 @@ export default function CShippingSection({
             value={password}
             onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
-            className="h-11 text-sm pl-10 pr-10"
+            className="h-11 pr-10 pl-10"
           />
-          <MdPassword className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <MdPassword className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <button
             type="button"
             onClick={() => setShowPassword(v => !v)}
-            className="absolute top-1/2 right-3 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
           >
-            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
           </button>
         </div>
       </div>
@@ -144,16 +145,16 @@ export default function CShippingSection({
       <Button
         onClick={login}
         disabled={loading || !username || !password}
-        className="w-full h-12 rounded-xl font-bold text-base active:scale-[0.98] transition-all"
+        className="h-12 w-full rounded-xl text-base font-bold transition-all active:scale-[0.98]"
       >
         {loading ? (
           <span className="flex items-center gap-2">
-            <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
             {t.store?.alwaseetLoggingIn || 'جاري تسجيل الدخول...'}
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <Link2 className="w-4 h-4" />
+            <Link2 className="h-4 w-4" />
             {t.store?.alwaseetLoginBtn || 'ربط الحساب'}
           </span>
         )}
@@ -161,9 +162,9 @@ export default function CShippingSection({
 
       {/* Divider */}
       <div className="flex items-center gap-3 py-1">
-        <div className="flex-1 h-px bg-border/60" />
-        <span className="text-xs font-medium text-muted-foreground">{(t as any).or || 'أو'}</span>
-        <div className="flex-1 h-px bg-border/60" />
+        <div className="bg-border/60 h-px flex-1" />
+        <span className="text-muted-foreground text-xs font-medium">{(t as any).or || 'أو'}</span>
+        <div className="bg-border/60 h-px flex-1" />
       </div>
     </div>
   );

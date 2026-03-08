@@ -171,7 +171,12 @@ export default function Dashboard() {
           <div id="mobile-plan-card">
             <PlanCard />
           </div>
-
+          <UrlCard
+            storeUrl={storeUrl}
+            copyToClipboard={handleCopyUrl}
+            theme={currentStore?.theme || ''}
+            storeName={currentStore?.name || ''}
+          />
           <div id="mobile-recent-orders">
             <RecentOrdersPanel orders={latestOrder ?? []} />
           </div>
