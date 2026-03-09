@@ -210,7 +210,7 @@ export async function POST(request: NextRequest) {
 
     const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
 
-    const cart_id = order.id;
+    const cart_id = order.id; 
 
     const payload = {
       profile_id: PAYTABS_PROFILE_ID,

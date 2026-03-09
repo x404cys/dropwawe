@@ -2,7 +2,7 @@
 import { useLanguage } from '../../../context/LanguageContext';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, Settings } from 'lucide-react';
+import { ChevronLeft, ExternalLink, MessageCircle, Settings } from 'lucide-react';
 import type { ElementType } from 'react';
 
 import { LuUserRoundPen } from 'react-icons/lu';
@@ -17,6 +17,8 @@ import { BiSolidDiscount } from 'react-icons/bi';
 import { PlanType } from '@/types/plans/Plans';
 import { useSubscriptions } from '../../../hooks';
 import PlanCard from '../../../_components/cards/PlanCard';
+import { Button } from '@/components/ui/button';
+import { BsTelephone } from 'react-icons/bs';
 
 interface Section {
   label: string;
@@ -61,7 +63,7 @@ export default function SettingOptions() {
           label: t.store?.generalSettings || 'الإعدادات العامة',
           desc: 'معلومات الحساب , المضهر , واللغة ',
           icon: Settings,
-           path: `${baseToProfile}`,
+          path: `${baseToProfile}`,
         },
       ],
     },
@@ -72,19 +74,19 @@ export default function SettingOptions() {
           label: t.store?.generalSettings || 'الإعدادات العامة',
           desc: t.store?.generalSettingsDesc || 'اسم المتجر، الرابط، الوصف',
           icon: LuUserRoundPen,
-           path: `${base}/basic`,
+          path: `${base}/basic`,
         },
         {
           label: 'الشحن والتوصيل',
           desc: 'سعر الشحن ورقم التواصل',
           icon: LiaShippingFastSolid,
-           path: `${base}/shipping`,
+          path: `${base}/shipping`,
         },
         {
           label: t.store?.socialLinks || 'روابط التواصل',
           desc: t.store?.socialLinksDesc || 'فيسبوك، انستغرام، تيليغرام',
           icon: IoShareSocialOutline,
-           path: `${base}/social`,
+          path: `${base}/social`,
         },
       ],
     },
@@ -95,7 +97,7 @@ export default function SettingOptions() {
           label: t.more?.templates || 'تخصيص القالب والمظهر',
           desc: t.more?.templatesDesc || 'ألوان وشكل صفحة المتجر',
           icon: MdOutlineStyle,
-           path: `${base}/theme`,
+          path: `${base}/theme`,
           allowedPlans: [
             'drop-basics',
             'trader-basic',
@@ -109,14 +111,14 @@ export default function SettingOptions() {
           label: t.store?.team || 'إضافة مستخدم للمتجر',
           desc: t.store?.teamDesc || 'منح صلاحيات لأعضاء فريقك',
           icon: FaUsersCog,
-           path: `${base}/users`,
+          path: `${base}/users`,
           allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
         },
         {
           label: t.store?.coupons || 'كوبونات الخصم',
           desc: t.store?.couponsDesc || 'إنشاء وإدارة كوبونات للعملاء',
           icon: BiSolidDiscount,
-           path: `${base}/coupon`,
+          path: `${base}/coupon`,
           allowedPlans: [
             'drop-basics',
             'trader-basic',
@@ -130,7 +132,7 @@ export default function SettingOptions() {
           label: t.more?.stores || 'إنشاء متجر إضافي',
           desc: t.more?.storesDesc || 'أدر أكثر من متجر من حساب واحد',
           icon: IoStorefrontOutline,
-           path: `${base}/create-another`,
+          path: `${base}/create-another`,
           allowedPlans: ['drop-pro'],
         },
       ],
@@ -193,13 +195,13 @@ export default function SettingOptions() {
                     key={section.path}
                     disabled={!allowed}
                     onClick={() => allowed && router.push(section.path)}
-                    className={`flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors ${
+                    className={`flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-right transition-colors ${
                       !allowed ? 'cursor-not-allowed opacity-50' : 'hover:bg-muted/50'
                     }`}
                   >
                     <div
                       className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
-                        section.danger ? 'bg-destructive/10' : section.color ?? 'bg-muted'
+                        section.danger ? 'bg-destructive/10' : (section.color ?? 'bg-muted')
                       }`}
                     >
                       <section.icon
@@ -245,6 +247,45 @@ export default function SettingOptions() {
             </div>
           </div>
         ))}
+        <div className="mt-2">
+          <h2 className="text-muted-foreground mb-2 px-1 text-xs font-semibold tracking-wide uppercase">
+            {t.profile?.contactUs || 'الدعم والمساعدة'}
+          </h2>
+          <div className="bg-card border-border divide-border divide-y overflow-hidden rounded-xl border shadow-sm">
+            <button
+              onClick={() => window.open('https://wa.me/9647718599996', '_blank')}
+              className="hover:bg-muted/50 flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-right transition-colors"
+            >
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-green-500/10">
+                <MessageCircle size={17} className="text-green-500" />
+              </div>
+              <div className="min-w-0 flex-1 text-right">
+                <p className="text-foreground text-sm font-medium">
+                  {t.profile?.whatsappSupport || 'واتساب — الدعم الفني'}
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-[11px]">
+                  تواصل معنا عبر الواتساب للحصول على مساعدة
+                </p>
+              </div>
+              <ExternalLink size={16} className="text-muted-foreground/40 flex-shrink-0" />
+            </button>
+            <button
+              onClick={() => window.open('tel:+9647718599996')}
+              className="hover:bg-muted/50 flex w-full cursor-pointer items-center gap-3 px-4 py-3.5 text-right transition-colors"
+            >
+              <div className="bg-primary/10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg">
+                <BsTelephone size={17} className="text-primary" />
+              </div>
+              <div className="min-w-0 flex-1 text-right">
+                <p dir="rtl" className="text-foreground text-right text-sm font-medium">
+                  0771-859-9996 — الدعم الفني
+                </p>
+                <p className="text-muted-foreground mt-0.5 text-[11px]">اتصل بنا هاتفياً مباشرة</p>
+              </div>
+              <ExternalLink size={16} className="text-muted-foreground/40 flex-shrink-0" />
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -28,6 +28,7 @@ import { useLanguage, type Lang } from '../../../context/LanguageContext';
 import SettingsPageHeader from '../_components/settings-page-header';
 import SettingsSectionCard from '../_components/settings-section-card';
 import SettingsSectionHeading from '../_components/settings-section-heading';
+import { BsTelephone } from 'react-icons/bs';
 
 const getFAQs = (t: any) => [
   {
@@ -57,6 +58,7 @@ export default function ProfileSettingsPage() {
   const [name, setName] = useState(session?.user?.name ?? '');
   const { theme, setTheme } = useTheme();
   const { lang, setLang, t } = useLanguage();
+
   const [notifSettings, setNotifSettings] = useState({
     orderAlerts: true,
     notifications: true,
@@ -81,14 +83,17 @@ export default function ProfileSettingsPage() {
     setEditing(false);
     toast.success(t.profile?.savedDesc || 'تم حفظ التغييرات');
   };
-
+  const handleSignOut = async () => {
+    await signOut({ redirect: false });
+    window.location.href = 'https://www.matager.store';
+  };
   const headerAction =
     activeTab === 'account' ? (
       editing ? (
         <Button
           size="sm"
           onClick={saveProfile}
-          className="h-8 gap-1.5 text-xs bg-primary hover:bg-primary/90"
+          className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
         >
           <Save className="h-3.5 w-3.5" />
           {t.save}
@@ -108,10 +113,7 @@ export default function ProfileSettingsPage() {
 
   return (
     <section dir="rtl" className="bg-background min-h-screen pb-28">
-      <SettingsPageHeader
-        title={t.nav?.profile || 'الملف الشخصي'}
-        action={headerAction}
-      />
+      <SettingsPageHeader title={t.nav?.profile || 'الملف الشخصي'} action={headerAction} />
 
       <div className="mx-auto max-w-xl space-y-5 px-4 pt-4">
         {/* Tab bar */}
@@ -184,7 +186,11 @@ export default function ProfileSettingsPage() {
                     <User className="h-3 w-3" /> {t.profile?.name || 'الاسم'}
                   </label>
                   {editing ? (
-                    <Input value={name} onChange={e => setName(e.target.value)} className="h-10 text-sm" />
+                    <Input
+                      value={name}
+                      onChange={e => setName(e.target.value)}
+                      className="h-10 text-sm"
+                    />
                   ) : (
                     <p className="text-foreground bg-muted rounded-lg px-3 py-2 text-sm">
                       {session?.user?.name ?? '—'}
@@ -204,19 +210,13 @@ export default function ProfileSettingsPage() {
 
             {/* Security + logout */}
             <SettingsSectionCard noPadding>
-              <button className="hover:bg-muted/50 flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors">
-                <Shield className="text-muted-foreground h-4 w-4" />
-                <p className="text-foreground flex-1 text-sm font-medium">
-                  {t.profile?.changePassword || 'تغيير كلمة المرور'}
-                </p>
-              </button>
-              <div className="border-t border-border" />
+              <div className="border-border border-t" />
               <button
-                onClick={() => signOut({ callbackUrl: '/auth/signin' })}
-                className="flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors hover:bg-destructive/5"
+                onClick={() => handleSignOut()}
+                className="hover:bg-destructive/5 flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors"
               >
-                <LogOut className="h-4 w-4 text-destructive" />
-                <p className="text-sm font-medium text-destructive">
+                <LogOut className="text-destructive h-4 w-4" />
+                <p className="text-destructive text-sm font-medium">
                   {t.profile?.logout || 'تسجيل الخروج'}
                 </p>
               </button>
@@ -303,7 +303,7 @@ export default function ProfileSettingsPage() {
                 },
               ].map((s, idx) => (
                 <div key={s.key}>
-                  {idx > 0 && <div className="border-t border-border" />}
+                  {idx > 0 && <div className="border-border border-t" />}
                   <div className="flex items-center justify-between px-4 py-3">
                     <div>
                       <p className="text-foreground text-sm font-medium">{s.label}</p>
@@ -331,7 +331,7 @@ export default function ProfileSettingsPage() {
                 <Button
                   variant="outline"
                   className="h-12 w-full justify-start gap-3"
-                  onClick={() => window.open('https://wa.me/9647700000000', '_blank')}
+                  onClick={() => window.open('https://wa.me/9647718599996', '_blank')}
                 >
                   <MessageCircle className="h-4 w-4 text-green-500" />
                   <span className="text-sm">
@@ -342,10 +342,12 @@ export default function ProfileSettingsPage() {
                 <Button
                   variant="outline"
                   className="h-12 w-full justify-start gap-3"
-                  onClick={() => window.open('mailto:support@drop-wave.com')}
+                  onClick={() => window.open('tel:+9647718599996')}
                 >
-                  <Mail className="text-primary h-4 w-4" />
-                  <span className="text-sm">support@drop-wave.com</span>
+                  <BsTelephone className="text-primary h-4 w-4" />
+                  <span dir="rtl" className="text-right text-sm">
+                    0771-859-9996 — الدعم الفني
+                  </span>
                   <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
                 </Button>
               </div>
@@ -364,16 +366,6 @@ export default function ProfileSettingsPage() {
                 ))}
               </div>
             </SettingsSectionCard>
-
-            <Button
-              variant="outline"
-              className="h-12 w-full justify-start gap-3"
-              onClick={() => window.open('https://docs.drop-wave.com', '_blank')}
-            >
-              <FileText className="text-muted-foreground h-4 w-4" />
-              <span className="text-sm">{t.profile?.documentation || 'التوثيق والمستندات'}</span>
-              <ExternalLink className="text-muted-foreground mr-auto h-3 w-3" />
-            </Button>
           </div>
         )}
       </div>
