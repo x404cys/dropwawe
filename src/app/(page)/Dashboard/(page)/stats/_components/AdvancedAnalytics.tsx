@@ -36,6 +36,11 @@ export function AdvancedAnalytics({
     { id: 'pages' as const, label: 'الزيارات', icon: Eye },
     { id: 'sources' as const, label: 'المصادر', icon: Globe },
   ];
+  const chartDeviceData = deviceData.map(d => ({
+    name: d.name,
+    value: d.value,
+    color: d.color,
+  }));
 
   return (
     <div className="pt-2">
@@ -126,7 +131,7 @@ export function AdvancedAnalytics({
               <div className="relative h-[200px] w-[200px]">
                 <PieChart width={200} height={200}>
                   <Pie
-                    data={deviceData.map(d => ({ name: d.name, value: d.value, color: d.color }))}
+                    data={chartDeviceData}
                     cx={100}
                     cy={100}
                     innerRadius={60}
@@ -135,7 +140,7 @@ export function AdvancedAnalytics({
                     dataKey="value"
                     strokeWidth={0}
                   >
-                    {deviceData.map((entry, i) => (
+                    {chartDeviceData.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
                     ))}
                   </Pie>
@@ -259,7 +264,11 @@ export function AdvancedAnalytics({
               <div className="flex items-center justify-center py-4">
                 <PieChart width={200} height={200}>
                   <Pie
-                    data={trafficSources}
+                    data={trafficSources.map(s => ({
+                      name: s.name,
+                      value: s.value,
+                      color: s.color,
+                    }))}
                     cx={100}
                     cy={100}
                     innerRadius={50}

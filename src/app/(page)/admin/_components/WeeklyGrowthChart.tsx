@@ -13,7 +13,7 @@ interface WeeklyStats {
 }
 
 export default function WeeklyGrowthChart() {
-  const [series, setSeries] = useState<ApexAxisChartSeries>([]);
+  const [series, setSeries] = useState<{ name: string; data: number[] }[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
 
