@@ -78,6 +78,29 @@ async function handlePayment(data: {
       where: { id: paymentOrder.order.id },
       data: { status: 'PENDING' },
     });
+    const totalEarned = paymentOrder.order.total;
+
+    await prisma.balance.upsert({
+      where: { userId: paymentOrder.order.userId! },
+      update: {
+        available: { increment: totalEarned },
+        pending: { increment: totalEarned },
+      },
+      create: {
+        userId: paymentOrder.order.userId!,
+        available: totalEarned,
+        pending: totalEarned,
+      },
+    });
+    await prisma.ledger.create({
+      data: {
+        userId: paymentOrder.order.userId!,
+        orderId: paymentOrder.order.id,
+        type: 'ORDER_PROFIT',
+        amount: totalEarned,
+        note: 'ربح من طلب مدفوع',
+      },
+    });
   }
 
   return paymentOrder;

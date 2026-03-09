@@ -33,10 +33,18 @@ function detectOS(ua: string): string {
 function classifyReferrer(ref: string | null): string {
   if (!ref) return 'مباشر';
   const r = ref.toLowerCase();
-  if (r.includes('google') || r.includes('bing') || r.includes('yahoo') || r.includes('duckduckgo')) return 'محركات بحث';
+  if (r.includes('google') || r.includes('bing') || r.includes('yahoo') || r.includes('duckduckgo'))
+    return 'محركات بحث';
   if (r.includes('facebook') || r.includes('fb.')) return 'فيسبوك';
   if (r.includes('instagram')) return 'انستغرام';
-  if (r.includes('tiktok') || r.includes('twitter') || r.includes('t.co') || r.includes('snapchat') || r.includes('telegram')) return 'سوشيال ميديا';
+  if (
+    r.includes('tiktok') ||
+    r.includes('twitter') ||
+    r.includes('t.co') ||
+    r.includes('snapchat') ||
+    r.includes('telegram')
+  )
+    return 'سوشيال ميديا';
   return 'إحالة';
 }
 
@@ -229,13 +237,13 @@ export async function GET(req: Request) {
     const totalVisitors = allVisitors.length;
 
     const DEVICE_COLORS: Record<string, string> = {
-      Mobile:  'hsl(191,80%,42%)',
-      Tablet:  'hsl(280,70%,60%)',
+      Mobile: 'hsl(191,80%,42%)',
+      Tablet: 'hsl(280,70%,60%)',
       Desktop: 'hsl(220,80%,55%)',
     };
     const DEVICE_ICONS: Record<string, string> = {
-      Mobile:  'Smartphone',
-      Tablet:  'Tablet',
+      Mobile: 'Smartphone',
+      Tablet: 'Tablet',
       Desktop: 'Monitor',
     };
 
@@ -256,11 +264,11 @@ export async function GET(req: Request) {
 
     const OS_COLORS: Record<string, string> = {
       Android: 'hsl(122,39%,49%)',
-      iOS:     'hsl(211,100%,50%)',
+      iOS: 'hsl(211,100%,50%)',
       Windows: 'hsl(207,100%,42%)',
-      macOS:   'hsl(0,0%,30%)',
-      Linux:   'hsl(40,80%,50%)',
-      Other:   'hsl(0,0%,60%)',
+      macOS: 'hsl(0,0%,30%)',
+      Linux: 'hsl(40,80%,50%)',
+      Other: 'hsl(0,0%,60%)',
     };
 
     const deviceBrands = Object.entries(osCounts)
@@ -273,12 +281,12 @@ export async function GET(req: Request) {
 
     // ── Traffic Sources (from visitor referrer) ───────────────────────────────
     const sourceCounts: Record<string, number> = {
-      'مباشر': 0,
+      مباشر: 0,
       'محركات بحث': 0,
       'سوشيال ميديا': 0,
-      'فيسبوك': 0,
-      'انستغرام': 0,
-      'إحالة': 0,
+      فيسبوك: 0,
+      انستغرام: 0,
+      إحالة: 0,
     };
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -288,12 +296,12 @@ export async function GET(req: Request) {
     });
 
     const SOURCE_META: Record<string, { color: string; emoji: string }> = {
-      'مباشر':        { color: 'hsl(191,80%,42%)', emoji: '🔗' },
+      مباشر: { color: 'hsl(191,80%,42%)', emoji: '🔗' },
       'سوشيال ميديا': { color: 'hsl(280,70%,60%)', emoji: '📱' },
-      'فيسبوك':       { color: 'hsl(214,89%,52%)', emoji: '📘' },
-      'انستغرام':     { color: 'hsl(340,82%,52%)', emoji: '📸' },
-      'محركات بحث':   { color: 'hsl(40,90%,55%)',  emoji: '🔍' },
-      'إحالة':        { color: 'hsl(0,70%,55%)',   emoji: '📣' },
+      فيسبوك: { color: 'hsl(214,89%,52%)', emoji: '📘' },
+      انستغرام: { color: 'hsl(340,82%,52%)', emoji: '📸' },
+      'محركات بحث': { color: 'hsl(40,90%,55%)', emoji: '🔍' },
+      إحالة: { color: 'hsl(0,70%,55%)', emoji: '📣' },
     };
 
     const trafficSources = Object.entries(sourceCounts)

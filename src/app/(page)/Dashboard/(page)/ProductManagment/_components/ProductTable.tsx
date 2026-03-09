@@ -307,7 +307,7 @@ export default function ProductTable() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t.inventory.searchPlaceholder}
-            className="border-border bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
+            className="border-border font-light bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
           />
         </div>
 

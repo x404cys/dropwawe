@@ -16,7 +16,7 @@ export async function GET(req: Request, context: { params: Promise<{ orderId: st
       where: { id: orderId },
       include: { items: { include: { product: true } } },
     });
-    
+
     if (order) return NextResponse.json(order);
 
     if (session?.user.role === 'SUPPLIER') {
@@ -31,6 +31,45 @@ export async function GET(req: Request, context: { params: Promise<{ orderId: st
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });
   } catch (error) {
     console.error('Error fetching order:', error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}
+
+export async function PATCH(req: Request, context: { params: Promise<{ orderId: string }> }) {
+  try {
+    const { orderId } = await context.params;
+    const session = await getServerSession(authOperation);
+
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    if (!orderId) {
+      return NextResponse.json({ error: 'Order ID is required' }, { status: 400 });
+    }
+
+    const { status } = await req.json();
+
+    if (!status) {
+      return NextResponse.json({ error: 'Status is required' }, { status: 400 });
+    }
+
+    const order = await prisma.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
+    }
+
+    const updatedOrder = await prisma.order.update({
+      where: { id: orderId },
+      data: { status },
+    });
+
+    return NextResponse.json(updatedOrder);
+  } catch (error) {
+    console.error('Error updating order:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

@@ -1,7 +1,7 @@
 import { ChangeEvent, JSX } from 'react';
 import { StoreProps } from './store/StoreType';
 import { User } from './users/User';
- 
+
 export interface Product {
   priceBeforeDiscount?: number;
   id: string;
@@ -85,15 +85,17 @@ export interface Order {
   storeId: string;
 
   items: {
-    map(arg0: (item: any) => JSX.Element): import("react").ReactNode;
     id: string;
-    quantity: number;
+    quantity?: number;
+    qty?: number;
     price: number;
     orderId: string;
-    color: string;
-    size: string;
+    color?: string;
+    size?: string;
     productId: string;
-  };
+    name?: string;
+    product?: Product;
+  }[];
   store?: StoreProps;
   user?: User;
 }

@@ -94,12 +94,14 @@ export default function StoreSetupPage() {
     const phoneRegex = /^(077|078|075)\d{8}$/;
     if (!phone.trim()) errors.phone = 'رقم الهاتف مطلوب';
     else if (!phoneRegex.test(phone)) errors.phone = 'يجب 11 رقم ويبدأ بـ 077 أو 078 أو 075';
-    if (!shippingPrice.trim()) errors.shippingPrice = 'سعر التوصيل مطلوب';
-    else {
-      const price = Number(shippingPrice);
-      if (isNaN(price)) errors.shippingPrice = 'يجب أن يكون رقم';
-      else if (price < 1000) errors.shippingPrice = 'أقل سعر هو 1000 د.ع';
-      else if (price % 500 !== 0) errors.shippingPrice = 'يجب أن يكون مضاريب 500 (مثال: 5000)';
+    if (storeCategory !== 'منتجات رقمية') {
+      if (!shippingPrice.trim()) errors.shippingPrice = 'سعر التوصيل مطلوب';
+      else {
+        const price = Number(shippingPrice);
+        if (isNaN(price)) errors.shippingPrice = 'يجب أن يكون رقم';
+        else if (price < 1000) errors.shippingPrice = 'أقل سعر هو 1000 د.ع';
+        else if (price % 500 !== 0) errors.shippingPrice = 'يجب أن يكون مضاريب 500 (مثال: 5000)';
+      }
     }
 
     if (!storeCategory) {
@@ -124,7 +126,7 @@ export default function StoreSetupPage() {
         subLink: storeSlug,
         name: storeName,
         description: storeDescription,
-        shippingPrice,
+        shippingPrice: storeCategory === 'منتجات رقمية' ? '0' : shippingPrice,
         phone,
         facebookLink: '',
         instaLink: '',
@@ -181,7 +183,6 @@ export default function StoreSetupPage() {
 
   return (
     <div className="bg-background flex min-h-screen flex-col md:flex-row" dir="rtl">
-      {/* Full Screen Loading Overlay */}
       {loading && (
         <div className="bg-background/95 animate-in fade-in fixed inset-0 z-[100] flex items-center justify-center backdrop-blur-sm duration-300">
           <div className="bg-card border-border/50 animate-in zoom-in-95 mx-4 flex w-full max-w-[320px] flex-col items-center rounded-[2rem] border p-6 text-center shadow-2xl duration-500 md:p-8">
@@ -198,7 +199,6 @@ export default function StoreSetupPage() {
               نحن نقوم الآن بتهيئة التخزين وقاعدة البيانات الخاصة بك ليكون متجرك جاهزاً للعمل.
             </p>
 
-            {/* Progress Bar container */}
             <div className="mb-6 w-full text-right">
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-primary text-xs font-bold">{progress}%</span>
@@ -215,7 +215,6 @@ export default function StoreSetupPage() {
               </div>
             </div>
 
-            {/* Stepper details */}
             <div className="w-full space-y-3 text-right md:space-y-4">
               <div className="flex items-center gap-3">
                 <div
@@ -270,9 +269,7 @@ export default function StoreSetupPage() {
         </div>
       )}
 
-      {/* Left side: branding/visuals */}
       <div className="bg-primary text-primary-foreground relative hidden flex-col justify-between overflow-hidden p-12 md:flex md:w-5/12 lg:w-1/2">
-        {/* Decorative elements */}
         <div className="pointer-events-none absolute top-0 right-0 h-full w-full opacity-10">
           <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-12 -left-24 h-80 w-80 rounded-full bg-blue-300 blur-3xl" />
@@ -370,7 +367,7 @@ export default function StoreSetupPage() {
                       }
                     }}
                     placeholder="متجر الأناقة"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.name ? 'border-destructive focus:border-destructive' : ''}`}
+                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 font-light focus:ring-1 ${fieldErrors.name ? 'border-destructive focus:border-destructive' : ''}`}
                   />
                 </div>
                 {fieldErrors.name && (
@@ -397,7 +394,7 @@ export default function StoreSetupPage() {
                       setStoreSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))
                     }
                     placeholder="mystore"
-                    className="text-foreground placeholder:text-muted-foreground h-full w-full min-w-0 flex-1 bg-transparent px-3 outline-none"
+                    className="text-foreground placeholder:text-muted-foreground h-full w-full min-w-0 flex-1 bg-transparent px-3 font-light outline-none"
                     dir="ltr"
                   />
                 </div>
@@ -441,7 +438,7 @@ export default function StoreSetupPage() {
                     value={phone}
                     onChange={e => setPhone(e.target.value)}
                     placeholder="07XXXXXXXXX"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.phone ? 'border-destructive focus:border-destructive' : ''}`}
+                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 font-light focus:ring-1 ${fieldErrors.phone ? 'border-destructive focus:border-destructive' : ''}`}
                     dir="ltr"
                     type="tel"
                   />
@@ -451,25 +448,27 @@ export default function StoreSetupPage() {
                 )}
               </div>
 
-              <div className="space-y-2">
-                <label className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
-                  سعر التوصيل العادي (د.ع) *
-                </label>
-                <div className="relative">
-                  <Truck className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
-                  <Input
-                    value={shippingPrice}
-                    onChange={e => setShippingPrice(e.target.value)}
-                    placeholder="5000"
-                    className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 focus:ring-1 ${fieldErrors.shippingPrice ? 'border-destructive focus:border-destructive' : ''}`}
-                    dir="ltr"
-                    type="number"
-                  />
+              {storeCategory !== 'منتجات رقمية' && (
+                <div className="space-y-2">
+                  <label className="text-foreground flex items-center gap-1.5 text-xs font-semibold">
+                    سعر التوصيل العادي (د.ع) *
+                  </label>
+                  <div className="relative">
+                    <Truck className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+                    <Input
+                      value={shippingPrice}
+                      onChange={e => setShippingPrice(e.target.value)}
+                      placeholder="5000"
+                      className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 h-11 rounded-xl pr-9 pl-3 font-light focus:ring-1 ${fieldErrors.shippingPrice ? 'border-destructive focus:border-destructive' : ''}`}
+                      dir="ltr"
+                      type="number"
+                    />
+                  </div>
+                  {fieldErrors.shippingPrice && (
+                    <p className="text-destructive mt-1 text-xs">{fieldErrors.shippingPrice}</p>
+                  )}
                 </div>
-                {fieldErrors.shippingPrice && (
-                  <p className="text-destructive mt-1 text-xs">{fieldErrors.shippingPrice}</p>
-                )}
-              </div>
+              )}
             </div>
 
             <div className="space-y-2">
@@ -480,7 +479,7 @@ export default function StoreSetupPage() {
                 value={storeDescription}
                 onChange={e => setStoreDescription(e.target.value)}
                 placeholder="اكتب وصفاً جذاباً عن متجرك وما تقدمه لعملائك..."
-                className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 min-h-[100px] resize-none rounded-xl p-4 focus:ring-1 ${fieldErrors.description ? 'border-destructive focus:border-destructive' : ''}`}
+                className={`bg-card border-border/80 focus:border-primary focus:ring-primary/20 min-h-[100px] resize-none rounded-xl p-4 font-light focus:ring-1 ${fieldErrors.description ? 'border-destructive focus:border-destructive' : ''}`}
                 maxLength={200}
               />
               <div className="mt-1 flex items-center justify-between">

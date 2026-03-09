@@ -43,6 +43,9 @@ model User {
   invitesSent Invite[] @relation("InviteOwner")
   couponUsages CouponUsage[]
   ProfitWithdrawal ProfitWithdrawal[]
+  balances    Balance[]
+  ledgers     Ledger[]
+  withdrawals Withdrawal[]
 
 }
 model Supplier {
@@ -255,6 +258,7 @@ model Order {
 
   finalTotal   Float    @default(0)
   couponUsages CouponUsage[]
+  ledgers Ledger[]
 }
 
 model OrderItem {
@@ -605,4 +609,59 @@ model CouponUsage {
 
   @@index([couponId])
   @@index([userId])
+}
+model Balance {
+  id        String   @id @default(cuid())
+
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  available Float    @default(0) 
+  pending   Float    @default(0) 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model Ledger {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  orderId   String?
+  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  type      LedgerType
+
+  amount    Float
+
+  balanceAfter Float?
+
+  note      String?
+
+  createdAt DateTime @default(now())
+}
+enum LedgerType {
+  PAYMENT_RECEIVED
+  ORDER_PROFIT
+  PLATFORM_FEE
+  WITHDRAW_REQUEST
+  WITHDRAW_APPROVED
+  REFUND
+}
+model Withdrawal {
+  id        String   @id @default(cuid())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount    Float
+
+  status    WithdrawalStatus @default(PENDING)
+
+  method    String?
+  note      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

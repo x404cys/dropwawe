@@ -4,27 +4,15 @@ import { useLanguage } from '../../context/LanguageContext';
 import axios from 'axios';
 import useSWR, { mutate } from 'swr';
 import { useSession } from 'next-auth/react';
-import { useRouter } from 'next/navigation';
 import React, { useMemo, useState } from 'react';
+import OrderDetailDialog, { type OrderStatus } from './components/OrderDetailDialog';
 import { useDashboardData } from '../../context/useDashboardData';
-import { Search, ShoppingBag, Trash2, ChevronLeft } from 'lucide-react';
+import { Search, ShoppingBag, Trash2 } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useStoreProvider } from '../../context/StoreContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
-
-interface Order {
-  id: string;
-  productName?: string;
-  quantity: number;
-  price: number;
-  status: string;
-  createdAt: string;
-  fullName: string;
-  location: string;
-  phone: string;
-  total: number;
-}
+import { Order } from '@/types/Products';
 
 const fetcher = (url: string) =>
   fetch(url).then(res => {
@@ -33,10 +21,19 @@ const fetcher = (url: string) =>
   });
 
 const STATUS_STYLES: Record<string, string> = {
-  PRE_ORDER: 'bg-primary/10 text-primary',
+  PENDING: 'bg-primary/10 text-primary',
   CONFIRMED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+  SHIPPED: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+  DELIVERED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
   CANCELLED: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
-  TRANSIT: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+};
+
+const STATUS_AR_MAP: Record<string, string> = {
+  PENDING: 'جديد',
+  CONFIRMED: 'تم التأكيد',
+  SHIPPED: 'قيد الشحن',
+  DELIVERED: 'مكتمل',
+  CANCELLED: 'ملغي',
 };
 
 const DATE_FILTERS = [
@@ -51,21 +48,22 @@ export default function OrderSummaryPage() {
 
   const STATUS_TABS = [
     { key: 'all', label: t.all },
-    { key: 'PRE_ORDER', label: 'مسبق' },
-    { key: 'TRANSIT', label: 'قيد الشحن' },
-    { key: 'CONFIRMED', label: t.orders.completed },
+    { key: 'PENDING', label: 'جديد' },
+    { key: 'CONFIRMED', label: 'تم التأكيد' },
+    { key: 'SHIPPED', label: 'قيد الشحن' },
+    { key: 'DELIVERED', label: t.orders.completed },
     { key: 'CANCELLED', label: t.orders.cancelled },
   ];
 
   const STATUS_LABELS: Record<string, string> = {
-    PRE_ORDER: 'طلب مسبق',
+    PENDING: 'جديد',
     CONFIRMED: 'تم التأكيد',
+    SHIPPED: 'قيد الشحن',
+    DELIVERED: 'مكتمل',
     CANCELLED: t.orders.cancelled,
-    TRANSIT: 'قيد الشحن',
   };
 
   const { data: session } = useSession();
-  const router = useRouter();
   const { data } = useDashboardData(session?.user?.id);
   const [storeId, setStoreId] = useState<string>('');
   const fiestoreId = data?.Stores?.[0]?.id || '';
@@ -81,6 +79,36 @@ export default function OrderSummaryPage() {
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('year');
   const [search, setSearch] = useState('');
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [dialogOpen, setDialogOpen] = useState(false);
+
+  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
+    if (newStatus === 'CANCELLED') {
+      await axios.patch(`/api/orders/option/${orderId}`);
+    } else if (newStatus === 'CONFIRMED') {
+      await axios.patch(`/api/orders/option/update/${orderId}`);
+    } else {
+      await axios.patch(`/api/orders/details/${orderId}`, { status: newStatus });
+    }
+    mutate(`/api/orders/store/${currentStore?.id}`);
+  };
+
+  const toDialogOrder = (o: Order): any => ({
+    id: o.id,
+    userId: '',
+    storeId: '',
+    fullName: o.fullName,
+    total: o.total ?? o.total,
+    status: o.status,
+    createdAt: new Date(o.createdAt).toLocaleDateString('ar-EG', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    }),
+    phone: o.phone,
+    location: o.location,
+    items: o.items,
+  });
 
   const filteredOrders = useMemo(() => {
     let result = [...orders];
@@ -113,10 +141,10 @@ export default function OrderSummaryPage() {
       const s = search.toLowerCase();
       result = result.filter(
         o =>
-          o.fullName.toLowerCase().includes(s) ||
+          o.fullName?.toLowerCase().includes(s) ||
           o.phone.includes(s) ||
           o.location.toLowerCase().includes(s) ||
-          o.productName?.toLowerCase().includes(s) ||
+          o.items?.some(item => item.name?.toLowerCase().includes(s)) ||
           o.id.toLowerCase().includes(s)
       );
     }
@@ -183,7 +211,7 @@ export default function OrderSummaryPage() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="ابحث بالاسم، الهاتف، الموقع..."
-            className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:ring-2"
+            className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border py-2.5 pr-10 pl-4 font-light transition outline-none focus:ring-2"
           />
         </div>
 
@@ -238,7 +266,10 @@ export default function OrderSummaryPage() {
                 className="bg-card border-border hover:border-border/80 overflow-hidden rounded-xl border transition-all hover:shadow-md"
               >
                 <div
-                  onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
+                  onClick={() => {
+                    setSelectedOrder(order);
+                    setDialogOpen(true);
+                  }}
                   className="flex cursor-pointer items-center gap-3 px-4 py-3.5"
                 >
                   {/* Avatar */}
@@ -256,10 +287,11 @@ export default function OrderSummaryPage() {
                       </span>
                       <span
                         className={`flex-shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-                          STATUS_STYLES[order.status] ?? 'bg-secondary text-secondary-foreground'
+                          STATUS_STYLES[order.status as string] ??
+                          'bg-secondary text-secondary-foreground'
                         }`}
                       >
-                        {STATUS_LABELS[order.status] ?? order.status}
+                        {STATUS_LABELS[order.status as string] ?? order.status}
                       </span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-2">
@@ -274,13 +306,10 @@ export default function OrderSummaryPage() {
                     </div>
                   </div>
 
-                  {/* Amount + chevron */}
-                  <div className="flex flex-shrink-0 items-center gap-2 text-left">
-                    <div>
-                      <p className="text-foreground text-sm font-bold">{formatIQD(order.price)}</p>
-                      <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
-                    </div>
-                    <ChevronLeft className="text-muted-foreground/50 h-4 w-4" />
+                  {/* Amount */}
+                  <div className="flex-shrink-0 text-left">
+                    <p className="text-foreground text-sm font-bold">{formatIQD(order.total)}</p>
+                    <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
                   </div>
                 </div>
 
@@ -301,6 +330,13 @@ export default function OrderSummaryPage() {
           </div>
         )}
       </div>
+
+      <OrderDetailDialog
+        order={selectedOrder ? toDialogOrder(selectedOrder) : null}
+        open={dialogOpen}
+        onOpenChange={setDialogOpen}
+        onUpdateStatus={handleUpdateStatus}
+      />
     </section>
   );
 }

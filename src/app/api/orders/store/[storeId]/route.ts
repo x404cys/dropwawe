@@ -16,6 +16,13 @@ export async function GET(req: NextRequest, context: { params: Promise<{ storeId
   try {
     const Order = await prisma.order.findMany({
       where: { storeId: storeId },
+      include: {
+        items: {
+          include: {
+            product: true,
+          },
+        },
+      },
     });
 
     return NextResponse.json(Order);
