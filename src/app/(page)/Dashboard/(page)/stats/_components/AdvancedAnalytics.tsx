@@ -126,7 +126,7 @@ export function AdvancedAnalytics({
               <div className="relative h-[200px] w-[200px]">
                 <PieChart width={200} height={200}>
                   <Pie
-                    data={deviceData}
+                    data={deviceData.map(d => ({ name: d.name, value: d.value, color: d.color }))}
                     cx={100}
                     cy={100}
                     innerRadius={60}
@@ -141,10 +141,7 @@ export function AdvancedAnalytics({
                   </Pie>
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(v: any, n: any) => [
-                      `${typeof v === 'number' ? v : Number(v) || 0}%`,
-                      n ?? '',
-                    ]}
+                    formatter={(v: any, n: any) => [`${v}%`, n ?? '']}
                   />
                 </PieChart>
                 {deviceData[0] && (
