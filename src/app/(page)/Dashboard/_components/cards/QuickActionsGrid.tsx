@@ -1,7 +1,7 @@
 'use client';
 import { useLanguage } from '../../context/LanguageContext';
 import { useRouter } from 'next/navigation';
-import { Plus, ShoppingBag, DollarSign, Settings } from 'lucide-react';
+import { Plus, BarChart, ShoppingCart, Package } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useSession } from 'next-auth/react';
 
@@ -15,22 +15,29 @@ export default function QuickActionsGrid() {
       path: '/Dashboard/ProductManagment/add-product',
       label: 'إضافة منتج',
       icon: Plus,
-      primary: true,
+      iconColor: 'text-cyan-500', // Matches the cyan/primary tint in image
+      bgColor: 'bg-cyan-500/10',
+    },
+    {
+      path: '/Dashboard/analytics',
+      label: 'التحليلات',
+      icon: BarChart,
+      iconColor: 'text-foreground',
+      bgColor: 'bg-muted',
     },
     {
       path: '/Dashboard/OrderTrackingPage',
-      label: t.orders?.title || 'أحدث الطلبات',
-      icon: ShoppingBag,
+      label: t.orders?.title || 'الطلبات',
+      icon: ShoppingCart,
+      iconColor: 'text-emerald-500',
+      bgColor: 'bg-emerald-500/10',
     },
     {
-      path: '/Dashboard/profit/profit-dropshiper',
-      label: t.profit?.title || 'الربح',
-      icon: DollarSign,
-    },
-    {
-      path: '/Dashboard/settings',
-      label: t.settings?.title || 'الإعدادات',
-      icon: Settings,
+      path: '/Dashboard/ProductManagment',
+      label: 'المنتجات',
+      icon: Package,
+      iconColor: 'text-muted-foreground',
+      bgColor: 'bg-muted',
     },
   ];
 
@@ -40,11 +47,9 @@ export default function QuickActionsGrid() {
   };
 
   return (
-    <div className="grid grid-cols-4 gap-2.5">
+    <div className="grid grid-cols-4 gap-2 md:gap-3">
       {actions.map((action, i) => {
         const Icon = action.icon;
-
-        const isPrimary = action.primary;
 
         return (
           <motion.button
@@ -55,29 +60,15 @@ export default function QuickActionsGrid() {
             whileTap={{ scale: 0.95 }}
             whileHover={{ y: -2 }}
             onClick={() => router.push(getPath(action.path))}
-            className={`flex cursor-pointer flex-col items-center gap-2 rounded-xl border p-3 transition-all duration-200 ${
-              isPrimary
-                ? 'bg-card text-primary-foreground border-primary/10 shadow-sm'
-                : 'bg-card border-border hover:bg-muted/50 border-primary/10'
-            } `}
+            className="border-border bg-card hover:bg-muted/50 flex cursor-pointer flex-col items-center gap-2 rounded-2xl border p-2 transition-all duration-200 md:gap-3 md:p-3"
           >
             <div
-              className={`flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-200 ${
-                isPrimary ? 'bg-primary/10' : 'bg-muted'
-              } `}
+              className={`flex h-11 w-11 items-center justify-center rounded-2xl transition-all duration-200 md:h-12 md:w-12 ${action.bgColor}`}
             >
-              <Icon
-                className={`h-5 w-5 ${
-                  isPrimary ? 'text-primary' : 'text-muted-foreground'
-                }`}
-              />
+              <Icon className={`h-5 w-5 md:h-6 md:w-6 ${action.iconColor}`} />
             </div>
 
-            <span
-              className={`text-center text-[11px] leading-tight font-semibold ${
-                isPrimary ? 'text-muted-foreground' : 'text-foreground'
-              }`}
-            >
+            <span className="text-foreground text-center text-[10px] font-bold md:text-xs">
               {action.label}
             </span>
           </motion.button>

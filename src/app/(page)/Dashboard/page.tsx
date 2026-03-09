@@ -97,11 +97,12 @@ export default function Dashboard() {
       value: `${data.productCount}`,
       icon: <Package />,
       href: '/Dashboard/ProductManagment',
+      change: 1.1,
     },
     {
-      title: t.home?.visitors || 'الزيارات',
+      title: t.home?.visitors || 'الزوار',
       value: `${visited?.count ?? 0}`,
-      icon: <Users />,
+      icon: <Users className="h-4 w-4" />,
     },
 
     {
@@ -109,6 +110,7 @@ export default function Dashboard() {
       value: pendingData?.length ?? 0,
       icon: <ShoppingBag />,
       href: '/Dashboard/OrderTrackingPage',
+      change: 8.3,
     },
     {
       title: t.home.revenue,
@@ -149,11 +151,8 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      {/* ─── Mobile Layout ─── */}
       <section dir="rtl" className="min-h-screen md:hidden">
         <main className="flex-1 space-y-4 px-1 py-2 pb-10">
-          {/* Start Tour Button — mobile */}
-
           <div id="mobile-revenue-card">
             <RevenueHeroCard />
           </div>

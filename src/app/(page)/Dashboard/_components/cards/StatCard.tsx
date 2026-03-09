@@ -12,7 +12,14 @@ export interface StatCardProps {
   color?: string;
 }
 
-export default function StatCard({ title, value, icon, change, href, color = 'text-muted-foreground' }: StatCardProps) {
+export default function StatCard({
+  title,
+  value,
+  icon,
+  change,
+  href,
+  color = 'text-muted-foreground',
+}: StatCardProps) {
   const card = (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
@@ -20,34 +27,38 @@ export default function StatCard({ title, value, icon, change, href, color = 'te
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
       dir="rtl"
-      className="bg-card border border-border rounded-xl p-3.5 transition-all hover:shadow-sm"
+      className="bg-card border-border rounded-xl border p-3.5 transition-all hover:shadow-sm"
     >
-      <div className="flex items-center justify-between mb-1.5">
-        <div className={`flex items-center justify-center [&>svg]:h-4 [&>svg]:w-4 md:[&>svg]:h-6 md:[&>svg]:w-6 md:w-9 md:h-9 md:rounded-lg md:bg-primary/15 md:p-2 md:text-primary ${color}`}>
+      <div className="mb-3 flex min-h-6 items-center justify-between md:mb-1.5 md:min-h-0">
+        <div
+          className={`md:bg-primary/15 md:text-primary flex items-center justify-center md:h-9 md:w-9 md:rounded-lg md:p-2 [&>svg]:h-5 [&>svg]:w-5 md:[&>svg]:h-6 md:[&>svg]:w-6 ${color}`}
+        >
           {icon}
         </div>
         {change !== undefined && (
           <span
-            className={`flex items-center gap-0.5 text-[10px] font-medium ${
-              change >= 0 ? 'text-success' : 'text-destructive'
+            className={`flex items-center gap-0.5 text-[11px] font-bold ${
+              change >= 0 ? 'text-emerald-500' : 'text-red-500'
             }`}
           >
             {change >= 0 ? (
-              <TrendingUp className="h-2.5 w-2.5" />
+              <TrendingUp className="h-3 w-3" />
             ) : (
-              <TrendingDown className="h-2.5 w-2.5" />
+              <TrendingDown className="h-3 w-3" />
             )}
             {Math.abs(change)}%
           </span>
         )}
       </div>
 
-      <span className="text-lg font-bold text-foreground block">
-        {typeof value === 'number' ? value : value}
-      </span>
-      <span className="text-[10px] text-muted-foreground block mt-0.5">
-        {title}
-      </span>
+      <div className="flex flex-col items-start md:block">
+        <span className="text-foreground block text-[20px] font-bold md:text-lg">
+          {typeof value === 'number' ? value : value}
+        </span>
+        <span className="text-muted-foreground mt-1 block text-start text-[12px] md:mt-0.5 md:text-[10px]">
+          {title}
+        </span>
+      </div>
     </motion.div>
   );
 

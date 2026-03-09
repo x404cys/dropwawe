@@ -51,7 +51,7 @@ export default function ThemeSection() {
       name: t.store?.modernTheme || 'عصري',
       description: t.store?.modernThemeDesc || 'تصميم عصري وجذاب مناسب للمتاجر الحديثة والأنيقة',
       category: 'مميز',
-      colors: ['#1A1A2E', '#E2B857', '#FFFFFF'],
+      colors: ['#f25933', '#0a0a0a', '#FFFFFF'],
       features: ['أنيميشن سلس', 'عرض المنتج بالكامل', 'أقسام حيوية'],
       popular: true,
       allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],

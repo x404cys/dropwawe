@@ -56,7 +56,7 @@ export function CustomersTab({ customers }: CustomersTabProps) {
           value={customerSearch}
           onChange={e => setCustomerSearch(e.target.value)}
           placeholder={t.customers?.searchPlaceholder || 'ابحث عن عميل...'}
-          className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-xl border px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:outline-none"
+          className="border-border bg-card text-foreground font-light placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-xl border px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:outline-none"
         />
       </div>
 

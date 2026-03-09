@@ -63,7 +63,6 @@ export async function GET(req: Request) {
   }
 
   try {
-    // ── Run independent queries in parallel ──────────────────────────────────
     const [
       revenueAgg,
       pendingCount,
@@ -73,28 +72,22 @@ export async function GET(req: Request) {
       allOrders,
       allVisitors,
     ] = await Promise.all([
-      // 1. Total confirmed revenue
       prisma.order.aggregate({
         where: { storeId, status: 'CONFIRMED' },
         _sum: { total: true },
         _count: { _all: true },
       }),
 
-      // 2. Pending orders
       prisma.order.count({ where: { storeId, status: 'PENDING' } }),
 
-      // 3. All orders count
       prisma.order.count({ where: { storeId } }),
 
-      // 4. Products
       prisma.product.count({ where: { storeId } }),
 
-      // 5. Visitors (storeName = subLink)
       storeSubLink
         ? prisma.visitor.count({ where: { storeName: storeSubLink } })
         : Promise.resolve(0),
 
-      // 6. All orders with items for chart / customer / product breakdown
       prisma.order.findMany({
         where: { storeId },
         select: {
@@ -115,7 +108,6 @@ export async function GET(req: Request) {
         orderBy: { createdAt: 'desc' },
       }),
 
-      // 7. All visitors for this store (UA + referrer)
       storeSubLink
         ? prisma.visitor.findMany({
             where: { storeName: storeSubLink },
@@ -127,7 +119,6 @@ export async function GET(req: Request) {
     const totalRevenue = revenueAgg._sum.total ?? 0;
     const confirmedCount = revenueAgg._count._all;
 
-    // ── Customers ─────────────────────────────────────────────────────────────
     const customerMap: Record<
       string,
       { name: string; phone: string; orders: number; total: number; lastOrder: string }
@@ -175,22 +166,27 @@ export async function GET(req: Request) {
     const now = new Date();
     const weeklyMap: Record<string, { orders: number; revenue: number }> = {};
     for (let i = 6; i >= 0; i--) {
-      const d = new Date(now);
-      d.setDate(now.getDate() - i);
-      weeklyMap[d.toISOString().split('T')[0]] = { orders: 0, revenue: 0 };
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dayKey = d.toLocaleDateString('en-CA'); // YYYY-MM-DD
+      weeklyMap[dayKey] = { orders: 0, revenue: 0 };
     }
 
     allOrders.forEach(order => {
-      const key = order.createdAt.toISOString().split('T')[0];
-      if (weeklyMap[key] !== undefined) {
+      const key = order.createdAt.toLocaleDateString('en-CA');
+      if (weeklyMap[key]) {
         weeklyMap[key].orders += 1;
         if (order.status === 'CONFIRMED') weeklyMap[key].revenue += order.total;
       }
     });
 
+    const chartData = Object.entries(weeklyMap).map(([day, info]) => ({
+      day,
+      value: info.revenue,
+    }));
+
     const revenueChart = Object.entries(weeklyMap).map(([day, v]) => ({ day, ...v }));
 
-    // ── Monthly Revenue (current month, by day) ───────────────────────────────
     const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const monthlyMap: Record<string, number> = {};
 
@@ -331,6 +327,7 @@ export async function GET(req: Request) {
       deviceData,
       deviceBrands,
       trafficSources,
+      chartData,
     });
   } catch (error) {
     console.error('[/api/dashboard/stats] error:', error);

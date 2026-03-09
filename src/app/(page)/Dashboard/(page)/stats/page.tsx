@@ -11,7 +11,7 @@ import { StatsSkeleton } from './_components/StatsSkeleton';
 import { PageHeader } from './_components/PageHeader';
 import { MainTabs } from './_components/MainTabs';
 import { CustomersTab } from './_components/CustomersTab';
-import { WithdrawDialog } from './_components/WithdrawDialog';
+import { StoreBalanceWithdraw } from './_components/WithdrawDialog';
 import { SummaryCards } from './_components/SummaryCards';
 import { RevenueChart } from './_components/RevenueChart';
 import { OrdersChart } from './_components/OrdersChart';
@@ -36,7 +36,7 @@ export default function StatsPage() {
 
   const { data: stats, isLoading } = useSWR<StatsResponse>(statsUrl, fetcher, {
     revalidateOnFocus: false,
-    refreshInterval: 60_000,   
+    refreshInterval: 60_000,
   });
 
   const availableBalance = stats?.availableBalance ?? 0;
@@ -66,7 +66,6 @@ export default function StatsPage() {
       return { day: label, value: item.revenue };
     });
   }, [stats?.revenueChart, lang]);
-
   if (isLoading) {
     return <StatsSkeleton />;
   }
@@ -98,16 +97,7 @@ export default function StatsPage() {
               ))}
             </div>
 
-            <div className="bg-card border-border flex items-center justify-between rounded-xl border p-4">
-              <div>
-                <p className="text-muted-foreground text-[11px]">الرصيد المتاح للسحب</p>
-                <p className="text-foreground text-lg font-bold">
-                  {availableBalance.toLocaleString('ar-IQ')}
-                  <span className="text-muted-foreground mr-1 text-[10px]">{t.currency}</span>
-                </p>
-              </div>
-              <WithdrawDialog availableBalance={availableBalance} />
-            </div>
+            <StoreBalanceWithdraw availableBalanceOrder={availableBalance} />
 
             <SummaryCards
               availableBalance={availableBalance}
