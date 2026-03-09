@@ -1,110 +1,5 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/app/lib/db';
-
-async function handlePayment(data: {
-  cartId: string;
-  tranRef: string;
-  respStatus: string;
-  respMessage: string;
-  customerEmail?: string;
-  signature?: string;
-  token?: string;
-}) {
-  const { cartId, tranRef, respStatus, respMessage, customerEmail, signature, token } = data;
-
-  if (!cartId) return null;
-
-  const paymentOrder = await prisma.paymentOrder.findUnique({
-    where: { cartId },
-    include: {
-      order: { include: { items: true } },
-    },
-  });
-
-  const traderPayment = await prisma.orderFromTraderPayment.findUnique({
-    where: { cartId },
-    include: {
-      order: { include: { items: true } },
-    },
-  });
-
-  if (!paymentOrder || !paymentOrder.order) return null;
-
-  if (paymentOrder.status === 'Success') {
-    return paymentOrder;
-  }
-
-  await prisma.paymentOrder.update({
-    where: { cartId },
-    data: {
-      tranRef,
-      respCode: respStatus,
-      respMessage,
-      customerEmail,
-      signature,
-      token,
-      status: respStatus === 'A' ? 'Success' : 'Failed',
-    },
-  });
-
-  if (traderPayment) {
-    await prisma.orderFromTraderPayment.update({
-      where: { cartId },
-      data: {
-        tranRef,
-        respCode: respStatus,
-        respMessage,
-        customerEmail,
-        signature,
-        token,
-        status: respStatus === 'A' ? 'Success' : 'Failed',
-      },
-    });
-  }
-
-  if (respStatus === 'A') {
-    await Promise.all(
-      paymentOrder.order.items.map(item =>
-        prisma.product.update({
-          where: { id: item.productId! },
-          data: {
-            quantity: { decrement: item.quantity },
-          },
-        })
-      )
-    );
-
-    await prisma.order.update({
-      where: { id: paymentOrder.order.id },
-      data: { status: 'PENDING' },
-    });
-    const totalEarned = paymentOrder.order.total;
-
-    await prisma.balance.upsert({
-      where: { storeId: paymentOrder.order.storeId! },
-      update: {
-        available: { increment: totalEarned },
-        pending: { increment: totalEarned },
-      },
-      create: {
-        storeId: paymentOrder.order.storeId!,
-        available: totalEarned,
-        pending: totalEarned,
-      },
-    });
-    await prisma.ledger.create({
-      data: {
-        storeId: paymentOrder.order.storeId!,
-        orderId: paymentOrder.order.id,
-        type: 'ORDER_PROFIT',
-        amount: totalEarned,
-        note: 'ربح من طلب مدفوع',
-      },
-    });
-  }
-
-  return paymentOrder;
-}
+import { orderPaymentService } from '@/server/services/order-payment.service';
 
 export async function GET(req: Request) {
   try {
@@ -118,7 +13,7 @@ export async function GET(req: Request) {
     const signature = params.get('signature') ?? '';
     const token = params.get('token') ?? '';
 
-    await handlePayment({
+    await orderPaymentService.handlePaymentCallback({
       cartId,
       tranRef,
       respStatus,
@@ -153,7 +48,7 @@ export async function POST(req: Request) {
 
     const cartId = data.cartId || data.cart_id || '';
 
-    await handlePayment({
+    await orderPaymentService.handlePaymentCallback({
       cartId,
       tranRef: data.tranRef ?? '',
       respStatus: data.respStatus ?? '',

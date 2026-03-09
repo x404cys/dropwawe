@@ -1,13 +1,9 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
-import { planRoleMap } from '@/app/lib/planRoleMap';
+import { subscriptionPaymentService } from '@/server/services/subscription-payment.service';
 
 interface PatchBody {
-  tranRef?: string;
-  respCode?: string;
-  respMessage?: string;
   cartId: string;
 }
 
@@ -25,68 +21,21 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: 'cartId is required' }, { status: 400 });
     }
 
-    const checkPayment = await prisma.payment.findUnique({ where: { cartId, isActive: false } });
-    if (!checkPayment) {
-      return NextResponse.json(
-        { error: `Payment not found for cartId: ${cartId}` },
-        { status: 404 }
-      );
+    const updatedSubscription = await subscriptionPaymentService.updateSubscriptionStatus(
+      cartId,
+      session.user.id
+    );
+
+    return NextResponse.json({ success: true, subscription: updatedSubscription });
+  } catch (error: any) {
+    if (error.message.includes('Payment not found for cartId')) {
+      return NextResponse.json({ error: error.message }, { status: 404 });
+    }
+    if (error.message === 'Subscription not found for user' || error.message === 'Plan not found') {
+      return NextResponse.json({ error: error.message }, { status: 404 });
     }
 
-    const subscription = await prisma.userSubscription.findUnique({
-      where: { userId: session.user.id },
-      include: {
-        plan: true,
-      },
-    });
-    if (!subscription) {
-      return NextResponse.json({ error: 'Subscription not found for user' }, { status: 404 });
-    }
-    const updated = await prisma.userSubscription.update({
-      where: { id: subscription.id },
-      data: { isActive: true },
-    });
-    const plan = await prisma.subscriptionPlan.findUnique({
-      where: { id: subscription.planId },
-    });
-    if (!plan) {
-      return NextResponse.json({ error: 'Plan not found' }, { status: 404 });
-    }
-    const role = planRoleMap[plan?.type];
-    if (role) {
-      await prisma.user.update({
-        where: { id: session.user.id },
-        data: { role: role },
-      });
-    }
-    await prisma.subscriptionHistory.updateMany({
-      where: {
-        userId: session.user.id,
-        paymentId: checkPayment.id,
-        status: 'PENDING',
-      },
-      data: {
-        status: 'ACTIVE',
-      },
-    });
-    await prisma.payment.update({
-      where: { cartId },
-      data: {
-        isActive: true,
-      },
-    });
-   
-    await prisma.notification.create({
-      data: {
-        userId: session.user.id,
-        message: `تم الاشتراك في الباقة ${subscription.plan.name + '-' + subscription.plan.price + '-' + subscription.plan.type} `,
-        type: 'Sub',
-      },
-    });
-    return NextResponse.json({ success: true, subscription: updated });
-  } catch (error) {
     console.error('Unexpected PATCH error:', error);
     return NextResponse.json({ error: 'Unexpected server error' }, { status: 500 });
   }
 }
-//
