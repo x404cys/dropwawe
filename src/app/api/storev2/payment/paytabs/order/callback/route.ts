@@ -81,20 +81,20 @@ async function handlePayment(data: {
     const totalEarned = paymentOrder.order.total;
 
     await prisma.balance.upsert({
-      where: { userId: paymentOrder.order.userId! },
+      where: { storeId: paymentOrder.order.storeId! },
       update: {
         available: { increment: totalEarned },
         pending: { increment: totalEarned },
       },
       create: {
-        userId: paymentOrder.order.userId!,
+        storeId: paymentOrder.order.storeId!,
         available: totalEarned,
         pending: totalEarned,
       },
     });
     await prisma.ledger.create({
       data: {
-        userId: paymentOrder.order.userId!,
+        storeId: paymentOrder.order.storeId!,
         orderId: paymentOrder.order.id,
         type: 'ORDER_PROFIT',
         amount: totalEarned,

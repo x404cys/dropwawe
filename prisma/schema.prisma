@@ -43,9 +43,7 @@ model User {
   invitesSent Invite[] @relation("InviteOwner")
   couponUsages CouponUsage[]
   ProfitWithdrawal ProfitWithdrawal[]
-  balances    Balance[]
-  ledgers     Ledger[]
-  withdrawals Withdrawal[]
+ 
 
 }
 model Supplier {
@@ -112,6 +110,9 @@ model Store {
 
 
   coupons Coupon[] 
+  balances    Balance[]
+  ledgers     Ledger[]
+  withdrawals Withdrawal[]
 }                                   
 model StoreUser {
   id        String   @id @default(cuid())
@@ -613,8 +614,8 @@ model CouponUsage {
 model Balance {
   id        String   @id @default(cuid())
 
-  userId    String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId   String   @unique
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   available Float    @default(0) 
   pending   Float    @default(0) 
@@ -625,8 +626,8 @@ model Balance {
 model Ledger {
   id        String   @id @default(cuid())
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId    String
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   orderId   String?
   order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
@@ -652,8 +653,8 @@ enum LedgerType {
 model Withdrawal {
   id        String   @id @default(cuid())
 
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  storeId    String
+  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   amount    Float
 
