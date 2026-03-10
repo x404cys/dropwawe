@@ -67,7 +67,7 @@ export const subscriptionRepository = {
   processSuccessfulSubscriptionUpdate: async (
     subscriptionId: string,
     userId: string,
-    role: 'GUEST' | 'SUPPLIER' | 'DROPSHIPPER' | 'TRADER' | null | undefined,
+    role: 'GUEST' | 'SUPPLIER' | 'DROPSHIPPER' | 'TRADER' | "A" | undefined,
     paymentId: string,
     cartId: string,
     notificationMessage: string
