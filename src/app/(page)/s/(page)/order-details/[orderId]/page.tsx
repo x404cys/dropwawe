@@ -147,9 +147,6 @@ export default function OrderDetailsPage({ params }: Props) {
                   <p className="text-sm text-black/60">الكمية: {item.quantity}</p>
                 </div>
                 <div className="text-right">
-                  <p className="font-bold text-black">
-                    {formatIQD(item.price * item.quantity!)} د.ع
-                  </p>
                   <p className="text-xs text-black/50">{item.price} للوحدة</p>
                 </div>
               </div>
