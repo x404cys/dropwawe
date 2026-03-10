@@ -5,6 +5,7 @@ import { Trash2, Package, Edit2, AlertTriangle } from 'lucide-react';
 import type { Product } from '@/types/Products';
 import Link from 'next/link';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { useRouter } from 'next/router';
 
 interface ProductCardProps {
   product: Product;
@@ -14,6 +15,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product, onEdit, onDelete }: ProductCardProps) {
   const { t } = useLanguage();
+  const router = useRouter();
   const finalPrice =
     product.discount && product.discount > 0
       ? product.price - (product.price * product.discount) / 100
@@ -72,7 +74,7 @@ export default function ProductCard({ product, onEdit, onDelete }: ProductCardPr
             <button
               onClick={e => {
                 e.stopPropagation();
-                onEdit(product);
+                router.push(`/Dashboard/edit/${product.id}`);
               }}
               className="text-muted-foreground rounded p-1 transition-colors hover:text-[#04BAF6]"
               aria-label={t.edit || 'تعديل'}

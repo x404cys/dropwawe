@@ -7,6 +7,7 @@ import { Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import type { Product } from '@/types/Products';
 import Link from 'next/link';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { useRouter } from 'next/router';
 
 interface Props {
   product: Product;
@@ -16,6 +17,7 @@ interface Props {
 
 export default function ProductRow({ product, onEdit, onDelete }: Props) {
   const { t } = useLanguage();
+  const router = useRouter();
   const finalPrice =
     product.discount != null && product.discount > 0
       ? product.price - (product.price * product.discount) / 100
@@ -143,7 +145,7 @@ export default function ProductRow({ product, onEdit, onDelete }: Props) {
           <Button
             size="sm"
             variant="ghost"
-            onClick={() => onEdit(product)}
+            onClick={() => router.push(`/Dashboard/edit/${product.id}`)}
             className="text-muted-foreground h-8 w-8 p-0 transition-colors hover:bg-[#04BAF6]/10 hover:text-[#04BAF6]"
             aria-label={t.inventory?.editProduct || 'تعديل'}
           >
