@@ -1,7 +1,7 @@
 'use client';
 import { StoreProps } from '@/types/store/StoreType';
 import { useProducts } from '../../context/products-context';
-import ProductsListTheme2 from './_components/ProductsList/Products-List';
+import ProductsListTheme2 from '../../_components/shared/ProductsList/Products-List';
 
 export default function HomeView() {
   const { products, filteredProductsByCategory, store } = useProducts();

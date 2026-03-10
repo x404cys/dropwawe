@@ -41,14 +41,7 @@ export const orderPaymentService = {
         });
         continue;
       }
-      if (product.price < item.price) {
-        errors.push({
-          productId: product.id,
-          type: 'PRICE_MISMATCH',
-          message: `Price mismatch for product: ${product.name}`,
-        });
-      }
-      calculatedTotal += item.price * item.quantity;
+      calculatedTotal += product.price * item.quantity;
     }
 
     if (errors.length > 0) {
@@ -84,7 +77,15 @@ export const orderPaymentService = {
             supplierId: product.supplierId,
           };
         })
-        .filter(Boolean) as any[];
+        .filter(i => i !== null) as Array<{
+        productId: string;
+        quantity: number;
+        price: number;
+        wholesalePrice: number;
+        traderProfit: number;
+        supplierProfit: number;
+        supplierId: string;
+      }>;
 
       traderOrder = await orderPaymentRepository.createTraderOrder(
         userId,

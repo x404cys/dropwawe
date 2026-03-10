@@ -37,15 +37,15 @@ type ProfitWithdrawal = {
   };
 };
 
-const fetcher = async (url: string) => {
-  const res = await fetch(url);
-  if (!res.ok) throw new Error();
-  return res.json();
+import { getTraderProfits, approveTraderProfit } from '@/server/actions/admin-profit.actions';
+
+const fetcher = async () => {
+  return await getTraderProfits();
 };
 
 export default function WithdrawalsPage() {
   const { data, isLoading, mutate, error } = useSWR<ProfitWithdrawal[]>(
-    '/api/admin/trader-profit',
+    'trader-profits-list',
     fetcher
   );
 
@@ -64,13 +64,7 @@ export default function WithdrawalsPage() {
 
     try {
       setLoadingId(selected.id);
-
-      const res = await fetch(`/api/admin/trader-profit/approve/${selected.id}`, {
-        method: 'PATCH',
-      });
-
-      if (!res.ok) throw new Error();
-
+      await approveTraderProfit(selected.id);
       await mutate();
       setSelected(null);
     } catch {

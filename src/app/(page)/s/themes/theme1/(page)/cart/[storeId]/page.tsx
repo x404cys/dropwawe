@@ -29,7 +29,7 @@ import { randomUUID } from 'crypto';
 import OrderSubmitButton from '../../../_lib/Checkout/OrderSubmitButton';
 import OrderSubmitButtonPayment from '../../../_lib/Checkout/OrderSubmitPayment/OrderSubmitPayment';
 import { useProducts } from '@/app/(page)/s/context/products-context';
-import CouponInputTheme1 from '../../../_components/CouponsInput';
+import CouponInputTheme1 from '../../../../../_components/shared/CouponsInput';
 
 export default function CartPage() {
   const {

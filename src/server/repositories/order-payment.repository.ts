@@ -49,7 +49,14 @@ export const orderPaymentRepository = {
     fullName: string,
     location: string,
     phone: string,
-    items: any[]
+    items: Array<{
+      productId: string;
+      quantity: number;
+      price: number;
+      wholesalePrice: number;
+      traderProfit: number;
+      supplierProfit: number;
+    }>
   ) => {
     return prisma.orderFromTrader.create({
       data: {
@@ -150,25 +157,25 @@ export const orderPaymentRepository = {
     totalEarned: number,
     items: { productId: string | null; quantity: number }[]
   ) => {
-    await Promise.all([
-      // Decrement product quantities
-      ...items
-        .filter(i => i.productId)
-        .map(item =>
-          prisma.product.update({
-            where: { id: item.productId! },
+    return prisma.$transaction(async tx => {
+      // Decrement product quantities sequentially in transaction
+      for (const item of items) {
+        if (item.productId) {
+          await tx.product.update({
+            where: { id: item.productId },
             data: { quantity: { decrement: item.quantity } },
-          })
-        ),
+          });
+        }
+      }
 
       // Update Order Status
-      prisma.order.update({
+      await tx.order.update({
         where: { id: orderId },
         data: { status: 'PENDING' },
-      }),
+      });
 
       // Update store balance
-      prisma.balance.upsert({
+      await tx.balance.upsert({
         where: { storeId },
         update: {
           available: { increment: totalEarned },
@@ -179,10 +186,10 @@ export const orderPaymentRepository = {
           available: totalEarned,
           pending: totalEarned,
         },
-      }),
+      });
 
       // Create Ledger entry
-      prisma.ledger.create({
+      await tx.ledger.create({
         data: {
           storeId,
           orderId,
@@ -190,8 +197,8 @@ export const orderPaymentRepository = {
           amount: totalEarned,
           note: 'ربح من طلب مدفوع',
         },
-      }),
-    ]);
+      });
+    });
   },
 
   getOrderByCartId: async (cartId: string) => {

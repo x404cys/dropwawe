@@ -189,22 +189,28 @@ export default function Dashboard() {
               <div className="divide-border divide-y">
                 {data?.lastProducts?.map(p => (
                   <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                    <div className="bg-muted sw-10 h-10 flex-shrink-0 overflow-hidden rounded-lg">
-                      <img
-                        src={p.images?.[0]?.url || ''}
+                    <div className="bg-muted h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg">
+                      <Image
+                        src={`${(p.images?.[0]?.url as string) || ''}`}
                         alt={p.name}
+                        width={25}
+                        height={25}
                         className="h-full w-full object-cover"
                       />
                     </div>
+
                     <div className="min-w-0 flex-1">
-                      <p className="text-foreground truncate text-sm font-medium">{p.name}</p>
-                      <p className="text-muted-foreground text-[11px]">{p.category}</p>
+                      <p className="text-foreground truncate text-sm font-medium" title={p.name}>
+                        {p.name.split(' ').slice(0, 2).join(' ')}
+                      </p>
+                      <p className="text-muted-foreground truncate text-[11px]" title={p.category}>
+                        {p.category.split(' ')[0]}
+                      </p>
                     </div>
+
                     <span className="text-foreground text-sm font-bold whitespace-nowrap">
-                      {(p.discount
-                        ? p.price - (p.price * p.discount) / 100
-                        : p.price
-                      ).toLocaleString('ar-IQ')}
+                      {formatIQD(p.discount ? p.price - (p.price * p.discount) / 100 : p.price)}
+
                       <span className="text-muted-foreground mr-0.5 text-[9px]">{t.currency}</span>
                     </span>
                   </div>
@@ -288,27 +294,36 @@ export default function Dashboard() {
                     <h2 className="text-foreground text-sm font-semibold">
                       {t.home.recentProducts}
                     </h2>
-                    <button
-                      onClick={() => router.push('/Dashboard/ProductManagment')}
-                      className="text-primary cursor-pointer text-xs font-medium"
-                    >
-                      {t.home.viewAll}
-                    </button>
+                    <button className="text-primary text-xs font-medium">{t.home.viewAll}</button>
                   </div>
                   <div className="divide-border divide-y">
                     {data?.lastProducts?.map(p => (
                       <div key={p.id} className="flex items-center gap-3 px-4 py-3">
-                        <div className="bg-muted sw-10 h-10 flex-shrink-0 overflow-hidden rounded-lg">
+                        <div className="bg-muted h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg">
                           <Image
-                            src={p.images?.[0]?.url || ''}
+                            src={`${(p.images?.[0]?.url as string) || ''}`}
                             alt={p.name}
+                            width={25}
+                            height={25}
                             className="h-full w-full object-cover"
                           />
                         </div>
+
                         <div className="min-w-0 flex-1">
-                          <p className="text-foreground truncate text-sm font-medium">{p.name}</p>
-                          <p className="text-muted-foreground text-[11px]">{p.category}</p>
+                          <p
+                            className="text-foreground truncate text-sm font-medium"
+                            title={p.name}
+                          >
+                            {p.name.split(' ').slice(0, 2).join(' ')}
+                          </p>
+                          <p
+                            className="text-muted-foreground truncate text-[11px]"
+                            title={p.category}
+                          >
+                            {p.category.split(' ')[0]}
+                          </p>
                         </div>
+
                         <span className="text-foreground text-sm font-bold whitespace-nowrap">
                           {formatIQD(p.discount ? p.price - (p.price * p.discount) / 100 : p.price)}
                           <span className="text-muted-foreground mr-0.5 text-[9px]">

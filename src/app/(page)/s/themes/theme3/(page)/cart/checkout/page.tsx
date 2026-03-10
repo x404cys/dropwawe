@@ -4,9 +4,9 @@ export const dynamic = 'force-dynamic';
 
 import { useCart } from '@/app/lib/context/CartContext';
 
-import CheckoutItem from './_components/CheckoutItem';
-import OrderSummary from './_components/OrderSummary';
-import OrderSubmi from './_components/OrderSubmit';
+import CheckoutItem from '../../../../../_components/shared/checkout/theme3/CheckoutItem';
+import OrderSummary from '../../../../../_components/shared/checkout/theme3/OrderSummary';
+import OrderSubmi from '../../../../../_components/shared/checkout/theme3/OrderSubmit';
 import { useProducts } from '@/app/(page)/s/context/products-context';
 
 const CheckoutPage = () => {

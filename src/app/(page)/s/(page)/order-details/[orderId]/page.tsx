@@ -148,7 +148,7 @@ export default function OrderDetailsPage({ params }: Props) {
                 </div>
                 <div className="text-right">
                   <p className="font-bold text-black">
-                    {/* {formatIQD(item.price * item.quantity)} د.ع */}
+                    {formatIQD(item.price * item.quantity!)} د.ع
                   </p>
                   <p className="text-xs text-black/50">{item.price} للوحدة</p>
                 </div>

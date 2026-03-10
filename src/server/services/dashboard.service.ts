@@ -3,8 +3,11 @@ import {
   getOrderCounts,
   getProductCount,
   getVisitorsCount,
-  getOrders,
-  getVisitors,
+  getCustomerStatsAgg,
+  getTopProductsAgg,
+  getGovernorateStatsAgg,
+  getRecentOrdersAgg,
+  getVisitorDemographicsAgg,
 } from '../repositories/dashboard.repository';
 import { detectDevice, detectOS } from '../utils/device-detection';
 import { classifyReferrer } from '../utils/referrer-classifier';
@@ -20,72 +23,61 @@ export async function getDashboardStats(
     { pendingCount, totalOrderCount },
     productCount,
     visitCount,
-    allOrders,
-    allVisitors,
+    customerStatsRows,
+    topProductsRows,
+    govStats,
+    recentOrders,
+    visitorDemo,
   ] = await Promise.all([
     getRevenueAggregation(storeId),
     getOrderCounts(storeId),
     getProductCount(storeId),
     getVisitorsCount(storeSubLink),
-    getOrders(storeId),
-    getVisitors(storeSubLink),
+    getCustomerStatsAgg(storeId),
+    getTopProductsAgg(storeId),
+    getGovernorateStatsAgg(storeId),
+    getRecentOrdersAgg(storeId),
+    getVisitorDemographicsAgg(storeSubLink),
   ]);
 
   const totalRevenue = revenueAgg._sum.total ?? 0;
   const confirmedCount = revenueAgg._count._all;
 
-  const customerMap: Record<
-    string,
-    { name: string; phone: string; orders: number; total: number; lastOrder: string }
-  > = {};
+  // Using raw SQL outputs saves megabytes of RAM over 100K order iterations
+  const customers = customerStatsRows.map(
+    (c: {
+      name: string | null;
+      phone: string | null;
+      orders: number;
+      total: number;
+      lastOrder: string | null;
+    }) => ({
+      name: c.name || '-',
+      phone: c.phone || '-',
+      orders: c.orders || 0,
+      total: c.total || 0,
+      lastOrder: c.lastOrder || new Date().toISOString(),
+    })
+  );
 
-  allOrders.forEach(order => {
-    const key = order.phone?.trim() || order.id;
-    if (!customerMap[key]) {
-      customerMap[key] = {
-        name: order.fullName ?? '-',
-        phone: order.phone ?? '-',
-        orders: 0,
-        total: 0,
-        lastOrder: order.createdAt.toISOString(),
-      };
-    }
-    customerMap[key].orders += 1;
-    if (order.status === 'CONFIRMED') {
-      customerMap[key].total += order.total;
-    }
-  });
-
-  const customers = Object.values(customerMap);
-
-  const productSales: Record<string, { name: string; sales: number; revenue: number }> = {};
-
-  allOrders.forEach(order => {
-    if (order.status !== 'CONFIRMED') return;
-    const perItem = order.items.length > 0 ? order.total / order.items.length : 0;
-    order.items.forEach(item => {
-      const name = item.product?.name ?? 'منتج';
-      if (!productSales[name]) productSales[name] = { name, sales: 0, revenue: 0 };
-      productSales[name].sales += item.quantity;
-      productSales[name].revenue += perItem * item.quantity;
-    });
-  });
-
-  const topProducts = Object.values(productSales)
-    .sort((a, b) => b.sales - a.sales)
-    .slice(0, 5)
-    .map(p => ({ name: p.name, sales: p.sales, revenue: Math.round(p.revenue) }));
+  const topProducts = topProductsRows.map(
+    (p: { name: string | null; sales: number; revenue: number }) => ({
+      name: p.name || 'منتج',
+      sales: p.sales || 0,
+      revenue: Math.round(p.revenue || 0),
+    })
+  );
 
   const now = new Date();
   const weeklyMap: Record<string, { orders: number; revenue: number }> = {};
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const dayKey = d.toLocaleDateString('en-CA');
-    weeklyMap[dayKey] = { orders: 0, revenue: 0 };
+    weeklyMap[d.toLocaleDateString('en-CA')] = { orders: 0, revenue: 0 };
   }
 
-  allOrders.forEach(order => {
+  // Iterate over constrained date boundaries directly
+  recentOrders.forEach((order: { createdAt: Date; status: string; total: number }) => {
     const key = order.createdAt.toLocaleDateString('en-CA');
     if (weeklyMap[key]) {
       weeklyMap[key].orders += 1;
@@ -97,13 +89,12 @@ export async function getDashboardStats(
     day,
     value: info.revenue,
   }));
-
   const revenueChart = Object.entries(weeklyMap).map(([day, v]) => ({ day, ...v }));
 
   const firstOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
   const monthlyMap: Record<string, number> = {};
 
-  allOrders.forEach(order => {
+  recentOrders.forEach((order: { createdAt: Date; status: string; total: number }) => {
     if (order.status !== 'CONFIRMED' || order.createdAt < firstOfMonth) return;
     const key = order.createdAt.toISOString().split('T')[0];
     monthlyMap[key] = (monthlyMap[key] || 0) + order.total;
@@ -113,34 +104,39 @@ export async function getDashboardStats(
     .sort(([a], [b]) => a.localeCompare(b))
     .map(([day, revenue]) => ({ day, revenue }));
 
-  const govMap: Record<string, number> = {};
-  allOrders.forEach(order => {
-    const loc = (order.location ?? 'غير محدد').trim() || 'غير محدد';
-    govMap[loc] = (govMap[loc] || 0) + 1;
-  });
-
-  const govTotal = allOrders.length;
-  const governorateData = Object.entries(govMap)
-    .sort(([, a], [, b]) => b - a)
-    .slice(0, 10)
-    .map(([name, orders]) => ({
-      name,
-      orders,
-      percentage: toPercent(orders, govTotal),
-    }));
+  // Governorate Aggregation (DB level mapping)
+  const governorateData = govStats.data.map(
+    (g: { location: string | null; _count: { id: number } }) => ({
+      name: g.location?.trim() || 'غير محدد',
+      orders: g._count.id,
+      percentage: toPercent(g._count.id, govStats.total),
+    })
+  );
 
   const deviceCounts: Record<string, number> = { Mobile: 0, Tablet: 0, Desktop: 0 };
   const osCounts: Record<string, number> = {};
+  const sourceCounts: Record<string, number> = {
+    مباشر: 0,
+    'محركات بحث': 0,
+    'سوشيال ميديا': 0,
+    فيسبوك: 0,
+    انستغرام: 0,
+    إحالة: 0,
+  };
 
-  allVisitors.forEach(v => {
+  const allVisitors = visitorDemo.data || [];
+  const totalVisitors = allVisitors.length;
+
+  allVisitors.forEach((v: { userAgent: string | null; referrer: string | null }) => {
     const ua = v.userAgent ?? '';
     const device = detectDevice(ua);
     const os = detectOS(ua);
+    const label = classifyReferrer(v.referrer);
+
     deviceCounts[device] = (deviceCounts[device] || 0) + 1;
     osCounts[os] = (osCounts[os] || 0) + 1;
+    sourceCounts[label] = (sourceCounts[label] || 0) + 1;
   });
-
-  const totalVisitors = allVisitors.length;
 
   const DEVICE_COLORS: Record<string, string> = {
     Mobile: 'hsl(191,80%,42%)',
@@ -184,20 +180,6 @@ export async function getDashboardStats(
       color: OS_COLORS[name] ?? 'hsl(0,0%,60%)',
     }));
 
-  const sourceCounts: Record<string, number> = {
-    مباشر: 0,
-    'محركات بحث': 0,
-    'سوشيال ميديا': 0,
-    فيسبوك: 0,
-    انستغرام: 0,
-    إحالة: 0,
-  };
-
-  allVisitors.forEach(v => {
-    const label = classifyReferrer(v.referrer);
-    sourceCounts[label] = (sourceCounts[label] || 0) + 1;
-  });
-
   const SOURCE_META: Record<string, { color: string; emoji: string }> = {
     مباشر: { color: 'hsl(191,80%,42%)', emoji: '🔗' },
     'سوشيال ميديا': { color: 'hsl(280,70%,60%)', emoji: '📱' },
@@ -224,7 +206,7 @@ export async function getDashboardStats(
     confirmedCount,
     pendingCount,
     productCount,
-    visitCount,
+    visitCount, // We keep the full visit count using the DB accurate getVisitorsCount
     customers,
     topProducts,
     revenueChart,

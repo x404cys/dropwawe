@@ -1,6 +1,6 @@
 'use client';
 import { useProducts } from '../../context/products-context';
-import ProductsListTheme1 from './_components/ProductsList/ProductsList';
+import ProductsListTheme1 from '../../_components/shared/ProductsList/ProductsList';
 
 export default function HomeView() {
   return (

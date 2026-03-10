@@ -1,4 +1,7 @@
 import { prisma } from '@/app/lib/db';
+import { PayTabsCallbackData } from '../types/paytabs.types';
+
+import { Prisma } from '@prisma/client';
 
 export const subscriptionRepository = {
   getPaymentById: async (cartId: string) => {
@@ -26,7 +29,7 @@ export const subscriptionRepository = {
     return null;
   },
 
-  processSuccessfulOldSubscription: async (data: any, userId: string) => {
+  processSuccessfulOldSubscription: async (data: PayTabsCallbackData, userId: string) => {
     return prisma.$transaction([
       prisma.userSubscription.update({
         where: { userId },
@@ -36,7 +39,7 @@ export const subscriptionRepository = {
         where: { cartId: data.cartId },
         data: {
           tranRef: data.tranRef,
-          respCode: data.respCode,
+          respCode: data.respStatus,
           respMessage: data.respMessage,
           customerEmail: data.customerEmail,
           signature: data.signature,
@@ -47,12 +50,14 @@ export const subscriptionRepository = {
     ]);
   },
 
-  updateFailedPayment: async (data: any) => {
+  updateFailedPayment: async (
+    data: Pick<PayTabsCallbackData, 'cartId' | 'tranRef' | 'respStatus' | 'respMessage'>
+  ) => {
     return prisma.payment.update({
       where: { cartId: data.cartId },
       data: {
         tranRef: data.tranRef,
-        respCode: data.respCode,
+        respCode: data.respStatus,
         respMessage: data.respMessage,
         status: 'FAILED',
       },
@@ -62,47 +67,49 @@ export const subscriptionRepository = {
   processSuccessfulSubscriptionUpdate: async (
     subscriptionId: string,
     userId: string,
-    role: any,
+    role: 'GUEST' | 'SUPPLIER' | 'DROPSHIPPER' | 'TRADER' | null | undefined,
     paymentId: string,
     cartId: string,
     notificationMessage: string
   ) => {
-    await prisma.userSubscription.update({
-      where: { id: subscriptionId },
-      data: { isActive: true },
-    });
-
-    if (role) {
-      await prisma.user.update({
-        where: { id: userId },
-        data: { role },
+    return prisma.$transaction(async tx => {
+      await tx.userSubscription.update({
+        where: { id: subscriptionId },
+        data: { isActive: true },
       });
-    }
 
-    await prisma.subscriptionHistory.updateMany({
-      where: {
-        userId,
-        paymentId,
-        status: 'PENDING',
-      },
-      data: { status: 'ACTIVE' },
-    });
+      if (role) {
+        await tx.user.update({
+          where: { id: userId },
+          data: { role },
+        });
+      }
 
-    await prisma.payment.update({
-      where: { cartId },
-      data: { isActive: true },
-    });
+      await tx.subscriptionHistory.updateMany({
+        where: {
+          userId,
+          paymentId,
+          status: 'PENDING',
+        },
+        data: { status: 'ACTIVE' },
+      });
 
-    await prisma.notification.create({
-      data: {
-        userId,
-        message: notificationMessage,
-        type: 'Sub',
-      },
+      await tx.payment.update({
+        where: { cartId },
+        data: { isActive: true },
+      });
+
+      await tx.notification.create({
+        data: {
+          userId,
+          message: notificationMessage,
+          type: 'Sub',
+        },
+      });
     });
   },
 
-  createSubscriptionHistory: async (data: any) => {
+  createSubscriptionHistory: async (data: Prisma.SubscriptionHistoryUncheckedCreateInput) => {
     return prisma.subscriptionHistory.create({ data });
   },
 
