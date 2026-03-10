@@ -1,77 +1,123 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
 
-import React from 'react';
-import { IoAddSharp } from 'react-icons/io5';
+import React, { useState } from 'react';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { CollapsibleSection } from './CollapsibleSection';
+import { Label } from '@/components/ui/label';
 
-interface ColorsSectionProps {
+const EXAMPLE_COLORS = [
+  { name: 'أسود', hex: '#000000' },
+  { name: 'أبيض', hex: '#FFFFFF' },
+  { name: 'أزرق', hex: '#3B82F6' },
+  { name: 'أحمر', hex: '#EF4444' },
+];
+
+export interface ColorsSectionProps {
   colors: { name: string; hex: string; stock: number }[];
-  updateColor: (index: number, field: 'name' | 'hex' | 'stock', value: string | number) => void;
-  addColor: () => void;
-  removeColor: (index: number) => void;
-  isExpanded: boolean;
-  onToggle: () => void;
+  setColors: React.Dispatch<React.SetStateAction<{ name: string; hex: string; stock: number }[]>>;
+  isExpanded?: boolean;
+  onToggle?: () => void;
 }
 
-export function ColorsSection({
-  colors,
-  updateColor,
-  addColor,
-  removeColor,
-  isExpanded,
-  onToggle,
-}: ColorsSectionProps) {
+export function ColorsSection({ colors, setColors, isExpanded, onToggle }: ColorsSectionProps) {
   const { t } = useLanguage();
-  return (
-    <div className="mb-3 max-w-92 space-y-1 overflow-y-auto rounded-2xl md:max-w-full">
-      {colors.map((c, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-2xl p-3">
-          <Input
-            placeholder={t.inventory?.colorName || 'اسم اللون'}
-            value={c.name}
-            onChange={e => updateColor(i, 'name', e.target.value)}
-            className="flex-1 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-          />
-          <div className="relative">
-            <Input
-              type="color"
-              value={c.hex}
-              onChange={e => updateColor(i, 'hex', e.target.value)}
-              className="h-10 w-16 cursor-pointer rounded-2xl border-gray-300"
-            />
-          </div>
-          <Input
-            type="number"
-            placeholder={t.inventory.quantity}
-            value={c.stock === 0 ? '' : c.stock}
-            onChange={e => {
-              const val = e.target.value;
-              updateColor(i, 'stock', val === '' ? 0 : Number(val));
-            }}
-            className="w-28 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-          />
-          <Button
-            type="button"
-            className="rounded-2xl bg-red-100 text-red-500 hover:bg-red-200 cursor-pointer"
-            variant="destructive"
-            size="sm"
-            onClick={() => removeColor(i)}
-          > {t.delete} </Button>
-        </div>
-      ))}
 
-      <Button
-        type="button"
-        variant="outline"
-        className="w-full cursor-pointer gap-2 rounded-2xl border-dashed border-gray-400 hover:border-sky-500 hover:bg-sky-50 hover:text-sky-500"
-        onClick={addColor}
-      >
-        <IoAddSharp className="h-4 w-4" />
-        <span>{t.inventory?.addNewColor || 'إضافة لون جديد'}</span>
-      </Button>
+  const [customColor, setCustomColor] = useState('#000000');
+  const [customColorName, setCustomColorName] = useState('');
+  const [extraColors, setExtraColors] = useState<{ name: string; hex: string }[]>([]);
+
+  const selectedColorHexes = colors.map(c => c.hex);
+
+  // Combine predefined colors with any custom colors added during the session
+  const allColorsMap = new Map();
+  [...EXAMPLE_COLORS, ...extraColors].forEach(c => {
+    if (!allColorsMap.has(c.hex)) {
+      allColorsMap.set(c.hex, c);
+    }
+  });
+  const allColors = Array.from(allColorsMap.values());
+
+  const toggleColor = (colorHex: string, colorName: string) => {
+    if (selectedColorHexes.includes(colorHex)) {
+      setColors(colors.filter(c => c.hex !== colorHex));
+    } else {
+      setColors([...colors, { name: colorName, hex: colorHex, stock: 0 }]);
+    }
+  };
+
+  const addCustomColor = () => {
+    const n = customColorName.trim();
+    if (n && customColor) {
+      // Add to extra options available
+      setExtraColors(prev => {
+        if (!prev.find(c => c.hex === customColor)) {
+          return [...prev, { name: n, hex: customColor }];
+        }
+        return prev;
+      });
+      // Toggle it on if it isn't
+      if (!selectedColorHexes.includes(customColor)) {
+        setColors(prev => [...prev, { name: n, hex: customColor, stock: 0 }]);
+      }
+      setCustomColorName('');
+    }
+  };
+
+  return (
+    <div className="my-4 space-y-2">
+      <Label className="text-muted-foreground text-sm font-medium">
+        {t.inventory?.colorName || 'الألوان'}
+      </Label>
+      <div className="flex flex-wrap gap-2">
+        {allColors.map(color => (
+          <button
+            key={color.hex}
+            type="button"
+            onClick={() => toggleColor(color.hex, color.name)}
+            className={`flex items-center gap-2 rounded-md border px-3 py-1.5 text-sm transition-colors ${
+              selectedColorHexes.includes(color.hex)
+                ? 'border-primary ring-primary/30 ring-2'
+                : 'border-border hover:border-primary'
+            }`}
+          >
+            <span
+              className="border-border h-4 w-4 rounded-full border"
+              style={{ backgroundColor: color.hex }}
+            />
+            {color.name}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <input
+          type="color"
+          value={customColor}
+          onChange={e => setCustomColor(e.target.value)}
+          className="border-border h-9 w-9 cursor-pointer rounded border p-0"
+        />
+        <Input
+          value={customColorName}
+          onChange={e => setCustomColorName(e.target.value)}
+          placeholder={t.inventory?.colorName || 'اسم اللون...'}
+          className="max-w-[180px] flex-1"
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addCustomColor();
+            }
+          }}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={addCustomColor}
+          disabled={!customColorName.trim()}
+        >
+          {t.add || 'أضف'}
+        </Button>
+      </div>
     </div>
   );
 }

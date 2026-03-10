@@ -328,7 +328,7 @@ export default function ProductAddPage() {
   };
 
   return (
-    <div className="mb-20 pt-3 min-h-screen bg-background text-foreground" dir="rtl">
+    <div className="bg-background text-foreground mb-20 min-h-screen pt-3" dir="rtl">
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-2 lg:grid-cols-3">
           <div className="lg:col-span-2">
@@ -390,18 +390,14 @@ export default function ProductAddPage() {
               >
                 <SizesSection
                   sizes={sizes}
-                  updateSize={updateSize}
-                  addSize={addSize}
-                  removeSize={removeSize}
+                  setSizes={setSizes}
                   isExpanded={expandedSections.sizes}
                   onToggle={() => toggleSection('sizes')}
                 />
 
                 <ColorsSection
                   colors={colors}
-                  updateColor={updateColor}
-                  addColor={addColor}
-                  removeColor={removeColor}
+                  setColors={setColors}
                   isExpanded={expandedSections.colors}
                   onToggle={() => toggleSection('colors')}
                 />

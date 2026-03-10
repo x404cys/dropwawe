@@ -19,20 +19,22 @@ export function CollapsibleSection({
   children,
 }: CollapsibleSectionProps) {
   return (
-    <div className="mt-5 rounded-2xl border border-dashed border-gray-300">
+    <div className="text-muted-foreground hover:text-foreground w-full border-t mt-4   text-sm font-medium">
       <button
         type="button"
         onClick={onToggle}
-        className="flex w-full cursor-pointer items-center justify-between rounded-2xl border-border bg-muted px-4 py-2 text-right transition"
+        className="border-border  flex w-full cursor-pointer items-center justify-between rounded-2xl px-4 py-2 text-right transition"
       >
         <div>
-          <h3 className="text-sm text-muted-foreground">{title}</h3>
-          {subtitle && <p className="mt-0.5 text-xs font-light text-muted-foreground">{subtitle}</p>}
+          <h3 className="text-muted-foreground text-sm">{title}</h3>
+          {subtitle && (
+            <p className="text-muted-foreground mt-0.5 text-xs font-light">{subtitle}</p>
+          )}
         </div>
         {isExpanded ? (
-          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+          <ChevronUp className="text-muted-foreground h-5 w-5" />
         ) : (
-          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+          <ChevronDown className="text-muted-foreground h-5 w-5" />
         )}
       </button>
 
@@ -42,4 +44,3 @@ export function CollapsibleSection({
     </div>
   );
 }
-

@@ -41,7 +41,7 @@ export function MainImageSection({
       )}
 
       {newProduct.imagePreview ? (
-        <div className="relative aspect-square overflow-hidden rounded-xl border border-gray-300 bg-muted">
+        <div className="bg-muted relative aspect-square overflow-hidden rounded-xl border border-gray-300">
           <img
             src={newProduct.imagePreview || '/placeholder.svg'}
             alt="Preview"
@@ -77,14 +77,16 @@ export function MainImageSection({
           </button>
         </div>
       ) : (
-        <label className="flex max-h-2/4 aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-sky-500 hover:bg-sky-50">
-          <div className="rounded-lg bg-sky-100 p-2.5">
-            <SlCloudUpload size={20} className="text-sky-500" />
+        <label className="text-muted-foreground flex aspect-square max-h-2/4  cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 transition">
+          <div className="rounded-lg bg-primary p-2.5">
+            <SlCloudUpload size={20} className="text-foreground" />
           </div>
 
           <div className="text-center leading-tight">
-            <span className="block text-xs font-semibold text-black">{t.inventory?.uploadImage || 'رفع الصورة'}</span>
-            <span className="text-[10px] text-muted-foreground">JPG / PNG / WEBP</span>
+            <span className="block text-xs font-semibold">
+              {t.inventory?.uploadImage || 'رفع الصورة'}
+            </span>
+            <span className="text-muted-foreground text-[10px]">JPG / PNG / WEBP</span>
           </div>
 
           <input

@@ -1,67 +1,92 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
 
-import { IoAddSharp } from 'react-icons/io5';
+import { useState } from 'react';
+import { useLanguage } from '../../../../context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 
-interface SizesSectionProps {
+const EXAMPLE_SIZES = ['S', 'M', 'L', 'XL'];
+
+export interface SizesSectionProps {
   sizes: { size: string; stock: number }[];
-  updateSize: (index: number, field: 'size' | 'stock', value: string | number) => void;
-  addSize: () => void;
-  removeSize: (index: number) => void;
-  isExpanded: boolean;
-  onToggle: () => void;
+  setSizes: React.Dispatch<React.SetStateAction<{ size: string; stock: number }[]>>;
+  isExpanded?: boolean;
+  onToggle?: () => void;
 }
 
-export function SizesSection({
-  sizes,
-  updateSize,
-  addSize,
-  removeSize,
-  isExpanded,
-  onToggle,
-}: SizesSectionProps) {
+export function SizesSection({ sizes, setSizes, isExpanded, onToggle }: SizesSectionProps) {
   const { t } = useLanguage();
-  return (
-    <div className="my-4 max-w-92 md:max-w-full overflow-y-auto border-b border-border pb-4">
-      {sizes.map((s, i) => (
-        <div key={i} className="flex items-center gap-3 p-1">
-          <Input
-            placeholder={t.inventory?.sizeOrType || 'المقاس أو النوع'}
-            value={s.size}
-            onChange={e => updateSize(i, 'size', e.target.value)}
-            className="flex-1 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-          />
-          <Input
-            type="number"
-            placeholder={t.inventory.quantity}
-            value={s.stock === 0 ? '' : s.stock}
-            onChange={e => {
-              const val = e.target.value;
-              updateSize(i, 'stock', val === '' ? 0 : Number(val));
-            }}
-            className="w-28 rounded-2xl border-gray-300 focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20"
-          />
-          <Button
-            type="button"
-            className="cursor-pointer rounded-2xl bg-red-100 text-red-500 hover:bg-red-200"
-            variant="destructive"
-            size="sm"
-            onClick={() => removeSize(i)}
-          > {t.delete} </Button>
-        </div>
-      ))}
+  const [extraSizes, setExtraSizes] = useState<string[]>([]);
+  const [customSize, setCustomSize] = useState('');
 
-      <Button
-        type="button"
-        variant="outline"
-        className="mt-2 w-full cursor-pointer gap-2 rounded-2xl border-dashed border-gray-400 bg-transparent hover:border-sky-500 hover:bg-sky-50 hover:text-sky-500"
-        onClick={addSize}
-      >
-        <IoAddSharp className="h-4 w-4" />
-        <span>{t.inventory?.addNewSize || 'إضافة حجم جديد'}</span>
-      </Button>
+  const selectedSizes = sizes.map(s => s.size);
+  const allSizes = Array.from(new Set([...EXAMPLE_SIZES, ...extraSizes]));
+
+  const toggleSize = (size: string) => {
+    if (selectedSizes.includes(size)) {
+      setSizes(sizes.filter(s => s.size !== size));
+    } else {
+      setSizes([...sizes, { size, stock: 0 }]);
+    }
+  };
+
+  const addCustomSize = () => {
+    const s = customSize.trim();
+    if (s && !allSizes.includes(s) && !selectedSizes.includes(s)) {
+      setExtraSizes(prev => [...prev, s]);
+      setSizes(prev => [...prev, { size: s, stock: 0 }]);
+      setCustomSize('');
+    } else if (s && !selectedSizes.includes(s)) {
+      setSizes(prev => [...prev, { size: s, stock: 0 }]);
+      setCustomSize('');
+    }
+  };
+
+  return (
+    <div className="my-4 space-y-2">
+      <Label className="text-muted-foreground text-sm font-medium">
+        {t.inventory?.sizeOrType || 'الأحجام'}
+      </Label>
+      <div className="flex flex-wrap gap-2">
+        {allSizes.map(size => (
+          <button
+            key={size}
+            type="button"
+            onClick={() => toggleSize(size)}
+            className={`rounded-md border px-3 py-1.5 text-sm font-medium transition-colors ${
+              selectedSizes.includes(size)
+                ? 'bg-primary text-primary-foreground border-primary'
+                : 'bg-secondary text-secondary-foreground border-border hover:border-primary'
+            }`}
+          >
+            {size}
+          </button>
+        ))}
+      </div>
+      <div className="flex items-center gap-2">
+        <Input
+          value={customSize}
+          onChange={e => setCustomSize(e.target.value)}
+          placeholder={t.inventory?.addNewSize || 'حجم مخصص...'}
+          className="max-w-[180px] flex-1"
+          onKeyDown={e => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              addCustomSize();
+            }
+          }}
+        />
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={addCustomSize}
+          disabled={!customSize.trim()}
+        >
+          {t.add || 'أضف'}
+        </Button>
+      </div>
     </div>
   );
 }

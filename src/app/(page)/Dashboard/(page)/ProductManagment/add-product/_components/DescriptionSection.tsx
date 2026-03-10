@@ -28,7 +28,7 @@ export function DescriptionSection({
           <span className="text-red-400">*</span>
         </label>
         <textarea
-          className="bg-card text-foreground font-light placeholder:text-muted-foreground min-h-[100px] w-full rounded-2xl border border-gray-300 p-4 font-light transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-muted/35 text-foreground placeholder:text-muted-foreground min-h-[100px] w-full rounded-2xl border border-gray-300 p-4 font-light transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50"
           placeholder={
             t.inventory?.productDescriptionPlaceholder || 'اكتب وصفاً تفصيلياً للمنتج... '
           }

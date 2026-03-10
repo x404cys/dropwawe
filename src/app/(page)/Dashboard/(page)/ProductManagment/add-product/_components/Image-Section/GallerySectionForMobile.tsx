@@ -27,12 +27,16 @@ export function GallerySectionForMobile({
 }: GallerySectionForMobileProps) {
   const { t } = useLanguage();
   return (
-    <OptionalSection title={t.inventory?.addOptionalImages || 'إضافة صور إضافية (اختياري)'} isOpen={isExpanded} onToggle={onToggle}>
+    <OptionalSection
+      title={t.inventory?.addOptionalImages || 'إضافة صور إضافية (اختياري)'}
+      isOpen={isExpanded}
+      onToggle={onToggle}
+    >
       <div className="grid grid-cols-3 gap-4">
         {galleryPreviews.map((preview, idx) => (
           <div
             key={idx}
-            className="relative h-32 w-full overflow-hidden rounded-xl border border-border bg-muted"
+            className="border-border bg-muted relative h-32 w-full overflow-hidden rounded-xl border"
           >
             <img src={preview} alt={`Gallery ${idx + 1}`} className="h-full w-full object-cover" />
 
@@ -40,7 +44,7 @@ export function GallerySectionForMobile({
               type="button"
               onClick={() => removeGalleryImage(idx)}
               disabled={loading}
-              className="absolute top-2 right-2 rounded-md bg-black/70 p-1 text-white transition hover:bg-black"
+              className="absolute top-2 right-2 rounded-md bg-black/70 p-1 text-white transition"
             >
               ✕
             </button>
@@ -48,7 +52,7 @@ export function GallerySectionForMobile({
         ))}
 
         {galleryFiles.length < 3 && (
-          <label className="flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-gray-400 hover:bg-muted">
+          <label className="bg-muted text-muted-foreground hover:bg-muted flex h-32 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 transition hover:border-gray-400">
             <TbUpload size={22} />
 
             <span className="text-xs font-medium">{t.inventory?.uploadImage || 'رفع صورة'}</span>

@@ -43,7 +43,7 @@ export function GallerySection({
             <button
               type="button"
               onClick={() => removeGalleryImage(idx)}
-              className="absolute top-1 right-1 bg-black p-1 text-white transition hover:bg-card"
+              className="absolute top-1 right-1 bg-black p-1 text-white transition"
               disabled={loading}
             >
               <svg
@@ -65,7 +65,7 @@ export function GallerySection({
         ))}
 
         {galleryFiles.length < 3 && (
-          <label className="flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-sky-500 hover:bg-sky-50">
+          <label className=" rounded-2xl text-muted-foreground flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 transition">
             <TbUpload size={24} className="text-sky-500" />
             <span className="text-xs font-medium">{t.inventory?.uploadImage || 'رفع صورة'}</span>
             <input

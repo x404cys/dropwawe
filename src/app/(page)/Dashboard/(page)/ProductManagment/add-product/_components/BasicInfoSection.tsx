@@ -16,12 +16,12 @@ interface BasicInfoSectionProps {
 export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicInfoSectionProps) {
   const { t } = useLanguage();
   return (
-    <div className=" text-foreground">
+    <div className="text-foreground">
       <div className="p-6">
         <div className="space-y-5">
           <ModernInputGroup
             label={t.inventory?.productName || 'اسم المنتج'}
-            icon={<Package className="h-4 w-4 text-foreground" />}
+            icon={<Package className="text-foreground h-4 w-4" />}
             value={newProduct.name}
             onChange={(value: any) => setNewProduct({ ...newProduct, name: value })}
             placeholder={t.inventory?.productNamePlaceholder || 'أدخل اسم المنتج (مثال: تيشرت قطن)'}
@@ -32,7 +32,7 @@ export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicIn
           <div className="grid gap-5 sm:grid-cols-2">
             <ModernInputGroup
               label={t.inventory.price}
-              icon={<DollarSign className="h-4 w-4 text-muted-foreground" />}
+              icon={<DollarSign className="text-muted-foreground h-4 w-4" />}
               type="number"
               value={newProduct.price ?? ''}
               onChange={(value: string) => {
@@ -52,7 +52,7 @@ export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicIn
             />
             <ModernInputGroup
               label={t.inventory?.discount || 'الخصم (%)'}
-              icon={<Percent className="h-4 w-4 text-muted-foreground" />}
+              icon={<Percent className="text-muted-foreground h-4 w-4" />}
               type="number"
               value={newProduct.discount === 0 ? '' : newProduct.discount}
               onChange={(value: string) => {
@@ -70,7 +70,8 @@ export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicIn
             <div className="border border-sky-500 bg-sky-50 p-3">
               <span className="text-sm font-medium text-black">
                 {t.inventory?.priceAfterDiscount || 'السعر بعد الخصم:'}{' '}
-                {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)} {t.currency || 'د.ع'}
+                {calculateDiscountedPrice(newProduct.price ?? 0, newProduct.discount ?? 0)}{' '}
+                {t.currency || 'د.ع'}
               </span>
             </div>
           )}

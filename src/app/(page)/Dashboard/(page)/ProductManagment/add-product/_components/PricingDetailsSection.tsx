@@ -19,8 +19,10 @@ export function PricingDetailsSection({
   const { t } = useLanguage();
 
   return (
-    <div className="space-y-4 border border-border bg-muted p-4">
-      <h3 className="text-sm font-semibold text-black">{t.inventory?.supplierPrices || 'أسعار الموردين'}</h3>
+    <div className="border-border bg-muted space-y-4 border p-4">
+      <h3 className="text-sm font-semibold text-black">
+        {t.inventory?.supplierPrices || 'أسعار الموردين'}
+      </h3>
       <div className="grid gap-4 sm:grid-cols-3">
         <ModernInputGroup
           label={t.inventory?.wholesalePrice || 'سعر الجملة'}
