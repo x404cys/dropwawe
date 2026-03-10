@@ -148,7 +148,7 @@ export default function OrderDetailsPage({ params }: Props) {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-black/50">{item.price} للوحدة</p>
-                </div>
+                </div>{/*  */}
               </div>
             ))}
           </div>
