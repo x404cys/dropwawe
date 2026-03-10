@@ -7,7 +7,7 @@ import { Pencil, Trash2, Package, AlertTriangle } from 'lucide-react';
 import type { Product } from '@/types/Products';
 import Link from 'next/link';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 interface Props {
   product: Product;
