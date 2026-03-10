@@ -2,8 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
-import { writeFile } from 'fs/promises';
-import path from 'path';
+import { uploadToServer } from '@/app/lib/uploadToSupabase';
 
 interface Params {
   params: { id: string };
@@ -36,6 +35,7 @@ export async function GET(req: Request, context: { params: Promise<{ id: string 
         images: true,
         sizes: true,
         colors: true,
+        subInfo: true,
       },
     });
 
@@ -74,10 +74,19 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
     const unlimitedStr = formData.get('unlimited') as string | null;
     const unlimited = unlimitedStr === 'true';
 
+    // New Fields
+    const telegramLink = formData.get('telegramLink') as string | null;
+    const galleryFiles = formData.getAll('gallery') as File[];
+    const sizesRaw = formData.get('sizes') as string | null;
+    const sizes: { size: string; stock: number }[] = sizesRaw ? JSON.parse(sizesRaw) : [];
+    const colorsRaw = formData.get('colors') as string | null;
+    const colors: { name: string; hex: string; stock: number }[] = colorsRaw
+      ? JSON.parse(colorsRaw)
+      : [];
+
     if (!name || !priceStr || !quantityStr) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
-    console.log('Received quantityStr:', quantityStr);
 
     const price = parseFloat(priceStr);
     const quantity = parseInt(quantityStr);
@@ -102,29 +111,12 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
 
     let imagePath: string | undefined;
 
-    // if (file && file.size > 0) {
-    //   const bytes = await file.arrayBuffer();
-    //   const buffer = Buffer.from(bytes);
-
-    //   const fileName = `${session.user.id}/${Date.now()}-${file.name}`;
-
-    //   const { error: uploadError } = await supabase.storage
-    //     .from('upload-sahl-img')
-    //     .upload(fileName, buffer, {
-    //       contentType: file.type,
-    //       upsert: false,
-    //     });
-
-    //   if (uploadError) {
-    //     return NextResponse.json({ error: 'Failed to upload image' }, { status: 500 });
-    //   }
-
-    //   const { data: publicUrlData } = supabase.storage
-    //     .from('upload-sahl-img')
-    //     .getPublicUrl(fileName);
-
-    //   imagePath = publicUrlData.publicUrl;
-    // }
+    if (file && file.size > 0) {
+      const url = await uploadToServer(file, session.user.id);
+      if (url) {
+        imagePath = url;
+      }
+    }
 
     const updatedProduct = await prisma.product.update({
       where: { id },
@@ -142,12 +134,66 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
       },
     });
 
+    // Handle Telegram Link (Upsert ProductSubInfo)
+    if (telegramLink !== null) {
+      await prisma.productSubInfo.upsert({
+        where: { productId: id },
+        update: { telegram: telegramLink },
+        create: { productId: id, telegram: telegramLink },
+      });
+    }
+
+    // Handle Gallery Images (Append new images)
+    for (const gFile of galleryFiles) {
+      if (gFile && gFile.size > 0) {
+        const gUrl = await uploadToServer(gFile, session.user.id);
+        if (gUrl) {
+          await prisma.productImage.create({
+            data: {
+              url: gUrl,
+              productId: id,
+            },
+          });
+        }
+      }
+    }
+
+    // Sync Sizes (Delete existing and recreate)
+    if (sizesRaw !== null) {
+      await prisma.productSize.deleteMany({ where: { productId: id } });
+      for (const s of sizes) {
+        await prisma.productSize.create({
+          data: {
+            size: s.size,
+            stock: s.stock,
+            productId: id,
+          },
+        });
+      }
+    }
+
+    // Sync Colors (Delete existing and recreate)
+    if (colorsRaw !== null) {
+      await prisma.productColor.deleteMany({ where: { productId: id } });
+      for (const c of colors) {
+        await prisma.productColor.create({
+          data: {
+            color: c.name,
+            hex: c.hex,
+            stock: c.stock,
+            productId: id,
+          },
+        });
+      }
+    }
+
     return NextResponse.json(updatedProduct);
   } catch (error) {
     console.error(error);
     return NextResponse.json({ error: 'Failed to update product' }, { status: 500 });
   }
 }
+
 export async function DELETE(req: Request, context: { params: Promise<{ id: string }> }) {
   const { id } = await context.params;
   const session = await getServerSession(authOperation);

@@ -18,16 +18,7 @@ export const getDashboardNavItems = (role: string | undefined, t: any) => [
     icon: CgFolderAdd,
     plans: ['trader-basic', 'trader-pro'],
   },
-  {
-    label: 'العوائد', // Will require a translation key if missing, let's use t.stats?.revenue ?? 'العوائد' or add to translation later. Actually we have t.stats.revenue
-    path:
-      role === 'SUPPLIER'
-        ? `/Dashboard/profit/profit-trader `
-        : role === 'DROPSHIPPER'
-          ? `/Dashboard/profit/profit-dropshiper `
-          : `/Dashboard/profit `,
-    icon: DollarSign,
-  },
+
   {
     label: t.orders.title,
     path:
@@ -37,7 +28,7 @@ export const getDashboardNavItems = (role: string | undefined, t: any) => [
     icon: ShoppingBag,
   },
   {
-    label: 'الموردين', // Let's use generic string for now, will add suppliers to t later
+    label: 'الموردين',
     path: '/Dashboard/supplier',
     icon: Users,
     show: 'DROPSHIPPER',
@@ -51,7 +42,7 @@ export const getDashboardNavItems = (role: string | undefined, t: any) => [
     show: 'DROPSHIPPER',
     plans: ['drop-basics', 'drop-pro'],
   },
-  { label: t.more.stats,  path: '/Dashboard/stats', icon: BarChart3 },
+  { label: t.more.stats, path: '/Dashboard/stats', icon: BarChart3 },
   {
     label: t.more.settingsLabel,
     path: '/Dashboard/setting/store',

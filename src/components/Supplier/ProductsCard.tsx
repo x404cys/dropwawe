@@ -7,8 +7,8 @@ import { PiPackageDuotone } from 'react-icons/pi';
 
 export default function ProductCard({ products }: { products: Product[] }) {
   return (
-    <div className="bg-white">
-      <div className="mx-auto">
+    <div className="">
+      <div className="">
         <h2 className="sr-only">Products</h2>
         <div className="grid grid-cols-2 gap-x-6 gap-y-10 md:grid-cols-5">
           {products.map(product => (
@@ -39,8 +39,8 @@ export default function ProductCard({ products }: { products: Product[] }) {
                   )}
                 </div>
               </div>
-              <h3 className="mt-4 text-sm text-gray-700">{product.name}</h3>
-              <p className="mt-1 text-lg font-medium text-gray-900">
+              <h3 className="mt-4 text-sm text-foreground">{product.name}</h3>
+              <p className="mt-1 text-lg font-medium text-accent">
                 {formatIQD(product.price)} د.ع
               </p>
             </Link>
