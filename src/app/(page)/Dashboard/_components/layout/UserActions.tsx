@@ -55,7 +55,6 @@ export default function UserActions() {
       }`}
     >
       <div className="flex items-center gap-3">
-        {/* Avatar button */}
         <div className="relative">
           <button
             onClick={() => {
@@ -63,7 +62,7 @@ export default function UserActions() {
               setOpenStoreMenu(false);
               setOpenNotifications(false);
             }}
-            className="hover:bg-muted flex h-9 w-9 items-center justify-center rounded-full transition"
+            className="hover:bg-muted flex h-9 w-9 items-center justify-center rounded-lg transition"
           >
             {session.user.image ? (
               <Image
@@ -71,7 +70,7 @@ export default function UserActions() {
                 alt={session.user.name as string}
                 width={36}
                 height={36}
-                className="rounded-full object-cover"
+                className="rounded-lg object-cover"
               />
             ) : (
               <div className="bg-primary/10 text-primary flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold">
@@ -105,13 +104,11 @@ export default function UserActions() {
           )}
         </div>
 
-        {/* Name + Store Switcher */}
         <div className="flex flex-col leading-tight">
           <span className="text-foreground text-sm font-semibold">
             {session.user.name?.split(' ')[0]}
           </span>
 
-          {/* Store Switcher */}
           {stores.length > 0 && (
             <div className="relative">
               <button
@@ -154,9 +151,7 @@ export default function UserActions() {
         </div>
       </div>
 
-      {/* RIGHT SIDE */}
       <div className="flex items-center gap-2">
-        {/* OPEN STORE */}
         <button
           onClick={() => window.open(`https://${currentStore?.subLink}.matager.store`, '_blank')}
           className="border-primary/20 bg-primary/10 hover:bg-primary/15 flex h-8 items-center gap-1.5 rounded-full border px-3 transition-colors"
@@ -165,7 +160,6 @@ export default function UserActions() {
           <span className="text-primary text-[11px] font-semibold">{t.home.openStore}</span>
         </button>
 
-        {/* NOTIFICATIONS */}
         <div className="relative">
           <button
             onClick={() => {
