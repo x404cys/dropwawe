@@ -2,13 +2,12 @@
 
 import { JSX } from 'react';
 
-import Loader from '@/components/Loader';
-
 import { useAdmin } from '../../context/DataContext';
 import OrdersTable from '../../_components/OrderList';
 import { useApi } from '../../context/AdminContext';
 import useSWR from 'swr';
 import { Order } from '@/types/Products';
+import Loader from '../../_components/Loader-check';
 type OrderApi = {
   totalOrdersConfirmed: number;
   totalOrdersPending: number;

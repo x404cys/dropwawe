@@ -2,12 +2,18 @@ import { prisma } from '@/app/lib/db';
 import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
+
 export async function PATCH(req: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
 
   try {
+    const session = await getServerSession(authOperation);
+    if (!session || session.user.role !== 'A') {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await prisma.$transaction(async tx => {
-      const withdrawal = await tx.profitWithdrawal.findUnique({
+      const withdrawal = await tx.withdrawal.findUnique({
         where: { id },
       });
 
@@ -15,24 +21,42 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
         throw new Error('INVALID');
       }
 
-      await tx.profitWithdrawal.update({
+      await tx.withdrawal.update({
         where: { id },
         data: {
           status: 'APPROVED',
         },
       });
 
-      await tx.traderProfit.update({
-        where: { traderId: withdrawal.traderId },
+      const balance = await tx.balance.findUnique({
+        where: { storeId: withdrawal.storeId },
+      });
+
+      if (balance) {
+        await tx.balance.update({
+          where: { storeId: withdrawal.storeId },
+          data: {
+            pending: {
+              decrement: withdrawal.amount,
+            },
+          },
+        });
+      }
+
+      await tx.ledger.create({
         data: {
-          remaining: 0,
-          withdraw: false,
+          storeId: withdrawal.storeId,
+          type: 'WITHDRAW_APPROVED',
+          amount: withdrawal.amount,
+          balanceAfter: balance ? balance.available : 0,
+          note: withdrawal.method ? `تم التسديد عبر ${withdrawal.method}` : 'تم التسديد',
         },
       });
     });
 
-    return Response.json({ success: true });
+    return NextResponse.json({ success: true });
   } catch (e) {
-    return Response.json({ error: 'Failed' }, { status: 400 });
+    console.error('APPROVE WITHDRAWAL ERROR', e);
+    return NextResponse.json({ error: 'Failed' }, { status: 400 });
   }
 }

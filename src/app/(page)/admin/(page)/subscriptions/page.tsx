@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { Loader2, Search } from 'lucide-react';
 import UserDetailsDialog from './_components/UserDetailsDialog';
 import { User } from '@/types/users/UserForDashboard';
+import Loader from '../../_components/Loader-check';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -34,11 +35,7 @@ export default function SubscriptionsPage() {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [openDialog, setOpenDialog] = useState(false);
   if (isLoading) {
-    return (
-      <div className="mt-10 flex justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-gray-600" />
-      </div>
-    );
+    return <Loader />;
   }
 
   const subscriptions = data || [];

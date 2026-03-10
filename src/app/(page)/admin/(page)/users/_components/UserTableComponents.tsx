@@ -178,7 +178,6 @@ export function UserTableComponentsDashboard({
           ))}
         </div>
       </div>
-
       <UserDetailsDialog
         user={dialogState.type === 'details' ? dialogState.user : null}
         isOpen={dialogState.isOpen && dialogState.type === 'details'}

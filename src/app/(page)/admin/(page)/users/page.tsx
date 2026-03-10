@@ -2,7 +2,7 @@
 import useSWR from 'swr';
 import { User, UsersResponse } from '@/types/users/UserForDashboard';
 import { UserTableComponentsDashboard } from './_components/UserTableComponents';
-   
+import Loader from '../../_components/Loader-check';
 export type UserDialogState = {
   isOpen: boolean;
   type: 'details' | 'renew' | 'whatsapp' | 'delete' | null;
@@ -11,7 +11,10 @@ export type UserDialogState = {
 export default function Page() {
   const fetcher = (url: string) => fetch(url).then(res => res.json());
 
-  const { data, error } = useSWR<UsersResponse>('/api/admin/overview/stats/users', fetcher);
+  const { data, error, isLoading } = useSWR<UsersResponse>(
+    '/api/admin/overview/stats/users',
+    fetcher
+  );
 
   const handleDelete = (user: User) => {};
 
@@ -21,12 +24,18 @@ export default function Page() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <UserTableComponentsDashboard
-        users={data?.users ?? []}
-        onDelete={handleDelete}
-        onRenew={handleRenew}
-        onContact={handleContact}
-      />
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <main>
+          <UserTableComponentsDashboard
+            users={data?.users ?? []}
+            onDelete={handleDelete}
+            onRenew={handleRenew}
+            onContact={handleContact}
+          />
+        </main>
+      )}
     </main>
   );
 }

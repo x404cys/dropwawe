@@ -2,12 +2,12 @@
 
 import React, { useState, useMemo } from 'react';
 import { useAdmin } from '../context/DataContext';
-import Loader from '@/components/Loader';
 import axios from 'axios';
 import { Trash2 } from 'lucide-react';
 import { Product } from '@/types/Products';
 import useSWR from 'swr';
 import ProductCard from '../../Dashboard/(page)/ProductManagment/_components/ProductCard';
+import Loader from './Loader-check';
 
 interface Props {
   filterByCategory?: string;
@@ -36,14 +36,16 @@ export default function ProductList({ filterByCategory }: Props) {
   );
 
   const filteredProducts = useMemo(() => {
-    return allProducts
-      .filter(p => (filterByCategory ? p.category === filterByCategory : true))
-      .filter(p => (selectedCategory ? p.category === selectedCategory : true))
-      // .filter(p => (selectedStore ? p.user?.Store?.[0]?.subLink === selectedStore : true))
-      .filter(p =>
-        statusFilter ? (statusFilter === 'available' ? p.quantity > 0 : p.quantity === 0) : true
-      )
-      .filter(p => p.name.toLowerCase().includes(search.toLowerCase()));
+    return (
+      allProducts
+        .filter(p => (filterByCategory ? p.category === filterByCategory : true))
+        .filter(p => (selectedCategory ? p.category === selectedCategory : true))
+        // .filter(p => (selectedStore ? p.user?.Store?.[0]?.subLink === selectedStore : true))
+        .filter(p =>
+          statusFilter ? (statusFilter === 'available' ? p.quantity > 0 : p.quantity === 0) : true
+        )
+        .filter(p => p.name.toLowerCase().includes(search.toLowerCase()))
+    );
   }, [allProducts, filterByCategory, selectedCategory, selectedStore, search, statusFilter]);
 
   if (isLoading) return <Loader />;

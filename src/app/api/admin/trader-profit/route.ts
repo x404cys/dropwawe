@@ -11,11 +11,14 @@ export async function GET() {
   if (session.user.role !== 'A') return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
   try {
-    const withdrawals = await prisma.profitWithdrawal.findMany({
+    const withdrawals = await prisma.withdrawal.findMany({
       include: {
-        trader: {
+        store: {
           include: {
-            stores: true,
+            users: {
+              where: { isOwner: true },
+              include: { user: true },
+            },
           },
         },
       },

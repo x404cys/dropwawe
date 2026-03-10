@@ -5,6 +5,7 @@ import useSWR from 'swr';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Loader2, CheckCircle2, XCircle, Clock, ChevronDown } from 'lucide-react';
+import Loader from '../../_components/Loader-check';
 
 type Payment = {
   id: string;
@@ -190,9 +191,7 @@ export default function PaymentPage() {
 
   if (isLoading || !data) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <Loader2 className="text-muted-foreground h-8 w-8 animate-spin" />
-      </div>
+      <Loader />
     );
   }
 
