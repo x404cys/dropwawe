@@ -100,8 +100,8 @@ export default async function StorefrontPage() {
   };
 
   const announcement = template.announcementBar as AnnouncementBarConfig | null;
-  const banners = template.bannerImages?.map((b) => b.url) ?? [];
-  const enabledCategorySections = template.categorySections?.filter((cs) => cs.enabled) ?? [];
+  const banners = template.bannerImages?.map(b => b.url) ?? [];
+  const enabledCategorySections = template.categorySections?.filter(cs => cs.enabled) ?? [];
   const waNumber = (template.whatsappNumber || store.phone || '').replace(/\s+/g, '');
   const baseFontSizeRaw = (template as unknown as { baseFontSize?: string | number }).baseFontSize;
   const baseFontSize = Number(baseFontSizeRaw ?? 16);
@@ -130,7 +130,11 @@ export default async function StorefrontPage() {
         )}
 
         {sections.services && template.services.length > 0 && (
-          <ServicesSection services={template.services} colors={colors} headingStyle={headingStyle} />
+          <ServicesSection
+            services={template.services}
+            colors={colors}
+            headingStyle={headingStyle}
+          />
         )}
 
         {sections.works && template.works.length > 0 && (
@@ -156,11 +160,21 @@ export default async function StorefrontPage() {
         )}
 
         {sections.cta && (
-          <CtaSection template={template} store={store} colors={colors} headingStyle={headingStyle} />
+          <CtaSection
+            template={template}
+            store={store}
+            colors={colors}
+            headingStyle={headingStyle}
+          />
         )}
 
         {sections.about && (
-          <AboutSection template={template} store={store} colors={colors} headingStyle={headingStyle} />
+          <AboutSection
+            template={template}
+            store={store}
+            colors={colors}
+            headingStyle={headingStyle}
+          />
         )}
 
         <Footer store={store} template={template} colors={colors} />

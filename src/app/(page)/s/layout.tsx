@@ -69,7 +69,9 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
 
   const primaryFont = customFonts[0]?.name || 'sans-serif';
   const primaryFontUrl = customFonts[0]?.url;
-  const primaryFontApiUrl = customFonts[0]?.id ? `/api/fonts?id=${customFonts[0].id}` : null;
+  const primaryFontApiUrl = customFonts[0]?.id
+    ? `/api/template/fonts/get/fonts?id=${customFonts[0].id}`
+    : null;
 
   return (
     <div
