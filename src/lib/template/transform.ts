@@ -84,6 +84,9 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
       id: b.id,
       url: b.url,
       order: b.order,
+      postion: (typeof b.postion === 'string' && b.postion.toLowerCase() === 'center')
+        ? 'center'
+        : 'top',
     })),
     categorySections: (db.categorySections ?? []).map((cs: PrismaTemplateRecord) => ({
       id: cs.id,

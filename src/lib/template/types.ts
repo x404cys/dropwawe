@@ -56,6 +56,7 @@ export interface BannerItem {
   id: string;
   url: string;
   order: number;
+  postion: string;
 }
 
 export interface CategorySectionItem {

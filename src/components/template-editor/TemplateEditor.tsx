@@ -209,6 +209,7 @@ export default function TemplateEditor({
             onUpdate={editor.update}
             onAddBanner={editor.addBanner}
             onRemoveBanner={editor.removeBanner}
+            onUpdatePostionBanner={editor.updatePostionBanner}
             onAddCategorySection={editor.addCategorySection}
             onUpdateCategorySection={editor.updateCategorySection}
             onToggleCategorySection={editor.toggleCategorySection}

@@ -393,6 +393,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         id: `tmp-${Date.now()}`,
         url: URL.createObjectURL(file), // local preview while uploading
         order: nextOrder(formState.bannerImages),
+        postion: 'top',
       };
       setFormState(prev => ({ ...prev, bannerImages: [...prev.bannerImages, optimistic] }));
       try {
@@ -401,6 +402,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
           storeId,
           url,
           order: optimistic.order,
+          postion: optimistic.postion,
         });
         if (created) {
           setFormState(prev => ({
@@ -425,6 +427,25 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       setFormState(prev => ({ ...prev, bannerImages: prev.bannerImages.filter(b => b.id !== id) }));
       try {
         await apiDelete('/api/template/banners', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, bannerImages: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.bannerImages, storeId]
+  );
+
+  const updatePostionBanner = useCallback(
+    async (id: string, postion: string) => {
+      const previous = formState.bannerImages;
+      setFormState(prev => ({
+        ...prev,
+        bannerImages: prev.bannerImages.map(b =>
+          b.id === id ? { ...b, postion } : b
+        ),
+      }));
+      try {
+        await apiPut('/api/template/banners', { storeId, id, postion });
       } catch (err) {
         setFormState(prev => ({ ...prev, bannerImages: previous }));
         toast.error((err as Error).message);
@@ -703,6 +724,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     // banners
     addBanner,
     removeBanner,
+    updatePostionBanner,
     // category sections
     addCategorySection,
     updateCategorySection,

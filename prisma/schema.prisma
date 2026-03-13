@@ -769,7 +769,7 @@ model TemplateBanner {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-
+  postion    String        @default("up")
   url   String
   order Int    @default(0)
 

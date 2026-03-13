@@ -24,6 +24,14 @@ import {
   Smartphone,
   Footprints,
 } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
@@ -79,6 +87,7 @@ interface StorefrontTabProps {
   onUpdate: (partial: Partial<TemplateFormState>) => void;
   onAddBanner: (file: File) => void;
   onRemoveBanner: (id: string) => void;
+  onUpdatePostionBanner: (id: string, position: string) => void;
   onAddCategorySection: (category: string) => void;
   onUpdateCategorySection: (id: string, category: string) => void;
   onToggleCategorySection: (id: string) => void;
@@ -95,6 +104,7 @@ export default function StorefrontTab({
   onRemoveBanner,
   onAddCategorySection,
   onUpdateCategorySection,
+  onUpdatePostionBanner,
   onToggleCategorySection,
   onMoveCategorySection,
   onRemoveCategorySection,
@@ -115,7 +125,7 @@ export default function StorefrontTab({
       return;
     }
     onAddBanner(file);
-    toast.success('✓ تم إضافة البنر');
+    toast.success('تم إضافة البنر');
     e.target.value = '';
   };
 
@@ -226,21 +236,41 @@ export default function StorefrontTab({
         </div>
         <div className="space-y-2">
           {state.bannerImages.map((img, i) => (
-            <div className="border-border relative h-24 w-full overflow-hidden rounded-xl border">
+            <div
+              key={img.id}
+              className="border-border relative h-24 w-full overflow-hidden rounded-xl border"
+            >
               <Image src={img.url as string} alt="banner" fill className="object-cover" />
 
               <button
                 onClick={() => onRemoveBanner(img.id)}
-                className="bg-destructive/90 absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full"
+                className="bg-destructive/90 absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full"
               >
                 <X className="text-destructive-foreground h-3 w-3" />
               </button>
 
-              <span className="bg-foreground/60 text-background absolute top-2 right-2 rounded-full px-2 py-0.5 text-[9px] font-bold">
+              <span className="bg-foreground/60 text-background absolute top-2 right-2 z-10 rounded-full px-2 py-0.5 text-[9px] font-bold">
                 {i + 1}
               </span>
+
+              <div className="absolute right-2 bottom-2 z-10">
+                <Select
+                  value={img.postion || 'top'}
+                  onValueChange={value => onUpdatePostionBanner(img.id, value)}
+                >
+                  <SelectTrigger className="h-8 w-[130px] text-[10px]">
+                    <SelectValue placeholder="اختر مكان البنر" />
+                  </SelectTrigger>
+
+                  <SelectContent>
+                    <SelectItem value="top">اعلى المتجر</SelectItem>
+                    <SelectItem value="center">مع الاصناف</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           ))}
+
           <button
             onClick={() => bannerInputRef.current?.click()}
             className="border-border text-muted-foreground hover:border-primary/30 hover:text-primary flex w-full items-center justify-center gap-1.5 rounded-xl border-2 border-dashed py-4 text-xs font-medium transition-all"

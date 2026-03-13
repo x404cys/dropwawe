@@ -13,6 +13,7 @@ export type AnnouncementBarConfig = {
   text: string;
   bgColor: string;
   textColor: string;
+  postion: string;
 };
 
 export type SectionsConfig = {
@@ -57,7 +58,7 @@ export type StorefrontTestimonial = {
   order: number;
 };
 
-export type StorefrontBanner = { id: string; url: string; order: number };
+export type StorefrontBanner = { id: string; url: string; order: number; postion: string };
 
 export type StorefrontCategorySection = {
   id: string;

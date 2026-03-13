@@ -7,6 +7,7 @@
 import { Package } from 'lucide-react';
 import { ActiveColors, StorefrontCategoryIcon, StorefrontCategorySection, StorefrontProduct, StorefrontTemplate } from '../../_lib/types';
 import { useStorefront } from '../../_hooks/useStorefront';
+import BannerCarousel from '../BannerCarousel';
 import SearchBar from '../store/SearchBar';
 import CategoryIcons from '../store/CategoryIcons';
 import CategoryPills from '../store/CategoryPills';
@@ -19,6 +20,7 @@ interface StoreSectionProps {
   colors: ActiveColors;
   headingStyle: React.CSSProperties;
   enabledCategorySections: StorefrontCategorySection[];
+  centerBanners?: string[];
 }
 
 export default function StoreSection({
@@ -27,6 +29,7 @@ export default function StoreSection({
   colors,
   headingStyle,
   enabledCategorySections,
+  centerBanners = [],
 }: StoreSectionProps) {
   const {
     activeCategory, setActiveCategory,
@@ -43,6 +46,12 @@ export default function StoreSection({
       <div className="max-w-5xl mx-auto px-4 sm:px-6">
         {/* Search */}
         <SearchBar value={searchQuery} onChange={setSearchQuery} />
+
+        {centerBanners.length > 0 && (
+          <div className="my-4">
+            <BannerCarousel banners={centerBanners} colors={colors} />
+          </div>
+        )}
 
         {/* Category filter */}
         {template.categoryDisplayMode === 'icons' ? (

@@ -100,7 +100,17 @@ export default async function StorefrontPage() {
   };
 
   const announcement = template.announcementBar as AnnouncementBarConfig | null;
-  const banners = template.bannerImages?.map(b => b.url) ?? [];
+  const rawBanners = template.bannerImages ?? [];
+  const topBanners: string[] = [];
+  const centerBanners: string[] = [];
+  for (const banner of rawBanners) {
+    const position = (banner.postion || '').toLowerCase();
+    if (position === 'center') {
+      centerBanners.push(banner.url);
+    } else {
+      topBanners.push(banner.url);
+    }
+  }
   const enabledCategorySections = template.categorySections?.filter(cs => cs.enabled) ?? [];
   const waNumber = (template.whatsappNumber || store.phone || '').replace(/\s+/g, '');
   const baseFontSizeRaw = (template as unknown as { baseFontSize?: string | number }).baseFontSize;
@@ -114,7 +124,7 @@ export default async function StorefrontPage() {
 
   return (
     <div className="min-h-screen" style={rootStyle}>
-      {announcement?.enabled && <AnnouncementBar config={announcement} />}
+      {announcement?.enabled  && <AnnouncementBar config={announcement} />}
 
       <StorefrontClient
         store={store}
@@ -123,7 +133,7 @@ export default async function StorefrontPage() {
         headingStyle={headingStyle}
         sections={sections}
       >
-        {banners.length > 0 && <BannerCarousel banners={banners} colors={colors} />}
+        {topBanners.length > 0 && <BannerCarousel banners={topBanners} colors={colors} />}
 
         {sections.hero && (
           <HeroSection template={template} colors={colors} headingStyle={headingStyle} />
@@ -148,6 +158,7 @@ export default async function StorefrontPage() {
             colors={colors}
             headingStyle={headingStyle}
             enabledCategorySections={enabledCategorySections}
+            centerBanners={centerBanners}
           />
         )}
 
