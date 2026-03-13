@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 
 type CustomFont = {
+  id: string;
   name: string;
   url: string;
 };
@@ -15,6 +16,17 @@ function getFontFormat(url: string) {
   if (lower.endsWith('.otf')) return 'opentype';
 
   return '';
+}
+
+function getFontMimeType(url: string) {
+  const lower = url.toLowerCase();
+
+  if (lower.endsWith('.woff2')) return 'font/woff2';
+  if (lower.endsWith('.woff')) return 'font/woff';
+  if (lower.endsWith('.ttf')) return 'font/ttf';
+  if (lower.endsWith('.otf')) return 'font/otf';
+
+  return undefined;
 }
 
 export default async function StorefrontLayout({ children }: { children: ReactNode }) {
@@ -46,7 +58,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
       return `
         @font-face {
           font-family: '${f.name}';
-          src: url('${f.url}')${format ? ` format('${format}')` : ''};
+          src: url('/api/fonts?id=${f.id}')${format ? ` format('${format}')` : ''};
           font-weight: 100 900;
           font-style: normal;
           font-display: swap;
@@ -55,32 +67,33 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
     })
     .join('\n');
 
+  const primaryFont = customFonts[0]?.name || 'sans-serif';
+  const primaryFontUrl = customFonts[0]?.url;
+  const primaryFontApiUrl = customFonts[0]?.id ? `/api/fonts?id=${customFonts[0].id}` : null;
+
   return (
-    <html lang="ar" dir="rtl">
-      <head>
-        {customFonts.map(font => (
-          <link
-            key={font.url}
-            rel="preload"
-            href={font.url}
-            as="font"
-            type={
-              font.url.endsWith('.woff2')
-                ? 'font/woff2'
-                : font.url.endsWith('.woff')
-                  ? 'font/woff'
-                  : font.url.endsWith('.ttf')
-                    ? 'font/ttf'
-                    : undefined
-            }
-            crossOrigin="anonymous"
-          />
-        ))}
+    <div
+      dir="rtl"
+      style={{
+        margin: 0,
+        padding: 0,
+        fontWeight: 'normal',
+        fontFamily: `'${primaryFont}', sans-serif`,
+      }}
+    >
+      {primaryFontApiUrl && (
+        <link
+          rel="preload"
+          href={primaryFontApiUrl}
+          as="font"
+          type={primaryFontUrl ? getFontMimeType(primaryFontUrl) : undefined}
+          crossOrigin="anonymous"
+        />
+      )}
 
-        {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
-      </head>
+      {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
 
-      <body style={{ margin: 0, padding: 0, fontWeight: 'normal' }}>{children}</body>
-    </html>
+      {children}
+    </div>
   );
 }
