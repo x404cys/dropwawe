@@ -180,4 +180,3 @@ const renderDayTick = ({ x, y, payload }: any) => {
     </motion.div>
   );
 }
-//
