@@ -93,20 +93,7 @@ export default function SettingOptions() {
     {
       title: t.more?.storeManagement || 'إدارة المتجر',
       sections: [
-        {
-          label: t.more?.templates || 'تخصيص القالب والمظهر',
-          desc: t.more?.templatesDesc || 'ألوان وشكل صفحة المتجر',
-          icon: MdOutlineStyle,
-          path: `${base}/theme`,
-          allowedPlans: [
-            'drop-basics',
-            'trader-basic',
-            'trader-pro',
-            'drop-pro',
-            'free-trial',
-            'ramadan-plan',
-          ],
-        },
+         
         {
           label: 'تخصيص القالب',
           desc: 'محتوى الهوية، الأقسام، الألوان، والخطوط',

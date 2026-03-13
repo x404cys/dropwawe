@@ -36,7 +36,7 @@ interface TemplateEditorProps {
   storeDescription: string;
   storeLogoImage: string | null;
   categories: string[];
-  storefrontUrl: string; // e.g. https://example.drop-wave.com
+  storefrontUrl: string;  
 }
 
 export default function TemplateEditor({

@@ -18,6 +18,8 @@ import type {
   CustomFontItem,
 } from '@/lib/template/types';
 import { toPayload } from '@/lib/template/transform';
+ 
+import CheckCircle from "lucide-react";
 
 // ── Upload helper (client → server route → uploadToServer on disk) ────────────
 
@@ -99,8 +101,10 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         return;
       }
       setSavedState(formState);
-      toast.success('✓ تم الحفظ بنجاح');
-    } catch {
+      toast.success("تم الحفظ بنجاح", {
+        description: "تم تحديث البيانات بنجاح",
+       });      
+     } catch {
       toast.error('حدث خطأ في الاتصال، حاول مرة أخرى');
     } finally {
       setIsSaving(false);

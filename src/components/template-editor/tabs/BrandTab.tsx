@@ -132,13 +132,13 @@ export default function BrandTab({
             <Input
               value={storeName}
               onChange={e => onStoreNameChange(e.target.value)}
-              className="rounded-xl text-sm font-bold"
+              className="rounded-xl font-light  "
               placeholder="اسم المتجر"
             />
             <Input
               value={state.tagline}
               onChange={e => onUpdate({ tagline: e.target.value })}
-              className="rounded-xl text-sm font-light"
+              className="rounded-xl  font-light"
               placeholder="شعار نصي قصير"
             />
           </div>
@@ -151,7 +151,7 @@ export default function BrandTab({
             onUpdate({ storeDescription: value });
           }}
           rows={2}
-          className="resize-none rounded-xl text-sm"
+          className="resize-none font-light rounded-xl "
           placeholder="وصف المتجر"
         />
       </div>
@@ -163,13 +163,13 @@ export default function BrandTab({
             <Input
               value={state.heroButtonText}
               onChange={e => onUpdate({ heroButtonText: e.target.value })}
-              className="rounded-xl text-sm"
+              className="rounded-xl font-light"
               placeholder="الزر الرئيسي"
             />
             <Input
               value={state.heroSecondaryButton}
               onChange={e => onUpdate({ heroSecondaryButton: e.target.value })}
-              className="rounded-xl text-sm"
+              className="rounded-xl font-light"
               placeholder="الزر الثانوي"
             />
           </div>

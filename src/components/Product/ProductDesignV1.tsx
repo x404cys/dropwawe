@@ -11,8 +11,7 @@ import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPri
 import { Button } from '../ui/button';
   
 export default function ProductCardV1({ product }: { product: Product }) {
-  const { addToCartByKey } = useCart();
-  const { addToFavoriteByKey, removeFromFavoriteByKey, isInFavoriteByKey } = useFavorite();
+  
   const [isAdding, setIsAdding] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
    return (
