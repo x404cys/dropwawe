@@ -16,10 +16,9 @@ import type {
 
 import AboutSection from '../sections/AboutSection';
 import CtaSection from '../sections/CtaSection';
-import ServicesSection from '../sections/ServicesSection';
 import TestimonialsSection from '../sections/TestimonialsSection';
-import WorksSection from '../sections/WorksSection';
 import ContentBlock from '../ui/ContentBlock';
+import ServiceWithWorksSection from '../sections/WorksSection';
 
 interface BrandTabProps {
   state: TemplateFormState;
@@ -33,13 +32,13 @@ interface BrandTabProps {
   onAddService: () => void;
   onUpdateService: (id: string, fields: Partial<Omit<ServiceItem, 'id'>>) => void;
   onRemoveService: (id: string) => void;
-  onAddWork: () => void;
-  onUpdateWork: (id: string, fields: Partial<Omit<WorkItem, 'id'>>) => void;
-  onRemoveWork: (id: string) => void;
+  onAddWork: (serviceId: string) => void;
+  onUpdateWork: (serviceId: string, workId: string, fields: Partial<Omit<WorkItem, 'id'>>) => void;
+  onRemoveWork: (serviceId: string, workId: string) => void;
   onAddTestimonial: () => void;
   onUpdateTestimonial: (id: string, fields: Partial<Omit<TestimonialItem, 'id'>>) => void;
   onRemoveTestimonial: (id: string) => void;
-  uploadWorkImage: (id: string, file: File) => void;
+  uploadWorkImage: (serviceId: string, workId: string, file: File) => void;
 }
 
 const SECTION_IDS = ['hero', 'services', 'works', 'testimonials', 'cta', 'about', 'store'] as const;
@@ -132,13 +131,13 @@ export default function BrandTab({
             <Input
               value={storeName}
               onChange={e => onStoreNameChange(e.target.value)}
-              className="rounded-xl font-light  "
+              className="rounded-xl font-light"
               placeholder="اسم المتجر"
             />
             <Input
               value={state.tagline}
               onChange={e => onUpdate({ tagline: e.target.value })}
-              className="rounded-xl  font-light"
+              className="rounded-xl font-light"
               placeholder="شعار نصي قصير"
             />
           </div>
@@ -151,7 +150,7 @@ export default function BrandTab({
             onUpdate({ storeDescription: value });
           }}
           rows={2}
-          className="resize-none font-light rounded-xl "
+          className="resize-none rounded-xl font-light"
           placeholder="وصف المتجر"
         />
       </div>
@@ -192,7 +191,7 @@ export default function BrandTab({
         />
 
         <ContentBlock
-          title="الخدمات"
+          title="الخدمات والأعمال"
           icon={<Zap className="h-4 w-4" />}
           enabled={state.sectionsConfig.services}
           onToggle={() => toggleSection('services')}
@@ -200,29 +199,15 @@ export default function BrandTab({
           onOpenToggle={() => toggleOpen('services')}
           count={state.services.length}
         >
-          <ServicesSection
+          <ServiceWithWorksSection
             services={state.services}
-            onAdd={onAddService}
-            onUpdate={onUpdateService}
-            onRemove={onRemoveService}
-          />
-        </ContentBlock>
-
-        <ContentBlock
-          title="معرض الأعمال"
-          icon={<Image className="h-4 w-4" />}
-          enabled={state.sectionsConfig.works}
-          onToggle={() => toggleSection('works')}
-          open={openSections['works'] ?? false}
-          onOpenToggle={() => toggleOpen('works')}
-          count={state.works.length}
-        >
-          <WorksSection
-            works={state.works}
-            onAdd={onAddWork}
-            onUpdate={onUpdateWork}
-            onRemove={onRemoveWork}
-            onUploadImage={uploadWorkImage}
+            onAddService={onAddService}
+            onUpdateService={onUpdateService}
+            onRemoveService={onRemoveService}
+            onAddWork={onAddWork}
+            onUpdateWork={onUpdateWork}
+            onRemoveWork={onRemoveWork}
+            onUploadWorkImage={uploadWorkImage}
           />
         </ContentBlock>
 
@@ -267,7 +252,10 @@ export default function BrandTab({
           open={openSections['about'] ?? false}
           onOpenToggle={() => toggleOpen('about')}
         >
-          <AboutSection aboutText={state.aboutText} onChange={value => onUpdate({ aboutText: value })} />
+          <AboutSection
+            aboutText={state.aboutText}
+            onChange={value => onUpdate({ aboutText: value })}
+          />
         </ContentBlock>
 
         <ContentBlock

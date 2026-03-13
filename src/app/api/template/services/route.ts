@@ -40,7 +40,8 @@ export async function POST(req: Request) {
     const { storeId, icon = 'Sparkles', title, desc, order = 0 } = body;
 
     if (!storeId) return NextResponse.json({ error: 'storeId مطلوب' }, { status: 400 });
-    if (!title) return NextResponse.json({ error: 'العنوان مطلوب' }, { status: 400 });
+    if (typeof title !== 'string')
+      return NextResponse.json({ error: 'Title is required' }, { status: 400 });
 
     if (!(await verifyOwnershipByStore(storeId, session.user.email)))
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
@@ -100,3 +101,4 @@ export async function DELETE(req: Request) {
 
 // Workaround: suppress unused import warning
 void verifyTemplateOwnership;
+

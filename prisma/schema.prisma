@@ -723,34 +723,44 @@ model StoreTemplate {
 }
 
 model TemplateService {
-  id         String        @id @default(cuid())
-  templateId String
-  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  name  String?
-  description String?
-  icon  String  @default("Sparkles")
-  title String
-  desc  String?
-  order Int     @default(0)
+  id          String        @id @default(cuid())
+  templateId  String
+  template    StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  icon        String        @default("Sparkles")
+  title       String
+  desc        String?
+
+  // عنوان قسم الأعمال الخاص بهذه الخدمة
+  worksTitle  String?       // مثال: "أعمالي في التصميم"
+  worksDesc   String?       // وصف اختياري
+
+  order       Int           @default(0)
+  enabled     Boolean       @default(true)  // ← هذا كل شي
+
+
+  // الأعمال المرتبطة
+  works       TemplateWork[]
 
   @@index([templateId])
 }
 
 model TemplateWork {
-  id         String        @id @default(cuid())
-  templateId String
-  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  image      String?
-  name        String?
-  description String?
-  title      String
-  category   String?
-  link       String?
-  order      Int           @default(0)
+  id          String           @id @default(cuid())
+  templateId  String
+  template    StoreTemplate    @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  serviceId   String?
+  service     TemplateService? @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  image       String?
+  title       String
+  category    String?
+  link        String?
+  order       Int              @default(0)
 
   @@index([templateId])
+  @@index([serviceId])
 }
-
 model TemplateTestimonial {
   id         String        @id @default(cuid())
   templateId String

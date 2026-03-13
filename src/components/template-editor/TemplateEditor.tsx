@@ -187,13 +187,15 @@ export default function TemplateEditor({
             onUpdateService={(id, fields) =>
               editor.updateService(id, fields as Partial<Omit<ServiceItem, 'id'>>)
             }
-            uploadWorkImage={editor.uploadWorkImage}
-            onRemoveService={editor.removeService}
-            onAddWork={editor.addWork}
-            onUpdateWork={(id, fields) =>
-              editor.updateWork(id, fields as Partial<Omit<WorkItem, 'id'>>)
+            uploadWorkImage={(serviceId, workId, file) =>
+              editor.uploadWorkImage(serviceId, workId, file)
             }
-            onRemoveWork={editor.removeWork}
+            onRemoveService={editor.removeService}
+            onAddWork={editor.addServiceWork}
+            onUpdateWork={(serviceId, workId, fields) =>
+              editor.updateServiceWork(serviceId, workId, fields as Partial<Omit<WorkItem, 'id'>>)
+            }
+            onRemoveWork={editor.removeServiceWork}
             onAddTestimonial={editor.addTestimonial}
             onUpdateTestimonial={(id, fields) =>
               editor.updateTestimonial(id, fields as Partial<Omit<TestimonialItem, 'id'>>)

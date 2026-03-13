@@ -159,14 +159,19 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     const optimistic: ServiceItem = {
       id: `tmp-${Date.now()}`,
       icon: 'Sparkles',
-      title: 'خدمة جديدة',
-
-      desc: 'وصف الخدمة',
-      order: nextOrder(formState.services),
+      title: '',
+      desc: '',
+      name: '',
+      description: '',
+      worksTitle: '',
+      worksDesc: '',
+      enabled: true,
+      order: formState.services.length,
+      works: [],
     };
     setFormState(prev => ({ ...prev, services: [...prev.services, optimistic] }));
     try {
-      const created = await apiPost<ServiceItem>('/api/template/services', {
+      const created = await apiPost<Partial<ServiceItem>>('/api/template/services', {
         storeId,
         icon: optimistic.icon,
         title: optimistic.title,
@@ -174,9 +179,19 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         order: optimistic.order,
       });
       if (created) {
+        const normalized: ServiceItem = {
+          ...optimistic,
+          ...created,
+          worksTitle: created.worksTitle ?? optimistic.worksTitle ?? '',
+          worksDesc: created.worksDesc ?? optimistic.worksDesc ?? '',
+          enabled: created.enabled ?? optimistic.enabled ?? true,
+          name: created.name ?? optimistic.name ?? '',
+          description: created.description ?? optimistic.description ?? '',
+          works: created.works ?? optimistic.works ?? [],
+        };
         setFormState(prev => ({
           ...prev,
-          services: prev.services.map(s => (s.id === optimistic.id ? created : s)),
+          services: prev.services.map(s => (s.id === optimistic.id ? normalized : s)),
         }));
       }
     } catch (err) {
@@ -219,16 +234,165 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.services, storeId]
   );
 
+  const addServiceWork = useCallback(
+    async (serviceId: string) => {
+      // ── تحقق من الحد الأقصى ──
+      const service = formState.services.find(s => s.id === serviceId);
+      if (!service) return;
+      if ((service.works ?? []).length >= 6) {
+        toast.error('وصلت للحد الأقصى (٦ أعمال لكل خدمة)');
+        return;
+      }
+
+      const optimistic: WorkItem = {
+        id: `tmp-${Date.now()}`,
+        title: '',
+        category: '',
+        link: '',
+        image: null,
+        order: service.works?.length ?? 0,
+        serviceId,
+      };
+
+      // ── أضف للـ state أولاً ──
+      setFormState(prev => ({
+        ...prev,
+        services: prev.services.map(s =>
+          s.id !== serviceId
+            ? s
+            : {
+                ...s,
+                works: [...(s.works ?? []), optimistic],
+              }
+        ),
+      }));
+
+      // ── احفظ في الـ DB ──
+      try {
+        const created = await apiPost<WorkItem>('/api/template/works', {
+          storeId, // ← كان ناقص
+          title: optimistic.title,
+          category: optimistic.category,
+          link: optimistic.link,
+          image: optimistic.image,
+          order: optimistic.order,
+          serviceId, // ← الربط بالخدمة
+        });
+
+        if (created) {
+          setFormState(prev => ({
+            ...prev,
+            services: prev.services.map(s =>
+              s.id !== serviceId
+                ? s
+                : {
+                    ...s,
+                    works: (s.works ?? []).map(w =>
+                      w.id === optimistic.id ? { ...created, serviceId } : w
+                    ),
+                  }
+            ),
+          }));
+        }
+      } catch (err) {
+        // ── revert عند الخطأ ──
+        setFormState(prev => ({
+          ...prev,
+          services: prev.services.map(s =>
+            s.id !== serviceId
+              ? s
+              : {
+                  ...s,
+                  works: (s.works ?? []).filter(w => w.id !== optimistic.id),
+                }
+          ),
+        }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.services, storeId]
+  );
+  const updateServiceWork = useCallback(
+    async (serviceId: string, workId: string, fields: Partial<Omit<WorkItem, 'id'>>) => {
+      const service = formState.services.find(s => s.id === serviceId);
+      const previous = service?.works ?? [];
+
+      // ── optimistic update ──
+      setFormState(prev => ({
+        ...prev,
+        services: prev.services.map(s =>
+          s.id !== serviceId
+            ? s
+            : {
+                ...s,
+                works: (s.works ?? []).map(w => (w.id !== workId ? w : { ...w, ...fields })),
+              }
+        ),
+      }));
+
+      // ── لا تحفظ للـ IDs المؤقتة ──
+      if (workId.startsWith('tmp-')) return;
+
+      try {
+        await apiPut('/api/template/works', {
+          storeId,
+          id: workId,
+          ...fields,
+        });
+      } catch (err) {
+        setFormState(prev => ({
+          ...prev,
+          services: prev.services.map(s => (s.id !== serviceId ? s : { ...s, works: previous })),
+        }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.services, storeId]
+  );
+
+  const removeServiceWork = useCallback(
+    async (serviceId: string, workId: string) => {
+      const service = formState.services.find(s => s.id === serviceId);
+      const previous = service?.works ?? [];
+
+      setFormState(prev => ({
+        ...prev,
+        services: prev.services.map(s =>
+          s.id !== serviceId
+            ? s
+            : {
+                ...s,
+                works: (s.works ?? []).filter(w => w.id !== workId),
+              }
+        ),
+      }));
+
+      if (workId.startsWith('tmp-')) return;
+
+      try {
+        await apiDelete('/api/template/works', { storeId, id: workId });
+      } catch (err) {
+        setFormState(prev => ({
+          ...prev,
+          services: prev.services.map(s => (s.id !== serviceId ? s : { ...s, works: previous })),
+        }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.services, storeId]
+  );
+
   // ── Works ────────────────────────────────────────────────────────────────
 
   const addWork = useCallback(async () => {
     const optimistic: WorkItem = {
       id: `tmp-${Date.now()}`,
-      title: 'مشروع جديد',
-      category: 'تصنيف',
+      title: '',
+      category: '',
       link: '',
       image: null,
       order: nextOrder(formState.works),
+      serviceId: null,
     };
     setFormState(prev => ({ ...prev, works: [...prev.works, optimistic] }));
     try {
@@ -309,27 +473,67 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.works, storeId]
   );
 
-  const uploadWorkImage = useCallback(
-    async (id: string, file: File) => {
+  type UploadWorkImage = {
+    (workId: string, file: File): void;
+    (serviceId: string, workId: string, file: File): void;
+  };
+
+  const uploadWorkImage: UploadWorkImage = useCallback(
+    async (arg1: string, arg2: string | File, arg3?: File) => {
+      if (arg2 instanceof File) {
+        const workId = arg1;
+        const file = arg2;
+        try {
+          const imageUrl = await uploadFile(file);
+          await updateWork(workId, { image: imageUrl });
+        } catch (err) {
+          toast.error((err as Error).message);
+        }
+        return;
+      }
+
+      if (!arg3) return;
+
+      const serviceId = arg1;
+      const workId = arg2;
+      const file = arg3;
+
+      // Optimistic preview with base64
+      const reader = new FileReader();
+      reader.onload = e => {
+        const base64 = e.target?.result as string;
+        setFormState(prev => ({
+          ...prev,
+          services: prev.services.map(s =>
+            s.id !== serviceId
+              ? s
+              : {
+                  ...s,
+                  works: (s.works ?? []).map(w => (w.id !== workId ? w : { ...w, image: base64 })),
+                }
+          ),
+        }));
+      };
+      reader.readAsDataURL(file);
+
+      // Upload and persist to server
       try {
         const imageUrl = await uploadFile(file);
-        await updateWork(id, { image: imageUrl });
+        await updateServiceWork(serviceId, workId, { image: imageUrl });
       } catch (err) {
         toast.error((err as Error).message);
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
-    [formState.works, storeId]
+    [updateWork, updateServiceWork]
   );
 
-  // ── Testimonials ─────────────────────────────────────────────────────────
-
+  // Testimonials
   const addTestimonial = useCallback(async () => {
     const optimistic: TestimonialItem = {
       id: `tmp-${Date.now()}`,
-      name: 'عميل جديد',
-      role: 'الوظيفة',
-      text: 'رأي العميل...',
+      name: '\u0639\u0645\u064a\u0644 \u062c\u062f\u064a\u062f',
+      role: '\u0627\u0644\u0648\u0638\u064a\u0641\u0629',
+      text: '\u0631\u0623\u064a \u0627\u0644\u0639\u0645\u064a\u0644...',
       rating: 5,
       order: nextOrder(formState.testimonials),
     };
@@ -385,13 +589,12 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.testimonials, storeId]
   );
 
-  // ── Banners ──────────────────────────────────────────────────────────────
-
+  // Banners
   const addBanner = useCallback(
     async (file: File) => {
       const optimistic: BannerItem = {
         id: `tmp-${Date.now()}`,
-        url: URL.createObjectURL(file), // local preview while uploading
+        url: URL.createObjectURL(file),
         order: nextOrder(formState.bannerImages),
         postion: 'top',
       };
@@ -440,9 +643,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       const previous = formState.bannerImages;
       setFormState(prev => ({
         ...prev,
-        bannerImages: prev.bannerImages.map(b =>
-          b.id === id ? { ...b, postion } : b
-        ),
+        bannerImages: prev.bannerImages.map(b => (b.id === id ? { ...b, postion } : b)),
       }));
       try {
         await apiPut('/api/template/banners', { storeId, id, postion });
@@ -454,8 +655,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.bannerImages, storeId]
   );
 
-  // ── Category Sections ────────────────────────────────────────────────────
-
+  // Category Sections
   const addCategorySection = useCallback(
     async (category: string) => {
       const optimistic: CategorySectionItem = {
@@ -572,8 +772,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.categorySections, storeId]
   );
 
-  // ── Category Icons ───────────────────────────────────────────────────────
-
+  // Category Icons
   const updateCategoryIcon = useCallback(
     async (id: string, fields: Partial<Omit<CategoryIconItem, 'id'>>) => {
       const previous = formState.categoryIcons;
@@ -639,8 +838,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState.categoryIcons, storeId]
   );
 
-  // ── Custom Fonts ─────────────────────────────────────────────────────────
-
+  // Custom Fonts
   const addCustomFont = useCallback(
     async (name: string, file: File): Promise<boolean> => {
       if (formState.customFonts.some(f => f.name === name)) {
@@ -700,8 +898,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     [formState, storeId]
   );
 
-  // ── Return ────────────────────────────────────────────────────────────────
-
+  // Return
   return {
     formState,
     update,
@@ -712,6 +909,9 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     addService,
     updateService,
     removeService,
+    addServiceWork,
+    updateServiceWork,
+    removeServiceWork,
     // works
     addWork,
     updateWork,

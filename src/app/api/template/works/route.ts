@@ -25,7 +25,6 @@ export async function POST(req: Request) {
     const session = await getServerSession(authOperation);
     if (!session?.user?.email) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-    // include image field—can be null or a data URL / URL string
     const body = (await req.json()) as {
       storeId: string;
       title: string;
@@ -33,11 +32,11 @@ export async function POST(req: Request) {
       link?: string;
       image?: string | null;
       order?: number;
+      serviceId?: string | null;
     };
-    const { storeId, title, category, link, image = null, order = 0 } = body;
+    const { storeId, title, category, link, image = null, order = 0, serviceId = null } = body;
 
-    if (!storeId || !title)
-      return NextResponse.json({ error: 'storeId والعنوان مطلوبان' }, { status: 400 });
+    if (!storeId) return NextResponse.json({ error: 'storeId والعنوان مطلوبان' }, { status: 400 });
     if (!(await verifyOwnershipByStore(storeId, session.user.email)))
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
 
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
     if (!templateId) return NextResponse.json({ error: 'القالب غير موجود' }, { status: 404 });
 
     const work = await prisma.templateWork.create({
-      data: { templateId, title, category, link, image, order },
+      data: { templateId, title, category, link, image, order, serviceId },
     });
     return NextResponse.json(work, { status: 201 });
   } catch (error) {
@@ -67,6 +66,7 @@ export async function PUT(req: Request) {
       link?: string;
       image?: string | null;
       order?: number;
+      serviceId?: string | null;
     };
     const { storeId, id, ...fields } = body;
 

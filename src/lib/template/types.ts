@@ -26,21 +26,28 @@ export interface ColorConfig {
   text: string;
 }
 
-export interface ServiceItem {
-  id: string;
-  icon: string;
-  title: string;
-  desc: string;
-  order: number;
-}
-
 export interface WorkItem {
   id: string;
   title: string;
   category: string;
   link: string;
-  image: string | null;
+  image?: string | null;
   order: number;
+  serviceId?: string | null;
+}
+
+export interface ServiceItem {
+  id: string;
+  icon: string;
+  title: string;
+  desc: string;
+  name: string;
+  description: string;
+  worksTitle: string;
+  worksDesc: string;
+  enabled: boolean;
+  order: number;
+  works: WorkItem[];
 }
 
 export interface TestimonialItem {

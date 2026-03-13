@@ -44,7 +44,7 @@ export async function GET(req: Request) {
     const template = await prisma.storeTemplate.findUnique({
       where: { storeId },
       include: {
-        services: { orderBy: { order: 'asc' } },
+        services: { orderBy: { order: 'asc' }, include: { works: { orderBy: { order: 'asc' } } } },
         works: { orderBy: { order: 'asc' } },
         testimonials: { orderBy: { order: 'asc' } },
         bannerImages: { orderBy: { order: 'asc' } },
