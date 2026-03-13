@@ -58,7 +58,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
       return `
         @font-face {
           font-family: '${f.name}';
-          src: url('/api/template/fonts/get/fonts?id=${f.id}')${format ? ` format('${format}')` : ''};
+          src: url('/api/template/fonts/get?id=${f.id}')${format ? ` format('${format}')` : ''};
           font-weight: 100 900;
           font-style: normal;
           font-display: swap;
