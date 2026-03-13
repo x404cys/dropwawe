@@ -9,15 +9,13 @@ import { useState } from 'react';
 import { Product } from '@/types/Products';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Button } from '../ui/button';
-import { useProducts } from '@/app/(page)/s/context/products-context';
-
+  
 export default function ProductCardV1({ product }: { product: Product }) {
   const { addToCartByKey } = useCart();
   const { addToFavoriteByKey, removeFromFavoriteByKey, isInFavoriteByKey } = useFavorite();
   const [isAdding, setIsAdding] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
-  const { store } = useProducts();
-  return (
+   return (
     <div className="group flex h-[350px] flex-col overflow-hidden rounded-xl border border-gray-200 bg-white transition duration-300 hover:shadow-md">
       <Link
         href={`/storev2/productOverviews/${product.id}`}
@@ -85,9 +83,7 @@ export default function ProductCardV1({ product }: { product: Product }) {
             تفاصيل أكثر
           </button>
           <button
-            onClick={() => {
-              addToFavoriteByKey(product, `fav/${store?.id}`);
-            }}
+          
             className={`h-14 w-14 rounded-xl transition-all duration-300 ${
               isFavorite
                 ? 'border-destructive bg-destructive text-destructive-foreground'
