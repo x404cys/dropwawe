@@ -35,9 +35,10 @@ async function getStorefrontData(): Promise<StorefrontData | null> {
   const host = headersList.get('host') || '';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
+  const subdomain = host.split('.')[0];
 
   try {
-    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=0000ppp`, {
+    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}`, {
       next: { revalidate: 30 },
     });
     if (!storeRes.ok) return null;

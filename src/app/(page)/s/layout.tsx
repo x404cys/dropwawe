@@ -5,13 +5,14 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
   const headersList = await headers();
   const host = headersList.get('host') || '';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
+  const subdomain = host.split('.')[0];
 
   const baseUrl = `${protocol}://${host}`;
 
   let fontFaces = '';
   
   try {
-    const res = await fetch(`${baseUrl}/api/s/store?subdomain=0000ppp`, {
+    const res = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}`, {
       next: { revalidate: 60 },
     });
 

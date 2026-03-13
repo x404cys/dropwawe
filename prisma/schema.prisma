@@ -677,54 +677,42 @@ model StoreTemplate {
   storeId String @unique
   store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  // ── Brand (الهوية) ──
-  tagline             String? // الشعار النصي القصير
-  heroButtonText      String? // نص الزر الرئيسي في Hero
-  heroSecondaryButton String? // نص الزر الثانوي في Hero
-  aboutText           String? // نص قسم "من نحن"
-  storeDescription    String? // وصف المتجر (يظهر في قسم "من نحن" وتحت الشعار)
-  // ── CTA Section ──
-  ctaTitle            String? // عنوان قسم دعوة للإجراء
-  ctaDesc             String? // وصف قسم دعوة للإجراء
-  ctaButton           String? // نص زر دعوة للإجراء
+  tagline             String?
+  heroButtonText      String?
+  heroSecondaryButton String?
+  aboutText           String?
+  storeDescription    String?
 
-  // ── Contact (الجديد غير الموجود في Store) ──
-  contactEmail   String? // البريد الإلكتروني
-  contactWebsite String? // الموقع الإلكتروني
-  whatsappNumber String? // رقم الواتساب
+  ctaTitle  String?
+  ctaDesc   String?
+  ctaButton String?
 
-  // ── Design: Fonts ──
-  headingFont String @default("IBM Plex Sans Arabic") // خط العناوين
-  bodyFont    String @default("IBM Plex Sans Arabic") // خط النصوص
+  contactEmail   String?
+  contactWebsite String?
+  whatsappNumber String?
 
-  // ── Design: Colors ──
-  selectedPreset  Int     @default(0) // رقم الـ preset المختار
-  useCustomColors Boolean @default(false) // هل يستخدم ألوان مخصصة
-  colorPrimary    String? // اللون الرئيسي  (#hex)
-  colorAccent     String? // اللون الثانوي  (#hex)
-  colorBg         String? // لون الخلفية    (#hex)
-  colorText       String? // لون النصوص     (#hex)
+  headingFont String @default("IBM Plex Sans Arabic")
+  bodyFont    String @default("IBM Plex Sans Arabic")
 
-  // ── Storefront ──
-  categoryDisplayMode String @default("icons") // "icons" | "pills"
+  selectedPreset  Int     @default(0)
+  useCustomColors Boolean @default(false)
+  colorPrimary    String?
+  colorAccent     String?
+  colorBg         String?
+  colorText       String?
 
-  // ── Announcement Bar (Json — object بسيط لن يُستعلم مستقلاً) ──
-  // { enabled: boolean, text: string, bgColor: string, textColor: string }
+  categoryDisplayMode String @default("icons")
+
   announcementBar Json?
 
-  // ── Sections Toggles (Json — 7 booleans فقط) ──
-  // { hero: boolean, services: boolean, works: boolean,
-  //   testimonials: boolean, cta: boolean, about: boolean, store: boolean }
   sectionsConfig Json?
 
-  // ── Draft / Publish ──
   isDraft     Boolean   @default(true)
   publishedAt DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  // ── Relations ──
   services         TemplateService[]
   works            TemplateWork[]
   testimonials     TemplateTestimonial[]
@@ -734,35 +722,32 @@ model StoreTemplate {
   customFonts      TemplateCustomFont[]
 }
 
-// ── الخدمات ─────────────────────────────────────────────────────
 model TemplateService {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  icon  String  @default("Sparkles") // اسم الأيقونة من lucide-react
+  icon  String  @default("Sparkles")
   title String
   desc  String?
-  order Int     @default(0) // ترتيب العرض
+  order Int     @default(0)
 
   @@index([templateId])
 }
 
-// ── معرض الأعمال ─────────────────────────────────────────────────
 model TemplateWork {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  image      String? // URL أو base64
+  image      String?
   title      String
   category   String?
-  link       String? // رابط اختياري
+  link       String?
   order      Int           @default(0)
 
   @@index([templateId])
 }
 
-// ── آراء العملاء ─────────────────────────────────────────────────
 model TemplateTestimonial {
   id         String        @id @default(cuid())
   templateId String
@@ -771,25 +756,23 @@ model TemplateTestimonial {
   name   String
   role   String?
   text   String
-  rating Int     @default(5) // 1 - 5
+  rating Int     @default(5)
   order  Int     @default(0)
 
   @@index([templateId])
 }
 
-// ── صور البنر ────────────────────────────────────────────────────
 model TemplateBanner {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  url   String // URL أو base64
+  url   String
   order Int    @default(0)
 
   @@index([templateId])
 }
 
-// ── أقسام المنتجات (الصفوف الأفقية) ─────────────────────────────
 model TemplateCategorySection {
   id         String        @id @default(cuid())
   templateId String
@@ -797,34 +780,32 @@ model TemplateCategorySection {
 
   category String
   enabled  Boolean @default(true)
-  order    Int     @default(0) // ترتيب قابل للتغيير (drag & drop)
+  order    Int     @default(0)
 
   @@index([templateId])
 }
 
-// ── أيقونات الأقسام ──────────────────────────────────────────────
 model TemplateCategoryIcon {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  category String // اسم القسم من Inventory
-  icon     String  @default("Package") // اسم الأيقونة من lucide-react
-  image    String? // صورة مخصصة (URL أو base64) — تلغي الأيقونة عند وجودها
+  category String
+  icon     String  @default("Package")
+  image    String?
 
-  @@unique([templateId, category]) // كل قسم له إدخال واحد فقط
+  @@unique([templateId, category])
   @@index([templateId])
 }
 
-// ── الخطوط المخصصة ───────────────────────────────────────────────
 model TemplateCustomFont {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  name String // اسم الخط (مستخرج من اسم الملف)
-  url  String // base64 للملف (TTF / OTF / WOFF / WOFF2)
+  name String
+  url  String
 
-  @@unique([templateId, name]) // لا تكرار لنفس الخط في نفس الـ template
+  @@unique([templateId, name])
   @@index([templateId])
 }
