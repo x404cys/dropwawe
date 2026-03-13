@@ -48,7 +48,7 @@ export default function TemplateSettingsPage() {
   return (
     <section dir="rtl" className="bg-background min-h-screen pb-28">
       <SettingsPageHeader title="تخصيص القالب" subtitle="عدّل هوية ومحتوى وتصميم متجرك" />
-      <main className="mx-auto max-w-lg px-4 pt-4">
+      <main className="mx-auto max-w-lg  pt-4">
         {isLoading ? (
           <div className="text-muted-foreground flex items-center justify-center py-20 text-sm">
             جارٍ التحميل...

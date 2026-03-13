@@ -177,7 +177,7 @@ export default function StorefrontTab({
             <Input
               value={state.announcementBar.text}
               onChange={e => updateBar({ text: e.target.value })}
-              className="rounded-xl text-sm"
+              className="rounded-xl"
               placeholder="نص الإعلان..."
             />
             <div className="flex gap-2">

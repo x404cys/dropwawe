@@ -27,7 +27,7 @@ export default function UserActions() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { theme, toggleTheme } = useTheme();
-  const allowPath = ['/Dashboard', '/'];
+  const allowPath = ['/Dashboard', '/' , '/Dashboard/ProductManagment/add-product'];
 
   const { notifications, unreadCount, markAsRead } = useNotifications(session?.user?.id);
 
@@ -50,7 +50,7 @@ export default function UserActions() {
     <div
       dir="rtl"
       ref={dropdownRef}
-      className={`border-border bg-card z-50 flex w-full items-center justify-between border-b px-4 py-3 md:hidden ${
+      className={`border-border bg-card z-50 flex w-full items-center justify-between border-b px-2 py-3 md:hidden ${
         allowPath.includes(pathname) ? '' : 'hidden'
       }`}
     >

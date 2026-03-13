@@ -40,11 +40,7 @@ export default function QuickActionsGrid() {
       bgColor: 'bg-muted',
     },
   ];
-
-  const getPath = (path: string) => {
-    if (session?.data?.user?.role === 'DROPSHIPPER') return '/Dashboard/profit/profit-dropshiper';
-    return path;
-  };
+ 
 
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3">
@@ -59,7 +55,7 @@ export default function QuickActionsGrid() {
             transition={{ delay: i * 0.05, duration: 0.25 }}
             whileTap={{ scale: 0.95 }}
             whileHover={{ y: -2 }}
-            onClick={() => router.push(getPath(action.path))}
+            onClick={() => router.push(action.path)}
             className="border-border bg-card hover:bg-muted/50 flex cursor-pointer flex-col items-center gap-2 rounded-2xl border p-2 transition-all duration-200 md:gap-3 md:p-3"
           >
             <div

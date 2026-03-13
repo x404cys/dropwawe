@@ -151,7 +151,7 @@ export default function Dashboard() {
           </div>
         </div>
       )}
-      <section dir="rtl" className="min-h-screen md:hidden">
+      <section dir="rtl" className="min-h-screen px-1 md:hidden">
         <main className="flex-1 space-y-4 px-1 py-2 pb-10">
           <div id="mobile-revenue-card">
             <RevenueHeroCard />

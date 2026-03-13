@@ -33,13 +33,13 @@ export default function TestimonialsSection({
               <Input
                 value={t.name}
                 onChange={e => onUpdate(t.id, { name: e.target.value })}
-                className="h-8 text-xs rounded-lg flex-1"
+                className="h-8   rounded-lg flex-1"
                 placeholder="الاسم"
               />
               <Input
                 value={t.role}
                 onChange={e => onUpdate(t.id, { role: e.target.value })}
-                className="h-8 text-xs rounded-lg flex-1"
+                className="h-8   rounded-lg flex-1"
                 placeholder="المنصب"
               />
             </div>
@@ -53,7 +53,7 @@ export default function TestimonialsSection({
           <Textarea
             value={t.text}
             onChange={e => onUpdate(t.id, { text: e.target.value })}
-            className="text-xs min-h-[40px] rounded-lg resize-none"
+            className="  min-h-[40px] rounded-lg resize-none"
             placeholder="نص الرأي"
           />
           <div className="flex items-center gap-0.5">

@@ -15,7 +15,7 @@ export default function AboutSection({ aboutText, onChange }: AboutSectionProps)
       value={aboutText}
       onChange={e => onChange(e.target.value)}
       rows={3}
-      className="text-xs rounded-xl resize-none"
+      className=" rounded-xl resize-none"
       placeholder="نبذة تعريفية"
     />
   );

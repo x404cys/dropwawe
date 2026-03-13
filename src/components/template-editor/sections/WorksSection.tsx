@@ -138,7 +138,7 @@ export default function WorksSection({
                 <Input
                   value={work.title}
                   onChange={e => onUpdate(work.id, { title: e.target.value })}
-                  className="h-8 rounded-lg text-xs font-medium"
+                  className="h-8 rounded-lg  font-medium"
                   placeholder="اسم المشروع"
                 />
 
@@ -146,14 +146,14 @@ export default function WorksSection({
                   <Input
                     value={work.category}
                     onChange={e => onUpdate(work.id, { category: e.target.value })}
-                    className="h-8 rounded-lg text-[11px]"
+                    className="h-8 rounded-lg "
                     placeholder="التصنيف"
                   />
 
                   <Input
                     value={work.link}
                     onChange={e => onUpdate(work.id, { link: e.target.value })}
-                    className="h-8 rounded-lg text-[11px]"
+                    className="h-8 rounded-lg "
                     placeholder="الرابط (اختياري)"
                     dir="ltr"
                   />

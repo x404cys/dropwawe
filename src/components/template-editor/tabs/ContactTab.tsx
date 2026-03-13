@@ -51,7 +51,7 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
                 onChange={e => onUpdate({ [key]: e.target.value })}
                 placeholder={placeholder}
                 dir="ltr"
-                className="h-7 text-xs border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                className="h-7 font-light  border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
               />
             </div>
           </div>

@@ -30,26 +30,25 @@ model User {
   Notification    Notification[]
   orders          Order[]
   Product         Product[]
-  stores StoreUser[]
+  stores          StoreUser[]
 
   Supplier Supplier[]
-  coupons Coupon[] 
+  coupons  Coupon[]
 
-  UserSubscription UserSubscription?
+  UserSubscription    UserSubscription?
   subscriptionHistory SubscriptionHistory[]
-  merchant  Merchant? @relation("UserMerchant")
-  traderOrders OrderFromTrader[] @relation("TraderOrderRelation")
-  traderProfit    TraderProfit?
-  invitesSent Invite[] @relation("InviteOwner")
-  couponUsages CouponUsage[]
-  ProfitWithdrawal ProfitWithdrawal[]
- 
-
+  merchant            Merchant?             @relation("UserMerchant")
+  traderOrders        OrderFromTrader[]     @relation("TraderOrderRelation")
+  traderProfit        TraderProfit?
+  invitesSent         Invite[]              @relation("InviteOwner")
+  couponUsages        CouponUsage[]
+  ProfitWithdrawal    ProfitWithdrawal[]
 }
+
 model Supplier {
-  id              String      @id @default(cuid())
-  userId          String      @unique
-  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id              String     @id @default(cuid())
+  userId          String     @unique
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   name            String?
   image           String?
   Header          String?
@@ -61,26 +60,25 @@ model Supplier {
   hasReturnPolicy String?
   shippingPrice   Float?
   shippingType    String?
-  theme           ThemeStore  @default(MODERN)
-  active          Boolean     @default(true)
+  theme           ThemeStore @default(MODERN)
+  active          Boolean    @default(true)
   address         String?
-  paymentInfo     String?     
-  rating          Float?      @default(0)
-  commission      Float?      @default(0)  
+  paymentInfo     String?
+  rating          Float?     @default(0)
+  commission      Float?     @default(0)
   phone           String?
   stores          Store[]
   products        Product[]
   orders          Order[]
 
   ProductPricing ProductPricing[]
-  traderOrders OrderFromTrader[] @relation("SupplierOrderRelation")
-
+  traderOrders   OrderFromTrader[] @relation("SupplierOrderRelation")
 }
 
 model Store {
-  id              String    @id @default(cuid())
+  id              String         @id @default(cuid())
   name            String?
-  subLink         String?   @unique
+  subLink         String?        @unique
   shippingPrice   Float?
   shippingType    String?
   hasReturnPolicy String?
@@ -93,35 +91,35 @@ model Store {
   methodPayment   String?
   telegram        String?
   description     String?
-  createdAt       DateTime  @default(now())
+  createdAt       DateTime       @default(now())
   products        Product[]
-  users     StoreUser[]
+  users           StoreUser[]
   category        String?
   facebookPixel   String?
   instagramPixel  String?
   tiktokPixel     String?
   googlePixel     String?
   snapPixel       String?
-  Order Order[]
+  Order           Order[]
   theme           String         @default("MODERN")
-  Notification Notification[]
-  invites Invite[]
-  Supplier Supplier[]
+  Notification    Notification[]
+  invites         Invite[]
+  Supplier        Supplier[]
 
-
-  coupons Coupon[] 
+  coupons     Coupon[]
   balances    Balance[]
   ledgers     Ledger[]
   withdrawals Withdrawal[]
-  template  StoreTemplate?
-}                                   
-model StoreUser {
-  id        String   @id @default(cuid())
-  storeId  String
-  userId   String
+  template    StoreTemplate?
+}
 
-  role     StoreUserRole @default(OWNER)
-  isOwner  Boolean       @default(false)
+model StoreUser {
+  id      String @id @default(cuid())
+  storeId String
+  userId  String
+
+  role    StoreUserRole @default(OWNER)
+  isOwner Boolean       @default(false)
 
   createdAt DateTime @default(now())
 
@@ -130,6 +128,7 @@ model StoreUser {
 
   @@unique([storeId, userId])
 }
+
 enum StoreUserRole {
   OWNER
   ADMIN
@@ -137,99 +136,100 @@ enum StoreUserRole {
 }
 
 model Invite {
-  id        String   @id @default(cuid())
-  code      String   @unique
+  id        String    @id @default(cuid())
+  code      String    @unique
   storeId   String
   ownerId   String
-  used      Boolean  @default(false)
-  createdAt DateTime @default(now())
+  used      Boolean   @default(false)
+  createdAt DateTime  @default(now())
   expiresAt DateTime?
 
   store Store @relation(fields: [storeId], references: [id])
   owner User  @relation("InviteOwner", fields: [ownerId], references: [id])
 }
 
-
 model Product {
-  id              String         @id @default(cuid())
-  name            String
-  description     String?
-  price           Float
-  quantity        Int            @default(0)
-  image           String?
-  createdAt       DateTime       @default(now())
-  updatedAt       DateTime       @updatedAt
-  userId          String?
-  category        String?
-  discount        Float?
-  hasReturnPolicy String?
-  shippingPrice   Float?
-  shippingType    String?
-  storeId         String?
-  Notification    Notification[]
-  OrderItem       OrderItem[]
-  store           Store?         @relation(fields: [storeId], references: [id], onDelete: Cascade)
-  user            User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  images          ProductImage[]
-  sizes           ProductSize[]
-  unlimited       Boolean         @default(false)
-  colors           ProductColor[]
-  isFromSupplier   Boolean        @default(false)
-  supplierId       String?      
-  Supplier         Supplier[]
-  pricingDetails  ProductPricing?
+  id                   String                @id @default(cuid())
+  name                 String
+  description          String?
+  price                Float
+  quantity             Int                   @default(0)
+  image                String?
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
+  userId               String?
+  category             String?
+  discount             Float?
+  hasReturnPolicy      String?
+  shippingPrice        Float?
+  shippingType         String?
+  storeId              String?
+  Notification         Notification[]
+  OrderItem            OrderItem[]
+  store                Store?                @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  user                 User?                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  images               ProductImage[]
+  sizes                ProductSize[]
+  unlimited            Boolean               @default(false)
+  colors               ProductColor[]
+  isFromSupplier       Boolean               @default(false)
+  supplierId           String?
+  Supplier             Supplier[]
+  pricingDetails       ProductPricing?
   orderFromTraderItems OrderFromTraderItem[]
-  subInfo         ProductSubInfo?
-  coupons Coupon[] 
-
-
+  subInfo              ProductSubInfo?
+  coupons              Coupon[]
 }
+
 model ProductPricing {
-  id              String    @id @default(cuid())
-  productId       String    @unique      
-  supplierId      String?
-  wholesalePrice  Float      
-  minPrice        Float     
-  maxPrice        Float      
-  minQuantity     Int?       
-  createdAt       DateTime  @default(now())
+  id             String   @id @default(cuid())
+  productId      String   @unique
+  supplierId     String?
+  wholesalePrice Float
+  minPrice       Float
+  maxPrice       Float
+  minQuantity    Int?
+  createdAt      DateTime @default(now())
 
-  product         Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
-  supplier        Supplier? @relation(fields: [supplierId], references: [id], onDelete: Cascade)
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  supplier Supplier? @relation(fields: [supplierId], references: [id], onDelete: Cascade)
 }
+
 model ProductImage {
-  id        String   @id @default(cuid())
+  id        String  @id @default(cuid())
   url       String
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
 model ProductSubInfo {
-  id               String   @id @default(cuid())
-  telegram         String?
-  whatsapp         String?
-  facebookLink     String?
-  instaLink        String?
-  videoLink        String?
-  returnPolicy     String?
-  shippingDetails  String?
-  productId      String   @unique
-  product        Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  id              String  @id @default(cuid())
+  telegram        String?
+  whatsapp        String?
+  facebookLink    String?
+  instaLink       String?
+  videoLink       String?
+  returnPolicy    String?
+  shippingDetails String?
+  productId       String  @unique
+  product         Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model ProductSize {
-  id        String   @id @default(cuid())
-  size      String    
-  stock     Int      @default(0)  
+  id        String  @id @default(cuid())
+  size      String
+  stock     Int     @default(0)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
+
 model ProductColor {
-  id        String   @id @default(cuid())
-  color     String    
-  hex       String?  
-  stock     Int      @default(0)  
+  id        String  @id @default(cuid())
+  color     String
+  hex       String?
+  stock     Int     @default(0)
   productId String
-  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
 }
 
 model Order {
@@ -238,29 +238,28 @@ model Order {
   status       OrderStatus    @default(PENDING)
   total        Float          @default(0)
   userId       String?
-  storeId      String?       
+  storeId      String?
   email        String?
   fullName     String?
   location     String?
   phone        String?
   Notification Notification[]
   user         User?          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  store        Store?       @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  store        Store?         @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  items        OrderItem[]
+  items OrderItem[]
 
   Supplier Supplier[]
 
-
   paymentOrder PaymentOrder?
   couponId     String?
-  coupon Coupon? @relation(fields: [couponId], references: [id])
+  coupon       Coupon?       @relation(fields: [couponId], references: [id])
 
-  discount     Float?   @default(0)
+  discount Float? @default(0)
 
-  finalTotal   Float    @default(0)
+  finalTotal   Float         @default(0)
   couponUsages CouponUsage[]
-  ledgers Ledger[]
+  ledgers      Ledger[]
 }
 
 model OrderItem {
@@ -274,44 +273,47 @@ model OrderItem {
   order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
   product   Product? @relation(fields: [productId], references: [id])
 }
+
 model PaymentOrder {
-  id            String    @id @default(cuid())
-  orderId       String    @unique
-  cartId        String    @unique
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  cartId        String   @unique
   tranRef       String?
   amount        Float
-  currency      String    @default("IQD")
-  status        String     
+  currency      String   @default("IQD")
+  status        String
   respCode      String?
   respMessage   String?
   token         String?
   customerEmail String?
   signature     String?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime @default(now())
 
-  order         Order     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([cartId])
 }
+
 model Payment {
-  id            String    @id @default(cuid())
-  cartId        String    @unique
+  id            String   @id @default(cuid())
+  cartId        String   @unique
   tranRef       String?
   amount        Float
-  currency      String    @default("IQD")
-  status        String     
+  currency      String   @default("IQD")
+  status        String
   respCode      String?
   respMessage   String?
   token         String?
   customerEmail String?
   signature     String?
-  createdAt     DateTime  @default(now())
-  userId        String     
-  planId        String     
-  isActive        Boolean   @default(false)
+  createdAt     DateTime @default(now())
+  userId        String
+  planId        String
+  isActive      Boolean  @default(false)
+
   @@index([cartId])
 }
- 
+
 model Visitor {
   id        String   @id @default(cuid())
   visitorId String
@@ -321,28 +323,27 @@ model Visitor {
   storeName String?
   referrer  String?
 }
+
 //
 model Notification {
-  id        String   @id @default(cuid())
-  userId    String?
-  storeId   String?
-  message   String
-  url       String?
-  isRead    Boolean  @default(false)
-  type      String?
-  createdAt DateTime @default(now())
-  orderId   String?
-  productId String?
+  id                String           @id @default(cuid())
+  userId            String?
+  storeId           String?
+  message           String
+  url               String?
+  isRead            Boolean          @default(false)
+  type              String?
+  createdAt         DateTime         @default(now())
+  orderId           String?
+  productId         String?
   orderFromTraderId String?
   orderFromTrader   OrderFromTrader? @relation("TraderOrderNotifications", fields: [orderFromTraderId], references: [id])
-  
 
-  order     Order?   @relation(fields: [orderId], references: [id])
-  product   Product? @relation(fields: [productId], references: [id])
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  order   Order?   @relation(fields: [orderId], references: [id])
+  product Product? @relation(fields: [productId], references: [id])
+  user    User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store   Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
 }
-
 
 enum UserRole {
   GUEST
@@ -364,68 +365,69 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
-enum TypePlan { 
+
+enum TypePlan {
   NORMAL
   MODERN
   PENDINGROFESSIONAL
 }
 
 model SubscriptionPlan {
-  id                String   @id @default(cuid())
-  name              String  
-  type              String  
-  price             Float
-  durationDays      Int      
-  maxProducts       Int?      
-  maxTemplates      Int?      
-  templateCategory  String?   
-  maxStores         Int?     
-  maxSuppliers      Int?      
-  features          Json?     
-  description       String?
-  createdAt         DateTime @default(now())
+  id               String   @id @default(cuid())
+  name             String
+  type             String
+  price            Float
+  durationDays     Int
+  maxProducts      Int?
+  maxTemplates     Int?
+  templateCategory String?
+  maxStores        Int?
+  maxSuppliers     Int?
+  features         Json?
+  description      String?
+  createdAt        DateTime @default(now())
 
-  subscriptions     UserSubscription[]
-  history           SubscriptionHistory[]   
+  subscriptions UserSubscription[]
+  history       SubscriptionHistory[]
 }
-
 
 model UserSubscription {
-  id              String   @id @default(cuid())
-  userId          String   @unique    
-  planId          String
+  id     String @id @default(cuid())
+  userId String @unique
+  planId String
 
-  startDate       DateTime @default(now())
-  endDate         DateTime
-  isActive        Boolean  @default(true)
+  startDate DateTime @default(now())
+  endDate   DateTime
+  isActive  Boolean  @default(true)
 
-  canceledAt      DateTime?
-  autoRenew       Boolean  @default(false)
+  canceledAt DateTime?
+  autoRenew  Boolean   @default(false)
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan            SubscriptionPlan @relation(fields: [planId], references: [id])
+  user User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan SubscriptionPlan @relation(fields: [planId], references: [id])
 
-  history         SubscriptionHistory[]    
+  history SubscriptionHistory[]
 }
+
 model SubscriptionHistory {
-  id              String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  userId          String
-  planId          String
-  subscriptionId  String?    
+  userId         String
+  planId         String
+  subscriptionId String?
 
-  startDate       DateTime
-  endDate         DateTime
+  startDate DateTime
+  endDate   DateTime
 
-  price           Float
-  paymentId       String?
-  status          SubscriptionStatus
+  price     Float
+  paymentId String?
+  status    SubscriptionStatus
 
-  createdAt       DateTime @default(now())
+  createdAt DateTime @default(now())
 
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  plan            SubscriptionPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
-  subscription    UserSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  user         User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan         SubscriptionPlan  @relation(fields: [planId], references: [id], onDelete: Cascade)
+  subscription UserSubscription? @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@index([planId])
@@ -440,37 +442,35 @@ enum SubscriptionStatus {
 }
 
 model Merchant {
-  id        String   @id @default(cuid())
-  userId    String?  @unique
-  user      User?    @relation("UserMerchant", fields: [userId], references: [id], onDelete: Cascade)
+  id     String  @id @default(cuid())
+  userId String? @unique
+  user   User?   @relation("UserMerchant", fields: [userId], references: [id], onDelete: Cascade)
 
-  username  String   @unique
+  username  String    @unique
   password  String
   token     String?
   tokenExp  DateTime?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
-
 model OrderFromTrader {
-  id           String         @id @default(cuid())
-  createdAt    DateTime       @default(now())
-  status       OrderStatus    @default(PENDING)
-  total        Float          @default(0)
+  id        String      @id @default(cuid())
+  createdAt DateTime    @default(now())
+  status    OrderStatus @default(PENDING)
+  total     Float       @default(0)
 
-  orderId      String?        @unique
+  orderId String? @unique
 
-  traderId     String?         
-  supplierId   String?         
+  traderId   String?
+  supplierId String?
 
- 
-  fullName     String?
-  location     String?
-  phone        String?
+  fullName String?
+  location String?
+  phone    String?
 
-  trader       User?          @relation("TraderOrderRelation", fields: [traderId], references: [id], onDelete: Cascade)
-  supplier     Supplier?      @relation("SupplierOrderRelation", fields: [supplierId], references: [id], onDelete: Cascade)
+  trader   User?     @relation("TraderOrderRelation", fields: [traderId], references: [id], onDelete: Cascade)
+  supplier Supplier? @relation("SupplierOrderRelation", fields: [supplierId], references: [id], onDelete: Cascade)
 
   items        OrderFromTraderItem[]
   paymentOrder OrderFromTraderPayment?
@@ -479,46 +479,46 @@ model OrderFromTrader {
 }
 
 model OrderFromTraderItem {
-  id             String   @id @default(cuid())
-  quantity       Int      @default(1)
+  id             String  @id @default(cuid())
+  quantity       Int     @default(1)
   price          Float
-  wholesalePrice Float?     
-  traderProfit   Float?     
-  supplierProfit Float?     
+  wholesalePrice Float?
+  traderProfit   Float?
+  supplierProfit Float?
   orderId        String
   color          String?
-  size          String?
+  size           String?
   productId      String?
 
-  order          OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  product        Product?        @relation(fields: [productId], references: [id])
+  order   OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product Product?        @relation(fields: [productId], references: [id])
 }
+
 model OrderFromTraderPayment {
-  id            String    @id @default(cuid())
-  orderId       String    @unique
-  cartId        String    @unique
+  id            String   @id @default(cuid())
+  orderId       String   @unique
+  cartId        String   @unique
   tranRef       String?
   amount        Float
-  currency      String    @default("IQD")
-  status        String     
+  currency      String   @default("IQD")
+  status        String
   respCode      String?
   respMessage   String?
   token         String?
   customerEmail String?
   signature     String?
-  createdAt     DateTime  @default(now())
+  createdAt     DateTime @default(now())
 
-  order         OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  order OrderFromTrader @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
   @@index([cartId])
 }
 
-
 model TraderProfit {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  traderId  String   @unique   
-  trader    User     @relation(fields: [traderId], references: [id], onDelete: Cascade)
+  traderId String @unique
+  trader   User   @relation(fields: [traderId], references: [id], onDelete: Cascade)
 
   amount    Float
   remaining Float
@@ -527,66 +527,66 @@ model TraderProfit {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model ProfitWithdrawal {
-  id        String   @id @default(cuid())
-  traderId  String   
+  id        String           @id @default(cuid())
+  traderId  String
   amount    Float
   status    WithdrawalStatus @default(PENDING)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 
-  trader    User     @relation(fields: [traderId], references: [id], onDelete: Cascade)
+  trader User @relation(fields: [traderId], references: [id], onDelete: Cascade)
 }
+
 enum WithdrawalStatus {
   PENDING
   APPROVED
   REJECTED
 }
+
 model Coupon {
-  id      String @id @default(cuid())
+  id String @id @default(cuid())
 
-  code    String @unique
+  code String @unique
 
+  scope CouponScope @default(GLOBAL)
 
-  scope   CouponScope @default(GLOBAL)
+  type CouponType
 
-  type    CouponType
+  value Float
 
-  value   Float
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  storeId   String?
-  store     Store?   @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String?
+  store   Store?  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
   productId String?
   product   Product? @relation(fields: [productId], references: [id], onDelete: Cascade)
 
+  minOrder    Float?
+  maxDiscount Float?
+  maxUsage    Int?
+  perUser     Int?
 
-  minOrder      Float?
-  maxDiscount   Float?
-  maxUsage      Int?
-  perUser       Int?     
+  startsAt  DateTime? @default(now())
+  expiresAt DateTime?
 
+  isActive Boolean @default(true)
 
-  startsAt   DateTime?   @default(now())
-  expiresAt  DateTime?
-
-  isActive   Boolean @default(true)
-
-  usedCount  Int @default(0)
+  usedCount Int @default(0)
 
   usages CouponUsage[]
 
   createdAt DateTime @default(now())
-  orders Order[]
+  orders    Order[]
 }
 
 enum CouponScope {
   GLOBAL
   STORE
-  PRODUCT 
+  PRODUCT
 }
 
 enum CouponType {
@@ -596,53 +596,56 @@ enum CouponType {
 }
 
 model CouponUsage {
-  id        String @id @default(cuid())
+  id String @id @default(cuid())
 
-  couponId  String?
-  coupon    Coupon? @relation(fields: [couponId], references: [id])
+  couponId String?
+  coupon   Coupon? @relation(fields: [couponId], references: [id])
 
-  userId    String?
-  user      User?  @relation(fields: [userId], references: [id])
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
 
-  orderId   String?
-  order     Order? @relation(fields: [orderId], references: [id])
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id])
 
-  usedAt    DateTime @default(now())
+  usedAt DateTime @default(now())
 
   @@index([couponId])
   @@index([userId])
 }
+
 model Balance {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  storeId   String   @unique
-  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  available Float    @default(0) 
-  pending   Float    @default(0) 
+  available Float @default(0)
+  pending   Float @default(0)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 model Ledger {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  storeId    String
-  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  orderId   String?
-  order     Order?   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String?
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
-  type      LedgerType
+  type LedgerType
 
-  amount    Float
+  amount Float
 
   balanceAfter Float?
 
-  note      String?
+  note String?
 
   createdAt DateTime @default(now())
 }
+
 enum LedgerType {
   PAYMENT_RECEIVED
   ORDER_PROFIT
@@ -651,24 +654,23 @@ enum LedgerType {
   WITHDRAW_APPROVED
   REFUND
 }
+
 model Withdrawal {
-  id        String   @id @default(cuid())
+  id String @id @default(cuid())
 
-  storeId    String
-  store      Store     @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  storeId String
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
 
-  amount    Float
+  amount Float
 
-  status    WithdrawalStatus @default(PENDING)
+  status WithdrawalStatus @default(PENDING)
 
-  method    String?
-  note      String?
+  method String?
+  note   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
-
 
 model StoreTemplate {
   id      String @id @default(cuid())
@@ -682,9 +684,9 @@ model StoreTemplate {
   aboutText           String? // نص قسم "من نحن"
   storeDescription    String? // وصف المتجر (يظهر في قسم "من نحن" وتحت الشعار)
   // ── CTA Section ──
-  ctaTitle  String? // عنوان قسم دعوة للإجراء
-  ctaDesc   String? // وصف قسم دعوة للإجراء
-  ctaButton String? // نص زر دعوة للإجراء
+  ctaTitle            String? // عنوان قسم دعوة للإجراء
+  ctaDesc             String? // وصف قسم دعوة للإجراء
+  ctaButton           String? // نص زر دعوة للإجراء
 
   // ── Contact (الجديد غير الموجود في Store) ──
   contactEmail   String? // البريد الإلكتروني
@@ -696,7 +698,7 @@ model StoreTemplate {
   bodyFont    String @default("IBM Plex Sans Arabic") // خط النصوص
 
   // ── Design: Colors ──
-  selectedPreset  Int     @default(0)     // رقم الـ preset المختار
+  selectedPreset  Int     @default(0) // رقم الـ preset المختار
   useCustomColors Boolean @default(false) // هل يستخدم ألوان مخصصة
   colorPrimary    String? // اللون الرئيسي  (#hex)
   colorAccent     String? // اللون الثانوي  (#hex)
@@ -738,10 +740,10 @@ model TemplateService {
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  icon  String @default("Sparkles") // اسم الأيقونة من lucide-react
+  icon  String  @default("Sparkles") // اسم الأيقونة من lucide-react
   title String
   desc  String?
-  order Int    @default(0)          // ترتيب العرض
+  order Int     @default(0) // ترتيب العرض
 
   @@index([templateId])
 }
@@ -751,11 +753,11 @@ model TemplateWork {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-  image      String?        // URL أو base64
-  title    String
-  category String?
-  link     String? // رابط اختياري
-  order    Int     @default(0)
+  image      String? // URL أو base64
+  title      String
+  category   String?
+  link       String? // رابط اختياري
+  order      Int           @default(0)
 
   @@index([templateId])
 }
@@ -769,8 +771,8 @@ model TemplateTestimonial {
   name   String
   role   String?
   text   String
-  rating Int    @default(5) // 1 - 5
-  order  Int    @default(0)
+  rating Int     @default(5) // 1 - 5
+  order  Int     @default(0)
 
   @@index([templateId])
 }
@@ -781,8 +783,8 @@ model TemplateBanner {
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  url   String       // URL أو base64
-  order Int @default(0)
+  url   String // URL أو base64
+  order Int    @default(0)
 
   @@index([templateId])
 }

@@ -31,13 +31,13 @@ export default function ServicesSection({
             <Input
               value={service.title}
               onChange={e => onUpdate(service.id, { title: e.target.value })}
-              className="h-8 rounded-lg text-xs font-medium"
+              className="h-8 rounded-lg  font-medium"
               placeholder="اسم الخدمة"
             />
             <Input
               value={service.desc}
               onChange={e => onUpdate(service.id, { desc: e.target.value })}
-              className="h-8 rounded-lg text-xs"
+              className="h-8 rounded-lg"
               placeholder="وصف مختصر"
             />
           </div>

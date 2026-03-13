@@ -18,19 +18,19 @@ export default function CtaSection({ ctaTitle, ctaDesc, ctaButton, onChange }: C
       <Input
         value={ctaTitle}
         onChange={e => onChange({ ctaTitle: e.target.value })}
-        className="text-sm rounded-xl"
+        className=" rounded-xl"
         placeholder="العنوان"
       />
       <Input
         value={ctaDesc}
         onChange={e => onChange({ ctaDesc: e.target.value })}
-        className="text-sm rounded-xl"
+        className=" rounded-xl"
         placeholder="الوصف"
       />
       <Input
         value={ctaButton}
         onChange={e => onChange({ ctaButton: e.target.value })}
-        className="text-sm rounded-xl"
+        className=" rounded-xl"
         placeholder="نص الزر"
       />
     </div>

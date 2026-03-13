@@ -77,28 +77,7 @@ export function StockSection({
           <Infinity className="h-4 w-4 text-xs" /> {t.inventory.unlimited}{' '}
         </Button>
       </div>
-      {session.data?.user.role === 'DROPSHIPPER' && (
-        <div className="space-y-2">
-          <label className="text-muted-foreground flex items-center gap-2 text-sm">
-            <Store className="h-4 w-4" />
-            {t.store?.storeDescPlaceholder || 'اختر المتجر'}
-          </label>
-
-          <select
-            className="bg-card w-full rounded-xl border border-gray-300 p-3 text-sm text-black shadow-sm transition focus:border-sky-500 focus:ring-2 focus:ring-sky-500/20 focus:outline-none"
-            value={storeId || ''}
-            onChange={e => setStoreId(e.target.value)}
-          >
-            <option value="">{t.store?.storeDescPlaceholder || 'الافتراضي'}</option>
-
-            {data.Stores?.map((store: any) => (
-              <option key={store.id} value={store.id}>
-                {store.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+       
     </div>
   );
 }
