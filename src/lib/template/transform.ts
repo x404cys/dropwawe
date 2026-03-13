@@ -69,6 +69,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
       title: w.title,
       category: w.category ?? '',
       link: w.link ?? '',
+      image: w.image ?? null,
       order: w.order,
     })),
     testimonials: (db.testimonials ?? []).map((t: PrismaTemplateRecord) => ({

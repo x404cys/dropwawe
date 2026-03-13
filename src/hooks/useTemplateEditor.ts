@@ -18,8 +18,8 @@ import type {
   CustomFontItem,
 } from '@/lib/template/types';
 import { toPayload } from '@/lib/template/transform';
- 
-import CheckCircle from "lucide-react";
+
+import CheckCircle from 'lucide-react';
 
 // ── Upload helper (client → server route → uploadToServer on disk) ────────────
 
@@ -95,16 +95,15 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       });
       const data: unknown = await res.json();
       if (!res.ok) {
-        const errMsg =
-          (data as { error?: string })?.error ?? 'حدث خطأ في الحفظ';
+        const errMsg = (data as { error?: string })?.error ?? 'حدث خطأ في الحفظ';
         toast.error(errMsg);
         return;
       }
       setSavedState(formState);
-      toast.success("تم الحفظ بنجاح", {
-        description: "تم تحديث البيانات بنجاح",
-       });      
-     } catch {
+      toast.success('تم الحفظ بنجاح', {
+        description: 'تم تحديث البيانات بنجاح',
+      });
+    } catch {
       toast.error('حدث خطأ في الاتصال، حاول مرة أخرى');
     } finally {
       setIsSaving(false);
@@ -161,6 +160,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       id: `tmp-${Date.now()}`,
       icon: 'Sparkles',
       title: 'خدمة جديدة',
+
       desc: 'وصف الخدمة',
       order: nextOrder(formState.services),
     };
@@ -180,35 +180,44 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         }));
       }
     } catch (err) {
-      setFormState(prev => ({ ...prev, services: prev.services.filter(s => s.id !== optimistic.id) }));
+      setFormState(prev => ({
+        ...prev,
+        services: prev.services.filter(s => s.id !== optimistic.id),
+      }));
       toast.error((err as Error).message);
     }
   }, [formState.services, storeId]);
 
-  const updateService = useCallback(async (id: string, fields: Partial<Omit<ServiceItem, 'id'>>) => {
-    const previous = formState.services;
-    setFormState(prev => ({
-      ...prev,
-      services: prev.services.map(s => (s.id === id ? { ...s, ...fields } : s)),
-    }));
-    try {
-      await apiPut('/api/template/services', { storeId, id, ...fields });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, services: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.services, storeId]);
+  const updateService = useCallback(
+    async (id: string, fields: Partial<Omit<ServiceItem, 'id'>>) => {
+      const previous = formState.services;
+      setFormState(prev => ({
+        ...prev,
+        services: prev.services.map(s => (s.id === id ? { ...s, ...fields } : s)),
+      }));
+      try {
+        await apiPut('/api/template/services', { storeId, id, ...fields });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, services: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.services, storeId]
+  );
 
-  const removeService = useCallback(async (id: string) => {
-    const previous = formState.services;
-    setFormState(prev => ({ ...prev, services: prev.services.filter(s => s.id !== id) }));
-    try {
-      await apiDelete('/api/template/services', { storeId, id });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, services: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.services, storeId]);
+  const removeService = useCallback(
+    async (id: string) => {
+      const previous = formState.services;
+      setFormState(prev => ({ ...prev, services: prev.services.filter(s => s.id !== id) }));
+      try {
+        await apiDelete('/api/template/services', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, services: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.services, storeId]
+  );
 
   // ── Works ────────────────────────────────────────────────────────────────
 
@@ -261,50 +270,57 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     }
   }, [formState.works, storeId]);
 
-  const updateWork = useCallback(async (id: string, fields: Partial<Omit<WorkItem, 'id'>>) => {
-    const resolvedId = tempWorkIdMap.current[id] ?? id;
-    const previous = formState.works;
-    setFormState(prev => ({
-      ...prev,
-      works: prev.works.map(w =>
-        w.id === id || w.id === resolvedId ? { ...w, ...fields } : w,
-      ),
-    }));
-    if (resolvedId.startsWith('tmp-')) return;
-    try {
-      await apiPut('/api/template/works', { storeId, id: resolvedId, ...fields });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, works: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.works, storeId]);
+  const updateWork = useCallback(
+    async (id: string, fields: Partial<Omit<WorkItem, 'id'>>) => {
+      const resolvedId = tempWorkIdMap.current[id] ?? id;
+      const previous = formState.works;
+      setFormState(prev => ({
+        ...prev,
+        works: prev.works.map(w => (w.id === id || w.id === resolvedId ? { ...w, ...fields } : w)),
+      }));
+      if (resolvedId.startsWith('tmp-')) return;
+      try {
+        await apiPut('/api/template/works', { storeId, id: resolvedId, ...fields });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, works: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.works, storeId]
+  );
 
-  const removeWork = useCallback(async (id: string) => {
-    const resolvedId = tempWorkIdMap.current[id] ?? id;
-    const previous = formState.works;
-    setFormState(prev => ({
-      ...prev,
-      works: prev.works.filter(w => w.id !== id && w.id !== resolvedId),
-    }));
-    if (resolvedId.startsWith('tmp-')) return;
-    try {
-      await apiDelete('/api/template/works', { storeId, id: resolvedId });
-      delete tempWorkIdMap.current[id];
-    } catch (err) {
-      setFormState(prev => ({ ...prev, works: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.works, storeId]);
+  const removeWork = useCallback(
+    async (id: string) => {
+      const resolvedId = tempWorkIdMap.current[id] ?? id;
+      const previous = formState.works;
+      setFormState(prev => ({
+        ...prev,
+        works: prev.works.filter(w => w.id !== id && w.id !== resolvedId),
+      }));
+      if (resolvedId.startsWith('tmp-')) return;
+      try {
+        await apiDelete('/api/template/works', { storeId, id: resolvedId });
+        delete tempWorkIdMap.current[id];
+      } catch (err) {
+        setFormState(prev => ({ ...prev, works: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.works, storeId]
+  );
 
-  const uploadWorkImage = useCallback(async (id: string, file: File) => {
-    try {
-      const imageUrl = await uploadFile(file);
-      await updateWork(id, { image: imageUrl });
-    } catch (err) {
-      toast.error((err as Error).message);
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [formState.works, storeId]);
+  const uploadWorkImage = useCallback(
+    async (id: string, file: File) => {
+      try {
+        const imageUrl = await uploadFile(file);
+        await updateWork(id, { image: imageUrl });
+      } catch (err) {
+        toast.error((err as Error).message);
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [formState.works, storeId]
+  );
 
   // ── Testimonials ─────────────────────────────────────────────────────────
 
@@ -352,125 +368,148 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.testimonials, storeId],
+    [formState.testimonials, storeId]
   );
 
-  const removeTestimonial = useCallback(async (id: string) => {
-    const previous = formState.testimonials;
-    setFormState(prev => ({ ...prev, testimonials: prev.testimonials.filter(t => t.id !== id) }));
-    try {
-      await apiDelete('/api/template/testimonials', { storeId, id });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, testimonials: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.testimonials, storeId]);
+  const removeTestimonial = useCallback(
+    async (id: string) => {
+      const previous = formState.testimonials;
+      setFormState(prev => ({ ...prev, testimonials: prev.testimonials.filter(t => t.id !== id) }));
+      try {
+        await apiDelete('/api/template/testimonials', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, testimonials: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.testimonials, storeId]
+  );
 
   // ── Banners ──────────────────────────────────────────────────────────────
 
-  const addBanner = useCallback(async (file: File) => {
-    const optimistic: BannerItem = {
-      id: `tmp-${Date.now()}`,
-      url: URL.createObjectURL(file), // local preview while uploading
-      order: nextOrder(formState.bannerImages),
-    };
-    setFormState(prev => ({ ...prev, bannerImages: [...prev.bannerImages, optimistic] }));
-    try {
-      const url = await uploadFile(file);
-      const created = await apiPost<BannerItem>('/api/template/banners', {
-        storeId,
-        url,
-        order: optimistic.order,
-      });
-      if (created) {
+  const addBanner = useCallback(
+    async (file: File) => {
+      const optimistic: BannerItem = {
+        id: `tmp-${Date.now()}`,
+        url: URL.createObjectURL(file), // local preview while uploading
+        order: nextOrder(formState.bannerImages),
+      };
+      setFormState(prev => ({ ...prev, bannerImages: [...prev.bannerImages, optimistic] }));
+      try {
+        const url = await uploadFile(file);
+        const created = await apiPost<BannerItem>('/api/template/banners', {
+          storeId,
+          url,
+          order: optimistic.order,
+        });
+        if (created) {
+          setFormState(prev => ({
+            ...prev,
+            bannerImages: prev.bannerImages.map(b => (b.id === optimistic.id ? created : b)),
+          }));
+        }
+      } catch (err) {
         setFormState(prev => ({
           ...prev,
-          bannerImages: prev.bannerImages.map(b => (b.id === optimistic.id ? created : b)),
+          bannerImages: prev.bannerImages.filter(b => b.id !== optimistic.id),
         }));
+        toast.error((err as Error).message);
       }
-    } catch (err) {
-      setFormState(prev => ({
-        ...prev,
-        bannerImages: prev.bannerImages.filter(b => b.id !== optimistic.id),
-      }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.bannerImages, storeId]);
+    },
+    [formState.bannerImages, storeId]
+  );
 
-  const removeBanner = useCallback(async (id: string) => {
-    const previous = formState.bannerImages;
-    setFormState(prev => ({ ...prev, bannerImages: prev.bannerImages.filter(b => b.id !== id) }));
-    try {
-      await apiDelete('/api/template/banners', { storeId, id });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, bannerImages: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.bannerImages, storeId]);
+  const removeBanner = useCallback(
+    async (id: string) => {
+      const previous = formState.bannerImages;
+      setFormState(prev => ({ ...prev, bannerImages: prev.bannerImages.filter(b => b.id !== id) }));
+      try {
+        await apiDelete('/api/template/banners', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, bannerImages: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.bannerImages, storeId]
+  );
 
   // ── Category Sections ────────────────────────────────────────────────────
 
-  const addCategorySection = useCallback(async (category: string) => {
-    const optimistic: CategorySectionItem = {
-      id: `tmp-${Date.now()}`,
-      category,
-      enabled: true,
-      order: nextOrder(formState.categorySections),
-    };
-    setFormState(prev => ({ ...prev, categorySections: [...prev.categorySections, optimistic] }));
-    try {
-      const created = await apiPost<CategorySectionItem>('/api/template/category-sections', {
-        storeId,
-        ...optimistic,
-      });
-      if (created) {
+  const addCategorySection = useCallback(
+    async (category: string) => {
+      const optimistic: CategorySectionItem = {
+        id: `tmp-${Date.now()}`,
+        category,
+        enabled: true,
+        order: nextOrder(formState.categorySections),
+      };
+      setFormState(prev => ({ ...prev, categorySections: [...prev.categorySections, optimistic] }));
+      try {
+        const created = await apiPost<CategorySectionItem>('/api/template/category-sections', {
+          storeId,
+          ...optimistic,
+        });
+        if (created) {
+          setFormState(prev => ({
+            ...prev,
+            categorySections: prev.categorySections.map(cs =>
+              cs.id === optimistic.id ? created : cs
+            ),
+          }));
+        }
+      } catch (err) {
         setFormState(prev => ({
           ...prev,
-          categorySections: prev.categorySections.map(cs =>
-            cs.id === optimistic.id ? created : cs,
-          ),
+          categorySections: prev.categorySections.filter(cs => cs.id !== optimistic.id),
         }));
+        toast.error((err as Error).message);
       }
-    } catch (err) {
+    },
+    [formState.categorySections, storeId]
+  );
+
+  const updateCategorySection = useCallback(
+    async (id: string, category: string) => {
+      const previous = formState.categorySections;
       setFormState(prev => ({
         ...prev,
-        categorySections: prev.categorySections.filter(cs => cs.id !== optimistic.id),
+        categorySections: prev.categorySections.map(cs =>
+          cs.id === id ? { ...cs, category } : cs
+        ),
       }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.categorySections, storeId]);
+      try {
+        await apiPut('/api/template/category-sections', {
+          storeId,
+          action: 'update',
+          id,
+          category,
+        });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, categorySections: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.categorySections, storeId]
+  );
 
-  const updateCategorySection = useCallback(async (id: string, category: string) => {
-    const previous = formState.categorySections;
-    setFormState(prev => ({
-      ...prev,
-      categorySections: prev.categorySections.map(cs =>
-        cs.id === id ? { ...cs, category } : cs,
-      ),
-    }));
-    try {
-      await apiPut('/api/template/category-sections', { storeId, action: 'update', id, category });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, categorySections: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.categorySections, storeId]);
-
-  const toggleCategorySection = useCallback(async (id: string) => {
-    const previous = formState.categorySections;
-    setFormState(prev => ({
-      ...prev,
-      categorySections: prev.categorySections.map(cs =>
-        cs.id === id ? { ...cs, enabled: !cs.enabled } : cs,
-      ),
-    }));
-    try {
-      await apiPut('/api/template/category-sections', { storeId, action: 'toggle', id });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, categorySections: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.categorySections, storeId]);
+  const toggleCategorySection = useCallback(
+    async (id: string) => {
+      const previous = formState.categorySections;
+      setFormState(prev => ({
+        ...prev,
+        categorySections: prev.categorySections.map(cs =>
+          cs.id === id ? { ...cs, enabled: !cs.enabled } : cs
+        ),
+      }));
+      try {
+        await apiPut('/api/template/category-sections', { storeId, action: 'toggle', id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, categorySections: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.categorySections, storeId]
+  );
 
   const moveCategorySection = useCallback(
     async (index: number, direction: -1 | 1) => {
@@ -492,22 +531,25 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.categorySections, storeId],
+    [formState.categorySections, storeId]
   );
 
-  const removeCategorySection = useCallback(async (id: string) => {
-    const previous = formState.categorySections;
-    setFormState(prev => ({
-      ...prev,
-      categorySections: prev.categorySections.filter(cs => cs.id !== id),
-    }));
-    try {
-      await apiDelete('/api/template/category-sections', { storeId, id });
-    } catch (err) {
-      setFormState(prev => ({ ...prev, categorySections: previous }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.categorySections, storeId]);
+  const removeCategorySection = useCallback(
+    async (id: string) => {
+      const previous = formState.categorySections;
+      setFormState(prev => ({
+        ...prev,
+        categorySections: prev.categorySections.filter(cs => cs.id !== id),
+      }));
+      try {
+        await apiDelete('/api/template/category-sections', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({ ...prev, categorySections: previous }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState.categorySections, storeId]
+  );
 
   // ── Category Icons ───────────────────────────────────────────────────────
 
@@ -525,14 +567,14 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.categoryIcons, storeId],
+    [formState.categoryIcons, storeId]
   );
 
   const ensureCategoryIcons = useCallback(
     async (categories: string[]) => {
       const normalized = Array.from(new Set(categories.map(c => c.trim()).filter(Boolean)));
       const missing = normalized.filter(
-        category => !formState.categoryIcons.some(ci => ci.category === category),
+        category => !formState.categoryIcons.some(ci => ci.category === category)
       );
       if (missing.length === 0) return;
 
@@ -573,59 +615,69 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.categoryIcons, storeId],
+    [formState.categoryIcons, storeId]
   );
 
   // ── Custom Fonts ─────────────────────────────────────────────────────────
 
-  const addCustomFont = useCallback(async (name: string, file: File) => {
-    if (formState.customFonts.some(f => f.name === name)) return;
-    const optimistic: CustomFontItem = { id: `tmp-${Date.now()}`, name, url: '' };
-    setFormState(prev => ({ ...prev, customFonts: [...prev.customFonts, optimistic] }));
-    try {
-      const url = await uploadFile(file);
-      const created = await apiPost<CustomFontItem>('/api/template/fonts', {
-        storeId,
-        name,
-        url,
-      });
-      if (created) {
+  const addCustomFont = useCallback(
+    async (name: string, file: File): Promise<boolean> => {
+      if (formState.customFonts.some(f => f.name === name)) {
+        return true;
+      }
+      const optimistic: CustomFontItem = { id: `tmp-${Date.now()}`, name, url: '' };
+      setFormState(prev => ({ ...prev, customFonts: [...prev.customFonts, optimistic] }));
+      try {
+        const url = await uploadFile(file);
+        const created = await apiPost<CustomFontItem>('/api/template/fonts', {
+          storeId,
+          name,
+          url,
+        });
+        if (created) {
+          setFormState(prev => ({
+            ...prev,
+            customFonts: prev.customFonts.map(f => (f.id === optimistic.id ? created : f)),
+          }));
+        }
+        return true;
+      } catch (err) {
         setFormState(prev => ({
           ...prev,
-          customFonts: prev.customFonts.map(f => (f.id === optimistic.id ? created : f)),
+          customFonts: prev.customFonts.filter(f => f.id !== optimistic.id),
         }));
+        toast.error((err as Error).message);
+        return false;
       }
-    } catch (err) {
-      setFormState(prev => ({
-        ...prev,
-        customFonts: prev.customFonts.filter(f => f.id !== optimistic.id),
-      }));
-      toast.error((err as Error).message);
-    }
-  }, [formState.customFonts, storeId]);
+    },
+    [formState.customFonts, storeId]
+  );
 
-  const removeCustomFont = useCallback(async (id: string, name: string) => {
-    const previous = formState.customFonts;
-    const previousHeading = formState.headingFont;
-    const previousBody = formState.bodyFont;
-    setFormState(prev => ({
-      ...prev,
-      customFonts: prev.customFonts.filter(f => f.id !== id),
-      headingFont: prev.headingFont === name ? 'IBM Plex Sans Arabic' : prev.headingFont,
-      bodyFont: prev.bodyFont === name ? 'IBM Plex Sans Arabic' : prev.bodyFont,
-    }));
-    try {
-      await apiDelete('/api/template/fonts', { storeId, id });
-    } catch (err) {
+  const removeCustomFont = useCallback(
+    async (id: string, name: string) => {
+      const previous = formState.customFonts;
+      const previousHeading = formState.headingFont;
+      const previousBody = formState.bodyFont;
       setFormState(prev => ({
         ...prev,
-        customFonts: previous,
-        headingFont: previousHeading,
-        bodyFont: previousBody,
+        customFonts: prev.customFonts.filter(f => f.id !== id),
+        headingFont: prev.headingFont === name ? 'IBM Plex Sans Arabic' : prev.headingFont,
+        bodyFont: prev.bodyFont === name ? 'IBM Plex Sans Arabic' : prev.bodyFont,
       }));
-      toast.error((err as Error).message);
-    }
-  }, [formState, storeId]);
+      try {
+        await apiDelete('/api/template/fonts', { storeId, id });
+      } catch (err) {
+        setFormState(prev => ({
+          ...prev,
+          customFonts: previous,
+          headingFont: previousHeading,
+          bodyFont: previousBody,
+        }));
+        toast.error((err as Error).message);
+      }
+    },
+    [formState, storeId]
+  );
 
   // ── Return ────────────────────────────────────────────────────────────────
 

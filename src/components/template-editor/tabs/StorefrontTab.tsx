@@ -13,7 +13,6 @@ import {
   X,
   ChevronDown,
   Sparkles,
-  Image,
   Star,
   Palette,
   Camera,
@@ -34,7 +33,7 @@ import type {
   AnnouncementBarConfig,
   CategoryIconItem,
 } from '@/lib/template/types';
-import NextImage from 'next/image'; // ── Icon map for category icons ──────────────────────────────────────────────
+import Image from 'next/image'; // ── Icon map for category icons ──────────────────────────────────────────────
 
 const CATEGORY_ICON_OPTIONS = [
   'Package',
@@ -216,11 +215,9 @@ export default function StorefrontTab({
         )}
       </div>
 
-      {/* Banner Images */}
       <div className="bg-card border-border rounded-2xl border p-4">
         <div className="mb-3 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Image className="text-primary h-4 w-4" />
             <p className="text-foreground text-xs font-semibold">صور البنر</p>
           </div>
           <span className="text-muted-foreground text-[10px]">
@@ -229,14 +226,16 @@ export default function StorefrontTab({
         </div>
         <div className="space-y-2">
           {state.bannerImages.map((img, i) => (
-            <div key={img.id} className="border-border relative overflow-hidden rounded-xl border">
-              <NextImage src={img.url as string} width={10} height={10} alt="d" className="h-24 w-full object-cover" />
+            <div className="border-border relative h-24 w-full overflow-hidden rounded-xl border">
+              <Image src={img.url as string} alt="banner" fill className="object-cover" />
+
               <button
                 onClick={() => onRemoveBanner(img.id)}
                 className="bg-destructive/90 absolute top-2 left-2 flex h-6 w-6 items-center justify-center rounded-full"
               >
                 <X className="text-destructive-foreground h-3 w-3" />
               </button>
+
               <span className="bg-foreground/60 text-background absolute top-2 right-2 rounded-full px-2 py-0.5 text-[9px] font-bold">
                 {i + 1}
               </span>

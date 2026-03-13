@@ -112,7 +112,7 @@ export default function TemplateEditor({
       setStoreDescriptionDraft(normalizedDescription);
       setSavedStoreName(normalizedName);
       setSavedStoreDescription(normalizedDescription);
-      return true;
+      return true;  
     } catch {
       toast.error('حدث خطأ في حفظ بيانات المتجر');
       return false;
@@ -226,6 +226,7 @@ export default function TemplateEditor({
             storeName={storeNameDraft}
             onUpdate={editor.update}
             onRemoveCustomFont={editor.removeCustomFont}
+            onAddCustomFont={editor.addCustomFont}
           />
         )}
 

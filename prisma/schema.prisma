@@ -726,7 +726,8 @@ model TemplateService {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
-
+  name  String?
+  description String?
   icon  String  @default("Sparkles")
   title String
   desc  String?
@@ -740,6 +741,8 @@ model TemplateWork {
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
   image      String?
+  name        String?
+  description String?
   title      String
   category   String?
   link       String?
