@@ -14,73 +14,77 @@ function getContentType(file: string) {
   return 'application/octet-stream';
 }
 
+async function fileExists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function GET(req: Request) {
   try {
-    console.log('---- FONT REQUEST START ----');
-
     const url = new URL(req.url);
     const id = url.searchParams.get('id');
 
-    console.log('Request URL:', req.url);
-    console.log('Font ID:', id);
-
     if (!id) {
-      console.error('ERROR: Missing font ID');
-      return NextResponse.json({ error: 'Missing font ID in query (?id=...)' }, { status: 400 });
+      return NextResponse.json({ error: 'Missing font ID' }, { status: 400 });
     }
 
     const font = await prisma.templateCustomFont.findUnique({
       where: { id },
     });
 
-    console.log('Font record from DB:', font);
-
     if (!font) {
-      console.error('ERROR: Font not found in database for ID:', id);
-      return NextResponse.json({ error: `Font not found for id: ${id}` }, { status: 404 });
-    }
-
-    if (!font.url) {
-      console.error('ERROR: Font URL is empty in DB');
-      return NextResponse.json({ error: 'Font URL is empty in database record' }, { status: 500 });
+      return NextResponse.json({ error: 'Font not found' }, { status: 404 });
     }
 
     let cleanPath = font.url;
 
-    // إذا كان الرابط كامل (https://...)
     if (cleanPath.startsWith('http://') || cleanPath.startsWith('https://')) {
-      console.log('Detected full URL, extracting pathname');
       cleanPath = new URL(cleanPath).pathname;
     }
 
-    cleanPath = cleanPath.replace(/^\//, '');
+    cleanPath = cleanPath.replace(/^\/+/, '');
 
     const cwd = process.cwd();
-    const filePath = path.join(cwd, cleanPath);
 
+    const possiblePaths = [
+      path.join(cwd, cleanPath),
+      path.join(cwd, '..', cleanPath),
+      path.join('/', cleanPath),
+    ];
+
+    console.log('Font URL:', font.url);
     console.log('process.cwd():', cwd);
-    console.log('Font URL from DB:', font.url);
-    console.log('Resolved file path:', filePath);
+    console.log('Trying paths:', possiblePaths);
 
-    let fileBuffer: Buffer;
+    let resolvedPath: string | null = null;
 
-    try {
-      fileBuffer = await fs.readFile(filePath);
-    } catch (fsError: any) {
-      console.error('ERROR reading file:', fsError);
+    for (const p of possiblePaths) {
+      if (await fileExists(p)) {
+        resolvedPath = p;
+        break;
+      }
+    }
+
+    if (!resolvedPath) {
       return NextResponse.json(
         {
-          error: 'Failed to read font file',
-          filePath,
-          message: fsError?.message,
+          error: 'Font file not found on disk',
+          fontUrl: font.url,
+          triedPaths: possiblePaths,
         },
-        { status: 500 }
+        { status: 404 }
       );
     }
 
-    console.log('Font file loaded successfully');
+    console.log('Resolved font path:', resolvedPath);
 
-    return new NextResponse(new Uint8Array(fileBuffer), {
+    const fileBuffer = await fs.readFile(resolvedPath);
+
+    return new NextResponse(fileBuffer, {
       status: 200,
       headers: {
         'Content-Type': getContentType(font.url),
@@ -89,8 +93,7 @@ export async function GET(req: Request) {
       },
     });
   } catch (error: any) {
-    console.error('---- FONT API FATAL ERROR ----');
-    console.error(error);
+    console.error('FONT API ERROR:', error);
 
     return NextResponse.json(
       {
