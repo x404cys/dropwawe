@@ -1,7 +1,3 @@
-// Purpose: GET /api/s/store?subdomain=xxx
-// Returns store info + full StoreTemplate with all relations.
-// Used by Server Components in the storefront.
-
 import { prisma } from '@/app/lib/db';
 
 export async function GET(req: Request) {
@@ -23,13 +19,19 @@ export async function GET(req: Request) {
   const template = await prisma.storeTemplate.findUnique({
     where: { storeId: store.id },
     include: {
-      services:         { orderBy: { order: 'asc' } },
-      works:            { orderBy: { order: 'asc' } },
-      testimonials:     { orderBy: { order: 'asc' } },
-      bannerImages:     { orderBy: { order: 'asc' } },
+      services: {
+        orderBy: { order: 'asc' },
+        include: {
+          works: {
+            orderBy: { order: 'asc' },
+          },
+        },
+      },
+      testimonials: { orderBy: { order: 'asc' } },
+      bannerImages: { orderBy: { order: 'asc' } },
       categorySections: { orderBy: { order: 'asc' } },
-      categoryIcons:    true,
-      customFonts:      true,
+      categoryIcons: true,
+      customFonts: true,
     },
   });
 

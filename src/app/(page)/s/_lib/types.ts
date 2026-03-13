@@ -33,20 +33,28 @@ export type ColorConfig = {
   text: string;
 };
 
-export type StorefrontService = {
-  id: string;
-  icon: string;
-  title: string;
-  desc: string | null;
-  order: number;
-};
-
 export type StorefrontWork = {
   id: string;
   title: string;
   category: string | null;
   link: string | null;
+  image?: string | null;
   order: number;
+  serviceId?: string | null;
+};
+
+export type StorefrontService = {
+  id: string;
+  icon: string;
+  title: string;
+  desc: string | null;
+  name?: string | null;
+  description?: string | null;
+  worksTitle: string | null;
+  worksDesc: string | null;
+  enabled: boolean;
+  order: number;
+  works: StorefrontWork[];
 };
 
 export type StorefrontTestimonial = {
@@ -58,7 +66,12 @@ export type StorefrontTestimonial = {
   order: number;
 };
 
-export type StorefrontBanner = { id: string; url: string; order: number; postion: string };
+export type StorefrontBanner = {
+  id: string;
+  url: string;
+  order: number;
+  postion: string;
+};
 
 export type StorefrontCategorySection = {
   id: string;
@@ -74,7 +87,11 @@ export type StorefrontCategoryIcon = {
   image: string | null;
 };
 
-export type StorefrontCustomFont = { id: string; name: string; url: string };
+export type StorefrontCustomFont = {
+  id: string;
+  name: string;
+  url: string;
+};
 
 export type StorefrontTemplate = {
   id: string;
@@ -98,10 +115,9 @@ export type StorefrontTemplate = {
   colorBg: string | null;
   colorText: string | null;
   categoryDisplayMode: string;
-  announcementBar: unknown;
-  sectionsConfig: unknown;
+  announcementBar: AnnouncementBarConfig | null;
+  sectionsConfig: SectionsConfig | null;
   services: StorefrontService[];
-  works: StorefrontWork[];
   testimonials: StorefrontTestimonial[];
   bannerImages: StorefrontBanner[];
   categorySections: StorefrontCategorySection[];
@@ -119,8 +135,17 @@ export type StorefrontStore = {
   description: string | null;
 };
 
-export type StorefrontProductImage = { id: string; url: string };
-export type StorefrontProductSize = { id: string; size: string; stock: number };
+export type StorefrontProductImage = {
+  id: string;
+  url: string;
+};
+
+export type StorefrontProductSize = {
+  id: string;
+  size: string;
+  stock: number;
+};
+
 export type StorefrontProductColor = {
   id: string;
   color: string;
@@ -142,8 +167,13 @@ export type StorefrontProduct = {
   colors: StorefrontProductColor[];
 };
 
-export type CartItem = { product: StorefrontProduct; qty: number };
+export type CartItem = {
+  product: StorefrontProduct;
+  qty: number;
+};
+
 export type CheckoutStep = 'cart' | 'info' | 'success';
+
 export type CustomerInfo = {
   name: string;
   phone: string;

@@ -38,7 +38,7 @@ async function getStorefrontData(): Promise<StorefrontData | null> {
   const subdomain = host.split('.')[0];
 
   try {
-    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}`, {
+    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=0000ppp`, {
       next: { revalidate: 30 },
     });
     if (!storeRes.ok) return null;
@@ -124,7 +124,7 @@ export default async function StorefrontPage() {
 
   return (
     <div className="min-h-screen" style={rootStyle}>
-      {announcement?.enabled  && <AnnouncementBar config={announcement} />}
+      {announcement?.enabled && <AnnouncementBar config={announcement} />}
 
       <StorefrontClient
         store={store}
@@ -139,16 +139,13 @@ export default async function StorefrontPage() {
           <HeroSection template={template} colors={colors} headingStyle={headingStyle} />
         )}
 
-        {sections.services && template.services.length > 0 && (
+        {sections.services &&(
           <ServicesSection
             services={template.services}
             colors={colors}
             headingStyle={headingStyle}
+            showWorksSection={sections.works}
           />
-        )}
-
-        {sections.works && template.works.length > 0 && (
-          <WorksSection works={template.works} colors={colors} headingStyle={headingStyle} />
         )}
 
         {sections.store && (
