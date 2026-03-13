@@ -19,7 +19,7 @@ export async function POST(req: Request) {
 
     const imageUrl = await uploadToServer(file, session.user.id);
     if (!imageUrl) {
-         return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
+      return NextResponse.json({ error: 'Upload failed' }, { status: 500 });
     }
 
     return NextResponse.json({ url: imageUrl }, { status: 200 });

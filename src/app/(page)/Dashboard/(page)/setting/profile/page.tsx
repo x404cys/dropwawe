@@ -213,12 +213,12 @@ export default function ProfileSettingsPage() {
               <div className="border-border border-t" />
               <button
                 onClick={() => handleSignOut()}
-                className="hover:bg-destructive/5 flex w-full items-center gap-3 px-4 py-3.5 text-right transition-colors"
+                className="  cursor-pointer flex justify-between w-full items-center gap-3 px-4 py-3.5 text-right transition-colors"
               >
-                <LogOut className="text-destructive h-4 w-4" />
-                <p className="text-destructive text-sm font-medium">
+                <p className="text-red-700 text-sm font-medium">
                   {t.profile?.logout || 'تسجيل الخروج'}
                 </p>
+                <LogOut className="text-red-700 h-4 w-4" />
               </button>
             </SettingsSectionCard>
           </div>

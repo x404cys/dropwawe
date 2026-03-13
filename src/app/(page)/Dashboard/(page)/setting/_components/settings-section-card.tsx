@@ -14,11 +14,7 @@ export default function SettingsSectionCard({
 }: SettingsSectionCardProps) {
   return (
     <div
-      className={cn(
-        'bg-card border border-border rounded-xl shadow-sm overflow-hidden',
-        !noPadding && 'p-4',
-        className,
-      )}
+      className={cn('bg-card overflow-hidden rounded-xl shadow-sm', !noPadding && 'p-4', className)}
     >
       {children}
     </div>

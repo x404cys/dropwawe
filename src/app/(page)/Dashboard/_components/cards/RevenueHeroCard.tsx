@@ -8,9 +8,12 @@ import { format } from 'path';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import useSWR from 'swr';
 import { useStoreProvider } from '../../context/StoreContext';
+import { useTheme } from '../../context/ThemeContext';
 
 export default function RevenueHeroCard() {
   const { currentStore } = useStoreProvider();
+    const { theme, toggleTheme } = useTheme();
+  
   const fetcher = (url: string) => fetch(url).then(res => res.json());
   const { data, isLoading } = useSWR(
     `/api/dashboard/profit/Revenue?storeId=${currentStore?.id}`,
@@ -67,7 +70,22 @@ export default function RevenueHeroCard() {
 
       value: item.profit,
     })) || [];
+const renderDayTick = ({ x, y, payload }: any) => {
+  const isDark = theme === 'dark';
 
+  return (
+    <text
+      x={x}
+      y={y + 10}
+      textAnchor="middle"
+      fill={isDark ? '#ffffff' : '#000000'}
+      fontSize={10}
+      fontWeight={600}
+    >
+      {payload.value}
+    </text>
+  );
+};
   if (isLoading) {
     return (
       <div className="bg-primary/10 border-primary/20 h-48 animate-pulse rounded-2xl border" />
@@ -122,7 +140,7 @@ export default function RevenueHeroCard() {
 
       <div className="h-36 px-2 pb-3">
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={weeklyData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}>
+          <AreaChart  data={weeklyData} margin={{ top: 5, right: 5, left: 0, bottom: 0 }}  >
             <defs>
               <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="5%" stopColor="#04BAF6" stopOpacity={0.25} />
@@ -131,9 +149,10 @@ export default function RevenueHeroCard() {
             </defs>
             <XAxis
               dataKey="day"
-              tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+              tick={renderDayTick}
               axisLine={false}
               tickLine={false}
+              
             />
             <Tooltip
               contentStyle={{

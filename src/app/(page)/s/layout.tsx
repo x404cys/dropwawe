@@ -1,58 +1,44 @@
-import { ReactNode } from 'react';
-import { StoreProvider } from './context/store-context';
-import { ProductsProvider } from './context/products-context';
-import { getStoreFromSubdomain } from './lib/store';
-import { getTheme } from './themes';
-import type { Metadata } from 'next';
-import FacebookPixel from './context/Pixel/FacebookPixel';
-import GooglePixel from './context/Pixel/GooglePixel';
-import TikTokPixel from './context/Pixel/TikTokPixel';
-import SnapPixel from './context/Pixel/SnapPixel';
+import { headers } from 'next/headers';
+import type { ReactNode } from 'react';
 
-export async function generateMetadata(): Promise<Metadata> {
-  const store = await getStoreFromSubdomain();
+export default async function StorefrontLayout({ children }: { children: ReactNode }) {
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
+  const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
 
-  return {
-    title: store.name,
-    description: store.description,
-    metadataBase: new URL(`https://${store.domain}.matager.store`),
+  const baseUrl = `${protocol}://${host}`;
 
-    openGraph: {
-      title: store.name,
-      description: store.description,
-      images: [store.image as string],
-    },
+  let fontFaces = '';
+  
+  try {
+    const res = await fetch(`${baseUrl}/api/s/store?subdomain=0000ppp`, {
+      next: { revalidate: 60 },
+    });
 
-    twitter: {
-      card: 'summary_large_image',
-      title: store.name,
-      description: store.description,
-      images: [store.image as string],
-    },
-  };
-}
+    if (res.ok) {
+      const data = await res.json();
 
-export default async function RootLayout({ children }: { children: ReactNode }) {
-  const store = await getStoreFromSubdomain();
-  const theme = getTheme(store.theme);
-
-  const Navbar = theme.Navbar;
-  const Footer = theme.Footer;
+      fontFaces =
+        data.template?.customFonts
+          ?.map(
+            (f: { name: string; url: string }) => `
+              @font-face {
+                font-family: '${f.name}';
+                src: url('${f.url}');
+                font-display: swap;
+              }
+            `
+          )
+          .join('\n') ?? '';
+    }
+  } catch (err) {
+    console.error('Font fetch failed', err);
+  }
 
   return (
-    <StoreProvider store={store}>
-      <ProductsProvider>
-        <section className="flex min-h-screen flex-col">
-          <Navbar />
-          <main className="flex-1">{children}</main>
-          <Footer />
-        </section>
-      </ProductsProvider>
-      {store?.facebookPixel && <FacebookPixel pixelId={store.facebookPixel} />}
-      {store?.googlePixel && <GooglePixel measurementId={store.googlePixel} />}
-      {store?.tiktokPixel && <TikTokPixel pixelId={store.tiktokPixel} />}
-      {store?.snapPixel && <SnapPixel pixelId={store.snapPixel} />}
-        
-    </StoreProvider>
+    <div dir="rtl" style={{ margin: 0, padding: 0, fontWeight: 'normal' }}>
+      {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
+      {children}
+    </div>
   );
 }

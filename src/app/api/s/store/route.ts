@@ -1,0 +1,40 @@
+// Purpose: GET /api/s/store?subdomain=xxx
+// Returns store info + full StoreTemplate with all relations.
+// Used by Server Components in the storefront.
+
+import { prisma } from '@/app/lib/db';
+
+export async function GET(req: Request) {
+  const { searchParams } = new URL(req.url);
+  const subdomain = searchParams.get('subdomain');
+
+  if (!subdomain) {
+    return Response.json({ error: 'subdomain required' }, { status: 400 });
+  }
+
+  const store = await prisma.store.findUnique({
+    where: { subLink: subdomain },
+  });
+
+  if (!store) {
+    return Response.json({ error: 'not found' }, { status: 404 });
+  }
+
+  const template = await prisma.storeTemplate.findUnique({
+    where: { storeId: store.id },
+    include: {
+      services:         { orderBy: { order: 'asc' } },
+      works:            { orderBy: { order: 'asc' } },
+      testimonials:     { orderBy: { order: 'asc' } },
+      bannerImages:     { orderBy: { order: 'asc' } },
+      categorySections: { orderBy: { order: 'asc' } },
+      categoryIcons:    true,
+      customFonts:      true,
+    },
+  });
+
+  return Response.json({
+    store,
+    template: template ?? null,
+  });
+}

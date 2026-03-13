@@ -8,7 +8,7 @@ import type { ElementType } from 'react';
 import { LuUserRoundPen } from 'react-icons/lu';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline, IoStorefrontOutline } from 'react-icons/io5';
-import { MdOutlineStyle } from 'react-icons/md';
+import { MdOutlineStyle, MdOutlineDesignServices } from 'react-icons/md';
 import { PiShootingStarThin } from 'react-icons/pi';
 import { FaShippingFast, FaUsersCog, FaCrown } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
@@ -98,6 +98,20 @@ export default function SettingOptions() {
           desc: t.more?.templatesDesc || 'ألوان وشكل صفحة المتجر',
           icon: MdOutlineStyle,
           path: `${base}/theme`,
+          allowedPlans: [
+            'drop-basics',
+            'trader-basic',
+            'trader-pro',
+            'drop-pro',
+            'free-trial',
+            'ramadan-plan',
+          ],
+        },
+        {
+          label: 'تخصيص القالب',
+          desc: 'محتوى الهوية، الأقسام، الألوان، والخطوط',
+          icon: MdOutlineDesignServices,
+          path: `${base}/template`,
           allowedPlans: [
             'drop-basics',
             'trader-basic',
@@ -201,12 +215,12 @@ export default function SettingOptions() {
                   >
                     <div
                       className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg ${
-                        section.danger ? 'bg-destructive/10' : (section.color ?? 'bg-muted')
+                        section.danger ? 'bg-destructive/20' : (section.color ?? 'bg-muted')
                       }`}
                     >
                       <section.icon
                         size={17}
-                        className={section.danger ? 'text-destructive' : undefined}
+                        className={section.danger ? 'text-red-700' : undefined}
                       />
                     </div>
 
@@ -214,7 +228,7 @@ export default function SettingOptions() {
                       <div className="flex items-center gap-2">
                         <p
                           className={`text-sm font-medium ${
-                            section.danger ? 'text-destructive' : 'text-foreground'
+                            section.danger ? 'text-red-700' : 'text-foreground'
                           }`}
                         >
                           {section.label}
@@ -228,7 +242,7 @@ export default function SettingOptions() {
                       </div>
                       <p
                         className={`mt-0.5 text-[11px] ${
-                          section.danger ? 'text-destructive/60' : 'text-muted-foreground'
+                          section.danger ? 'text-red-700/60' : 'text-muted-foreground'
                         }`}
                       >
                         {section.desc}

@@ -113,6 +113,7 @@ model Store {
   balances    Balance[]
   ledgers     Ledger[]
   withdrawals Withdrawal[]
+  template  StoreTemplate?
 }                                   
 model StoreUser {
   id        String   @id @default(cuid())
@@ -665,4 +666,163 @@ model Withdrawal {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+
+model StoreTemplate {
+  id      String @id @default(cuid())
+  storeId String @unique
+  store   Store  @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  // ── Brand (الهوية) ──
+  tagline             String? // الشعار النصي القصير
+  heroButtonText      String? // نص الزر الرئيسي في Hero
+  heroSecondaryButton String? // نص الزر الثانوي في Hero
+  aboutText           String? // نص قسم "من نحن"
+  storeDescription    String? // وصف المتجر (يظهر في قسم "من نحن" وتحت الشعار)
+  // ── CTA Section ──
+  ctaTitle  String? // عنوان قسم دعوة للإجراء
+  ctaDesc   String? // وصف قسم دعوة للإجراء
+  ctaButton String? // نص زر دعوة للإجراء
+
+  // ── Contact (الجديد غير الموجود في Store) ──
+  contactEmail   String? // البريد الإلكتروني
+  contactWebsite String? // الموقع الإلكتروني
+  whatsappNumber String? // رقم الواتساب
+
+  // ── Design: Fonts ──
+  headingFont String @default("IBM Plex Sans Arabic") // خط العناوين
+  bodyFont    String @default("IBM Plex Sans Arabic") // خط النصوص
+
+  // ── Design: Colors ──
+  selectedPreset  Int     @default(0)     // رقم الـ preset المختار
+  useCustomColors Boolean @default(false) // هل يستخدم ألوان مخصصة
+  colorPrimary    String? // اللون الرئيسي  (#hex)
+  colorAccent     String? // اللون الثانوي  (#hex)
+  colorBg         String? // لون الخلفية    (#hex)
+  colorText       String? // لون النصوص     (#hex)
+
+  // ── Storefront ──
+  categoryDisplayMode String @default("icons") // "icons" | "pills"
+
+  // ── Announcement Bar (Json — object بسيط لن يُستعلم مستقلاً) ──
+  // { enabled: boolean, text: string, bgColor: string, textColor: string }
+  announcementBar Json?
+
+  // ── Sections Toggles (Json — 7 booleans فقط) ──
+  // { hero: boolean, services: boolean, works: boolean,
+  //   testimonials: boolean, cta: boolean, about: boolean, store: boolean }
+  sectionsConfig Json?
+
+  // ── Draft / Publish ──
+  isDraft     Boolean   @default(true)
+  publishedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // ── Relations ──
+  services         TemplateService[]
+  works            TemplateWork[]
+  testimonials     TemplateTestimonial[]
+  bannerImages     TemplateBanner[]
+  categorySections TemplateCategorySection[]
+  categoryIcons    TemplateCategoryIcon[]
+  customFonts      TemplateCustomFont[]
+}
+
+// ── الخدمات ─────────────────────────────────────────────────────
+model TemplateService {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  icon  String @default("Sparkles") // اسم الأيقونة من lucide-react
+  title String
+  desc  String?
+  order Int    @default(0)          // ترتيب العرض
+
+  @@index([templateId])
+}
+
+// ── معرض الأعمال ─────────────────────────────────────────────────
+model TemplateWork {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  image      String?        // URL أو base64
+  title    String
+  category String?
+  link     String? // رابط اختياري
+  order    Int     @default(0)
+
+  @@index([templateId])
+}
+
+// ── آراء العملاء ─────────────────────────────────────────────────
+model TemplateTestimonial {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  name   String
+  role   String?
+  text   String
+  rating Int    @default(5) // 1 - 5
+  order  Int    @default(0)
+
+  @@index([templateId])
+}
+
+// ── صور البنر ────────────────────────────────────────────────────
+model TemplateBanner {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  url   String       // URL أو base64
+  order Int @default(0)
+
+  @@index([templateId])
+}
+
+// ── أقسام المنتجات (الصفوف الأفقية) ─────────────────────────────
+model TemplateCategorySection {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  category String
+  enabled  Boolean @default(true)
+  order    Int     @default(0) // ترتيب قابل للتغيير (drag & drop)
+
+  @@index([templateId])
+}
+
+// ── أيقونات الأقسام ──────────────────────────────────────────────
+model TemplateCategoryIcon {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  category String // اسم القسم من Inventory
+  icon     String  @default("Package") // اسم الأيقونة من lucide-react
+  image    String? // صورة مخصصة (URL أو base64) — تلغي الأيقونة عند وجودها
+
+  @@unique([templateId, category]) // كل قسم له إدخال واحد فقط
+  @@index([templateId])
+}
+
+// ── الخطوط المخصصة ───────────────────────────────────────────────
+model TemplateCustomFont {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  name String // اسم الخط (مستخرج من اسم الملف)
+  url  String // base64 للملف (TTF / OTF / WOFF / WOFF2)
+
+  @@unique([templateId, name]) // لا تكرار لنفس الخط في نفس الـ template
+  @@index([templateId])
 }
