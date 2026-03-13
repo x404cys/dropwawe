@@ -27,7 +27,7 @@ export async function GET(req: Request) {
     });
 
     if (!font) {
-      return new NextResponse('Font not found', { status: 404 });
+      return new NextResponse('Font not found', { status: 406 });
     }
 
     const filePath = path.join(process.cwd(), font.url.replace(/^\//, ''));

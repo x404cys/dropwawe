@@ -56,14 +56,14 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
       const format = getFontFormat(f.url);
 
       return `
-        @font-face {
-          font-family: '${f.name}';
-          src: url('/api/template/fonts/get?id=${f.id}')${format ? ` format('${format}')` : ''};
-          font-weight: 100 900;
-          font-style: normal;
-          font-display: swap;
-        }
-      `;
+      @font-face {
+        font-family: '${f.name}';
+        src: url('/api/template/fonts/get?id=${f.id}')${format ? ` format('${format}')` : ''};
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+    `;
     })
     .join('\n');
 
