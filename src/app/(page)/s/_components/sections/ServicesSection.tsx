@@ -70,7 +70,7 @@ export default function ServicesSection({
                           }
                         : {};
 
-                      const viewMode = work.showTitle ?? 'IMAGE';
+                      const viewMode = work.displayType ?? 'IMAGE';
                       const WorkIcon = getIconComponent(work.icon ?? '');
                       const hasImage = !!work.image;
                       const hasIcon = !!work.icon?.trim() && viewMode === 'ICON';

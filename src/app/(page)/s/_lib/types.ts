@@ -38,7 +38,7 @@ export type StorefrontWork = {
   title: string;
   category: string;
   icon?: string;
-  showTitle?: 'ICON' | 'IMAGE';
+  displayType?: 'ICON' | 'IMAGE';
   link: string;
   image?: string | null;
   order: number;

@@ -1,5 +1,4 @@
 'use client';
-// src/components/template-editor/sections/ServiceWithWorksSection.tsx
 
 import { useState, type ChangeEvent } from 'react';
 import * as LucideIcons from 'lucide-react';
@@ -36,7 +35,6 @@ function getLucideIcon(iconName?: string) {
   if (!iconName?.trim()) return null;
 
   const IconComponent = LucideIcons[iconName.trim() as keyof typeof LucideIcons];
-
   if (!IconComponent || typeof IconComponent !== 'function') return null;
 
   return IconComponent as React.ComponentType<{ className?: string }>;
@@ -165,21 +163,20 @@ export default function ServiceWithWorksSection({
                     {works.map(work => {
                       const fileInputId = `work-image-${work.id}`;
                       const previewTitle = work.category?.trim() || work.title?.trim() || 'معاينة';
-                      const showType = work.showTitle ?? 'IMAGE';
-                      const DynamicIcon = getLucideIcon(work.icon);
+                      const showType = work.displayType ?? 'IMAGE';
+                      const SelectedIcon = getLucideIcon(work.icon);
 
                       return (
                         <div
                           key={work.id}
                           className="bg-background border-border/50 space-y-3 rounded-xl border p-2.5"
                         >
-                          {/* نوع العرض */}
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               type="button"
                               onClick={() =>
                                 onUpdateWork(service.id, work.id, {
-                                  showTitle: 'IMAGE',
+                                  displayType: 'IMAGE',
                                 })
                               }
                               className={`flex h-9 items-center justify-center gap-2 rounded-lg border text-xs font-medium transition-all ${
@@ -196,7 +193,7 @@ export default function ServiceWithWorksSection({
                               type="button"
                               onClick={() =>
                                 onUpdateWork(service.id, work.id, {
-                                  showTitle: 'ICON',
+                                  displayType: 'ICON',
                                 })
                               }
                               className={`flex h-9 items-center justify-center gap-2 rounded-lg border text-xs font-medium transition-all ${
@@ -210,7 +207,6 @@ export default function ServiceWithWorksSection({
                             </button>
                           </div>
 
-                          {/* عرض الصورة */}
                           {showType === 'IMAGE' && (
                             <>
                               <div className="border-border/60 bg-muted/20 overflow-hidden rounded-xl border">
@@ -316,21 +312,10 @@ export default function ServiceWithWorksSection({
                               <div className="border-border/60 bg-muted/20 overflow-hidden rounded-xl border">
                                 <div className="flex h-36 flex-col items-center justify-center gap-3 px-4 text-center">
                                   <div className="bg-background border-border/60 flex h-16 w-16 items-center justify-center rounded-2xl border">
-                                    {!work.icon ? (
-                                      DynamicIcon ? (
-                                        <DynamicIcon className="text-primary h-8 w-8" />
-                                      ) : (
-                                        <Shapes className="text-muted-foreground h-8 w-8" />
-                                      )
+                                    {SelectedIcon ? (
+                                      <SelectedIcon className="text-primary h-8 w-8" />
                                     ) : (
-                                      <div>
-                                        {(() => {
-                                          const Icon = getLucideIcon(work.icon);
-                                          return Icon ? (
-                                            <Icon className="text-primary h-8 w-8" />
-                                          ) : null;
-                                        })()}
-                                      </div>
+                                      <Shapes className="text-muted-foreground h-8 w-8" />
                                     )}
                                   </div>
 
@@ -354,6 +339,7 @@ export default function ServiceWithWorksSection({
                                     onChange={iconName =>
                                       onUpdateWork(service.id, work.id, {
                                         icon: iconName,
+                                        displayType: 'ICON',
                                       })
                                     }
                                     onClear={() =>

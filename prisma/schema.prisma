@@ -751,7 +751,7 @@ model TemplateWork {
   serviceId   String?
   service     TemplateService? @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   image       String?
-  showTitle   String?       @default("ICON")
+  displayType   String?       @default("ICON")
   title       String
   icon        String?
   category    String?

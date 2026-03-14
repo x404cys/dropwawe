@@ -35,7 +35,7 @@ export async function POST(req: Request) {
       order?: number;
       serviceId?: string | null;
       icon?: string;
-      showTitle?: string;
+      displayType?: string;
     };
     const {
       storeId,
@@ -46,7 +46,7 @@ export async function POST(req: Request) {
       order = 0,
       serviceId = null,
       icon,
-      showTitle,
+      displayType,
     } = body;
 
     if (!storeId) return NextResponse.json({ error: 'storeId والعنوان مطلوبان' }, { status: 400 });
@@ -58,13 +58,13 @@ export async function POST(req: Request) {
 
     try {
       const work = await prisma.templateWork.create({
-        data: { templateId, title, category, link, image, order, serviceId, icon, showTitle },
+        data: { templateId, title, category, link, image, order, serviceId, icon, displayType },
       });
       return NextResponse.json(work, { status: 201 });
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientValidationError &&
-        /Unknown argument `(?:icon|showTitle)`/i.test(error.message)
+        /Unknown argument `(?:icon|displayType)`/i.test(error.message)
       ) {
         const work = await prisma.templateWork.create({
           data: { templateId, title, category, link, image, order, serviceId },
@@ -94,7 +94,7 @@ export async function PUT(req: Request) {
       order?: number;
       serviceId?: string | null;
       icon?: string | null;
-      showTitle?: string | null;
+      displayType?: string | null;
     };
     const { storeId, id, ...fields } = body;
 
@@ -119,7 +119,7 @@ export async function PUT(req: Request) {
       ...(fields.order !== undefined ? { order: fields.order } : {}),
       ...(fields.serviceId !== undefined ? { serviceId: fields.serviceId } : {}),
       ...(fields.icon !== undefined ? { icon: fields.icon } : {}),
-      ...(fields.showTitle !== undefined ? { showTitle: fields.showTitle } : {}),
+      ...(fields.displayType !== undefined ? { displayType: fields.displayType } : {}),
     };
 
     try {
@@ -128,9 +128,9 @@ export async function PUT(req: Request) {
     } catch (error) {
       if (
         error instanceof Prisma.PrismaClientValidationError &&
-        /Unknown argument `(?:icon|showTitle)`/i.test(error.message)
+        /Unknown argument `(?:icon|displayType)`/i.test(error.message)
       ) {
-        const { icon: _icon, showTitle: _showTitle, ...fallbackData } = data;
+        const { icon: _icon, displayType: _displayType, ...fallbackData } = data;
         const work = await prisma.templateWork.update({ where: { id }, data: fallbackData });
         return NextResponse.json(work, { status: 200 });
       }

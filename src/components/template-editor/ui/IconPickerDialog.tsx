@@ -23,14 +23,39 @@ interface IconPickerDialogProps {
 const EXCLUDED_EXPORTS = new Set(['createLucideIcon', 'Icon', 'icons', 'default', 'LucideIcon']);
 
 const POPULAR_ICON_NAMES = [
-  'Monitor', 'ShoppingBag', 'Briefcase', 'Settings', 'Camera', 'Palette',
-  'Globe', 'Smartphone', 'Star', 'Heart', 'Home', 'User',
-  'Mail', 'Phone', 'FileText', 'Image', 'Package', 'BadgeHelp',
+  'Monitor',
+  'ShoppingBag',
+  'Briefcase',
+  'Settings',
+  'Camera',
+  'Palette',
+  'Globe',
+  'Smartphone',
+  'Star',
+  'Heart',
+  'Home',
+  'User',
+  'Mail',
+  'Phone',
+  'FileText',
+  'Image',
+  'Package',
+  'BadgeHelp',
 ];
 
 const SEARCH_SUGGESTIONS = [
-  'Monitor', 'ShoppingBag', 'Briefcase', 'Settings',
-  'Camera', 'Palette', 'Globe', 'Smartphone', 'User', 'Home', 'Mail', 'Phone',
+  'Monitor',
+  'ShoppingBag',
+  'Briefcase',
+  'Settings',
+  'Camera',
+  'Palette',
+  'Globe',
+  'Smartphone',
+  'User',
+  'Home',
+  'Mail',
+  'Phone',
 ];
 
 function isProbablyIconComponent(value: unknown) {
@@ -127,20 +152,16 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
         </button>
       </DialogTrigger>
 
-      {/* ── Dialog: strict flex-col, fixed height ── */}
       <DialogContent
         dir="rtl"
-        className="border-border/60 flex flex-col p-0 rounded-2xl overflow-hidden"
+        className="border-border/60 flex flex-col overflow-hidden rounded-2xl p-0"
         style={{ width: 'min(95vw, 860px)', height: 'min(88vh, 700px)', maxWidth: '100%' }}
       >
-        {/* ── FIXED: Header ── */}
         <DialogHeader className="border-border/50 shrink-0 border-b px-5 pt-4 pb-3">
           <DialogTitle className="text-sm sm:text-base">اختيار أيقونة</DialogTitle>
         </DialogHeader>
 
-        {/* ── FIXED: Controls (search + chips + selected badge) ── */}
-        <div className="shrink-0 space-y-3 px-5 pt-4 pb-3 border-b border-border/40">
-          {/* Search row */}
+        <div className="border-border/40 shrink-0 space-y-3 border-b px-5 pt-4 pb-3">
           <div className="flex gap-2">
             <div className="relative flex-1">
               <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
@@ -148,7 +169,7 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                 value={search}
                 onChange={e => setSearch(e.target.value)}
                 placeholder="ابحث... مثال: monitor أو shopping"
-                className="h-9 pr-9 pl-3 text-sm"
+                className="h-9 pr-9 pl-3"
                 dir="ltr"
                 autoFocus
               />
@@ -166,7 +187,10 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
             {value && (
               <button
                 type="button"
-                onClick={() => { onClear?.(); setOpen(false); }}
+                onClick={() => {
+                  onClear?.();
+                  setOpen(false);
+                }}
                 className="border-border bg-background text-muted-foreground hover:text-destructive hover:border-destructive/40 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-xs transition-all"
               >
                 <X className="h-3.5 w-3.5" />
@@ -177,8 +201,8 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
 
           {/* Suggestion chips (only when not searching) */}
           {!isSearching && (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="flex items-center gap-1 text-[11px] font-semibold text-muted-foreground shrink-0">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-semibold">
                 <Sparkles className="text-primary h-3.5 w-3.5" />
                 مقترحة:
               </span>
@@ -212,7 +236,7 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
           {/* Popular icons row (only when not searching) */}
           {!isSearching && popularIcons.length > 0 && (
             <div className="space-y-2">
-              <p className="text-[11px] font-semibold text-muted-foreground">الأكثر استخدامًا</p>
+              <p className="text-muted-foreground text-[11px] font-semibold">الأكثر استخدامًا</p>
               <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9 md:grid-cols-12">
                 {popularIcons.map(icon => {
                   const Icon = icon.component;
@@ -222,7 +246,10 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                       key={icon.name}
                       type="button"
                       title={icon.name}
-                      onClick={() => { onChange(icon.name); setOpen(false); }}
+                      onClick={() => {
+                        onChange(icon.name);
+                        setOpen(false);
+                      }}
                       className={`group relative flex h-10 w-full items-center justify-center rounded-lg border transition-all ${
                         isActive
                           ? 'border-primary bg-primary/10'
@@ -234,7 +261,9 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                           <Check className="h-2 w-2" />
                         </span>
                       )}
-                      <Icon className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-foreground/70'}`} />
+                      <Icon
+                        className={`h-4 w-4 ${isActive ? 'text-primary' : 'text-foreground/70'}`}
+                      />
                     </button>
                   );
                 })}
@@ -271,7 +300,7 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
             </div>
           ) : (
             <>
-              <p className="mb-3 text-[11px] font-medium text-muted-foreground">
+              <p className="text-muted-foreground mb-3 text-[11px] font-medium">
                 {isSearching
                   ? `${filteredIcons.length} نتيجة`
                   : `جميع الأيقونات · عرض أول ${filteredIcons.length}`}
@@ -285,7 +314,10 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                       key={icon.name}
                       type="button"
                       title={icon.name}
-                      onClick={() => { onChange(icon.name); setOpen(false); }}
+                      onClick={() => {
+                        onChange(icon.name);
+                        setOpen(false);
+                      }}
                       className={`group relative flex flex-col items-center justify-center gap-1.5 rounded-xl border p-2 pt-2.5 pb-2 transition-all ${
                         isActive
                           ? 'border-primary bg-primary/10'
@@ -297,8 +329,10 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                           <Check className="h-2 w-2" />
                         </span>
                       )}
-                      <Icon className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-foreground/70 group-hover:text-foreground'}`} />
-                      <span className="line-clamp-1 w-full text-center text-[9px] leading-tight text-muted-foreground">
+                      <Icon
+                        className={`h-5 w-5 ${isActive ? 'text-primary' : 'text-foreground/70 group-hover:text-foreground'}`}
+                      />
+                      <span className="text-muted-foreground line-clamp-1 w-full text-center text-[9px] leading-tight">
                         {icon.name}
                       </span>
                     </button>

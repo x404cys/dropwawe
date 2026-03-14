@@ -3,7 +3,11 @@
 // Handles JSON field parsing with safe fallbacks.
 
 import type { TemplateFormState, AnnouncementBarConfig, SectionsConfig } from './types';
-import { DEFAULT_ANNOUNCEMENT_BAR, DEFAULT_SECTIONS_CONFIG, DEFAULT_TEMPLATE_STATE } from './defaults';
+import {
+  DEFAULT_ANNOUNCEMENT_BAR,
+  DEFAULT_SECTIONS_CONFIG,
+  DEFAULT_TEMPLATE_STATE,
+} from './defaults';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PrismaTemplateRecord = Record<string, any>;
@@ -29,7 +33,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
 
   const announcementBar = parseJson<AnnouncementBarConfig>(
     db.announcementBar,
-    DEFAULT_ANNOUNCEMENT_BAR,
+    DEFAULT_ANNOUNCEMENT_BAR
   );
   const sectionsConfig = parseJson<SectionsConfig>(db.sectionsConfig, DEFAULT_SECTIONS_CONFIG);
 
@@ -73,6 +77,9 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
         title: w.title ?? '',
         category: w.category ?? '',
         link: w.link ?? '',
+        icon: w.icon ?? '',
+        displayType: w.displayType ?? 'IMAGE',
+
         image: w.image ?? null,
         order: w.order,
         serviceId: w.serviceId ?? s.id ?? null,
@@ -99,9 +106,8 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
       id: b.id,
       url: b.url,
       order: b.order,
-      postion: (typeof b.postion === 'string' && b.postion.toLowerCase() === 'center')
-        ? 'center'
-        : 'top',
+      postion:
+        typeof b.postion === 'string' && b.postion.toLowerCase() === 'center' ? 'center' : 'top',
     })),
     categorySections: (db.categorySections ?? []).map((cs: PrismaTemplateRecord) => ({
       id: cs.id,
@@ -127,10 +133,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
  * toPayload — converts TemplateFormState scalar fields into the POST body for
  * /api/template (upsert). Does NOT include relation arrays.
  */
-export function toPayload(
-  state: TemplateFormState,
-  storeId: string,
-): Record<string, unknown> {
+export function toPayload(state: TemplateFormState, storeId: string): Record<string, unknown> {
   return {
     storeId,
     tagline: state.tagline,

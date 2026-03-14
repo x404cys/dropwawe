@@ -250,7 +250,8 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         category: '',
         link: '',
         image: null,
-        showTitle: 'ICON',
+        icon: '',
+        displayType: 'IMAGE',
         order: service.works?.length ?? 0,
         serviceId,
       };
@@ -271,13 +272,15 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       // ── احفظ في الـ DB ──
       try {
         const created = await apiPost<WorkItem>('/api/template/works', {
-          storeId, // ← كان ناقص
+          storeId,
           title: optimistic.title,
           category: optimistic.category,
           link: optimistic.link,
           image: optimistic.image,
+          icon: optimistic.icon,
+          displayType: optimistic.displayType,
           order: optimistic.order,
-          serviceId, // ← الربط بالخدمة
+          serviceId,
         });
 
         if (created) {
@@ -392,7 +395,8 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       category: '',
       link: '',
       image: null,
-      showTitle: 'ICON',
+      icon: '',
+      displayType: 'IMAGE',
       order: nextOrder(formState.works),
       serviceId: null,
     };
@@ -400,7 +404,14 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     try {
       const created = await apiPost<WorkItem>('/api/template/works', {
         storeId,
-        ...optimistic,
+        title: optimistic.title,
+        category: optimistic.category,
+        link: optimistic.link,
+        image: optimistic.image,
+        icon: optimistic.icon,
+        displayType: optimistic.displayType,
+        order: optimistic.order,
+        serviceId: optimistic.serviceId,
       });
       if (created) {
         tempWorkIdMap.current[optimistic.id] = created.id;
@@ -487,7 +498,10 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         const file = arg2;
         try {
           const imageUrl = await uploadFile(file);
-          await updateWork(workId, { image: imageUrl });
+          await updateWork(workId, {
+            image: imageUrl,
+            displayType: 'IMAGE',
+          });
         } catch (err) {
           toast.error((err as Error).message);
         }
@@ -521,7 +535,10 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       // Upload and persist to server
       try {
         const imageUrl = await uploadFile(file);
-        await updateServiceWork(serviceId, workId, { image: imageUrl });
+        await updateServiceWork(serviceId, workId, {
+          image: imageUrl,
+          displayType: 'IMAGE',
+        });
       } catch (err) {
         toast.error((err as Error).message);
       }
