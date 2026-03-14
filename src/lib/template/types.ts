@@ -68,6 +68,24 @@ export interface BannerItem {
   postion: string;
 }
 
+export type ContactType =
+  | 'email'
+  | 'whatsapp'
+  | 'website'
+  | 'phone'
+  | 'instagram'
+  | 'facebook'
+  | 'telegram'
+  | 'custom';
+
+export interface ContactItem {
+  id: string;
+  type: ContactType;
+  label: string;
+  value: string;
+  enabled: boolean;
+}
+
 export interface CategorySectionItem {
   id: string;
   category: string;
@@ -101,6 +119,7 @@ export interface TemplateFormState {
   contactEmail: string;
   contactWebsite: string;
   whatsappNumber: string;
+  contactItems: ContactItem[];
   headingFont: string;
   bodyFont: string;
   selectedPreset: number;

@@ -49,6 +49,7 @@ export const DEFAULT_TEMPLATE_STATE: TemplateFormState = {
   contactEmail: '',
   contactWebsite: '',
   whatsappNumber: '',
+  contactItems: [],
   headingFont: 'IBM Plex Sans Arabic',
   bodyFont: 'IBM Plex Sans Arabic',
   selectedPreset: 0,

@@ -2,7 +2,13 @@
 // Converts between Prisma DB records and the client-side TemplateFormState.
 // Handles JSON field parsing with safe fallbacks.
 
-import type { TemplateFormState, AnnouncementBarConfig, SectionsConfig } from './types';
+import type {
+  TemplateFormState,
+  AnnouncementBarConfig,
+  SectionsConfig,
+  ContactItem,
+  ContactType,
+} from './types';
 import {
   DEFAULT_ANNOUNCEMENT_BAR,
   DEFAULT_SECTIONS_CONFIG,
@@ -11,6 +17,58 @@ import {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type PrismaTemplateRecord = Record<string, any>;
+
+const CONTACT_LABELS: Record<ContactType, string> = {
+  email: 'البريد الإلكتروني',
+  whatsapp: 'واتساب',
+  website: 'الموقع الإلكتروني',
+  phone: 'رقم الهاتف',
+  instagram: 'انستغرام',
+  facebook: 'فيسبوك',
+  telegram: 'تلغرام',
+  custom: 'رابط مخصص',
+};
+
+const CONTACT_TYPES = new Set<ContactType>([
+  'email',
+  'whatsapp',
+  'website',
+  'phone',
+  'instagram',
+  'facebook',
+  'telegram',
+  'custom',
+]);
+
+function normalizeContactItems(items: ContactItem[]): ContactItem[] {
+  return items.map((raw, index) => {
+    const type: ContactType = CONTACT_TYPES.has(raw.type) ? raw.type : 'custom';
+    const label =
+      typeof raw.label === 'string' && raw.label.trim() ? raw.label : CONTACT_LABELS[type];
+    const value = typeof raw.value === 'string' ? raw.value : '';
+    const enabled = typeof raw.enabled === 'boolean' ? raw.enabled : value.trim().length > 0;
+    const id = typeof raw.id === 'string' && raw.id ? raw.id : `${type}-${index}`;
+    return { id, type, label, value, enabled };
+  });
+}
+
+function buildLegacyContactItems(db: PrismaTemplateRecord): ContactItem[] {
+  const legacy: Array<{ type: ContactType; value?: string | null }> = [
+    { type: 'email', value: db.contactEmail },
+    { type: 'whatsapp', value: db.whatsappNumber },
+    { type: 'website', value: db.contactWebsite },
+  ];
+
+  return legacy
+    .filter(item => typeof item.value === 'string' && item.value.trim().length > 0)
+    .map((item, index) => ({
+      id: `${item.type}-${index}`,
+      type: item.type,
+      label: CONTACT_LABELS[item.type],
+      value: item.value!.trim(),
+      enabled: true,
+    }));
+}
 
 function parseJson<T>(raw: unknown, fallback: T): T {
   if (raw === null || raw === undefined) return fallback;
@@ -36,6 +94,11 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
     DEFAULT_ANNOUNCEMENT_BAR
   );
   const sectionsConfig = parseJson<SectionsConfig>(db.sectionsConfig, DEFAULT_SECTIONS_CONFIG);
+  const contactItemsRaw = parseJson<ContactItem[]>(db.contactItems, []);
+  const contactItems =
+    contactItemsRaw.length > 0
+      ? normalizeContactItems(contactItemsRaw)
+      : buildLegacyContactItems(db);
 
   return {
     tagline: db.tagline ?? '',
@@ -49,6 +112,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
     contactEmail: db.contactEmail ?? '',
     contactWebsite: db.contactWebsite ?? '',
     whatsappNumber: db.whatsappNumber ?? '',
+    contactItems,
     headingFont: db.headingFont ?? 'IBM Plex Sans Arabic',
     bodyFont: db.bodyFont ?? 'IBM Plex Sans Arabic',
     selectedPreset: db.selectedPreset ?? 0,
@@ -147,6 +211,7 @@ export function toPayload(state: TemplateFormState, storeId: string): Record<str
     contactEmail: state.contactEmail,
     contactWebsite: state.contactWebsite,
     whatsappNumber: state.whatsappNumber,
+    contactItems: state.contactItems,
     headingFont: state.headingFont,
     bodyFont: state.bodyFont,
     selectedPreset: state.selectedPreset,

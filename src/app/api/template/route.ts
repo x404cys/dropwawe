@@ -107,6 +107,7 @@ export async function POST(req: Request) {
       contactEmail: typeof fields.contactEmail === 'string' ? fields.contactEmail : undefined,
       contactWebsite: typeof fields.contactWebsite === 'string' ? fields.contactWebsite : undefined,
       whatsappNumber: typeof fields.whatsappNumber === 'string' ? fields.whatsappNumber : undefined,
+      contactItems: fields.contactItems !== undefined ? fields.contactItems : undefined,
       headingFont: typeof fields.headingFont === 'string' ? fields.headingFont : undefined,
       bodyFont: typeof fields.bodyFont === 'string' ? fields.bodyFont : undefined,
       selectedPreset: typeof fields.selectedPreset === 'number' ? fields.selectedPreset : undefined,

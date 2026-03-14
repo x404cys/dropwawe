@@ -690,6 +690,7 @@ model StoreTemplate {
   contactEmail   String?
   contactWebsite String?
   whatsappNumber String?
+  contactItems   Json?
 
   headingFont String @default("IBM Plex Sans Arabic")
   bodyFont    String @default("IBM Plex Sans Arabic")

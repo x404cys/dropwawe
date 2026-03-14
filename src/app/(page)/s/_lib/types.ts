@@ -95,6 +95,24 @@ export type StorefrontCustomFont = {
   url: string;
 };
 
+export type StorefrontContactType =
+  | 'email'
+  | 'whatsapp'
+  | 'website'
+  | 'phone'
+  | 'instagram'
+  | 'facebook'
+  | 'telegram'
+  | 'custom';
+
+export type StorefrontContactItem = {
+  id: string;
+  type: StorefrontContactType;
+  label: string;
+  value: string;
+  enabled: boolean;
+};
+
 export type StorefrontTemplate = {
   id: string;
   storeId: string;
@@ -108,6 +126,7 @@ export type StorefrontTemplate = {
   contactEmail: string | null;
   contactWebsite: string | null;
   whatsappNumber: string | null;
+  contactItems?: StorefrontContactItem[] | null;
   headingFont: string;
   bodyFont: string;
   selectedPreset: number;
@@ -134,6 +153,8 @@ export type StorefrontStore = {
   image: string | null;
   phone: string | null;
   instaLink: string | null;
+  facebookLink: string | null;
+  telegram: string | null;
   description: string | null;
 };
 

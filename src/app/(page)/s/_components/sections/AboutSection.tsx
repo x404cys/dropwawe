@@ -3,9 +3,10 @@
 
 'use client';
 
-import { Award, Globe, Instagram, Mail, Phone } from 'lucide-react';
+import { Award } from 'lucide-react';
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../../_lib/types';
 import { useLanguage } from '../../_context/LanguageContext';
+import { buildContactItems, getContactHref, getContactIcon, isExternalContact } from '../../_utils/contacts';
 
 interface AboutSectionProps {
   template: StorefrontTemplate;
@@ -28,12 +29,9 @@ export default function AboutSection({ template, store, colors, headingStyle }: 
     aboutFeatures = t.about.features;
   }
 
-  const contactItems = [
-    { icon: Mail, text: template.contactEmail, dir: 'ltr' as const },
-    { icon: Phone, text: store.phone, dir: 'ltr' as const },
-    { icon: Instagram, text: store.instaLink, dir: undefined },
-    { icon: Globe, text: template.contactWebsite, dir: 'ltr' as const },
-  ].filter((c) => c.text);
+  const contactItems = buildContactItems(template, store).filter(
+    (item) => item.enabled && item.value.trim().length > 0
+  );
 
   return (
     <section id="about-section" className="py-16 sm:py-20">
@@ -77,19 +75,42 @@ export default function AboutSection({ template, store, colors, headingStyle }: 
                 {t.about.contactTitle}
               </h3>
               <div className="space-y-3">
-                {contactItems.map((c) => (
-                  <div key={String(c.text)} className="flex items-center gap-3">
-                    <div
-                      className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
-                      style={{ backgroundColor: `${colors.primary}15` }}
-                    >
-                      <c.icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
-                    </div>
-                    <span className="text-xs text-muted-foreground" dir={c.dir}>
-                      {String(c.text)}
+                {contactItems.map((item) => {
+                  const Icon = getContactIcon(item.type);
+                  const href = getContactHref(item);
+                  const value =
+                    item.type === 'custom' && item.label
+                      ? `${item.label}: ${item.value}`
+                      : item.value;
+                  const isExternal = isExternalContact(item.type);
+                  const content = (
+                    <span className="text-xs text-muted-foreground" dir="ltr">
+                      {value}
                     </span>
-                  </div>
-                ))}
+                  );
+
+                  return (
+                    <div key={item.id} className="flex items-center gap-3">
+                      <div
+                        className="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0"
+                        style={{ backgroundColor: `${colors.primary}15` }}
+                      >
+                        <Icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
+                      </div>
+                      {href ? (
+                        <a
+                          href={href}
+                          target={isExternal ? '_blank' : undefined}
+                          rel={isExternal ? 'noopener noreferrer' : undefined}
+                        >
+                          {content}
+                        </a>
+                      ) : (
+                        content
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>

@@ -5,16 +5,22 @@
 
 import { MessageCircle } from 'lucide-react';
 import { useLanguage } from '../../_context/LanguageContext';
+import { buildContactItems } from '../../_utils/contacts';
+import type { StorefrontStore, StorefrontTemplate } from '../../_lib/types';
 
 interface FloatingWhatsAppProps {
-  whatsappNumber: string;
+  template: StorefrontTemplate;
+  store: StorefrontStore;
 }
 
-export default function FloatingWhatsApp({ whatsappNumber }: FloatingWhatsAppProps) {
+export default function FloatingWhatsApp({ template, store }: FloatingWhatsAppProps) {
   const { t } = useLanguage();
-  if (!whatsappNumber) return null;
+  const whatsappItem = buildContactItems(template, store).find(
+    (item) => item.type === 'whatsapp' && item.enabled && item.value.trim().length > 0
+  );
+  if (!whatsappItem) return null;
 
-  const number = whatsappNumber.replace(/\s+/g, '');
+  const number = whatsappItem.value.replace(/\s+/g, '');
 
   return (
     <a

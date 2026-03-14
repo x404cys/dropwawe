@@ -112,7 +112,6 @@ export default async function StorefrontPage() {
     }
   }
   const enabledCategorySections = template.categorySections?.filter(cs => cs.enabled) ?? [];
-  const waNumber = (template.whatsappNumber || store.phone || '').replace(/\s+/g, '');
   const baseFontSizeRaw = (template as unknown as { baseFontSize?: string | number }).baseFontSize;
   const baseFontSize = Number(baseFontSizeRaw ?? 16);
   const rootStyle = {
@@ -188,7 +187,7 @@ export default async function StorefrontPage() {
         <Footer store={store} template={template} colors={colors} />
       </StorefrontClient>
 
-      {waNumber && <FloatingWhatsApp whatsappNumber={waNumber} />}
+      <FloatingWhatsApp template={template} store={store} />
     </div>
   );
 }

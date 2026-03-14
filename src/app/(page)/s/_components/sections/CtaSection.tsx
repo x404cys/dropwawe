@@ -6,6 +6,7 @@
 import { MessageCircle } from 'lucide-react';
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../../_lib/types';
 import { useLanguage } from '../../_context/LanguageContext';
+import { buildContactItems } from '../../_utils/contacts';
 
 interface CtaSectionProps {
   template: StorefrontTemplate;
@@ -16,7 +17,10 @@ interface CtaSectionProps {
 
 export default function CtaSection({ template, store, colors, headingStyle }: CtaSectionProps) {
   const { t } = useLanguage();
-  const waNumber = (template.whatsappNumber || store.phone || '').replace(/\s+/g, '');
+  const whatsappItem = buildContactItems(template, store).find(
+    (item) => item.type === 'whatsapp' && item.enabled && item.value.trim().length > 0
+  );
+  const waNumber = whatsappItem?.value.replace(/\s+/g, '') ?? '';
 
   return (
     <section id="cta-section" className="py-16 sm:py-20" style={{ backgroundColor: `${colors.primary}08` }}>

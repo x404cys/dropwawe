@@ -1,9 +1,10 @@
 'use client';
 
-import { Globe, Instagram, MessageCircle, Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react';
 
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../_lib/types';
 import { useLanguage } from '../_context/LanguageContext';
+import { buildContactItems, getContactHref, getContactIcon, isExternalContact } from '../_utils/contacts';
 
 interface FooterProps {
   store: StorefrontStore;
@@ -15,10 +16,9 @@ export default function Footer({ store, template, colors }: FooterProps) {
   const { t, locale } = useLanguage();
   const templateLogo = (template as unknown as { logoImage?: string | null }).logoImage ?? null;
   const logoSrc = templateLogo || store.image;
-  const contactInstagram =
-    (template as unknown as { contactInstagram?: string | null }).contactInstagram ?? store.instaLink;
-  const contactPhone =
-    (template as unknown as { contactPhone?: string | null }).contactPhone ?? store.phone;
+  const contactItems = buildContactItems(template, store).filter(
+    (item) => item.enabled && item.value.trim().length > 0
+  );
   const year = new Date().getFullYear().toLocaleString(locale);
 
   return (
@@ -40,15 +40,23 @@ export default function Footer({ store, template, colors }: FooterProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            {contactInstagram && (
-              <Instagram className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-            )}
-            {template.contactWebsite && (
-              <Globe className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-            )}
-            {(template.whatsappNumber || contactPhone) && (
-              <MessageCircle className="h-4 w-4 text-muted-foreground hover:text-foreground transition-colors cursor-pointer" />
-            )}
+            {contactItems.map((item) => {
+              const Icon = getContactIcon(item.type);
+              const href = getContactHref(item);
+              const isExternal = isExternalContact(item.type);
+              if (!href) return null;
+              return (
+                <a
+                  key={item.id}
+                  href={href}
+                  target={isExternal ? '_blank' : undefined}
+                  rel={isExternal ? 'noopener noreferrer' : undefined}
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  <Icon className="h-4 w-4" />
+                </a>
+              );
+            })}
           </div>
 
           <p className="text-[10px] text-muted-foreground">
