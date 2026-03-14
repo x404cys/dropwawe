@@ -383,13 +383,6 @@ export default function ServiceWithWorksSection({
                                   <Trash2 className="h-3.5 w-3.5" />
                                 </button>
                               </div>
-
-                              {!DynamicIcon && work.icon?.trim() && (
-                                <p className="text-[11px] text-amber-600 dark:text-amber-400">
-                                  اسم الأيقونة غير صحيح. تأكد أنه مطابق لاسم أيقونة داخل
-                                  lucide-react.
-                                </p>
-                              )}
                             </>
                           )}
 
