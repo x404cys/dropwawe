@@ -39,7 +39,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
   let customFonts: CustomFont[] = [];
 
   try {
-    const res = await fetch(`${baseUrl}/api/s/store?subdomain=0000ppp`, {
+    const res = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}}`, {
       next: { revalidate: 60 },
     });
 
