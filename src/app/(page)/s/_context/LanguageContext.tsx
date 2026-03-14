@@ -35,10 +35,12 @@ export const STORE_LANG_OPTIONS = [
   { value: 'en', label: LANG_LABELS.en },
 ] as const;
 
+type TranslationType = typeof ar | typeof ku | typeof en;
+
 interface LanguageContextType {
   lang: StorefrontLang;
   setLang: (lang: StorefrontLang) => void;
-  t: typeof ar;
+  t: TranslationType;
   langLabel: string;
   dir: 'rtl' | 'ltr';
   locale: string;
