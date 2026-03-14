@@ -1,8 +1,9 @@
-// Purpose: Search bar — "use client" input with magnifying glass and clear button.
+// Purpose: Search bar - "use client" input with magnifying glass and clear button.
 
 'use client';
 
 import { Search, X } from 'lucide-react';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface SearchBarProps {
   value: string;
@@ -10,6 +11,8 @@ interface SearchBarProps {
 }
 
 export default function SearchBar({ value, onChange }: SearchBarProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="max-w-md mx-auto mb-6">
       <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-card border border-border">
@@ -17,7 +20,7 @@ export default function SearchBar({ value, onChange }: SearchBarProps) {
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="ابحث عن منتج..."
+          placeholder={t.store.searchPlaceholder}
           className="flex-1 bg-transparent text-sm text-foreground placeholder:text-muted-foreground outline-none"
         />
         {value && (

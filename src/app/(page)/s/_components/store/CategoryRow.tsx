@@ -1,15 +1,15 @@
-// Purpose: Horizontal scrolling category row — "use client".
-// Shows a header with icon + category name + count + "عرض الكل" button,
+// Purpose: Horizontal scrolling category row - "use client".
+// Shows a header with icon + category name + count + "View all" button,
 // then a horizontal scroll of compact product cards.
-// Matches Storefront.tsx enabledCategorySections rendering exactly.
 
 'use client';
 
-import { ChevronLeft, Package, ShoppingCart, Star, Heart } from 'lucide-react';
+import { ChevronLeft, Heart, Package, ShoppingCart, Star } from 'lucide-react';
 import { ActiveColors, StorefrontCategoryIcon, StorefrontProduct } from '../../_lib/types';
 import { getCategoryIcon } from '../../_utils/icons';
 import { getDiscountedPrice } from '../../_utils/price';
 import { useCart } from '../../_context/CartContext';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface CategoryRowProps {
   category: string;
@@ -28,6 +28,7 @@ export default function CategoryRow({
   categoryIcons,
   onViewAll,
 }: CategoryRowProps) {
+  const { t, locale } = useLanguage();
   const { addToCart, setSelectedProduct, liked, toggleLike } = useCart();
 
   if (products.length === 0) return null;
@@ -50,7 +51,7 @@ export default function CategoryRow({
             {category}
           </h3>
           <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-            {products.length}
+            {products.length.toLocaleString(locale)}
           </span>
         </div>
         <button
@@ -58,7 +59,7 @@ export default function CategoryRow({
           className="text-[11px] font-semibold flex items-center gap-1"
           style={{ color: colors.primary }}
         >
-          عرض الكل <ChevronLeft className="h-3 w-3" />
+          {t.store.viewAll} <ChevronLeft className="h-3 w-3" />
         </button>
       </div>
 
@@ -74,7 +75,7 @@ export default function CategoryRow({
             >
               <div
                 onClick={() => setSelectedProduct(product)}
-                className="w-full text-right cursor-pointer"
+                className="w-full text-start cursor-pointer"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && setSelectedProduct(product)}
@@ -91,7 +92,7 @@ export default function CategoryRow({
                   )}
                   {(product.discount ?? 0) > 0 && (
                     <span className="absolute top-2 right-2 px-2 py-0.5 rounded-full text-[8px] font-bold bg-destructive text-destructive-foreground">
-                      خصم {product.discount}٪
+                      {t.store.discount} {product.discount}%
                     </span>
                   )}
                   <button
@@ -123,9 +124,9 @@ export default function CategoryRow({
                   </div>
                   <div className="flex items-center gap-1.5">
                     <span className="text-xs font-bold" style={{ color: colors.primary }}>
-                      {finalPrice.toLocaleString('ar-IQ')}
+                      {finalPrice.toLocaleString(locale)}
                     </span>
-                    <span className="text-[8px] text-muted-foreground">د.ع</span>
+                    <span className="text-[8px] text-muted-foreground">{t.store.currency}</span>
                   </div>
                 </div>
               </div>
@@ -135,7 +136,7 @@ export default function CategoryRow({
                   className="w-full py-2 rounded-xl text-[10px] font-bold text-white flex items-center justify-center gap-1 active:scale-95 transition-transform"
                   style={{ backgroundColor: colors.primary }}
                 >
-                  <ShoppingCart className="h-3 w-3" /> أضف للسلة
+                  <ShoppingCart className="h-3 w-3" /> {t.store.addToCart}
                 </button>
               </div>
             </div>

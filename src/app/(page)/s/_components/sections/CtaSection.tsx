@@ -1,9 +1,11 @@
-// Purpose: CTA section — Server Component.
+// Purpose: CTA section - Client Component.
 // Centered card with title, desc, primary button, WhatsApp button.
-// Matches Storefront.tsx case "cta".
+
+'use client';
 
 import { MessageCircle } from 'lucide-react';
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../../_lib/types';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface CtaSectionProps {
   template: StorefrontTemplate;
@@ -13,10 +15,11 @@ interface CtaSectionProps {
 }
 
 export default function CtaSection({ template, store, colors, headingStyle }: CtaSectionProps) {
+  const { t } = useLanguage();
   const waNumber = (template.whatsappNumber || store.phone || '').replace(/\s+/g, '');
 
   return (
-    <section className="py-16 sm:py-20" style={{ backgroundColor: `${colors.primary}08` }}>
+    <section id="cta-section" className="py-16 sm:py-20" style={{ backgroundColor: `${colors.primary}08` }}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
         <div className="max-w-lg mx-auto">
           <h2
@@ -46,7 +49,7 @@ export default function CtaSection({ template, store, colors, headingStyle }: Ct
                 rel="noopener"
                 className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm font-bold bg-card border border-border text-foreground flex items-center justify-center gap-2"
               >
-                <MessageCircle className="h-4 w-4" /> تواصل واتساب
+                <MessageCircle className="h-4 w-4" /> {t.cta.whatsapp}
               </a>
             )}
           </div>

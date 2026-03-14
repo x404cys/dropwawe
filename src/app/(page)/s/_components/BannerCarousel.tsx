@@ -1,4 +1,4 @@
-// Purpose: Banner image carousel — "use client", prev/next + dot indicators.
+// Purpose: Banner image carousel - "use client", prev/next + dot indicators.
 // Matches Storefront.tsx banner section exactly.
 
 'use client';
@@ -6,6 +6,7 @@
 import { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { ActiveColors } from '../_lib/types';
+import { useLanguage } from '../_context/LanguageContext';
 
 interface BannerCarouselProps {
   banners: string[];
@@ -13,6 +14,7 @@ interface BannerCarouselProps {
 }
 
 export default function BannerCarousel({ banners, colors }: BannerCarouselProps) {
+  const { t } = useLanguage();
   const [current, setCurrent] = useState(0);
 
   if (banners.length === 0) return null;
@@ -25,7 +27,7 @@ export default function BannerCarousel({ banners, colors }: BannerCarouselProps)
       <div className="w-full overflow-hidden" style={{ maxHeight: 300 }}>
         <img
           src={banners[current]}
-          alt="بنر"
+          alt={t.store.bannerAlt}
           className="w-full h-48 sm:h-72 object-cover"
         />
       </div>

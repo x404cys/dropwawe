@@ -1,4 +1,4 @@
-// Purpose: Category icons filter — "use client", horizontal scroll of icon buttons.
+// Purpose: Category icons filter - "use client", horizontal scroll of icon buttons.
 // Used when categoryDisplayMode === "icons". Matches Storefront.tsx exactly.
 
 'use client';
@@ -6,9 +6,10 @@
 import { Package } from 'lucide-react';
 import { ActiveColors, StorefrontCategoryIcon } from '../../_lib/types';
 import { getCategoryIcon } from '../../_utils/icons';
+import type { StorefrontCategoryOption } from '../../_hooks/useStorefront';
 
 interface CategoryIconsProps {
-  categories: string[];
+  categories: StorefrontCategoryOption[];
   activeCategory: string;
   onSelect: (cat: string) => void;
   categoryIcons: StorefrontCategoryIcon[];
@@ -25,14 +26,14 @@ export default function CategoryIcons({
   return (
     <div className="flex gap-4 overflow-x-auto pb-4 mb-6 justify-start sm:justify-center px-2">
       {categories.map((cat) => {
-        const iconItem = categoryIcons.find((ci) => ci.category === cat);
-        const CatIcon = cat === 'الكل' ? Package : getCategoryIcon(iconItem?.icon ?? 'Package');
-        const isActive = activeCategory === cat;
+        const iconItem = categoryIcons.find((ci) => ci.category === cat.key);
+        const CatIcon = cat.isAll ? Package : getCategoryIcon(iconItem?.icon ?? 'Package');
+        const isActive = activeCategory === cat.key;
 
         return (
           <button
-            key={cat}
-            onClick={() => onSelect(cat)}
+            key={cat.key}
+            onClick={() => onSelect(cat.key)}
             className="flex flex-col items-center gap-1.5 flex-shrink-0 min-w-[60px] transition-all"
           >
             <div
@@ -48,7 +49,7 @@ export default function CategoryIcons({
               {iconItem?.image ? (
                 <img
                   src={iconItem.image}
-                  alt={cat}
+                  alt={cat.label}
                   className="w-full h-full object-cover rounded-xl"
                 />
               ) : (
@@ -64,7 +65,7 @@ export default function CategoryIcons({
               }`}
               style={isActive ? { color: colors.primary } : undefined}
             >
-              {cat}
+              {cat.label}
             </span>
           </button>
         );

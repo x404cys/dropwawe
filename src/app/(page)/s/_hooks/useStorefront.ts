@@ -1,36 +1,67 @@
-// Purpose: useStorefront hook — manages active category, search query,
+// Purpose: useStorefront hook - manages active category, search query,
 // derived category list, and filtered product results.
 
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { StorefrontProduct } from '../_lib/types';
+import { useLanguage } from '../_context/LanguageContext';
+
+export type StorefrontCategoryOption = {
+  key: string;
+  label: string;
+  isAll?: boolean;
+};
+
+const ALL_CATEGORY_KEY = '__all__';
+const GENERAL_CATEGORY_KEY = '__general__';
 
 export function useStorefront(products: StorefrontProduct[]) {
-  const [activeCategory, setActiveCategory] = useState('الكل');
+  const { t } = useLanguage();
+  const [activeCategory, setActiveCategory] = useState(ALL_CATEGORY_KEY);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const displayCategories = useMemo(
-    () => ['الكل', ...Array.from(new Set(products.map((p) => p.category ?? 'عام')))],
-    [products]
+  const getProductCategory = useCallback(
+    (product: StorefrontProduct) => product.category ?? GENERAL_CATEGORY_KEY,
+    []
   );
+
+  const resolveCategoryLabel = useCallback(
+    (category: string) => {
+      if (category === GENERAL_CATEGORY_KEY) return t.store.general;
+      return category;
+    },
+    [t.store.general]
+  );
+
+  const displayCategories = useMemo(() => {
+    const uniqueCats = Array.from(new Set(products.map(getProductCategory)));
+    return [
+      { key: ALL_CATEGORY_KEY, label: t.store.all, isAll: true },
+      ...uniqueCats.map((cat) => ({ key: cat, label: resolveCategoryLabel(cat) })),
+    ];
+  }, [getProductCategory, products, resolveCategoryLabel, t.store.all]);
 
   const displayFiltered = useMemo(
     () =>
       products.filter((p) => {
         const matchCat =
-          activeCategory === 'الكل' || (p.category ?? 'عام') === activeCategory;
+          activeCategory === ALL_CATEGORY_KEY || getProductCategory(p) === activeCategory;
         const matchSearch =
           !searchQuery ||
           p.name.includes(searchQuery) ||
           (p.description ?? '').includes(searchQuery);
         return matchCat && matchSearch;
       }),
-    [products, activeCategory, searchQuery]
+    [activeCategory, getProductCategory, products, searchQuery]
   );
 
-  const getProductsByCat = (cat: string) =>
-    products.filter((p) => (p.category ?? 'عام') === cat);
+  const getProductsByCat = useCallback(
+    (cat: string) => products.filter((p) => getProductCategory(p) === cat),
+    [getProductCategory, products]
+  );
+
+  const isAllCategory = activeCategory === ALL_CATEGORY_KEY;
 
   return {
     activeCategory,
@@ -40,5 +71,8 @@ export function useStorefront(products: StorefrontProduct[]) {
     displayCategories,
     displayFiltered,
     getProductsByCat,
+    getProductCategory,
+    isAllCategory,
+    allCategoryKey: ALL_CATEGORY_KEY,
   };
 }

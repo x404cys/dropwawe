@@ -1,7 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import { ExternalLink, PenTool, Shapes } from 'lucide-react';
 import { ActiveColors, StorefrontService } from '../../_lib/types';
 import { getIconComponent } from '../../_utils/icons';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface ServicesSectionProps {
   services: StorefrontService[];
@@ -16,6 +19,7 @@ export default function ServicesSection({
   headingStyle,
   showWorksSection = true,
 }: ServicesSectionProps) {
+  const { t } = useLanguage();
   const enabledServices = services.filter(service => service.enabled !== false);
 
   return (
@@ -46,7 +50,7 @@ export default function ServicesSection({
                       className="mt-4 text-lg font-bold sm:text-xl"
                       style={{ ...headingStyle, color: colors.text }}
                     >
-                      {service.worksTitle || `أعمال ${service.title}`}
+                      {service.worksTitle || `${t.services.worksTitlePrefix} ${service.title}`}
                     </h3>
 
                     {service.worksDesc ? (
@@ -74,6 +78,7 @@ export default function ServicesSection({
                       const WorkIcon = getIconComponent(work.icon ?? '');
                       const hasImage = !!work.image;
                       const hasIcon = !!work.icon?.trim() && viewMode === 'ICON';
+                      const overlayText = work.link ? t.services.openLink : t.services.viewProject;
 
                       return (
                         <Wrapper
@@ -95,7 +100,7 @@ export default function ServicesSection({
                                 <>
                                   <Image
                                     src={work.image!}
-                                    alt={work.title || 'work image'}
+                                    alt={work.title || t.services.imageAlt}
                                     fill
                                     className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
                                   />
@@ -144,9 +149,7 @@ export default function ServicesSection({
                               <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/45 group-hover:opacity-100">
                                 <div className="text-center">
                                   <ExternalLink className="mx-auto mb-1.5 h-5 w-5 text-white" />
-                                  <p className="text-[10px] font-bold text-white">
-                                    {work.link ? 'فتح الرابط' : 'عرض المشروع'}
-                                  </p>
+                                  <p className="text-[10px] font-bold text-white">{overlayText}</p>
                                 </div>
                               </div>
                             </div>
@@ -155,7 +158,7 @@ export default function ServicesSection({
                               <div className="flex items-start justify-between gap-2">
                                 <div className="min-w-0 flex-1">
                                   <h4 className="text-foreground truncate text-xs font-bold sm:text-sm">
-                                    {work.title || 'بدون عنوان'}
+                                    {work.title || t.services.untitled}
                                   </h4>
 
                                   {work.category ? (

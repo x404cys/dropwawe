@@ -1,5 +1,7 @@
 import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
+import { LanguageProvider } from './_context/LanguageContext';
+import StorefrontShell from './_components/StorefrontShell';
 
 type CustomFont = {
   id: string;
@@ -74,28 +76,30 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
     : null;
 
   return (
-    <div
-      dir="rtl"
-      style={{
-        margin: 0,
-        padding: 0,
-        fontWeight: 'normal',
-        fontFamily: `'${primaryFont}', sans-serif`,
-      }}
-    >
-      {primaryFontApiUrl && (
-        <link
-          rel="preload"
-          href={primaryFontApiUrl}
-          as="font"
-          type={primaryFontUrl ? getFontMimeType(primaryFontUrl) : undefined}
-          crossOrigin="anonymous"
-        />
-      )}
+    <LanguageProvider>
+      <StorefrontShell
+        className="min-h-screen"
+        style={{
+          margin: 0,
+          padding: 0,
+          fontWeight: 'normal',
+          fontFamily: `'${primaryFont}', sans-serif`,
+        }}
+      >
+        {primaryFontApiUrl && (
+          <link
+            rel="preload"
+            href={primaryFontApiUrl}
+            as="font"
+            type={primaryFontUrl ? getFontMimeType(primaryFontUrl) : undefined}
+            crossOrigin="anonymous"
+          />
+        )}
 
-      {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
+        {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
 
-      {children}
-    </div>
+        {children}
+      </StorefrontShell>
+    </LanguageProvider>
   );
 }

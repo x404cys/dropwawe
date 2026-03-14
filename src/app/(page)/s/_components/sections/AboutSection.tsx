@@ -1,9 +1,11 @@
-// Purpose: About section — Server Component.
+// Purpose: About section - Client Component.
 // Two-column layout: story + features grid | contact info card.
-// Matches Storefront.tsx case "about".
 
-import { Award, Mail, Phone, Instagram, Globe } from 'lucide-react';
+'use client';
+
+import { Award, Globe, Instagram, Mail, Phone } from 'lucide-react';
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../../_lib/types';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface AboutSectionProps {
   template: StorefrontTemplate;
@@ -13,14 +15,17 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ template, store, colors, headingStyle }: AboutSectionProps) {
+  const { t } = useLanguage();
   // Parse aboutFeatures with fallback matching reference defaults.
   let aboutFeatures: string[] = [];
   try {
     const raw = (template as unknown as Record<string, unknown>).aboutFeatures;
     if (Array.isArray(raw)) aboutFeatures = raw as string[];
-  } catch { /* ignore */ }
+  } catch {
+    /* ignore */
+  }
   if (aboutFeatures.length === 0) {
-    aboutFeatures = ['جودة عالية', 'تسليم سريع', 'دعم مستمر'];
+    aboutFeatures = t.about.features;
   }
 
   const contactItems = [
@@ -40,13 +45,13 @@ export default function AboutSection({ template, store, colors, headingStyle }: 
               className="text-[11px] font-semibold px-3 py-1 rounded-full"
               style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
             >
-              من نحن
+              {t.about.badge}
             </span>
             <h2
               className="text-xl sm:text-2xl font-bold mt-4 mb-3"
               style={{ ...headingStyle, color: colors.text }}
             >
-              فريق شغوف بالإبداع
+              {t.about.heading}
             </h2>
             <p
               className="text-xs sm:text-sm leading-relaxed mb-4"
@@ -65,11 +70,11 @@ export default function AboutSection({ template, store, colors, headingStyle }: 
             </div>
           </div>
 
-          {/* Right column — contact card */}
+          {/* Right column - contact card */}
           <div className="flex-1">
             <div className="bg-card border border-border rounded-2xl p-5 sm:p-6">
               <h3 className="text-sm font-bold text-foreground mb-4" style={headingStyle}>
-                تواصل معنا
+                {t.about.contactTitle}
               </h3>
               <div className="space-y-3">
                 {contactItems.map((c) => (

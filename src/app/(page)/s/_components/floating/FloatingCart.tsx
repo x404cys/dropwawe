@@ -1,4 +1,4 @@
-// Purpose: Floating cart button — "use client".
+// Purpose: Floating cart button - "use client".
 // fixed bottom-6 right-4, visible only when cart has items, drawer is closed,
 // and no product modal is open. Shows count and total.
 
@@ -6,13 +6,16 @@
 
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../../_context/CartContext';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface FloatingCartProps {
   primaryColor: string;
 }
 
 export default function FloatingCart({ primaryColor }: FloatingCartProps) {
-  const { cartCount, cartTotal, showCart, selectedProduct, setShowCart, setCheckoutStep } = useCart();
+  const { cartCount, cartTotal, showCart, selectedProduct, setShowCart, setCheckoutStep } =
+    useCart();
+  const { t, locale } = useLanguage();
 
   if (cartCount === 0 || showCart || selectedProduct) return null;
 
@@ -26,7 +29,7 @@ export default function FloatingCart({ primaryColor }: FloatingCartProps) {
       style={{ backgroundColor: primaryColor }}
     >
       <ShoppingCart className="h-4 w-4" />
-      {cartCount} • {cartTotal.toLocaleString('ar-IQ')} د.ع
+      {cartCount.toLocaleString(locale)} • {cartTotal.toLocaleString(locale)} {t.store.currency}
     </button>
   );
 }

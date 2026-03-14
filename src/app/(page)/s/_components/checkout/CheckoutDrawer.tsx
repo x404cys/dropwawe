@@ -1,14 +1,21 @@
-// Purpose: Checkout drawer — "use client", left-side fixed panel with backdrop.
+// Purpose: Checkout drawer - "use client", left-side fixed panel with backdrop.
 // Handles cart view, order form, payment selection, order placement via POST /api/s/orders,
 // and success state. Reads/writes state from CartContext.
-// Pixel-perfect match to Storefront.tsx checkout drawer.
 
 'use client';
 
 import {
-  X, ShoppingCart, Check, Minus, Plus, Package, CreditCard, Download,
+  Check,
+  CreditCard,
+  Download,
+  Minus,
+  Package,
+  Plus,
+  ShoppingCart,
+  X,
 } from 'lucide-react';
 import { useCart } from '../../_context/CartContext';
+import { useLanguage } from '../../_context/LanguageContext';
 import { getDiscountedPrice } from '../../_utils/price';
 
 interface CheckoutDrawerProps {
@@ -18,12 +25,21 @@ interface CheckoutDrawerProps {
 
 export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawerProps) {
   const {
-    cart, cartCount, cartTotal, updateCartQty, clearCart,
-    showCart, setShowCart,
-    checkoutStep, setCheckoutStep,
-    customerInfo, setCustomerInfo,
-    paymentMethod, setPaymentMethod,
+    cart,
+    cartCount,
+    cartTotal,
+    updateCartQty,
+    clearCart,
+    showCart,
+    setShowCart,
+    checkoutStep,
+    setCheckoutStep,
+    customerInfo,
+    setCustomerInfo,
+    paymentMethod,
+    setPaymentMethod,
   } = useCart();
+  const { t, locale } = useLanguage();
 
   if (!showCart) return null;
 
@@ -83,7 +99,9 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
               <X className="h-4 w-4 text-foreground" />
             </button>
             <h2 className="text-sm font-bold text-foreground">
-              {checkoutStep === 'success' ? 'تم الطلب ✓' : `إتمام الشراء (${cartCount})`}
+              {checkoutStep === 'success'
+                ? t.checkout.orderDone
+                : `${t.checkout.title} (${cartCount.toLocaleString(locale)})`}
             </h2>
             <div className="w-8" />
           </div>
@@ -99,24 +117,24 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
               >
                 <Check className="h-10 w-10" style={{ color: primaryColor }} />
               </div>
-              <h2 className="text-xl font-bold text-foreground mb-2">تم تأكيد طلبك! 🎉</h2>
+              <h2 className="text-xl font-bold text-foreground mb-2">
+                {t.checkout.successTitle}
+              </h2>
               <p className="text-sm text-muted-foreground mb-1">
-                رقم الطلب: #{Math.floor(1000 + Math.random() * 9000)}
+                {t.checkout.orderNumber}: #{Math.floor(1000 + Math.random() * 9000)}
               </p>
-              <p className="text-xs text-muted-foreground mb-6">
-                سيتم التواصل معك عبر الواتساب
-              </p>
+              <p className="text-xs text-muted-foreground mb-6">{t.checkout.contactNote}</p>
             </div>
           ) : cart.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-muted-foreground">
               <ShoppingCart className="h-12 w-12 mb-3 opacity-20" />
-              <p className="text-sm">السلة فارغة</p>
+              <p className="text-sm">{t.checkout.emptyCart}</p>
             </div>
           ) : (
             <div className="p-4 space-y-5">
               {/* Cart items */}
               <div className="space-y-2">
-                <p className="text-xs font-bold text-foreground">المنتجات</p>
+                <p className="text-xs font-bold text-foreground">{t.checkout.products}</p>
                 {cart.map(({ product, qty }) => {
                   const price = getDiscountedPrice(product);
                   return (
@@ -137,7 +155,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                           {product.name}
                         </p>
                         <p className="text-[11px] font-bold mt-0.5" style={{ color: primaryColor }}>
-                          {price.toLocaleString('ar-IQ')} د.ع
+                          {price.toLocaleString(locale)} {t.store.currency}
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">
@@ -171,18 +189,22 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
 
               {/* Customer info */}
               <div className="space-y-3">
-                <p className="text-xs font-bold text-foreground">معلومات الطلب</p>
+                <p className="text-xs font-bold text-foreground">{t.checkout.orderInfo}</p>
                 <div>
-                  <label className="text-[10px] text-muted-foreground mb-1 block">الاسم الكامل *</label>
+                  <label className="text-[10px] text-muted-foreground mb-1 block">
+                    {t.checkout.fullName} *
+                  </label>
                   <input
                     value={customerInfo.name}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, name: e.target.value })}
                     className="w-full h-10 rounded-xl border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors"
-                    placeholder="الاسم الكامل"
+                    placeholder={t.checkout.fullNamePlaceholder}
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground mb-1 block">رقم الهاتف *</label>
+                  <label className="text-[10px] text-muted-foreground mb-1 block">
+                    {t.checkout.phone} *
+                  </label>
                   <input
                     value={customerInfo.phone}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
@@ -193,7 +215,9 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-muted-foreground mb-1 block">البريد الإلكتروني</label>
+                  <label className="text-[10px] text-muted-foreground mb-1 block">
+                    {t.checkout.email}
+                  </label>
                   <input
                     value={customerInfo.email}
                     onChange={(e) => setCustomerInfo({ ...customerInfo, email: e.target.value })}
@@ -207,7 +231,9 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
 
               {/* Payment */}
               <div>
-                <p className="text-xs font-bold text-foreground mb-2">طريقة الدفع</p>
+                <p className="text-xs font-bold text-foreground mb-2">
+                  {t.checkout.paymentMethod}
+                </p>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setPaymentMethod('electronic')}
@@ -222,7 +248,9 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                       className="h-4 w-4 mx-auto mb-1"
                       style={{ color: paymentMethod === 'electronic' ? primaryColor : undefined }}
                     />
-                    <p className="text-[10px] font-bold text-foreground">دفع إلكتروني</p>
+                    <p className="text-[10px] font-bold text-foreground">
+                      {t.checkout.payElectronic}
+                    </p>
                   </button>
                   <button
                     onClick={() => setPaymentMethod('cod')}
@@ -237,19 +265,23 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                       className="h-4 w-4 mx-auto mb-1"
                       style={{ color: paymentMethod === 'cod' ? primaryColor : undefined }}
                     />
-                    <p className="text-[10px] font-bold text-foreground">تحويل</p>
+                    <p className="text-[10px] font-bold text-foreground">
+                      {t.checkout.payOnDelivery}
+                    </p>
                   </button>
                 </div>
               </div>
 
               {/* Notes */}
               <div>
-                <label className="text-[10px] text-muted-foreground mb-1 block">ملاحظات (اختياري)</label>
+                <label className="text-[10px] text-muted-foreground mb-1 block">
+                  {t.checkout.notes}
+                </label>
                 <textarea
                   value={customerInfo.notes}
                   onChange={(e) => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
                   className="w-full h-16 rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground outline-none focus:border-primary transition-colors resize-none"
-                  placeholder="ملاحظات..."
+                  placeholder={t.checkout.notesPlaceholder}
                 />
               </div>
             </div>
@@ -260,10 +292,10 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
         {checkoutStep !== 'success' && cart.length > 0 && (
           <div className="border-t border-border p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-bold text-foreground">المجموع</span>
+              <span className="text-sm font-bold text-foreground">{t.checkout.total}</span>
               <span className="text-lg font-bold" style={{ color: primaryColor }}>
-                {cartTotal.toLocaleString('ar-IQ')}{' '}
-                <span className="text-xs text-muted-foreground">د.ع</span>
+                {cartTotal.toLocaleString(locale)}{' '}
+                <span className="text-xs text-muted-foreground">{t.store.currency}</span>
               </span>
             </div>
             <button
@@ -272,7 +304,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
               className="w-full h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-transform text-white"
               style={{ backgroundColor: primaryColor }}
             >
-              <Check className="h-4 w-4" /> تأكيد الطلب
+              <Check className="h-4 w-4" /> {t.checkout.confirmOrder}
             </button>
           </div>
         )}

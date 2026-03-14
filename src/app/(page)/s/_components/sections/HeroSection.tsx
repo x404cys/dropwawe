@@ -1,11 +1,11 @@
-// Purpose: Hero section — Server Component.
+// Purpose: Hero section - Client Component.
 // Gradient blobs, badge, split tagline, description, CTA buttons, stats row, scroll arrow.
-// Pixel-perfect match to Storefront.tsx case "hero".
-// Note: CTA buttons that scroll to sections must be handled separately client-side.
-// We use <a> anchors for smooth scroll compat with Server Components.
 
-import { Zap, ArrowDown } from 'lucide-react';
+'use client';
+
+import { ArrowDown, Zap } from 'lucide-react';
 import { ActiveColors, StorefrontTemplate } from '../../_lib/types';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface HeroSectionProps {
   template: StorefrontTemplate;
@@ -14,7 +14,8 @@ interface HeroSectionProps {
 }
 
 export default function HeroSection({ template, colors, headingStyle }: HeroSectionProps) {
-  const tagline = template.tagline ?? 'أفضل المنتجات بأفضل الأسعار';
+  const { t, locale } = useLanguage();
+  const tagline = template.tagline ?? t.hero.taglineFallback;
   const words = tagline.split(' ');
   const half = Math.ceil(words.length / 2);
   const firstHalf = words.slice(0, half).join(' ');
@@ -49,7 +50,7 @@ export default function HeroSection({ template, colors, headingStyle }: HeroSect
           >
             <Zap className="h-3 w-3" style={{ color: colors.primary }} />
             <span className="text-[11px] font-semibold" style={{ color: colors.primary }}>
-              منتجات مميزة • عروض حصرية
+              {t.hero.badge}
             </span>
           </div>
 
@@ -71,7 +72,7 @@ export default function HeroSection({ template, colors, headingStyle }: HeroSect
             {storeDescription}
           </p>
 
-          {/* CTA buttons — anchor-based smooth scroll */}
+          {/* CTA buttons - anchor-based smooth scroll */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
               href="#store-section"
@@ -81,22 +82,28 @@ export default function HeroSection({ template, colors, headingStyle }: HeroSect
                 boxShadow: `0 10px 25px -5px ${colors.primary}40`,
               }}
             >
-              {template.heroButtonText ?? 'تسوق الآن'}
+              {template.heroButtonText ?? t.hero.primaryCta}
             </a>
             <a
               href="#works-section"
               className="w-full sm:w-auto px-8 py-3.5 rounded-2xl text-sm font-bold bg-card border border-border text-foreground hover:bg-muted transition-colors text-center"
             >
-              {template.heroSecondaryButton ?? 'تعرف علينا'}
+              {template.heroSecondaryButton ?? t.hero.secondaryCta}
             </a>
           </div>
 
           {/* Stats */}
           <div className="flex items-center justify-center gap-8 mt-12">
             {[
-              { value: '٥,٠٠٠+', label: 'عميل سعيد' },
-              { value: '١٥٠+', label: 'منتج' },
-              { value: '٤.٩', label: 'تقييم' },
+              {
+                value: `${new Intl.NumberFormat(locale).format(5000)}+`,
+                label: t.hero.stats.happyClients,
+              },
+              {
+                value: `${new Intl.NumberFormat(locale).format(150)}+`,
+                label: t.hero.stats.products,
+              },
+              { value: '4.9', label: t.hero.stats.rating },
             ].map((s) => (
               <div key={s.label} className="text-center">
                 <p

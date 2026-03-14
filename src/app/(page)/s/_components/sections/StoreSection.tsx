@@ -1,11 +1,16 @@
-// Purpose: Store section — "use client". Orchestrates search bar, category filter,
+// Purpose: Store section - "use client". Orchestrates search bar, category filter,
 // category rows, and product grid. Reads/writes cart via CartContext.
 // Matches Storefront.tsx case "store" exactly.
 
 'use client';
 
 import { Package } from 'lucide-react';
-import { ActiveColors, StorefrontCategoryIcon, StorefrontCategorySection, StorefrontProduct, StorefrontTemplate } from '../../_lib/types';
+import {
+  ActiveColors,
+  StorefrontCategorySection,
+  StorefrontProduct,
+  StorefrontTemplate,
+} from '../../_lib/types';
 import { useStorefront } from '../../_hooks/useStorefront';
 import BannerCarousel from '../BannerCarousel';
 import SearchBar from '../store/SearchBar';
@@ -13,6 +18,7 @@ import CategoryIcons from '../store/CategoryIcons';
 import CategoryPills from '../store/CategoryPills';
 import CategoryRow from '../store/CategoryRow';
 import ProductCard from '../store/ProductCard';
+import { useLanguage } from '../../_context/LanguageContext';
 
 interface StoreSectionProps {
   products: StorefrontProduct[];
@@ -31,15 +37,21 @@ export default function StoreSection({
   enabledCategorySections,
   centerBanners = [],
 }: StoreSectionProps) {
+  const { t } = useLanguage();
   const {
-    activeCategory, setActiveCategory,
-    searchQuery, setSearchQuery,
-    displayCategories, displayFiltered,
+    activeCategory,
+    setActiveCategory,
+    searchQuery,
+    setSearchQuery,
+    displayCategories,
+    displayFiltered,
     getProductsByCat,
+    getProductCategory,
+    isAllCategory,
   } = useStorefront(products);
 
   const showCategoryRows =
-    enabledCategorySections.length > 0 && activeCategory === 'الكل' && !searchQuery;
+    enabledCategorySections.length > 0 && isAllCategory && !searchQuery;
 
   return (
     <section id="store-section" className="py-10 sm:py-16">
@@ -91,13 +103,13 @@ export default function StoreSection({
             {(() => {
               const sectionCats = enabledCategorySections.map((cs) => cs.category);
               const remaining = products.filter(
-                (p) => !sectionCats.includes(p.category ?? 'عام')
+                (p) => !sectionCats.includes(getProductCategory(p))
               );
               if (remaining.length === 0) return null;
               return (
                 <div>
                   <h3 className="text-sm font-bold text-foreground mb-3" style={headingStyle}>
-                    منتجات أخرى
+                    {t.store.otherProducts}
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {remaining.map((product) => (
@@ -118,10 +130,10 @@ export default function StoreSection({
         )}
 
         {/* Empty state */}
-        {displayFiltered.length === 0 && (activeCategory !== 'الكل' || searchQuery) && (
+        {displayFiltered.length === 0 && (!isAllCategory || searchQuery) && (
           <div className="text-center py-16">
             <Package className="h-12 w-12 mx-auto mb-3 text-muted-foreground/20" />
-            <p className="text-sm text-muted-foreground">لا توجد منتجات</p>
+            <p className="text-sm text-muted-foreground">{t.store.noProducts}</p>
           </div>
         )}
       </div>
