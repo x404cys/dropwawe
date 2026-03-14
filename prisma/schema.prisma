@@ -728,18 +728,16 @@ model TemplateService {
   template    StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   icon        String        @default("Sparkles")
-  title       String
+  title       String?
   desc        String?
 
-  // عنوان قسم الأعمال الخاص بهذه الخدمة
-  worksTitle  String?       // مثال: "أعمالي في التصميم"
-  worksDesc   String?       // وصف اختياري
+  worksTitle  String?       
+  worksDesc   String?        
 
   order       Int           @default(0)
-  enabled     Boolean       @default(true)  // ← هذا كل شي
+  enabled     Boolean       @default(true)   
 
 
-  // الأعمال المرتبطة
   works       TemplateWork[]
 
   @@index([templateId])
@@ -753,7 +751,9 @@ model TemplateWork {
   serviceId   String?
   service     TemplateService? @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   image       String?
+  showTitle   String?       @default("ICON")
   title       String
+  icon        String?
   category    String?
   link        String?
   order       Int              @default(0)

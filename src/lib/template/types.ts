@@ -30,6 +30,8 @@ export interface WorkItem {
   id: string;
   title: string;
   category: string;
+  icon?: string;
+  showTitle?: 'ICON' | 'IMAGE';
   link: string;
   image?: string | null;
   order: number;

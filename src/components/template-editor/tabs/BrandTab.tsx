@@ -191,7 +191,7 @@ export default function BrandTab({
         />
 
         <ContentBlock
-          title="الخدمات والأعمال"
+          title="الاقسام(عرض اعمالك , اوخدماتك او ماشابه)"
           icon={<Zap className="h-4 w-4" />}
           enabled={state.sectionsConfig.services}
           onToggle={() => toggleSection('services')}

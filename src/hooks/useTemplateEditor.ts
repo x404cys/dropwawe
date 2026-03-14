@@ -250,6 +250,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         category: '',
         link: '',
         image: null,
+        showTitle: 'ICON',
         order: service.works?.length ?? 0,
         serviceId,
       };
@@ -391,6 +392,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       category: '',
       link: '',
       image: null,
+      showTitle: 'ICON',
       order: nextOrder(formState.works),
       serviceId: null,
     };

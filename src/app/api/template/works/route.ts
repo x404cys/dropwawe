@@ -4,6 +4,7 @@
 // DELETE — delete a TemplateWork by id
 
 import { NextResponse } from 'next/server';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
@@ -33,8 +34,20 @@ export async function POST(req: Request) {
       image?: string | null;
       order?: number;
       serviceId?: string | null;
+      icon?: string;
+      showTitle?: string;
     };
-    const { storeId, title, category, link, image = null, order = 0, serviceId = null } = body;
+    const {
+      storeId,
+      title,
+      category,
+      link,
+      image = null,
+      order = 0,
+      serviceId = null,
+      icon,
+      showTitle,
+    } = body;
 
     if (!storeId) return NextResponse.json({ error: 'storeId والعنوان مطلوبان' }, { status: 400 });
     if (!(await verifyOwnershipByStore(storeId, session.user.email)))
@@ -43,10 +56,23 @@ export async function POST(req: Request) {
     const templateId = await getTemplateId(storeId);
     if (!templateId) return NextResponse.json({ error: 'القالب غير موجود' }, { status: 404 });
 
-    const work = await prisma.templateWork.create({
-      data: { templateId, title, category, link, image, order, serviceId },
-    });
-    return NextResponse.json(work, { status: 201 });
+    try {
+      const work = await prisma.templateWork.create({
+        data: { templateId, title, category, link, image, order, serviceId, icon, showTitle },
+      });
+      return NextResponse.json(work, { status: 201 });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientValidationError &&
+        /Unknown argument `(?:icon|showTitle)`/i.test(error.message)
+      ) {
+        const work = await prisma.templateWork.create({
+          data: { templateId, title, category, link, image, order, serviceId },
+        });
+        return NextResponse.json(work, { status: 201 });
+      }
+      throw error;
+    }
   } catch (error) {
     console.error('[POST /api/template/works]', error);
     return NextResponse.json({ error: 'خطأ داخلي في الخادم' }, { status: 500 });
@@ -67,6 +93,8 @@ export async function PUT(req: Request) {
       image?: string | null;
       order?: number;
       serviceId?: string | null;
+      icon?: string | null;
+      showTitle?: string | null;
     };
     const { storeId, id, ...fields } = body;
 
@@ -83,8 +111,31 @@ export async function PUT(req: Request) {
       return NextResponse.json({ error: 'العنصر غير موجود' }, { status: 404 });
     }
 
-    const work = await prisma.templateWork.update({ where: { id }, data: fields });
-    return NextResponse.json(work, { status: 200 });
+    const data = {
+      ...(fields.title !== undefined ? { title: fields.title } : {}),
+      ...(fields.category !== undefined ? { category: fields.category } : {}),
+      ...(fields.link !== undefined ? { link: fields.link } : {}),
+      ...(fields.image !== undefined ? { image: fields.image } : {}),
+      ...(fields.order !== undefined ? { order: fields.order } : {}),
+      ...(fields.serviceId !== undefined ? { serviceId: fields.serviceId } : {}),
+      ...(fields.icon !== undefined ? { icon: fields.icon } : {}),
+      ...(fields.showTitle !== undefined ? { showTitle: fields.showTitle } : {}),
+    };
+
+    try {
+      const work = await prisma.templateWork.update({ where: { id }, data });
+      return NextResponse.json(work, { status: 200 });
+    } catch (error) {
+      if (
+        error instanceof Prisma.PrismaClientValidationError &&
+        /Unknown argument `(?:icon|showTitle)`/i.test(error.message)
+      ) {
+        const { icon: _icon, showTitle: _showTitle, ...fallbackData } = data;
+        const work = await prisma.templateWork.update({ where: { id }, data: fallbackData });
+        return NextResponse.json(work, { status: 200 });
+      }
+      throw error;
+    }
   } catch (error) {
     console.error('[PUT /api/template/works]', error);
     return NextResponse.json({ error: 'خطأ داخلي في الخادم' }, { status: 500 });
