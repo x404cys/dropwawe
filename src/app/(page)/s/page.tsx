@@ -38,7 +38,7 @@ async function getStorefrontData(): Promise<StorefrontData | null> {
   const subdomain = host.split('.')[0];
 
   try {
-    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}}`, {
+    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=${subdomain}`, {
       next: { revalidate: 30 },
     });
     if (!storeRes.ok) return null;
