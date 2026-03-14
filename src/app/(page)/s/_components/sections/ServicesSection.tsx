@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { ExternalLink, PenTool } from 'lucide-react';
+import { ExternalLink, PenTool, Shapes } from 'lucide-react';
 import { ActiveColors, StorefrontService } from '../../_lib/types';
 import { getIconComponent } from '../../_utils/icons';
 
@@ -25,53 +25,6 @@ export default function ServicesSection({
       style={{ backgroundColor: `${colors.primary}06` }}
     >
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="mb-10 text-center">
-          <span
-            className="rounded-full px-3 py-1 text-[11px] font-semibold"
-            style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
-          >
-            خدماتنا
-          </span>
-          <h2
-            className="mt-4 text-xl font-bold sm:text-2xl"
-            style={{ ...headingStyle, color: colors.text }}
-          >
-            ماذا نقدم لك؟
-          </h2>
-          <p
-            className="mx-auto mt-2 max-w-md text-xs sm:text-sm"
-            style={{ color: `${colors.text}88` }}
-          >
-            حلول شاملة تغطي جميع احتياجاتك
-          </p>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 sm:gap-4">
-          {enabledServices.map((service, i) => {
-            const SIcon = getIconComponent(service.icon);
-
-            return (
-              <div
-                key={`${service.id}-${i}`}
-                className="group border-border bg-card cursor-pointer rounded-2xl border p-4 text-center transition-all hover:shadow-md sm:p-5"
-              >
-                <div
-                  className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl transition-colors"
-                  style={{ backgroundColor: `${colors.primary}15` }}
-                >
-                  <SIcon className="h-5 w-5" style={{ color: colors.primary }} />
-                </div>
-                <h3 className="text-foreground mb-1 text-xs font-bold sm:text-sm">
-                  {service.title}
-                </h3>
-                <p className="text-muted-foreground text-[10px] leading-relaxed sm:text-xs">
-                  {service.desc}
-                </p>
-              </div>
-            );
-          })}
-        </div>
-
         {showWorksSection && enabledServices.some(service => (service.works ?? []).length > 0) && (
           <div className="mt-16 space-y-14">
             {enabledServices.map(service => {
@@ -117,48 +70,114 @@ export default function ServicesSection({
                           }
                         : {};
 
+                      const viewMode = work.showTitle ?? 'IMAGE';
+                      const WorkIcon = getIconComponent(work.icon ?? '');
+                      const hasImage = !!work.image;
+                      const hasIcon = !!work.icon?.trim() && viewMode === 'ICON';
+
                       return (
                         <Wrapper
                           key={work.id}
                           {...(wrapperProps as Record<string, string>)}
-                          className="group block cursor-pointer"
+                          className="group block"
                         >
-                          <div
-                            className="border-border relative aspect-[4/3] overflow-hidden rounded-2xl border"
-                            style={
-                              !work.image
-                                ? {
-                                    background: `linear-gradient(135deg, ${colors.primary}20, ${colors.accent}15)`,
-                                  }
-                                : undefined
-                            }
-                          >
-                            {work.image ? (
-                              <Image
-                                src={work.image}
-                                alt={work.title || 'work image'}
-                                fill
-                                className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-                              />
-                            ) : (
-                              <div className="flex h-full w-full items-center justify-center">
-                                <PenTool className="text-muted-foreground/20 h-8 w-8" />
-                              </div>
-                            )}
+                          <div className="border-border bg-card overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
+                            <div
+                              className="relative aspect-[4/3] overflow-hidden"
+                              style={{
+                                background:
+                                  viewMode === 'ICON' || !hasImage
+                                    ? `linear-gradient(135deg, ${colors.primary}16, ${colors.accent}12)`
+                                    : undefined,
+                              }}
+                            >
+                              {viewMode === 'IMAGE' && hasImage ? (
+                                <>
+                                  <Image
+                                    src={work.image!}
+                                    alt={work.title || 'work image'}
+                                    fill
+                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                                  />
 
-                            <div className="bg-foreground/0 group-hover:bg-foreground/60 absolute inset-0 flex items-center justify-center opacity-0 transition-all duration-300 group-hover:opacity-100">
-                              <div className="text-center">
-                                <ExternalLink className="text-background mx-auto mb-1.5 h-5 w-5" />
-                                <p className="text-background text-[10px] font-bold">
-                                  {work.link ? 'فتح الرابط' : 'عرض المشروع'}
-                                </p>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                                </>
+                              ) : hasIcon ? (
+                                <div className="flex h-full w-full items-center justify-center">
+                                  <div
+                                    className="flex h-20 w-20 items-center justify-center rounded-3xl border backdrop-blur-sm"
+                                    style={{
+                                      backgroundColor: 'rgba(255,255,255,0.65)',
+                                      borderColor: `${colors.primary}25`,
+                                    }}
+                                  >
+                                    <WorkIcon
+                                      className="h-10 w-10"
+                                      style={{ color: colors.primary }}
+                                    />
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="flex h-full w-full items-center justify-center">
+                                  <div
+                                    className="flex h-20 w-20 items-center justify-center rounded-3xl border backdrop-blur-sm"
+                                    style={{
+                                      backgroundColor: 'rgba(255,255,255,0.55)',
+                                      borderColor: `${colors.primary}20`,
+                                    }}
+                                  >
+                                    {viewMode === 'ICON' ? (
+                                      <Shapes
+                                        className="h-9 w-9"
+                                        style={{ color: `${colors.text}55` }}
+                                      />
+                                    ) : (
+                                      <PenTool
+                                        className="h-9 w-9"
+                                        style={{ color: `${colors.text}55` }}
+                                      />
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/45 group-hover:opacity-100">
+                                <div className="text-center">
+                                  <ExternalLink className="mx-auto mb-1.5 h-5 w-5 text-white" />
+                                  <p className="text-[10px] font-bold text-white">
+                                    {work.link ? 'فتح الرابط' : 'عرض المشروع'}
+                                  </p>
+                                </div>
                               </div>
                             </div>
-                          </div>
 
-                          <div className="mt-2.5 px-1">
-                            <h4 className="text-foreground text-xs font-bold">{work.title}</h4>
-                            <p className="text-muted-foreground text-[10px]">{work.category}</p>
+                            <div className="space-y-1 p-3">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="text-foreground truncate text-xs font-bold sm:text-sm">
+                                    {work.title || 'بدون عنوان'}
+                                  </h4>
+
+                                  {work.category ? (
+                                    <p className="text-muted-foreground mt-1 truncate text-[10px] sm:text-xs">
+                                      {work.category}
+                                    </p>
+                                  ) : null}
+                                </div>
+
+                                {viewMode === 'ICON' && hasIcon ? (
+                                  <div
+                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                                    style={{ backgroundColor: `${colors.primary}12` }}
+                                  >
+                                    <WorkIcon
+                                      className="h-4 w-4"
+                                      style={{ color: colors.primary }}
+                                    />
+                                  </div>
+                                ) : null}
+                              </div>
+                            </div>
                           </div>
                         </Wrapper>
                       );

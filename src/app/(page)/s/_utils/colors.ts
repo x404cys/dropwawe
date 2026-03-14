@@ -58,7 +58,6 @@ export const DEFAULT_TEMPLATE = {
   announcementBar: null,
   sectionsConfig: null,
   services: [],
-  works: [],
   testimonials: [],
   bannerImages: [],
   categorySections: [],

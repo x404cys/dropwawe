@@ -36,8 +36,10 @@ export type ColorConfig = {
 export type StorefrontWork = {
   id: string;
   title: string;
-  category: string | null;
-  link: string | null;
+  category: string;
+  icon?: string;
+  showTitle?: 'ICON' | 'IMAGE';
+  link: string;
   image?: string | null;
   order: number;
   serviceId?: string | null;
