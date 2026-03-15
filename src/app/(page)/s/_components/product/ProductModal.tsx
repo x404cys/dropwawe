@@ -138,7 +138,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
         </div>
 
         {/* Sizes */}
-        {product.sizes.length > 0 && (
+        {product.sizes && product.sizes.length > 0 && (
           <div>
             <p className="text-xs font-bold text-foreground mb-2">{t.product.sizes}</p>
             <div className="flex gap-2">
@@ -155,7 +155,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
         )}
 
         {/* Colors */}
-        {product.colors.length > 0 && (
+        {product.colors && product.colors.length > 0 && (
           <div>
             <p className="text-xs font-bold text-foreground mb-2">{t.product.colors}</p>
             <div className="flex gap-2">
@@ -163,7 +163,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
                 <div
                   key={c.id}
                   className="w-7 h-7 rounded-full border-2 border-border"
-                  style={{ backgroundColor: c.hex ?? c.color }}
+                  style={{ backgroundColor: c.hex ?? c.name }}
                 />
               ))}
             </div>
