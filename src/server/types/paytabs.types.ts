@@ -10,8 +10,12 @@ export interface PayTabsCustomerDetails {
   email: string;
   city: string;
   country: string;
+  name?: string;
+  phone?: string;
+  street1?: string;
+  state?: string;
+  zip?: string;
 }
-
 export interface PayTabsPayload {
   profile_id: number;
   tran_type: string;

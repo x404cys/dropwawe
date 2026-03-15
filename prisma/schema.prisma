@@ -43,6 +43,9 @@ model User {
   invitesSent         Invite[]              @relation("InviteOwner")
   couponUsages        CouponUsage[]
   ProfitWithdrawal    ProfitWithdrawal[]
+
+
+  paymentLinks PaymentLink[]
 }
 
 model Supplier {
@@ -111,6 +114,9 @@ model Store {
   ledgers     Ledger[]
   withdrawals Withdrawal[]
   template    StoreTemplate?
+
+
+  paymentLinks PaymentLink[]
 }
 
 model StoreUser {
@@ -822,4 +828,50 @@ model TemplateCustomFont {
 
   @@unique([templateId, name])
   @@index([templateId])
+}
+
+
+
+model PaymentLink {
+  id          String   @id @default(cuid())
+  title       String
+  amount      Float
+  description String?
+  storeId     String?
+  userId      String
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  store Store? @relation(fields: [storeId], references: [id], onDelete: Cascade)
+
+  submissions PaymentLinkSubmission[]
+}
+
+model PaymentLinkSubmission {
+  id            String                  @id @default(cuid())
+  paymentLinkId String
+  payerName     String
+  payerPhone    String
+  payerEmail    String?                  
+  payMethod     String
+  status        PaymentLinkStatus       @default(PENDING)
+   
+  cartId        String?                 @unique
+  tranRef       String?
+  paymentUrl    String?                  
+  respCode      String?
+  respMessage   String?
+  createdAt     DateTime                @default(now())
+  updatedAt     DateTime                @updatedAt
+
+  paymentLink PaymentLink @relation(fields: [paymentLinkId], references: [id], onDelete: Cascade)
+}
+
+enum PaymentLinkStatus {
+  PENDING
+  INITIATED     
+  PAID          
+  FAILED
+  CANCELLED
 }
