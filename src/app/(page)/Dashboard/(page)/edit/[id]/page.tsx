@@ -727,9 +727,8 @@ export default function EditProductPage() {
         </motion.div>
       </div>
 
-      {/* ── Sticky action bar (mobile) ── */}
       {!product.isFromSupplier && (
-        <div className="border-border/60 bg-card/90 fixed right-0 bottom-0 left-0 z-30 flex gap-3 border-t px-4 py-3 backdrop-blur-sm md:hidden">
+        <div className="border-border/60 right-0 bottom-0 left-0 z-30 flex gap-3 border-t px-4 py-3 backdrop-blur-sm md:hidden">
           <Button
             variant="outline"
             onClick={() => router.back()}

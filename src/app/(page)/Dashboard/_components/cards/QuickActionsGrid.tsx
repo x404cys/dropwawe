@@ -19,7 +19,7 @@ export default function QuickActionsGrid() {
       bgColor: 'bg-cyan-500/10',
     },
     {
-      path: '/Dashboard/analytics',
+      path: '/Dashboard/stats',
       label: 'التحليلات',
       icon: BarChart,
       iconColor: 'text-foreground',

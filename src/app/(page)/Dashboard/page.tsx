@@ -184,14 +184,19 @@ export default function Dashboard() {
             <div className="bg-card border-border rounded-xl border">
               <div className="flex items-center justify-between p-4 pb-3">
                 <h2 className="text-foreground text-sm font-semibold">{t.home.recentProducts}</h2>
-                <button className="text-primary text-xs font-medium">{t.home.viewAll}</button>
+                <button
+                  onClick={() => router.push('/Dashboard/ProductManagment')}
+                  className="text-primary cursor-pointer text-xs font-medium"
+                >
+                  {t.home.viewAll}
+                </button>{' '}
               </div>
               <div className="divide-border divide-y">
                 {data?.lastProducts?.map(p => (
                   <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                     <div className="bg-muted h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg">
                       <Image
-                        src={`${(p.images?.[0]?.url as string) || ''}`}
+                        src={`${p.image || ''}`}
                         alt={p.name}
                         width={25}
                         height={25}
@@ -231,36 +236,6 @@ export default function Dashboard() {
 
           <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
             <div className="space-y-4 lg:col-span-2">
-              {data.productCount === 0 && (
-                <div className="from-primary/10 via-primary/5 border-primary/20 relative overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4">
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
-                      <AlertCircle className="text-primary h-5 w-5" />
-                    </div>
-                    <div className="flex items-start gap-3">
-                      <div className="min-w-0 flex-1 text-right">
-                        <h3 className="text-foreground text-sm font-bold">
-                          {t.home.addFirstProduct}
-                        </h3>
-                        <p className="te-foreground mt-0.5 text-[11px] leading-relaxed">
-                          {t.home.addFirstProductDesc}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2">
-                      <Button
-                        onClick={() => router.push('Dashboard/ProductManagment/add-product')}
-                        size="sm"
-                        className="h-8 gap-1.5 rounded-lg text-xs"
-                      >
-                        <Plus className="h-3.5 w-3.5" />
-                        {t.home.addProductNow}
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              )}
-
               <div id="desktop-plan-card">
                 <PlanCard />
               </div>
@@ -294,14 +269,19 @@ export default function Dashboard() {
                     <h2 className="text-foreground text-sm font-semibold">
                       {t.home.recentProducts}
                     </h2>
-                    <button className="text-primary text-xs font-medium">{t.home.viewAll}</button>
+                    <button
+                      onClick={() => router.push('/Dashboard/ProductManagment')}
+                      className="text-primary cursor-pointer text-xs font-medium"
+                    >
+                      {t.home.viewAll}
+                    </button>
                   </div>
                   <div className="divide-border divide-y">
                     {data?.lastProducts?.map(p => (
                       <div key={p.id} className="flex items-center gap-3 px-4 py-3">
                         <div className="bg-muted h-10 w-10 flex-shrink-0 overflow-hidden rounded-lg">
                           <Image
-                            src={`${(p.images?.[0]?.url as string) || ''}`}
+                            src={`${p.image || ''}`}
                             alt={p.name}
                             width={25}
                             height={25}
