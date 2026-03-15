@@ -27,7 +27,7 @@ export default function TemplateSection({
   storeSubLink,
   categories,
 }: TemplateSectionProps) {
-  const storefrontUrl = `https://${storeSubLink}.drop-wave.com`;
+  const storefrontUrl = `https://${storeSubLink}.matager.store`;
 
   return (
     <SettingsSectionCard noPadding>

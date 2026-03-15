@@ -9,6 +9,7 @@ interface BasicInfoBody {
   storeId?: unknown;
   name?: unknown;
   description?: unknown;
+  image?: unknown;
 }
 
 async function verifyOwnershipByStore(storeId: string, userEmail: string): Promise<boolean> {
@@ -33,6 +34,12 @@ export async function PUT(req: Request) {
     const storeId = typeof body.storeId === 'string' ? body.storeId.trim() : '';
     const name = typeof body.name === 'string' ? body.name.trim() : '';
     const description = typeof body.description === 'string' ? body.description.trim() : '';
+    const image =
+      body.image === null
+        ? null
+        : typeof body.image === 'string'
+          ? body.image.trim()
+          : undefined;
 
     if (!storeId) {
       return NextResponse.json({ error: 'storeId مطلوب' }, { status: 400 });
@@ -51,7 +58,7 @@ export async function PUT(req: Request) {
 
     const updatedStore = await prisma.store.update({
       where: { id: storeId },
-      data: { name, description },
+      data: { name, description, ...(image !== undefined ? { image } : {}) },
       select: { id: true, name: true, description: true },
     });
 

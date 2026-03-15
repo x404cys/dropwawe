@@ -50,10 +50,12 @@ export default function TemplateEditor({
 }: TemplateEditorProps) {
   const [activeTab, setActiveTab] = useState<TabId>('brand');
   const [logoImage, setLogoImage] = useState<string | null>(storeLogoImage);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
   const [storeNameDraft, setStoreNameDraft] = useState(storeName);
   const [storeDescriptionDraft, setStoreDescriptionDraft] = useState(storeDescription);
   const [savedStoreName, setSavedStoreName] = useState(storeName);
   const [savedStoreDescription, setSavedStoreDescription] = useState(storeDescription);
+  const [savedLogoImage, setSavedLogoImage] = useState<string | null>(storeLogoImage);
   const [isSavingStoreBasics, setIsSavingStoreBasics] = useState(false);
 
   const editor = useTemplateEditor({ initialData, storeId });
@@ -73,8 +75,30 @@ export default function TemplateEditor({
     setSavedStoreDescription(storeDescription);
   }, [storeDescription]);
 
+  useEffect(() => {
+    setLogoImage(storeLogoImage);
+    setSavedLogoImage(storeLogoImage);
+    setLogoFile(null);
+  }, [storeLogoImage]);
+
   const isStoreDirty =
-    storeNameDraft !== savedStoreName || storeDescriptionDraft !== savedStoreDescription;
+    storeNameDraft !== savedStoreName ||
+    storeDescriptionDraft !== savedStoreDescription ||
+    logoImage !== savedLogoImage;
+
+  const uploadStoreLogo = async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('image', file);
+    const res = await fetch('/api/storev2/upload-image', {
+      method: 'POST',
+      body: formData,
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    if (!res.ok || !data.url) {
+      throw new Error(data.error ?? 'Failed to upload logo');
+    }
+    return data.url;
+  };
 
   const saveStoreBasics = async (): Promise<boolean> => {
     if (!isStoreDirty) return true;
@@ -92,6 +116,22 @@ export default function TemplateEditor({
 
     setIsSavingStoreBasics(true);
     try {
+      const logoChanged = logoImage !== savedLogoImage;
+      let imageToSave: string | null | undefined = undefined;
+
+      if (logoChanged) {
+        if (logoFile) {
+          imageToSave = await uploadStoreLogo(logoFile);
+        } else if (logoImage === null) {
+          imageToSave = null;
+        } else if (logoImage && !logoImage.startsWith('data:')) {
+          imageToSave = logoImage;
+        } else {
+          toast.error('يرجى إعادة اختيار الشعار');
+          return false;
+        }
+      }
+
       const res = await fetch('/api/storev2/basic-info', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -99,6 +139,7 @@ export default function TemplateEditor({
           storeId,
           name: normalizedName,
           description: normalizedDescription,
+          ...(imageToSave !== undefined ? { image: imageToSave } : {}),
         }),
       });
       const data = (await res.json()) as { error?: string };
@@ -108,13 +149,19 @@ export default function TemplateEditor({
         return false;
       }
 
+      if (imageToSave !== undefined) {
+        setLogoImage(imageToSave);
+        setSavedLogoImage(imageToSave);
+        setLogoFile(null);
+      }
+
       setStoreNameDraft(normalizedName);
       setStoreDescriptionDraft(normalizedDescription);
       setSavedStoreName(normalizedName);
       setSavedStoreDescription(normalizedDescription);
-      return true;  
-    } catch {
-      toast.error('حدث خطأ في حفظ بيانات المتجر');
+      return true;
+    } catch (err) {
+      toast.error((err as Error).message || 'حدث خطأ في حفظ بيانات المتجر');
       return false;
     } finally {
       setIsSavingStoreBasics(false);
@@ -183,6 +230,7 @@ export default function TemplateEditor({
             logoImage={logoImage}
             onUpdate={editor.update}
             onLogoChange={setLogoImage}
+            onLogoFileChange={setLogoFile}
             onAddService={editor.addService}
             onUpdateService={(id, fields) =>
               editor.updateService(id, fields as Partial<Omit<ServiceItem, 'id'>>)

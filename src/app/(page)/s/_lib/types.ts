@@ -1,6 +1,9 @@
 // Purpose: Centralized TypeScript types for the /s storefront route group.
 // All types are derived from the Prisma schema + UI-specific shapes.
 
+import { ProductPricing, subInfo } from '@/types/Products';
+import { StoreProps } from '@/types/store/StoreType';
+
 export type ActiveColors = {
   primary: string;
   accent: string;
@@ -177,17 +180,33 @@ export type StorefrontProductColor = {
 };
 
 export type StorefrontProduct = {
+  priceBeforeDiscount?: number;
   id: string;
   name: string;
-  description: string | null;
   price: number;
-  discount: number | null;
   quantity: number;
-  category: string | null;
-  unlimited: boolean;
-  images: StorefrontProductImage[];
-  sizes: StorefrontProductSize[];
-  colors: StorefrontProductColor[];
+  category: string;
+  discount: number;
+  image?: string;
+  description?: string;
+  selectedColor?: string;
+  selectedSize?: string;
+  hasReturnPolicy?: string;
+  shippingType?: string;
+  images?: { id: string; url: string }[];
+  sizes?: { id: string; size: string; stock: number }[];
+  colors?: { id: string; name: string; hex: string; stock: number }[];
+  unlimited?: boolean;
+  isFromSupplier?: boolean;
+  user?: {
+    id: string;
+    storeName?: string;
+    storeSlug?: string;
+    shippingPrice?: number;
+    stores?: { store: StoreProps }[];
+  };
+  pricingDetails?: ProductPricing;
+  subInfo?: subInfo;
 };
 
 export type CartItem = {

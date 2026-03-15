@@ -8,7 +8,9 @@ import type { ElementType } from 'react';
 import { LuUserRoundPen } from 'react-icons/lu';
 import { LiaShippingFastSolid } from 'react-icons/lia';
 import { IoShareSocialOutline, IoStorefrontOutline } from 'react-icons/io5';
-import { MdOutlineStyle, MdOutlineDesignServices } from 'react-icons/md';
+import { MdOutlineDesignServices } from 'react-icons/md';
+import { TfiLink } from 'react-icons/tfi';
+
 import { PiShootingStarThin } from 'react-icons/pi';
 import { FaShippingFast, FaUsersCog, FaCrown } from 'react-icons/fa';
 import { RiDeleteBin6Line } from 'react-icons/ri';
@@ -19,6 +21,7 @@ import { useSubscriptions } from '../../../hooks';
 import PlanCard from '../../../_components/cards/PlanCard';
 import { Button } from '@/components/ui/button';
 import { BsTelephone } from 'react-icons/bs';
+import { FaLinkSlash } from 'react-icons/fa6';
 
 interface Section {
   label: string;
@@ -93,7 +96,6 @@ export default function SettingOptions() {
     {
       title: t.more?.storeManagement || 'إدارة المتجر',
       sections: [
-         
         {
           label: 'تخصيص القالب',
           desc: 'محتوى الهوية، الأقسام، الألوان، والخطوط',
@@ -113,6 +115,13 @@ export default function SettingOptions() {
           desc: t.store?.teamDesc || 'منح صلاحيات لأعضاء فريقك',
           icon: FaUsersCog,
           path: `${base}/users`,
+          allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
+        },
+        {
+          label: 'روابط الدفع',
+          desc: 'انشاء روابط الدفع مع عملائك',
+          icon: TfiLink,
+          path: `/Dashboard/links`,
           allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
         },
         {

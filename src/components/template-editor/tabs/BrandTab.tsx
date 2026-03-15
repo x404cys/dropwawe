@@ -29,6 +29,7 @@ interface BrandTabProps {
   logoImage: string | null;
   onUpdate: (partial: Partial<TemplateFormState>) => void;
   onLogoChange: (dataUrl: string | null) => void;
+  onLogoFileChange: (file: File | null) => void;
   onAddService: () => void;
   onUpdateService: (id: string, fields: Partial<Omit<ServiceItem, 'id'>>) => void;
   onRemoveService: (id: string) => void;
@@ -53,6 +54,7 @@ export default function BrandTab({
   logoImage,
   onUpdate,
   onLogoChange,
+  onLogoFileChange,
   onAddService,
   onUpdateService,
   onRemoveService,
@@ -79,6 +81,7 @@ export default function BrandTab({
       toast.error('حجم الملف كبير — الحد الأقصى 2MB');
       return;
     }
+    onLogoFileChange(file);
     const reader = new FileReader();
     reader.onloadend = () => onLogoChange(reader.result as string);
     reader.readAsDataURL(file);
@@ -111,7 +114,10 @@ export default function BrandTab({
                   <Upload className="h-3 w-3" />
                 </button>
                 <button
-                  onClick={() => onLogoChange(null)}
+                  onClick={() => {
+                    onLogoChange(null);
+                    onLogoFileChange(null);
+                  }}
                   className="bg-destructive/90 text-destructive-foreground flex h-6 w-6 items-center justify-center rounded-lg"
                 >
                   <Trash2 className="h-3 w-3" />
