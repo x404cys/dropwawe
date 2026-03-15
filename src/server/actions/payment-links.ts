@@ -101,7 +101,7 @@ export async function initiatePayTabsPayment(data: {
 
   const storeName = link.store?.name || link.user?.storeName || 'المتجر';
 
-  const baseUrl = 'https://pay.matager.store';
+  const baseUrl = 'https://www.matager.store';
 
   const ptResponse = await payTabsService.createPaymentRequest({
     profile_id: Number(PAYTABS_PROFILE_ID),
@@ -122,7 +122,7 @@ export async function initiatePayTabsPayment(data: {
       zip: '00000',
     },
 
-    return: `${baseUrl}/pay/${data.paymentLinkId}/callback`,
+    return: `${baseUrl}/api/storev2/payment/paytabs/payment-link-callback`,
     callback: `${baseUrl}/api/paytabs/payment-link-callback`,
   });
 

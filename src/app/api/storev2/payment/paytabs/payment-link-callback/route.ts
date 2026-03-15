@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 
-const BASE_URL = process.env.NEXT_PUBLIC_APP_URL!;
+const BASE_URL = "https://www.matager.store";
 
 async function updateSubmission(
   cartId: string,
@@ -9,6 +9,7 @@ async function updateSubmission(
   respStatus: string,
   respMessage: string
 ) {
+  if (!cartId) return false;
   const isSuccess = respStatus === 'A' || respStatus === 'H';
   await prisma.paymentLinkSubmission.updateMany({
     where: { cartId },
@@ -22,73 +23,61 @@ async function updateSubmission(
   return isSuccess;
 }
 
-export async function GET(req: NextRequest) {
+export async function GET(req: Request) {
   try {
-    const params = req.nextUrl.searchParams;
+    const params = new URL(req.url).searchParams;
 
     const cartId = params.get('cartId') ?? params.get('cart_id') ?? '';
-    const tranRef = params.get('tranRef') ?? params.get('tran_ref') ?? '';
-    const respStatus = params.get('respStatus') ?? params.get('resp_status') ?? '';
-    const respMessage = params.get('respMessage') ?? params.get('resp_message') ?? '';
-
-    console.log('[PayTabs GET]', { cartId, respStatus });
-
-    if (!cartId) {
-      return NextResponse.redirect(`${BASE_URL}/pay/unknown?error=1`, { status: 303 });
-    }
+    const tranRef = params.get('tranRef') ?? '';
+    const respStatus = params.get('respStatus') ?? '';
+    const respMessage = params.get('respMessage') ?? '';
 
     const isSuccess = await updateSubmission(cartId, tranRef, respStatus, respMessage);
 
-    const parts = cartId.split('-');
-    const paymentLinkId = parts.slice(1, -1).join('-');
+     const paymentLinkId = cartId.split('-').slice(1, -1).join('-');
 
-    const redirectUrl = `${BASE_URL}/pay/${paymentLinkId}?status=${isSuccess ? 'success' : 'failed'}&cart=${encodeURIComponent(cartId)}`;
+    const returnUrl =
+      `${BASE_URL}/pay/${paymentLinkId}` +
+      `?status=${isSuccess ? 'success' : 'failed'}` +
+      `&tranRef=${encodeURIComponent(tranRef)}` +
+      `&respStatus=${encodeURIComponent(respStatus)}` +
+      `&cartId=${encodeURIComponent(cartId)}`;
 
-    return NextResponse.redirect(redirectUrl, { status: 303 });
+    return NextResponse.redirect(returnUrl, { status: 303 });
   } catch (error) {
-    console.error('[PayTabs GET] error:', error);
-    return NextResponse.redirect(`${BASE_URL}/pay/unknown?error=1`, { status: 303 });
+    console.error('PayTabs GET callback error:', error);
+    return NextResponse.json({ success: false }, { status: 200 });
   }
 }
 
-export async function POST(req: NextRequest) {
+export async function POST(req: Request) {
   try {
-    let cartId = '';
-    let tranRef = '';
-    let respStatus = '';
-    let respMessage = '';
+    const formData = await req.formData();
+    const data: Record<string, string> = {};
 
-    const contentType = req.headers.get('content-type') ?? '';
-
-    if (contentType.includes('application/json')) {
-      const body = await req.json();
-      cartId = body.cart_id ?? body.cartId ?? '';
-      tranRef = body.tran_ref ?? body.tranRef ?? '';
-      respStatus = body.payment_result?.response_status ?? body.respStatus ?? '';
-      respMessage = body.payment_result?.response_message ?? body.respMessage ?? '';
-    } else {
-      const formData = await req.formData();
-      const d: Record<string, string> = {};
-      for (const [k, v] of formData.entries()) {
-        d[k] = typeof v === 'string' ? v : '';
-      }
-      cartId = d.cartId ?? d.cart_id ?? '';
-      tranRef = d.tranRef ?? d.tran_ref ?? '';
-      respStatus = d.respStatus ?? d.resp_status ?? '';
-      respMessage = d.respMessage ?? d.resp_message ?? '';
+    for (const [key, value] of formData.entries()) {
+      data[key] = typeof value === 'string' ? value : '';
     }
 
-    console.log('[PayTabs POST]', { cartId, respStatus });
-
-    if (!cartId) {
-      return NextResponse.json({ error: 'missing cartId' }, { status: 400 });
-    }
+    const cartId = data.cartId ?? data.cart_id ?? '';
+    const tranRef = data.tranRef ?? '';
+    const respStatus = data.respStatus ?? '';
+    const respMessage = data.respMessage ?? '';
 
     await updateSubmission(cartId, tranRef, respStatus, respMessage);
 
-    return NextResponse.json({ success: true }, { status: 200 });
+    const paymentLinkId = cartId.split('-').slice(1, -1).join('-');
+
+    const returnUrl =
+      `${BASE_URL}/pay/${paymentLinkId}` +
+      `?status=${respStatus === 'A' || respStatus === 'H' ? 'success' : 'failed'}` +
+      `&tranRef=${encodeURIComponent(tranRef)}` +
+      `&respStatus=${encodeURIComponent(respStatus)}` +
+      `&cartId=${encodeURIComponent(cartId)}`;
+
+    return NextResponse.redirect(returnUrl, { status: 303 });
   } catch (error) {
-    console.error('[PayTabs POST] error:', error);
-    return NextResponse.json({ error: 'server error' }, { status: 200 });
+    console.error('PayTabs POST callback error:', error);
+    return NextResponse.json({ success: false }, { status: 200 });
   }
 }
