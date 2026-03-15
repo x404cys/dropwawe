@@ -101,7 +101,7 @@ export async function initiatePayTabsPayment(data: {
 
   const storeName = link.store?.name || link.user?.storeName || 'المتجر';
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL!;
+  const baseUrl = 'https://pay.matager.store';
 
   const ptResponse = await payTabsService.createPaymentRequest({
     profile_id: Number(PAYTABS_PROFILE_ID),
