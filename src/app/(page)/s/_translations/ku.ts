@@ -61,7 +61,7 @@ export const ku = {
   },
   checkout: {
     title: 'تەواوکاری کڕین',
-    orderDone: 'داواکاری تەواوبوو ✓',
+    orderDone: 'داواکاری تەواوبوو  ',
     successTitle: 'داواکاری تۆ پەسەند کرا! 🎉',
     orderNumber: 'ژمارەی داواکاری',
     contactNote: 'لە واتساپەوە پەیوەندیت پێوە دەکرێت',

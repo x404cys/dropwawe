@@ -61,7 +61,7 @@ export const ar = {
   },
   checkout: {
     title: 'إتمام الشراء',
-    orderDone: 'تم الطلب ✓',
+    orderDone: 'تم الطلب  ',
     successTitle: 'تم تأكيد طلبك! 🎉',
     orderNumber: 'رقم الطلب',
     contactNote: 'سيتم التواصل معك عبر الواتساب',

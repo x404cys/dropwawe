@@ -197,7 +197,7 @@ export const en = {
     addedToCart: '{qty} items added to cart 🛒',
     details: 'Details',
     actions: 'Actions',
-    suppliers: 'Suppliers'
+    suppliers: 'Suppliers',
   },
 
   // Store Settings
@@ -213,7 +213,8 @@ export const en = {
     deliveryIntegrationDesc: 'Automatic delivery via shipping companies',
     saving: 'Saving...',
     storeDescPlaceholder: 'Describe your store to customers...',
-    domainChangeWarning: 'If you change your store link, your visits will be deleted and started fresh',
+    domainChangeWarning:
+      'If you change your store link, your visits will be deleted and started fresh',
     domainChangeSubwarning: 'If you want to keep the visits, contact support',
     notAddedYet: 'Not added yet',
     facebookLabel: 'Facebook Link',
@@ -239,7 +240,8 @@ export const en = {
     deleteStoreDesc: 'This action cannot be undone',
     createAnother: 'Create Another Store',
     createAnotherEasy: 'Easily create another store',
-    createAnotherDesc: 'Now you can manage multiple stores from one account, to expand your business and increase productivity.',
+    createAnotherDesc:
+      'Now you can manage multiple stores from one account, to expand your business and increase productivity.',
     multipleStores: 'Multiple Stores',
     multipleStoresDesc: 'Create multiple stores based on your activity',
     fasterGrowth: 'Faster Growth',
@@ -260,7 +262,8 @@ export const en = {
     tiktokPixel: 'TikTok Pixel',
     snapPixel: 'Snap Pixel',
     pixelTrackingTitle: 'Track your store visitors accurately with Pixel',
-    pixelTrackingDesc: 'Know who visits your store, the products they care about, and optimize your ad campaigns on Facebook, Instagram, Google, TikTok, and Snapchat. Every step your visitor takes is recorded accurately to increase your sales and improve your targeting.',
+    pixelTrackingDesc:
+      'Know who visits your store, the products they care about, and optimize your ad campaigns on Facebook, Instagram, Google, TikTok, and Snapchat. Every step your visitor takes is recorded accurately to increase your sales and improve your targeting.',
     themeCustomization: 'Theme Customization',
     classicTheme: 'Classic Theme',
     classicThemeDesc: 'Simple design with calm colors',
@@ -272,7 +275,8 @@ export const en = {
     seasonalBadge: 'Seasonal',
     newThemeWaiting: 'A new theme is waiting for you',
     chooseStoreTheme: 'Choose your store theme',
-    chooseStoreThemeDesc: 'Select the theme that suits your store and start selling your products professionally',
+    chooseStoreThemeDesc:
+      'Select the theme that suits your store and start selling your products professionally',
     currentTheme: 'Current Theme:',
     updatingTheme: 'Updating...',
     themeUpdated: 'Theme updated successfully',
@@ -322,7 +326,8 @@ export const en = {
   // Team Settings
   teamSettings: {
     title: 'Invite Members to Manage Store',
-    subtitle: 'Add members to your team and grant them permissions to manage orders and inventory. Teamwork helps you manage your store more efficiently.',
+    subtitle:
+      'Add members to your team and grant them permissions to manage orders and inventory. Teamwork helps you manage your store more efficiently.',
     teamwork: 'Teamwork',
     teamworkDesc: 'Manage store with your team easily',
     quickInvite: 'Quick Invite',
@@ -337,7 +342,7 @@ export const en = {
     inviteCreatedSuccess: 'Invite link created successfully',
     inviteCreateFailed: 'Failed to create invite link',
     serverError: 'Server error occurred',
-    inviteCopied: 'Invite link copied'
+    inviteCopied: 'Invite link copied',
   },
 
   // Coupons
@@ -380,8 +385,8 @@ export const en = {
     mustSelectStore: 'You must select a store',
     mustSelectProduct: 'You must select a product',
     mustSelectDate: 'Select an expiration date',
-    createSuccess: 'Coupon created successfully ✓',
-    createError: 'Error creating coupon'
+    createSuccess: 'Coupon created successfully  ',
+    createError: 'Error creating coupon',
   },
 
   // More / Sidebar
@@ -435,7 +440,7 @@ export const en = {
     emailUpdatesDesc: 'Weekly reports via email',
     changePassword: 'Change Password',
     logout: 'Logout',
-    saved: 'Saved ✓',
+    saved: 'Saved  ',
     savedDesc: 'Data updated successfully',
     language: 'Language',
     languageDesc: 'Change dashboard language',
@@ -485,7 +490,7 @@ export const en = {
     proDesc: 'For growing stores that need all advanced features',
     perMonth: '/ month',
     freePrice: 'Free',
-    currentPlanBtn: '✓ Current Plan',
+    currentPlanBtn: '  Current Plan',
     upgradeToPro: 'Upgrade to Pro',
     upgradeToBasic: 'Upgrade to Basic',
     changeToBasic: 'Switch to Basic',
@@ -500,7 +505,7 @@ export const en = {
     upgradedDesc: 'You can now benefit from all advanced features',
     changed: 'Plan Changed',
     changedDesc: 'Switched to Basic plan',
-    renewed: '✓ Subscription renewed successfully',
+    renewed: '  Subscription renewed successfully',
     canUpgrade: 'You can upgrade',
     trial: 'Trial',
     expired: 'Expired',

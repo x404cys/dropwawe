@@ -172,11 +172,14 @@ export default function CouponCreatePage() {
   };
   const validateForm = () => {
     if (!form.code.trim()) return t.coupons?.enterCode || 'أدخل كود الكوبون';
-    if (!form.value || Number(form.value) <= 0) return t.coupons?.enterValidValue || 'أدخل قيمة صحيحة';
+    if (!form.value || Number(form.value) <= 0)
+      return t.coupons?.enterValidValue || 'أدخل قيمة صحيحة';
 
-    if (form.scope === 'STORE' && !form.storeId) return t.coupons?.mustSelectStore || 'يجب اختيار متجر';
+    if (form.scope === 'STORE' && !form.storeId)
+      return t.coupons?.mustSelectStore || 'يجب اختيار متجر';
 
-    if (form.scope === 'PRODUCT' && !form.productId) return t.coupons?.mustSelectProduct || 'يجب اختيار منتج';
+    if (form.scope === 'PRODUCT' && !form.productId)
+      return t.coupons?.mustSelectProduct || 'يجب اختيار منتج';
 
     if (!form.expiresAt) return t.coupons?.mustSelectDate || 'حدد تاريخ الانتهاء';
 
@@ -207,7 +210,7 @@ export default function CouponCreatePage() {
       }
 
       await fetchCoupons();
-      setSuccess(t.coupons?.createSuccess || 'تم إنشاء الكوبون بنجاح ✓');
+      setSuccess(t.coupons?.createSuccess || 'تم إنشاء الكوبون بنجاح  ');
       setShowForm(false);
 
       setForm(initialForm);
@@ -259,7 +262,9 @@ export default function CouponCreatePage() {
                 </div>
                 <div>
                   <CardTitle className="text-lg">{t.coupons?.title || 'الكوبونات'}</CardTitle>
-                  <p className="text-xs text-slate-500">{coupons.length} {t.coupons?.addedCount || 'كوبون مضاف'}</p>
+                  <p className="text-xs text-slate-500">
+                    {coupons.length} {t.coupons?.addedCount || 'كوبون مضاف'}
+                  </p>
                 </div>
               </div>
               <Button
@@ -286,7 +291,9 @@ export default function CouponCreatePage() {
               {coupons.length === 0 ? (
                 <div className="rounded-lg border-2 border-dashed border-slate-200 py-8 text-center">
                   <Ticket className="mx-auto mb-2 h-8 w-8 text-slate-300" />
-                  <p className="text-sm text-slate-500">{t.coupons?.noCouponsAdded || 'لا توجد كوبونات مضافة بعد'}</p>
+                  <p className="text-sm text-slate-500">
+                    {t.coupons?.noCouponsAdded || 'لا توجد كوبونات مضافة بعد'}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -309,7 +316,7 @@ export default function CouponCreatePage() {
                               <p className="font-semibold text-slate-900">{c.code}</p>
 
                               {!c.isActive && (
-                                <span className="rounded bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
+                                <span className="bg-muted text-muted-foreground rounded px-2 py-0.5 text-[10px]">
                                   {t.coupons?.inactive || 'غير مفعّل'}
                                 </span>
                               )}
@@ -332,7 +339,8 @@ export default function CouponCreatePage() {
                                 daysLeft <= 3 ? 'text-red-600' : 'text-slate-500'
                               }`}
                             >
-                              {t.coupons?.expiresIn || 'ينتهي:'} {new Date(c.expiresAt).toLocaleDateString('ar')}
+                              {t.coupons?.expiresIn || 'ينتهي:'}{' '}
+                              {new Date(c.expiresAt).toLocaleDateString('ar')}
                               {!isExpired && ` (${daysLeft} ${t.coupons?.daysLeft || 'يوم'})`}
                             </p>
                           </div>
@@ -365,13 +373,17 @@ export default function CouponCreatePage() {
               <Card className="border-0 shadow-sm">
                 <CardHeader className="pb-4">
                   <CardTitle className="text-lg">{t.coupons?.newCoupon || 'كوبون جديد'}</CardTitle>
-                  <p className="mt-1 text-xs text-slate-500">{t.coupons?.newCouponDesc || 'أضف كوبون خصم جديد بسهولة'}</p>
+                  <p className="mt-1 text-xs text-slate-500">
+                    {t.coupons?.newCouponDesc || 'أضف كوبون خصم جديد بسهولة'}
+                  </p>
                 </CardHeader>
 
                 <CardContent className="space-y-4">
                   <div className="grid gap-4 md:grid-cols-2">
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700">{t.coupons?.couponCode || 'كود الكوبون'}</Label>
+                      <Label className="text-xs font-semibold text-slate-700">
+                        {t.coupons?.couponCode || 'كود الكوبون'}
+                      </Label>
                       <Input
                         placeholder={t.coupons?.couponCodePlaceholder || 'مثل: SUMMER50'}
                         value={form.code}
@@ -389,9 +401,15 @@ export default function CouponCreatePage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent dir="rtl">
-                          <SelectItem value="PERCENTAGE">{t.coupons?.percentage || 'نسبة مئوية %'}</SelectItem>
-                          <SelectItem value="FIXED">{t.coupons?.fixedAmount || 'مبلغ ثابت'}</SelectItem>
-                          <SelectItem value="FREE_SHIPPING">{t.coupons?.freeShipping || 'خصم على التوصيل'}</SelectItem>
+                          <SelectItem value="PERCENTAGE">
+                            {t.coupons?.percentage || 'نسبة مئوية %'}
+                          </SelectItem>
+                          <SelectItem value="FIXED">
+                            {t.coupons?.fixedAmount || 'مبلغ ثابت'}
+                          </SelectItem>
+                          <SelectItem value="FREE_SHIPPING">
+                            {t.coupons?.freeShipping || 'خصم على التوصيل'}
+                          </SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -450,7 +468,7 @@ export default function CouponCreatePage() {
                             <Button variant={'outline'} className="mt-1 w-full">
                               {form.productId
                                 ? products.find(p => p.id === form.productId)?.name
-                                : (t.coupons?.selectProduct || 'اختر المنتج')}
+                                : t.coupons?.selectProduct || 'اختر المنتج'}
                             </Button>
                           </DialogTrigger>
 
@@ -482,7 +500,7 @@ export default function CouponCreatePage() {
                                   )}
                                   <p className="mb-1 text-sm font-medium">{p.name}</p>
                                   {p.price && (
-                                    <p className="text-xs text-muted-foreground">
+                                    <p className="text-muted-foreground text-xs">
                                       {p.price.toLocaleString()} {t.currency || 'IQD'}
                                     </p>
                                   )}
@@ -492,7 +510,7 @@ export default function CouponCreatePage() {
                             <DialogClose asChild>
                               <Button
                                 variant="outline"
-                                className="cursor-pointer text-red-400 hover:text-muted-foreground"
+                                className="hover:text-muted-foreground cursor-pointer text-red-400"
                               >
                                 {t.close || 'إغلاق'} ✖
                               </Button>
@@ -503,7 +521,9 @@ export default function CouponCreatePage() {
                     )}
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700">{t.coupons?.discountValue || 'قيمة الخصم'}</Label>
+                      <Label className="text-xs font-semibold text-slate-700">
+                        {t.coupons?.discountValue || 'قيمة الخصم'}
+                      </Label>
                       <Input
                         type="number"
                         placeholder="0"
@@ -527,7 +547,9 @@ export default function CouponCreatePage() {
                     </div>
 
                     <div>
-                      <Label className="text-xs font-semibold text-slate-700">{t.coupons?.maxDiscount || 'أقصى خصم'}</Label>
+                      <Label className="text-xs font-semibold text-slate-700">
+                        {t.coupons?.maxDiscount || 'أقصى خصم'}
+                      </Label>
                       <Input
                         type="number"
                         placeholder={t.optional}
@@ -551,7 +573,9 @@ export default function CouponCreatePage() {
                     </div>
 
                     <div className="md:col-span-2">
-                      <Label className="text-xs font-semibold text-slate-700">{t.plans?.endDate || 'تاريخ الانتهاء'}</Label>
+                      <Label className="text-xs font-semibold text-slate-700">
+                        {t.plans?.endDate || 'تاريخ الانتهاء'}
+                      </Label>
                       <Input
                         type="date"
                         value={form.expiresAt}
@@ -567,9 +591,14 @@ export default function CouponCreatePage() {
                       disabled={loading}
                       className="flex-1 bg-blue-600 hover:bg-blue-700"
                     >
-                      {loading ? (t.coupons?.saving || 'جاري الحفظ...') : (t.coupons?.saveCoupon || 'حفظ الكوبون')}
+                      {loading
+                        ? t.coupons?.saving || 'جاري الحفظ...'
+                        : t.coupons?.saveCoupon || 'حفظ الكوبون'}
                     </Button>
-                    <Button onClick={() => setShowForm(false)} variant="outline" className="px-6"> {t.cancel} </Button>
+                    <Button onClick={() => setShowForm(false)} variant="outline" className="px-6">
+                      {' '}
+                      {t.cancel}{' '}
+                    </Button>
                   </div>
                 </CardContent>
               </Card>

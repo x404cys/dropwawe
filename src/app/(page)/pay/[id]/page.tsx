@@ -17,6 +17,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { getPaymentLinkById, initiatePayTabsPayment } from '@/server/actions/payment-links';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 const PaymentPage = () => {
   const { id } = useParams<{ id: string }>();
@@ -24,7 +26,7 @@ const PaymentPage = () => {
   const [link, setLink] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
-
+  const router = useRouter();
   const [payerName, setPayerName] = useState('');
   const [payerPhone, setPayerPhone] = useState('');
   const [payerEmail, setPayerEmail] = useState('');
@@ -46,13 +48,8 @@ const PaymentPage = () => {
   }, [id]);
 
   const handleSubmit = async () => {
-    if (!payerName.trim() || !payerPhone.trim() || !payerEmail.trim()) {
+    if (!payerName.trim() || !payerPhone.trim()) {
       toast('يرجى تعبئة جميع الحقول');
-      return;
-    }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(payerEmail)) {
-      toast('البريد الإلكتروني غير صحيح');
       return;
     }
 
@@ -62,7 +59,7 @@ const PaymentPage = () => {
         paymentLinkId: id,
         payerName: payerName.trim(),
         payerPhone: payerPhone.trim(),
-        payerEmail: payerEmail.trim(),
+        payerEmail: '',
       });
       window.location.href = redirectUrl;
     } catch (err: any) {
@@ -107,20 +104,22 @@ const PaymentPage = () => {
         <div className="animate-in zoom-in mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-green-500/10 duration-300">
           <CheckCircle2 className="h-12 w-12 text-green-500" />
         </div>
-        <h1 className="mb-2 text-xl font-bold">تم الدفع بنجاح! 🎉</h1>
+        <h1 className="mb-2 text-xl font-bold">تم الدفع بنجاح! </h1>
         <p className="text-muted-foreground mb-4 max-w-xs text-sm">
           تمت عملية الدفع بنجاح وسيتم التواصل معك قريباً
         </p>
         <div className="bg-card border-border w-full max-w-sm rounded-2xl border p-4">
+          <div>
+            <span>الجهة</span>
+            <span>{storeName}</span>
+          </div>
           <div className="mb-2 flex justify-between">
             <span className="text-muted-foreground text-xs">الخدمة</span>
             <span className="text-sm font-bold">{link.title}</span>
           </div>
           <div className="flex justify-between">
             <span className="text-muted-foreground text-xs">المبلغ المدفوع</span>
-            <span className="text-primary text-sm font-bold">
-              {link.amount.toLocaleString('ar-IQ')} د.ع
-            </span>
+            <span className="text-primary text-sm font-bold">{formatIQD(link.amount)} د.ع</span>
           </div>
         </div>
       </div>
@@ -155,35 +154,38 @@ const PaymentPage = () => {
       <div className="bg-primary/10 border-primary/20 border-b">
         <div className="container mx-auto flex max-w-lg items-center justify-center gap-2 px-4 py-3">
           <ShieldCheck className="text-primary h-4 w-4" />
-          <span className="text-primary text-xs font-semibold">صفحة دفع آمنة عبر PayTabs</span>
+          <span className="text-primary text-xs font-normal">
+            صفحة دفع آمنة عبر{' '}
+            <span
+              className="cursor-pointer font-bold"
+              onClick={() => router.push('https://www.matager.store')}
+            >
+              متاجر - Matager
+            </span>
+          </span>
         </div>
       </div>
 
       <main className="container mx-auto max-w-lg space-y-6 px-4 py-8">
-        {/* Store Badge */}
         <div className="flex items-center justify-center">
-          <div className="bg-card border-border flex items-center gap-2 rounded-full border px-4 py-2 shadow-sm">
+          <div className="bg-card border-border flex items-center gap-2 rounded-full border px-4 py-2">
             <Store className="text-muted-foreground h-4 w-4" />
             <span className="text-xs font-semibold">{storeName}</span>
           </div>
         </div>
 
         <div className="bg-card border-border overflow-hidden rounded-3xl border shadow-lg">
-          {/* Header */}
           <div className="from-primary/10 to-primary/5 space-y-3 bg-gradient-to-l px-6 py-6 text-center">
             <h1 className="text-lg font-bold">{link.title}</h1>
             {link.description && (
               <p className="text-muted-foreground text-xs leading-relaxed">{link.description}</p>
             )}
             <div className="pt-2">
-              <span className="text-primary text-3xl font-black">
-                {link.amount.toLocaleString('ar-IQ')}
-              </span>
+              <span className="text-primary text-3xl font-black">{formatIQD(link.amount)}</span>
               <span className="text-muted-foreground mr-1.5 text-sm font-semibold">د.ع</span>
             </div>
           </div>
 
-          {/* Form */}
           <div className="space-y-4 p-6">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold">الاسم الكامل *</label>
@@ -191,6 +193,7 @@ const PaymentPage = () => {
                 value={payerName}
                 onChange={e => setPayerName(e.target.value)}
                 placeholder="أدخل اسمك الكامل"
+                type="text"
                 className="bg-muted/30 h-12 rounded-xl"
                 disabled={submitting}
               />
@@ -209,7 +212,7 @@ const PaymentPage = () => {
                 disabled={submitting}
               />
             </div>
-
+            {/* 
             <div className="space-y-1.5">
               <label className="text-xs font-semibold">البريد الإلكتروني *</label>
               <Input
@@ -222,10 +225,8 @@ const PaymentPage = () => {
                 className="bg-muted/30 h-12 rounded-xl text-left"
                 disabled={submitting}
               />
-              <p className="text-muted-foreground text-[10px]">مطلوب لاستلام إيصال الدفع</p>
-            </div>
+             </div> */}
 
-            {/* PayTabs Badge */}
             <div className="bg-muted/20 flex items-center justify-center gap-2 rounded-xl py-2">
               <CreditCard className="text-muted-foreground h-4 w-4" />
               <span className="text-muted-foreground text-xs">الدفع الآمن عبر</span>
@@ -244,7 +245,7 @@ const PaymentPage = () => {
                 </>
               ) : (
                 <>
-                  <Send className="h-4 w-4" /> ادفع الآن — {link.amount.toLocaleString('ar-IQ')} د.ع
+                  <Send className="h-4 w-4" /> ادفع الآن — {formatIQD(link.amount)} د.ع
                 </>
               )}
             </Button>

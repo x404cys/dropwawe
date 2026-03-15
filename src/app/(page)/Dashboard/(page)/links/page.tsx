@@ -25,6 +25,7 @@ import {
   getPaymentLinks,
 } from '@/server/actions/payment-links';
 import { toast } from 'sonner';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 interface PaymentLink {
   id: string;
@@ -46,7 +47,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
   const [description, setDescription] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const generateLink = (id: string) => `${window.location.origin}/pay/${id}`;
+  const generateLink = (id: string) => `https://www.matager.store/pay/${id}`;
 
   useEffect(() => {
     getPaymentLinks(storeId)
@@ -73,7 +74,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
       setAmount('');
       setDescription('');
       setShowForm(false);
-      toast('✓ تم إنشاء رابط الدفع');
+      toast(' تم إنشاء رابط الدفع');
     } catch {
       toast('فشل الإنشاء');
     } finally {
@@ -95,21 +96,21 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
     navigator.clipboard.writeText(generateLink(id));
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
-    toast('✓ تم نسخ الرابط');
+    toast(' تم نسخ الرابط');
   };
 
   const handleShareWhatsApp = (link: PaymentLink) => {
     const url = generateLink(link.id);
-    const text = `${link.title}\n💰 المبلغ: ${link.amount.toLocaleString('ar-IQ')} د.ع\n${link.description ? `📝 ${link.description}\n` : ''}🔗 ${url}`;
+    const text = `${link.title}\n💰 المبلغ: ${link.amount} د.ع\n${link.description ? `📝 ${link.description}\n` : ''}🔗 ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 
-  const totalAmount = links.reduce((s, l) => s + l.amount, 0);
+  const totalAmount = formatIQD(links.reduce((s, l) => s + l.amount, 0));
   const totalSubmissions = links.reduce((s, l) => s + (l._count?.submissions ?? 0), 0);
 
   return (
     <div className="bg-background min-h-screen" dir="rtl">
-      <div className="border-border bg-card border-b px-6 py-5">
+      <div className="border-border bg-card border-b px-6 py-2">
         <div className="mx-auto flex max-w-3xl items-center justify-between">
           <div>
             <h1 className="text-foreground text-lg font-bold">روابط الدفع</h1>
@@ -121,7 +122,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
             <Button
               onClick={() => setShowForm(true)}
               size="sm"
-              className="h-9 gap-1.5 rounded-xl text-xs font-semibold"
+              className="h-9 cursor-pointer gap-1.5 rounded-lg text-xs font-semibold"
             >
               <Plus className="h-3.5 w-3.5" />
               رابط جديد
@@ -131,7 +132,6 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
       </div>
 
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-6">
-        {/* ── Stats Row ── */}
         {links.length > 0 && !loading && (
           <div className="grid grid-cols-3 gap-3">
             {[
@@ -143,7 +143,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
               {
                 icon: <DollarSign className="h-3.5 w-3.5" />,
                 label: 'إجمالي المبالغ',
-                value: totalAmount.toLocaleString('ar-IQ') + ' د.ع',
+                value: totalAmount + ' د.ع',
               },
               {
                 icon: <BarChart2 className="h-3.5 w-3.5" />,
@@ -151,12 +151,12 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                 value: totalSubmissions,
               },
             ].map((stat, i) => (
-              <div key={i} className="bg-card border-border rounded-2xl border px-4 py-3">
+              <div key={i} className="bg-card border-border rounded-xl border px-4 py-3">
                 <div className="text-muted-foreground mb-1 flex items-center gap-1.5">
                   {stat.icon}
                   <span className="text-[11px]">{stat.label}</span>
                 </div>
-                <p className="text-foreground text-sm font-bold">{stat.value}</p>
+                <p className="text-foreground text-sm font-bold">{formatIQD(stat.value)}</p>
               </div>
             ))}
           </div>
@@ -164,7 +164,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
         {/* ── Create Form ── */}
         {showForm && (
-          <div className="bg-card border-border animate-in slide-in-from-top-2 overflow-hidden rounded-2xl border duration-200">
+          <div className="bg-card border-border animate-in slide-in-from-top-2 overflow-hidden rounded-xl border duration-200">
             {/* Form Header */}
             <div className="border-border flex items-center justify-between border-b px-5 py-4">
               <div className="flex items-center gap-2.5">
@@ -196,7 +196,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     placeholder="مثال: تصميم شعار احترافي"
-                    className="h-10 rounded-xl text-sm"
+                    className="h-10 rounded-xl font-light"
                   />
                 </div>
 
@@ -210,7 +210,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                       value={amount}
                       onChange={e => setAmount(e.target.value.replace(/[^0-9]/g, ''))}
                       placeholder="50000"
-                      className="h-10 rounded-xl pl-12 text-sm"
+                      className="h-10 rounded-xl pl-12 font-light"
                       type="text"
                       inputMode="numeric"
                       dir="ltr"
@@ -227,7 +227,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                     <div className="bg-muted/40 w-full rounded-xl px-3 py-2 text-center">
                       <p className="text-muted-foreground mb-0.5 text-[10px]">المبلغ</p>
                       <p className="text-foreground text-sm font-bold">
-                        {Number(amount).toLocaleString('ar-IQ')}
+                        {Number(amount)}
                         <span className="text-muted-foreground mr-1 text-[10px] font-normal">
                           د.ع
                         </span>
@@ -247,7 +247,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                   value={description}
                   onChange={e => setDescription(e.target.value)}
                   placeholder="تفاصيل يراها الزبون قبل الدفع..."
-                  className="min-h-[72px] resize-none rounded-xl text-sm"
+                  className="min-h-[72px] resize-none rounded-xl font-light"
                 />
               </div>
 
@@ -256,7 +256,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                 <div className="bg-muted/30 flex items-center gap-2 rounded-xl px-3 py-2.5">
                   <Link2 className="text-muted-foreground h-3 w-3 flex-shrink-0" />
                   <span className="text-muted-foreground truncate text-[11px]" dir="ltr">
-                    {window.location.origin}/pay/
+                    https://www.matager.store/pay/
                     <span className="text-foreground font-medium">{'[id]'}</span>
                   </span>
                 </div>
@@ -290,8 +290,8 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
         {/* ── Empty State ── */}
         {!loading && links.length === 0 && !showForm && (
-          <div className="bg-card border-border rounded-2xl border p-10 text-center">
-            <div className="bg-muted/50 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl">
+          <div className="bg-card border-border rounded-xl border p-10 text-center">
+            <div className="bg-muted/50 mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-xl">
               <Link2 className="text-muted-foreground h-6 w-6" />
             </div>
             <p className="text-foreground mb-1 text-sm font-semibold">لا توجد روابط دفع بعد</p>
@@ -320,7 +320,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
             {links.map(link => (
               <div
                 key={link.id}
-                className="bg-card border-border hover:border-border/80 overflow-hidden rounded-2xl border transition-colors"
+                className="bg-card border-border hover:border-border/80 overflow-hidden rounded-xl border transition-colors"
               >
                 {/* Link Header */}
                 <div className="flex items-start justify-between p-4 pb-3">
@@ -356,7 +356,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
                   <div className="mr-3 flex flex-shrink-0 flex-col items-end">
                     <span className="text-foreground text-base font-bold">
-                      {link.amount.toLocaleString('ar-IQ')}
+                      {formatIQD(link.amount)}
                     </span>
                     <span className="text-muted-foreground text-[10px]">د.ع</span>
                   </div>
@@ -370,7 +370,6 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                   </span>
                 </div>
 
-                {/* Actions */}
                 <div className="flex items-center gap-1.5 px-4 pb-4">
                   <Button
                     onClick={() => handleCopy(link.id)}

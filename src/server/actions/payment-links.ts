@@ -33,6 +33,10 @@ export async function createPaymentLink(data: {
 }) {
   const session = await getServerSession(authOperation);
   if (!session?.user?.id) throw new Error('غير مصرح');
+  const storeId = await prisma.storeUser.findFirst({
+    where: { userId: session.user.id },
+  });
+  if (!storeId) throw new Error('المتجر غير موجود');
 
   const link = await prisma.paymentLink.create({
     data: {
@@ -40,7 +44,7 @@ export async function createPaymentLink(data: {
       amount: data.amount,
       description: data.description,
       userId: session.user.id,
-      storeId: data.storeId || null,
+      storeId: storeId.storeId,
     },
   });
 

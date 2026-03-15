@@ -61,7 +61,7 @@ export const en = {
   },
   checkout: {
     title: 'Checkout',
-    orderDone: 'Order placed ✓',
+    orderDone: 'Order placed  ',
     successTitle: 'Your order is confirmed! 🎉',
     orderNumber: 'Order number',
     contactNote: 'We will contact you via WhatsApp',
