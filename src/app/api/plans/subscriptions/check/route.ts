@@ -17,7 +17,7 @@ export async function GET() {
     });
 
     if (isSubUser) {
-       const store = await prisma.storeUser.findFirst({
+      const store = await prisma.storeUser.findFirst({
         where: { userId },
         include: {
           store: {
@@ -56,11 +56,19 @@ export async function GET() {
               description: ownerSubscription.plan.description,
               startDate: ownerSubscription.startDate,
               endDate: ownerSubscription.endDate,
+              remainingDays:
+                ownerSubscription.plan.type === 'trader-basic'
+                  ? null
+                  : Math.ceil(
+                      (ownerSubscription.endDate.getTime() - new Date().getTime()) /
+                        (1000 * 60 * 60 * 24)
+                    ),
               detailsSubscription: ownerSubscription.plan,
             }
           : null,
       });
     }
+
     const now = new Date();
 
     let subscription = await prisma.userSubscription.findFirst({
@@ -127,7 +135,10 @@ export async function GET() {
           description: trialSubscription.plan.description,
           startDate,
           endDate,
-          remainingDays: Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
+          remainingDays:
+            trialSubscription.plan.type === 'trader-basic'
+              ? null
+              : Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
           detailsSubscription: trialSubscription.plan,
         },
       });
@@ -142,9 +153,12 @@ export async function GET() {
         description: subscription.plan.description,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
-        remainingDays: Math.ceil(
-          (subscription.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-        ),
+        remainingDays:
+          subscription.plan.type === 'trader-basic'
+            ? null
+            : Math.ceil(
+                (subscription.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
+              ),
         detailsSubscription: subscription.plan,
       },
     });

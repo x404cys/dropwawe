@@ -122,21 +122,14 @@ export default function SettingOptions() {
           desc: 'انشاء روابط الدفع مع عملائك',
           icon: TfiLink,
           path: `/Dashboard/links`,
-          allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
+          allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan', 'trader-basic'],
         },
         {
           label: t.store?.coupons || 'كوبونات الخصم',
           desc: t.store?.couponsDesc || 'إنشاء وإدارة كوبونات للعملاء',
           icon: BiSolidDiscount,
           path: `${base}/coupon`,
-          allowedPlans: [
-            'drop-basics',
-            'trader-basic',
-            'trader-pro',
-            'drop-pro',
-            'free-trial',
-            'ramadan-plan',
-          ],
+          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
         },
         {
           label: t.more?.stores || 'إنشاء متجر إضافي',
@@ -156,7 +149,7 @@ export default function SettingOptions() {
           icon: PiShootingStarThin,
           color: 'bg-orange-500/10 text-orange-500',
           path: `${base}/pixel`,
-          allowedPlans: ['trader-basic', 'trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
+          allowedPlans: ['trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
         },
         {
           label: t.store?.deliveryIntegration || 'الربط مع شركة التوصيل',
@@ -185,9 +178,7 @@ export default function SettingOptions() {
   const canAccess = (allowedPlans?: PlanType[]) =>
     !allowedPlans || allowedPlans.some(p => hasAccess(p));
   const planLabel = (allowedPlans?: PlanType[]) =>
-    allowedPlans?.length
-      ? `${t.plans?.requiredTitle || 'يتطلب'} ${planNames[allowedPlans[0]]}`
-      : '';
+    allowedPlans?.length ? `${t.plans?.requiredTitle || 'يتطلب '} الباقة الاحترافية` : '';
 
   return (
     <div className="scrollbar-none flex w-full flex-1 flex-col overflow-y-auto py-4">

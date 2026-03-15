@@ -16,10 +16,6 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { CheckCircle2 } from 'lucide-react';
-
-// ─────────────────────────────────────────────
-// Types
-// ─────────────────────────────────────────────
 interface Plan {
   id: string;
   name: string;
@@ -32,26 +28,16 @@ interface Plan {
   recommended?: boolean;
 }
 
-// ─────────────────────────────────────────────
-// Data
-// ─────────────────────────────────────────────
 const TRADERS: Plan[] = [
   {
     id: 'trader-basic',
     name: 'الأساسية',
-    price: '39,000',
-    period: 'د.ع / شهر',
+    price: 'مجانية',
+    period: '',
     description: 'ابدأ رحلتك الرقمية وأطلق متجرك الأول اليوم',
     fee: '499 د.ع / طلب  •  3.25% بوابات الدفع',
     cta: 'ابدأ الآن',
-    features: [
-      'منتجات وطلبات غير محدودة',
-      'إدارة كاملة للطلبات والمخزون',
-      'تحقق مجاني من هاتف العميل',
-      'ثيم متجر واحد',
-      'ربط بكسل ميتا / تيك توك / سناب',
-      'مدير حساب واحد',
-    ],
+    features: ['منتجات وطلبات غير محدودة', 'إدارة كاملة للطلبات والمخزون', 'مدير حساب واحد'],
   },
   {
     id: 'trader-pro',
@@ -112,9 +98,6 @@ const DROPSHIPPERS: Plan[] = [
   },
 ];
 
-// ─────────────────────────────────────────────
-// Confirm Dialog
-// ─────────────────────────────────────────────
 function ConfirmDialog({
   open,
   planName,
@@ -130,29 +113,32 @@ function ConfirmDialog({
 }) {
   return (
     <Dialog open={open} onOpenChange={v => !v && onCancel()}>
-      <DialogContent className="sm:max-w-[380px] rounded-3xl border-border/50 p-8 text-center" dir="rtl">
+      <DialogContent
+        className="border-border/50 rounded-3xl p-8 text-center sm:max-w-[380px]"
+        dir="rtl"
+      >
         <div className="flex flex-col items-center gap-5">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/10 flex items-center justify-center">
-            <CheckCircle2 className="w-9 h-9 text-emerald-500" />
+          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500/10">
+            <CheckCircle2 className="h-9 w-9 text-emerald-500" />
           </div>
           <DialogHeader className="space-y-1">
             <DialogTitle className="text-xl font-bold">تأكيد الاشتراك</DialogTitle>
             <DialogDescription className="text-sm">
               هل أنت متأكد من الاشتراك في خطة
-              <span className="font-bold text-foreground block mt-1">{planName}</span>
+              <span className="text-foreground mt-1 block font-bold">{planName}</span>
             </DialogDescription>
           </DialogHeader>
           <div className="flex w-full gap-3">
             <Button
               variant="outline"
-              className="flex-1 h-11 rounded-xl font-bold"
+              className="h-11 flex-1 rounded-xl font-bold"
               onClick={onCancel}
               disabled={loading}
             >
               إلغاء
             </Button>
             <Button
-              className="flex-1 h-11 rounded-xl font-bold"
+              className="h-11 flex-1 rounded-xl font-bold"
               onClick={onConfirm}
               disabled={loading}
             >
@@ -165,75 +151,64 @@ function ConfirmDialog({
   );
 }
 
-// ─────────────────────────────────────────────
-// Plan Card
-// ─────────────────────────────────────────────
-function PlanCard({
-  plan,
-  onSelect,
-}: {
-  plan: Plan;
-  onSelect: (id: string) => void;
-}) {
+function PlanCard({ plan, onSelect }: { plan: Plan; onSelect: (id: string) => void }) {
   return (
     <div
-      className={`relative flex flex-col rounded-3xl border p-6 transition-all duration-300 h-full ${
+      className={`relative flex h-full flex-col rounded-3xl border p-6 transition-all duration-300 ${
         plan.recommended
-          ? 'border-primary bg-card shadow-xl shadow-primary/10'
+          ? 'border-primary bg-card shadow-primary/10 shadow-xl'
           : 'border-border/50 bg-card/60 hover:bg-card hover:shadow-md'
       }`}
     >
-      {/* Recommended Badge */}
       {plan.recommended && (
-        <div className="absolute -top-4 left-0 right-0 flex justify-center">
-          <span className="inline-flex items-center gap-1.5 bg-primary text-primary-foreground text-[11px] font-bold px-4 py-1.5 rounded-full shadow-md">
-            <Zap className="w-3 h-3 fill-current" />
+        <div className="absolute -top-4 right-0 left-0 flex justify-center">
+          <span className="bg-primary text-primary-foreground inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-bold shadow-md">
+            <Zap className="h-3 w-3 fill-current" />
             الأكثر طلباً
           </span>
         </div>
       )}
 
-      {/* Header */}
-      <div className="mb-5 space-y-1 mt-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">{plan.name}</p>
-        <p className="text-sm text-muted-foreground leading-snug">{plan.description}</p>
+      <div className="mt-3 mb-5 space-y-1">
+        <p className="text-muted-foreground text-xs font-bold tracking-widest uppercase">
+          {plan.name}
+        </p>
+        <p className="text-muted-foreground text-sm leading-snug">{plan.description}</p>
       </div>
 
-      {/* Price */}
       <div className="mb-6">
         <div className="flex items-baseline gap-1">
-          <span className="text-4xl font-black text-foreground tracking-tight">{plan.price}</span>
-          <span className="text-sm font-medium text-muted-foreground mr-1">{plan.period}</span>
+          <span className="text-foreground text-4xl font-black tracking-tight">{plan.price}</span>
+          <span className="text-muted-foreground mr-1 text-sm font-medium">{plan.period}</span>
         </div>
       </div>
 
-      {/* Features */}
-      <ul className="flex-1 space-y-3 mb-6">
+      <ul className="mb-6 flex-1 space-y-3">
         {plan.features.map(f => (
           <li key={f} className="flex items-start gap-3">
             <span
-              className={`mt-0.5 flex-shrink-0 flex items-center justify-center w-[18px] h-[18px] rounded-full ${
-                plan.recommended
-                  ? 'bg-primary/10 text-primary'
-                  : 'bg-muted text-muted-foreground'
+              className={`mt-0.5 flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full ${
+                plan.recommended ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
               }`}
             >
-              <Check className="w-3 h-3" />
+              <Check className="h-3 w-3" />
             </span>
-            <span className="text-sm text-foreground/85 leading-snug">{f}</span>
+            <span className="text-foreground/85 text-sm leading-snug">{f}</span>
           </li>
         ))}
       </ul>
 
       {/* Fee note */}
-      <div className="mb-5 px-3 py-2.5 bg-muted/60 rounded-xl border border-border/40">
-        <p className="text-[11px] font-semibold text-muted-foreground leading-relaxed">{plan.fee}</p>
+      <div className="bg-muted/60 border-border/40 mb-5 rounded-xl border px-3 py-2.5">
+        <p className="text-muted-foreground text-[11px] leading-relaxed font-semibold">
+          {plan.fee}
+        </p>
       </div>
 
       {/* CTA */}
       <Button
         onClick={() => onSelect(plan.id)}
-        className={`w-full h-12 rounded-xl font-bold text-base transition-all active:scale-[0.98] ${
+        className={`h-12 w-full rounded-xl text-base font-bold transition-all active:scale-[0.98] ${
           plan.recommended ? 'shadow-md' : ''
         }`}
         variant={plan.recommended ? 'default' : 'outline'}
@@ -244,9 +219,6 @@ function PlanCard({
   );
 }
 
-// ─────────────────────────────────────────────
-// Page
-// ─────────────────────────────────────────────
 export default function Plans() {
   const { t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'traders' | 'dropshippers'>('traders');
@@ -255,7 +227,6 @@ export default function Plans() {
   const router = useRouter();
   const { update } = useSession();
 
-  // Countdown
   const [timeLeft, setTimeLeft] = useState(0);
   useEffect(() => {
     const endDate =
@@ -273,7 +244,11 @@ export default function Plans() {
   };
 
   const handleSelect = (planId: string) => {
-    const all = [...TRADERS, ...DROPSHIPPERS, { id: 'ramadan-plan', name: 'الباقة الرمضانية' } as Plan];
+    const all = [
+      ...TRADERS,
+      ...DROPSHIPPERS,
+      { id: 'ramadan-plan', name: 'الباقة الرمضانية' } as Plan,
+    ];
     const plan = all.find(p => p.id === planId) ?? ({ id: planId, name: planId } as Plan);
     setSelectedPlan(plan);
   };
@@ -303,82 +278,75 @@ export default function Plans() {
 
   return (
     <div dir="rtl" className="min-h-screen pb-24 md:pb-12">
-      <div className="mx-auto max-w-2xl px-4 py-8 space-y-10">
-
-        {/* ── Header ── */}
+      <div className="mx-auto max-w-2xl space-y-10 px-4 py-8">
         <motion.div
           initial={{ opacity: 0, y: -12 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center space-y-3"
+          className="space-y-3 text-center"
         >
-          <span className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-bold px-4 py-1.5 rounded-full">
-            <Rocket className="w-3.5 h-3.5" />
+          <span className="bg-primary/10 border-primary/20 text-primary inline-flex items-center gap-2 rounded-full border px-4 py-1.5 text-xs font-bold">
+            <Rocket className="h-3.5 w-3.5" />
             الخطط والأسعار
           </span>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+          <h1 className="text-foreground text-3xl font-extrabold tracking-tight md:text-4xl">
             استثمر في نجاح&nbsp;متجرك
           </h1>
-          <p className="text-sm md:text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
+          <p className="text-muted-foreground mx-auto max-w-md text-sm leading-relaxed md:text-base">
             جميع الخطط تشمل إدارة كاملة للمتجر والطلبات مع دعم فني متواصل
           </p>
         </motion.div>
 
-        {/* ── Ramadan Banner ── */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="relative overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-card via-card to-primary/5 shadow-lg"
+          className="border-primary/20 from-card via-card to-primary/5 relative overflow-hidden rounded-3xl border bg-gradient-to-br shadow-lg"
         >
-          {/* bg glow */}
-          <div className="pointer-events-none absolute -right-16 -top-16 w-56 h-56 rounded-full bg-primary/10 blur-3xl" />
+          <div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full blur-3xl" />
 
-          <div className="relative p-6 space-y-5">
-            {/* title row */}
+          <div className="relative space-y-5 p-6">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="bg-emerald-500/10 text-emerald-600 border border-emerald-500/20 text-xs font-bold px-3 py-1 rounded-full">
+              <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-600">
                 عرض خاص 🌙
               </span>
-              <h2 className="text-xl font-extrabold text-foreground">الباقة الرمضانية</h2>
+              <h2 className="text-foreground text-xl font-extrabold">الباقة الرمضانية</h2>
             </div>
 
-            {/* countdown */}
             <div className="flex items-center gap-2">
-              <Timer className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+              <Timer className="text-muted-foreground h-4 w-4 flex-shrink-0" />
               <div className="flex items-center gap-1.5">
                 {timerItems.map((item, i, arr) => (
                   <div key={item.label} className="flex items-center gap-1.5">
                     <div
-                      className={`flex flex-col items-center min-w-[3rem] p-1.5 rounded-xl border text-center ${
+                      className={`flex min-w-[3rem] flex-col items-center rounded-xl border p-1.5 text-center ${
                         item.pulse
                           ? 'bg-primary/5 border-primary/20 text-primary'
                           : 'bg-muted/60 border-border/50 text-foreground'
                       }`}
                     >
-                      <span className="text-base font-black font-mono leading-none">
+                      <span className="font-mono text-base leading-none font-black">
                         {item.value.toString().padStart(2, '0')}
                       </span>
-                      <span className="text-[9px] opacity-70 mt-0.5">{item.label}</span>
+                      <span className="mt-0.5 text-[9px] opacity-70">{item.label}</span>
                     </div>
                     {i < arr.length - 1 && (
-                      <span className="text-muted-foreground font-bold text-sm">:</span>
+                      <span className="text-muted-foreground text-sm font-bold">:</span>
                     )}
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* desc + price row */}
-            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
               <div>
-                <p className="text-sm text-muted-foreground leading-relaxed max-w-xs">
+                <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
                   مميزات استثنائية وخصم 43% لمضاعفة مبيعاتك في رمضان المبارك
                 </p>
                 <ul className="mt-3 space-y-1.5">
                   {['تصميم رمضاني حصري', 'دعم تسويقي مكثف', 'كل مميزات الاحترافية'].map(f => (
                     <li key={f} className="flex items-center gap-2 text-sm font-medium">
-                      <span className="w-4 h-4 rounded-full bg-primary/10 text-primary flex items-center justify-center flex-shrink-0">
-                        <Check className="w-2.5 h-2.5" />
+                      <span className="bg-primary/10 text-primary flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full">
+                        <Check className="h-2.5 w-2.5" />
                       </span>
                       {f}
                     </li>
@@ -386,12 +354,14 @@ export default function Plans() {
                 </ul>
               </div>
 
-              <div className="flex flex-col items-start sm:items-end gap-2">
-                <p className="text-sm text-muted-foreground line-through">69,000 {t.currency}</p>
-                <p className="text-3xl font-black text-foreground">39,000 <span className="text-base font-medium">{t.currency}</span></p>
+              <div className="flex flex-col items-start gap-2 sm:items-end">
+                <p className="text-muted-foreground text-sm line-through">69,000 {t.currency}</p>
+                <p className="text-foreground text-3xl font-black">
+                  39,000 <span className="text-base font-medium">{t.currency}</span>
+                </p>
                 <Button
                   onClick={() => handleSelect('ramadan-plan')}
-                  className="w-full sm:w-auto h-11 px-6 rounded-xl font-bold active:scale-[0.98] transition-all"
+                  className="h-11 w-full rounded-xl px-6 font-bold transition-all active:scale-[0.98] sm:w-auto"
                 >
                   استغل العرض
                 </Button>
@@ -400,16 +370,15 @@ export default function Plans() {
           </div>
         </motion.div>
 
-        {/* ── Tab Toggle ── */}
         <div className="flex justify-center">
-          <div className="inline-flex p-1.5 bg-muted rounded-2xl border border-border gap-1">
+          <div className="bg-muted border-border inline-flex gap-1 rounded-2xl border p-1.5">
             {(['traders', 'dropshippers'] as const).map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-5 py-2 text-sm font-bold rounded-xl transition-all duration-200 ${
+                className={`rounded-xl px-5 py-2 text-sm font-bold transition-all duration-200 ${
                   activeTab === tab
-                    ? 'bg-card text-foreground shadow-sm border border-border/50'
+                    ? 'bg-card text-foreground border-border/50 border shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
@@ -419,7 +388,6 @@ export default function Plans() {
           </div>
         </div>
 
-        {/* ── Pricing Cards ── */}
         <AnimatePresence mode="wait">
           <motion.div
             key={activeTab}
@@ -427,7 +395,7 @@ export default function Plans() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.18 }}
-            className="grid grid-cols-1 md:grid-cols-2 gap-6 md:items-start"
+            className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start"
           >
             {plans.map(plan => (
               <PlanCard key={plan.id} plan={plan} onSelect={handleSelect} />
@@ -435,28 +403,25 @@ export default function Plans() {
           </motion.div>
         </AnimatePresence>
 
-        {/* ── Enterprise ── */}
-        <div className="rounded-3xl border border-border bg-card/50 p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 md:gap-10 text-right">
+        <div className="border-border bg-card/50 flex flex-col gap-6 rounded-3xl border p-6 text-right md:flex-row md:items-center md:gap-10 md:p-8">
           <div className="flex-1 space-y-2">
-            <div className="flex items-center gap-2 text-primary">
-              <HelpCircle className="w-5 h-5" />
-              <h3 className="font-bold text-base">للشركات الكبيرة</h3>
+            <div className="text-primary flex items-center gap-2">
+              <HelpCircle className="h-5 w-5" />
+              <h3 className="text-base font-bold">للشركات الكبيرة</h3>
             </div>
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-muted-foreground text-sm leading-relaxed">
               خطط مؤسسية تشمل مدير حساب خاص، سيرفرات معزولة، تكامل ERP، وتدقيق أمني مع SSO.
             </p>
           </div>
           <Button
             variant="outline"
-            className="w-full md:w-auto px-7 h-11 rounded-xl font-bold border-primary text-primary hover:bg-primary/10"
+            className="border-primary text-primary hover:bg-primary/10 h-11 w-full rounded-xl px-7 font-bold md:w-auto"
           >
             تواصل مع المبيعات
           </Button>
         </div>
-
       </div>
 
-      {/* ── Confirm Dialog ── */}
       <ConfirmDialog
         open={!!selectedPlan}
         planName={selectedPlan?.name ?? ''}

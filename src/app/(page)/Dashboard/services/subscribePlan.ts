@@ -1,4 +1,22 @@
 export async function subscribePlan(type: string) {
+  if (type == 'trader-basic') {
+    try {
+      const res = await fetch(`/api/plans/free-trader-plan`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to subscribe');
+      }
+
+      return data;
+    } catch (error) {
+      throw error;
+    }
+  }
   try {
     const res = await fetch(`/api/storev2/payment/paytabs/plans/subscriptions/upgrade/${type}`, {
       method: 'POST',
@@ -9,14 +27,13 @@ export async function subscribePlan(type: string) {
     });
 
     const data = await res.json();
-    
+
     if (!res.ok) {
       throw new Error(data.error || 'Failed to subscribe');
     }
 
     return data;
   } catch (error) {
-    console.error('Subscription error:', error);
-    throw error;
+     throw error;
   }
 }

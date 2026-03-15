@@ -14,9 +14,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SubscriptionResponse } from '@/types/users/User';
 
 const STATUS_ICON: Record<string, React.ReactNode> = {
-  TRIAL_ACTIVE: <BiTestTube className="h-5 w-5 text-primary" />,
-  ACTIVE: <Rocket className="h-5 w-5 text-primary" />,
-  NEED_SUBSCRIPTION: <RiFireLine className="h-5 w-5 text-destructive" />,
+  TRIAL_ACTIVE: <BiTestTube className="text-primary h-5 w-5" />,
+  ACTIVE: <Rocket className="text-primary h-5 w-5" />,
+  NEED_SUBSCRIPTION: <RiFireLine className="text-destructive h-5 w-5" />,
 };
 
 export default function PlanCard() {
@@ -39,7 +39,9 @@ export default function PlanCard() {
   );
 
   if (isLoading) {
-    return <div className="h-24 w-full animate-pulse rounded-2xl border border-border bg-card shadow-sm" />;
+    return (
+      <div className="border-border bg-card h-24 w-full animate-pulse rounded-2xl border shadow-sm" />
+    );
   }
 
   const startDate = data?.subscription?.startDate ? new Date(data.subscription.startDate) : null;
@@ -48,20 +50,32 @@ export default function PlanCard() {
   const formattedStart = startDate ? format(startDate, 'dd/MM/yyyy') : '-';
   const formattedEnd = endDate ? format(endDate, 'dd/MM/yyyy') : '-';
 
-  const remainingDays =
-    startDate && endDate ? Math.max(0, differenceInDays(endDate, new Date()) + 1) : null;
-  const totalDays = startDate && endDate ? Math.max(1, differenceInDays(endDate, startDate)) : 30;
+  const isUnlimitedPlan = data?.subscription?.type === 'trader-basic';
+
+  const remainingDays = isUnlimitedPlan
+    ? null
+    : startDate && endDate
+      ? Math.max(0, differenceInDays(endDate, new Date()) + 1)
+      : null;
+
+  const totalDays =
+    !isUnlimitedPlan && startDate && endDate
+      ? Math.max(1, differenceInDays(endDate, startDate))
+      : 30;
+
   const progressPercent =
     remainingDays !== null ? Math.min(100, (remainingDays / totalDays) * 100) : 0;
 
   const status = data?.status ?? 'NEED_SUBSCRIPTION';
-  const isExpiringSoon = remainingDays !== null && remainingDays <= 7;
+  const isExpiringSoon = !isUnlimitedPlan && remainingDays !== null && remainingDays <= 7;
 
   const planName = data?.subscription?.planName || t.plans?.noSubscription || 'لا يوجد اشتراك';
 
   const description =
     status === 'ACTIVE'
-      ? data?.subscription?.detailsSubscription?.description
+      ? isUnlimitedPlan
+        ? 'اشتراك مفتوح'
+        : data?.subscription?.detailsSubscription?.description
       : status === 'TRIAL_ACTIVE'
         ? `${t.plans?.remainingTrial || 'متبقي'} ${remainingDays ?? 0} ${t.plans?.days || 'يوم'}`
         : status === 'SUB_USER'
@@ -74,28 +88,32 @@ export default function PlanCard() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       dir="rtl"
-      className="w-full rounded-2xl border  shadow-sm border-border border-primary/10 bg-card md:shadow transition-all duration-300 flex flex-col"
+      className="border-border border-primary/10 bg-card flex w-full flex-col rounded-2xl border shadow-sm transition-all duration-300 md:shadow"
     >
       <button
         onClick={() => setOpen(!open)}
-        className="flex w-full items-center justify-between p-4 px-4 md:px-5 text-right transition hover:bg-muted/50 rounded-2xl outline-none gap-3"
+        className="hover:bg-muted/50 flex w-full items-center justify-between gap-3 rounded-2xl p-4 px-4 text-right transition outline-none md:px-5"
       >
-        <div className="flex items-center gap-3 w-full min-w-0">
-          <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl bg-primary/10 shadow-sm border border-primary/10">
-            {STATUS_ICON[status] ?? <CreditCard className="h-5 w-5 text-primary" />}
+        <div className="flex w-full min-w-0 items-center gap-3">
+          <div className="bg-primary/10 border-primary/10 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl border shadow-sm">
+            {STATUS_ICON[status] ?? <CreditCard className="text-primary h-5 w-5" />}
           </div>
 
-          <div className="flex flex-col flex-1 min-w-0">
-            <h3 className="text-sm md:text-base font-bold text-foreground flex items-center gap-2">
+          <div className="flex min-w-0 flex-1 flex-col">
+            <h3 className="text-foreground flex items-center gap-2 text-sm font-bold md:text-base">
               <span className="truncate">{planName}</span>
-              {status === 'ACTIVE' && <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />}
+              {status === 'ACTIVE' && (
+                <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
+              )}
             </h3>
-            <p className="text-xs md:text-sm text-muted-foreground truncate font-medium mt-0.5">{description}</p>
+            <p className="text-muted-foreground mt-0.5 truncate text-xs font-medium md:text-sm">
+              {description}
+            </p>
           </div>
         </div>
 
         <ChevronRight
-          className={`h-5 w-5 flex-shrink-0 text-muted-foreground transition-transform duration-300 ${
+          className={`text-muted-foreground h-5 w-5 flex-shrink-0 transition-transform duration-300 ${
             open ? 'rotate-90' : 'rotate-180'
           }`}
         />
@@ -110,10 +128,9 @@ export default function PlanCard() {
             transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="overflow-hidden"
           >
-            <div className="border-t border-border/50 px-4 md:px-5 pb-5 pt-3 mt-1 space-y-5">
-              {/* Status Badge */}
+            <div className="border-border/50 mt-1 space-y-5 border-t px-4 pt-3 pb-5 md:px-5">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <span className="text-sm font-semibold text-foreground">
+                <span className="text-foreground text-sm font-semibold">
                   {t.home?.planAndSub || 'الباقة والاشتراك'}
                 </span>
                 <span
@@ -124,38 +141,65 @@ export default function PlanCard() {
                   }`}
                 >
                   {STATUS_LABEL[status]}
-                  {isExpiringSoon && status !== 'NEED_SUBSCRIPTION' && ` · ${t.plans?.expiringSoon || 'ينتهي قريباً'}`}
+                  {isExpiringSoon &&
+                    status !== 'NEED_SUBSCRIPTION' &&
+                    ` · ${t.plans?.expiringSoon || 'ينتهي قريباً'}`}
                 </span>
               </div>
 
-              {/* Dates */}
               {data?.subscription && status !== 'SUB_USER' && (
-                <div className="flex flex-col sm:flex-row gap-3 sm:gap-0 sm:items-center justify-between text-right rounded-xl bg-muted/50 p-4 border border-border/50">
+                <div className="bg-muted/50 border-border/50 flex flex-col justify-between gap-3 rounded-xl border p-4 text-right sm:flex-row sm:items-center sm:gap-0">
                   <div className="space-y-1">
-                    <p className="text-xs font-medium text-muted-foreground">{t.plans?.startDate || 'البداية'}</p>
-                    <p className="text-sm font-semibold text-foreground">{formattedStart}</p>
+                    <p className="text-muted-foreground text-xs font-medium">
+                      {t.plans?.startDate || 'البداية'}
+                    </p>
+                    <p className="text-foreground text-sm font-semibold">{formattedStart}</p>
                   </div>
-                  <div className="hidden sm:block w-px h-8 bg-primary/20 mx-4" />
-                  <div className="space-y-1 border-t sm:border-t-0 border-border/50 pt-3 sm:pt-0 sm:text-right">
-                    <p className="text-xs font-medium text-muted-foreground">{t.plans?.endDate || 'الانتهاء'}</p>
-                    <p className="text-sm font-semibold text-foreground">{formattedEnd}</p>
+
+                  <div className="bg-primary/20 mx-4 hidden h-8 w-px sm:block" />
+
+                  <div className="border-border/50 space-y-1 border-t pt-3 sm:border-t-0 sm:pt-0 sm:text-right">
+                    <p className="text-muted-foreground text-xs font-medium">
+                      {t.plans?.endDate || 'الانتهاء'}
+                    </p>
+                    <p className="text-foreground text-sm font-semibold">
+                      {isUnlimitedPlan ? 'مفتوح' : formattedEnd}
+                    </p>
                   </div>
                 </div>
               )}
 
-              {/* Progress */}
-              {remainingDays !== null && status !== 'SUB_USER' && (
+              {status !== 'SUB_USER' && isUnlimitedPlan && (
                 <div className="space-y-2.5">
-                  <div className="flex justify-between items-end">
-                    <span className="text-sm font-medium text-muted-foreground">
+                  <div className="flex items-end justify-between">
+                    <span className="text-muted-foreground text-sm font-medium">
                       {t.plans?.remaining || 'المتبقي'}
                     </span>
-                    <span className={`text-sm font-bold ${isExpiringSoon ? 'text-destructive' : 'text-primary'}`}>
+                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                      {'غير محدود'}
+                    </span>
+                  </div>
+
+                  <div className="bg-secondary h-2 w-full overflow-hidden rounded-full">
+                    <div className="h-full w-full rounded-full bg-emerald-500" />
+                  </div>
+                </div>
+              )}
+
+              {remainingDays !== null && status !== 'SUB_USER' && !isUnlimitedPlan && (
+                <div className="space-y-2.5">
+                  <div className="flex items-end justify-between">
+                    <span className="text-muted-foreground text-sm font-medium">
+                      {t.plans?.remaining || 'المتبقي'}
+                    </span>
+                    <span
+                      className={`text-sm font-bold ${isExpiringSoon ? 'text-destructive' : 'text-primary'}`}
+                    >
                       {remainingDays === 0 ? 'منتهي' : `${remainingDays} ${t.plans?.days || 'يوم'}`}
                     </span>
                   </div>
 
-                  <div className="h-2 w-full overflow-hidden rounded-full bg-secondary">
+                  <div className="bg-secondary h-2 w-full overflow-hidden rounded-full">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${progressPercent}%` }}
@@ -168,12 +212,11 @@ export default function PlanCard() {
                 </div>
               )}
 
-              {/* Actions */}
               {status !== 'SUB_USER' && (
-                <div className="flex flex-col sm:flex-row gap-3 pt-2">
+                <div className="flex flex-col gap-3 pt-2 sm:flex-row">
                   <Button
                     onClick={() => router.push('/Dashboard/plans')}
-                    className="flex-1 w-full bg-primary hover:bg-primary/90 text-primary-foreground font-semibold rounded-xl h-11 transition-colors"
+                    className="bg-primary hover:bg-primary/90 text-primary-foreground h-11 w-full flex-1 rounded-xl font-semibold transition-colors"
                   >
                     {t.plans?.viewPlans || 'عرض الباقات'}
                   </Button>
@@ -181,7 +224,7 @@ export default function PlanCard() {
                   <Button
                     onClick={() => router.push('/Dashboard/plans')}
                     variant="outline"
-                    className="flex-1 w-full bg-card hover:bg-muted text-foreground border border-border/50 font-semibold rounded-xl h-11 transition-colors"
+                    className="bg-card hover:bg-muted text-foreground border-border/50 h-11 w-full flex-1 rounded-xl border font-semibold transition-colors"
                   >
                     {t.plans?.renew || 'تجديد'}
                   </Button>

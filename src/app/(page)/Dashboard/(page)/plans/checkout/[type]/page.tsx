@@ -58,12 +58,12 @@ export default function PlanCheckout() {
   if (!plan) {
     return (
       <div className="flex h-screen items-center justify-center" dir="rtl">
-        <div className="text-center space-y-4">
-          <p className="text-4xl">🔍</p>
-          <p className="text-base font-semibold text-foreground">الخطة غير موجودة</p>
+        <div className="space-y-4 text-center">
+          <p className="text-4xl"></p>
+          <p className="text-foreground text-base font-semibold">الخطة غير موجودة</p>
           <button
             onClick={() => router.push('/Dashboard/plans')}
-            className="text-sm text-primary underline"
+            className="text-primary text-sm underline"
           >
             العودة للخطط
           </button>
@@ -77,70 +77,62 @@ export default function PlanCheckout() {
 
   return (
     <div dir="rtl" className="min-h-screen pb-28 md:pb-12">
-      <div className="mx-auto max-w-lg px-4 py-8 md:max-w-5xl md:py-12 space-y-6">
-
+      <div className="mx-auto max-w-lg space-y-6 px-4 py-8 md:max-w-5xl md:py-12">
         {/* ── Back link ── */}
         <button
           onClick={() => router.push('/Dashboard/plans')}
-          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="h-4 w-4" />
           العودة للخطط
         </button>
 
         {/* ── Main layout ── */}
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_380px] gap-6">
-
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_380px]">
           {/* ── Left: Plan Details ── */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="rounded-3xl border border-border bg-card shadow-sm p-6 md:p-8 space-y-6"
+            className="border-border bg-card space-y-6 rounded-3xl border p-6 shadow-sm md:p-8"
           >
             {/* Header */}
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-1.5 bg-primary/10 border border-primary/20 text-primary text-[11px] font-bold px-3 py-1 rounded-full">
-                <Sparkles className="w-3 h-3" />
+              <div className="bg-primary/10 border-primary/20 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold">
+                <Sparkles className="h-3 w-3" />
                 تفاصيل الخطة
               </div>
-              <h1 className="text-2xl font-extrabold text-foreground tracking-tight">
+              <h1 className="text-foreground text-2xl font-extrabold tracking-tight">
                 {plan.name}
               </h1>
-              <p className="text-sm text-muted-foreground leading-relaxed">
-                {plan.description}
-              </p>
+              <p className="text-muted-foreground text-sm leading-relaxed">{plan.description}</p>
             </div>
 
             {/* Price highlight */}
-            <div className="flex items-center gap-4 p-4 rounded-2xl bg-muted/50 border border-border/50">
+            <div className="bg-muted/50 border-border/50 flex items-center gap-4 rounded-2xl border p-4">
               <div className="flex-1">
-                <p className="text-xs font-medium text-muted-foreground mb-1">السعر الشهري</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium">السعر الشهري</p>
                 <div className="flex items-baseline gap-2">
                   {'oldPrice' in plan && (plan as any).oldPrice && (
-                    <span className="text-sm text-muted-foreground line-through">
+                    <span className="text-muted-foreground text-sm line-through">
                       {(plan as any).oldPrice.toLocaleString()} د.ع
                     </span>
                   )}
-                  <span className="text-3xl font-black text-foreground">
+                  <span className="text-foreground text-3xl font-black">
                     {plan.price.toLocaleString()}
                   </span>
-                  <span className="text-sm font-semibold text-muted-foreground">د.ع / شهر</span>
+                  <span className="text-muted-foreground text-sm font-semibold">د.ع / شهر</span>
                 </div>
               </div>
               {'oldPrice' in plan && (plan as any).oldPrice && (
-                <div className="flex-shrink-0 bg-emerald-500/10 text-emerald-600 text-xs font-black px-3 py-1.5 rounded-xl border border-emerald-500/20">
-                  خصم{' '}
-                  {Math.round(
-                    (1 - plan.price / (plan as any).oldPrice) * 100
-                  )}
-                  %
+                <div className="flex-shrink-0 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-black text-emerald-600">
+                  خصم {Math.round((1 - plan.price / (plan as any).oldPrice) * 100)}%
                 </div>
               )}
             </div>
 
             {/* Features */}
-            <div className="space-y-3 border-t border-border/50 pt-6">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
+            <div className="border-border/50 space-y-3 border-t pt-6">
+              <p className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
                 ما يشمله الاشتراك
               </p>
 
@@ -154,10 +146,10 @@ export default function PlanCheckout() {
                       transition={{ delay: i * 0.04 }}
                       className="flex items-start gap-3"
                     >
-                      <span className="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full bg-primary/10 text-primary flex items-center justify-center">
-                        <Check className="w-3 h-3" />
+                      <span className="bg-primary/10 text-primary mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full">
+                        <Check className="h-3 w-3" />
                       </span>
-                      <span className="text-sm text-foreground/90 leading-snug">{feature}</span>
+                      <span className="text-foreground/90 text-sm leading-snug">{feature}</span>
                     </motion.li>
                   ))}
                 </ul>
@@ -166,10 +158,10 @@ export default function PlanCheckout() {
               {hasMore && (
                 <button
                   onClick={() => setShowMore(v => !v)}
-                  className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:opacity-80 transition-opacity mt-2"
+                  className="text-primary mt-2 flex items-center gap-1.5 text-sm font-semibold transition-opacity hover:opacity-80"
                 >
                   <ChevronDown
-                    className={`w-4 h-4 transition-transform duration-200 ${showMore ? 'rotate-180' : ''}`}
+                    className={`h-4 w-4 transition-transform duration-200 ${showMore ? 'rotate-180' : ''}`}
                   />
                   {showMore ? 'إخفاء التفاصيل' : `عرض ${plan.features.length - 4} مميزات إضافية`}
                 </button>
@@ -177,9 +169,9 @@ export default function PlanCheckout() {
             </div>
 
             {/* Trust note */}
-            <div className="flex items-center gap-3 p-4 bg-muted/40 rounded-2xl border border-border/40">
-              <ShieldCheck className="w-5 h-5 text-emerald-500 flex-shrink-0" />
-              <p className="text-xs text-muted-foreground leading-relaxed">
+            <div className="bg-muted/40 border-border/40 flex items-center gap-3 rounded-2xl border p-4">
+              <ShieldCheck className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+              <p className="text-muted-foreground text-xs leading-relaxed">
                 يتم تفعيل اشتراكك فوراً بعد إتمام الدفع بنجاح
               </p>
             </div>
@@ -190,69 +182,65 @@ export default function PlanCheckout() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="h-fit rounded-3xl border border-border bg-card shadow-sm p-6 space-y-6"
+            className="border-border bg-card h-fit space-y-6 rounded-3xl border p-6 shadow-sm"
           >
             {/* Summary header */}
             <div className="flex items-center gap-2">
-              <CreditCard className="w-5 h-5 text-primary" />
-              <h2 className="text-base font-bold text-foreground">ملخص الدفع</h2>
+              <CreditCard className="text-primary h-5 w-5" />
+              <h2 className="text-foreground text-base font-bold">ملخص الدفع</h2>
             </div>
 
             {/* Price box */}
-            <div className="text-center py-6 rounded-2xl bg-gradient-to-b from-primary/5 to-transparent border border-primary/10 space-y-1">
-              <p className="text-xs font-medium text-muted-foreground">المبلغ الإجمالي</p>
-              <p className="text-4xl font-black text-foreground tracking-tight">
+            <div className="from-primary/5 border-primary/10 space-y-1 rounded-2xl border bg-gradient-to-b to-transparent py-6 text-center">
+              <p className="text-muted-foreground text-xs font-medium">المبلغ الإجمالي</p>
+              <p className="text-foreground text-4xl font-black tracking-tight">
                 {plan.price.toLocaleString()}
-                <span className="text-base font-semibold text-muted-foreground mr-1">د.ع</span>
+                <span className="text-muted-foreground mr-1 text-base font-semibold">د.ع</span>
               </p>
               {'oldPrice' in plan && (plan as any).oldPrice && (
-                <p className="text-xs text-muted-foreground line-through">
+                <p className="text-muted-foreground text-xs line-through">
                   بدلاً من {(plan as any).oldPrice.toLocaleString()} د.ع
                 </p>
               )}
             </div>
 
-            {/* Plan summary row */}
-            <div className="flex items-center justify-between text-sm py-3 border-t border-b border-border/50">
+            <div className="border-border/50 flex items-center justify-between border-t border-b py-3 text-sm">
               <span className="text-muted-foreground">الخطة</span>
-              <span className="font-bold text-foreground">{plan.name}</span>
+              <span className="text-foreground font-bold">{plan.name}</span>
             </div>
 
-            {/* CTA */}
             <Button
               onClick={() => setConfirming(true)}
-              className="w-full h-13 text-base font-bold rounded-2xl active:scale-[0.98] transition-all"
+              className="h-13 w-full cursor-pointer rounded-2xl text-base font-bold transition-all active:scale-[0.98]"
               size="lg"
             >
-              تأكيد الدفع
-              <ArrowRight className="w-4 h-4 mr-2" />
+              {type !== 'trader-basic' ? 'تأكيد الدفع' : 'تأكيد الاشتراك'}
+              <ArrowRight className="mr-2 h-4 w-4" />
             </Button>
 
             <Button
               variant="ghost"
               onClick={() => router.push('/Dashboard/plans')}
-              className="w-full h-11 font-semibold text-muted-foreground hover:text-foreground"
+              className="text-primary bg-foreground h-11 w-full cursor-pointer font-semibold"
             >
               العودة للخطط
             </Button>
 
-            {/* Secure badge */}
-            <div className="flex items-center justify-center gap-1.5 text-muted-foreground">
-              <Lock className="w-3.5 h-3.5" />
+            <div className="text-muted-foreground flex items-center justify-center gap-1.5">
+              <Lock className="h-3.5 w-3.5" />
               <p className="text-xs font-medium">دفع آمن ومشفر بالكامل</p>
             </div>
           </motion.div>
         </div>
       </div>
 
-      {/* ── Confirmation Modal ── */}
       <AnimatePresence>
         {confirming && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-sm px-4 pb-4 sm:pb-0"
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 px-4 pb-4 backdrop-blur-sm sm:items-center sm:pb-0"
             onClick={e => e.target === e.currentTarget && setConfirming(false)}
           >
             <motion.div
@@ -261,46 +249,44 @@ export default function PlanCheckout() {
               exit={{ y: 60, opacity: 0 }}
               transition={{ type: 'spring', stiffness: 280, damping: 28 }}
               dir="rtl"
-              className="w-full max-w-md rounded-3xl bg-card border border-border p-7 shadow-2xl space-y-5"
+              className="bg-card border-border w-full max-w-md space-y-5 rounded-3xl border p-7 shadow-2xl"
             >
               {/* Icon */}
               <div className="flex justify-center">
-                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                  <ShieldCheck className="w-9 h-9 text-primary" />
+                <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full">
+                  <ShieldCheck className="text-primary h-9 w-9" />
                 </div>
               </div>
 
               {/* Text */}
-              <div className="text-center space-y-1.5">
-                <h3 className="text-xl font-bold text-foreground">تأكيد الاشتراك</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
+              <div className="space-y-1.5 text-center">
+                <h3 className="text-foreground text-xl font-bold">تأكيد الاشتراك</h3>
+                <p className="text-muted-foreground text-sm leading-relaxed">
                   ستُخصم{' '}
-                  <span className="font-bold text-foreground">
+                  <span className="text-foreground font-bold">
                     {plan.price.toLocaleString()} د.ع
                   </span>{' '}
-                  شهرياً مقابل خطة{' '}
-                  <span className="font-bold text-foreground">{plan.name}</span>
+                  شهرياً مقابل خطة <span className="text-foreground font-bold">{plan.name}</span>
                 </p>
               </div>
 
-              {/* Actions */}
-              <div className="flex flex-col sm:flex-row gap-3">
+              <div className="flex flex-col gap-3 sm:flex-row">
                 <Button
                   variant="outline"
-                  className="flex-1 h-12 rounded-2xl font-bold"
+                  className="h-12 flex-1 rounded-2xl font-bold"
                   onClick={() => setConfirming(false)}
                   disabled={loading}
                 >
                   {t.cancel}
                 </Button>
                 <Button
-                  className="flex-1 h-12 rounded-2xl font-bold"
+                  className="h-12 flex-1 rounded-2xl font-bold"
                   onClick={handleSubscribe}
                   disabled={loading}
                 >
                   {loading ? (
                     <span className="flex items-center gap-2">
-                      <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
                       جاري المعالجة...
                     </span>
                   ) : (
