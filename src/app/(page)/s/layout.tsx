@@ -35,7 +35,8 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
   const headersList = await headers();
   const host = headersList.get('host') || '';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-  const subdomain = host.split('.')[0];
+  // const subdomain = host.split('.')[0];
+  const subdomain = "perfume";
   const baseUrl = `${protocol}://${host}`;
 
   let customFonts: CustomFont[] = [];

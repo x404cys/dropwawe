@@ -116,6 +116,129 @@ export type StorefrontContactItem = {
   enabled: boolean;
 };
 
+export type StorefrontHeroStat = {
+  id: string;
+  label: string;
+  value: string;
+  icon: string | null;
+  order: number;
+  enabled: boolean;
+};
+
+export type StorefrontHeroFeature = {
+  id: string;
+  title: string;
+  desc: string | null;
+  icon: string | null;
+  image: string | null;
+  link: string | null;
+  order: number;
+  enabled: boolean;
+};
+
+export type StorefrontHeroTrustItem = {
+  id: string;
+  text: string;
+  icon: string | null;
+  order: number;
+  enabled: boolean;
+};
+
+export type StorefrontHeroBadge = {
+  id: string;
+  text: string;
+  icon: string | null;
+  color: string | null;
+  order: number;
+  enabled: boolean;
+};
+
+export type StorefrontHeroSocialLink = {
+  id: string;
+  platform: string;
+  label: string | null;
+  url: string;
+  icon: string | null;
+  order: number;
+  enabled: boolean;
+};
+
+export type StorefrontHeroSection = {
+  id: string;
+  templateId: string;
+  enabled: boolean;
+  visible: boolean;
+  order: number;
+  badgeText: string | null;
+  badgeIcon: string | null;
+  overline: string | null;
+  title: string | null;
+  highlightText: string | null;
+  subtitle: string | null;
+  description: string | null;
+  trustText: string | null;
+  smallNote: string | null;
+  primaryButtonText: string | null;
+  primaryButtonLink: string | null;
+  primaryButtonIcon: string | null;
+  primaryButtonTarget: string | null;
+  secondaryButtonText: string | null;
+  secondaryButtonLink: string | null;
+  secondaryButtonIcon: string | null;
+  secondaryButtonTarget: string | null;
+  tertiaryButtonText: string | null;
+  tertiaryButtonLink: string | null;
+  tertiaryButtonIcon: string | null;
+  tertiaryButtonTarget: string | null;
+  heroImage: string | null;
+  heroImageAlt: string | null;
+  heroImageMobile: string | null;
+  heroVideo: string | null;
+  heroVideoPoster: string | null;
+  backgroundType: string | null;
+  backgroundImage: string | null;
+  backgroundImageMobile: string | null;
+  backgroundVideo: string | null;
+  backgroundColor: string | null;
+  backgroundGradientFrom: string | null;
+  backgroundGradientTo: string | null;
+  backgroundGradientVia: string | null;
+  overlayEnabled: boolean;
+  overlayColor: string | null;
+  overlayOpacity: number;
+  layout: string;
+  contentAlign: string;
+  contentPosition: string;
+  mediaPosition: string;
+  contentMaxWidth: string | null;
+  sectionHeight: string | null;
+  containerStyle: string | null;
+  verticalPadding: string | null;
+  showButtons: boolean;
+  showBadge: boolean;
+  showStats: boolean;
+  showFeatures: boolean;
+  showTrustItems: boolean;
+  showScrollHint: boolean;
+  roundedMedia: boolean;
+  glassEffect: boolean;
+  blurBackground: boolean;
+  shadowMedia: boolean;
+  borderMedia: boolean;
+  promoText: string | null;
+  promoEndsAt: string | null;
+  urgencyText: string | null;
+  ariaLabel: string | null;
+  sectionId: string | null;
+  createdAt: string;
+  updatedAt: string;
+  stats: StorefrontHeroStat[];
+  features: StorefrontHeroFeature[];
+  trustItems: StorefrontHeroTrustItem[];
+  badges: StorefrontHeroBadge[];
+  socials: StorefrontHeroSocialLink[];
+};
+
 export type StorefrontTemplate = {
   id: string;
   storeId: string;
@@ -123,6 +246,7 @@ export type StorefrontTemplate = {
   heroButtonText: string | null;
   heroSecondaryButton: string | null;
   aboutText: string | null;
+  storeDescription: string | null;
   ctaTitle: string | null;
   ctaDesc: string | null;
   ctaButton: string | null;
@@ -147,6 +271,7 @@ export type StorefrontTemplate = {
   categorySections: StorefrontCategorySection[];
   categoryIcons: StorefrontCategoryIcon[];
   customFonts: StorefrontCustomFont[];
+  heroSection: StorefrontHeroSection | null;
 };
 
 export type StorefrontStore = {

@@ -40,6 +40,7 @@ export const DEFAULT_TEMPLATE = {
   heroButtonText: 'تسوق الآن',
   heroSecondaryButton: 'تعرف علينا',
   aboutText: 'نحن متجر متخصص نقدم أفضل المنتجات لعملائنا الكرام',
+  storeDescription: null,
   ctaTitle: 'جاهز للبدء؟',
   ctaDesc: 'انضم إلى آلاف العملاء الراضين',
   ctaButton: 'تسوق الآن',
@@ -63,6 +64,7 @@ export const DEFAULT_TEMPLATE = {
   categorySections: [],
   categoryIcons: [],
   customFonts: [],
+  heroSection: null,
 } satisfies StorefrontTemplate;
 
 export const DEFAULT_SECTIONS = {

@@ -8,6 +8,10 @@ import type {
   SectionsConfig,
   ContactItem,
   ContactType,
+  HeroSectionItem,
+  HeroFeatureItem,
+  HeroTrustItem,
+  HeroStatItem,
 } from './types';
 import {
   DEFAULT_ANNOUNCEMENT_BAR,
@@ -125,6 +129,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
     isDraft: db.isDraft ?? true,
     announcementBar,
     sectionsConfig,
+    heroSection: toHeroSection(db.heroSection),
     services: (db.services ?? []).map((s: PrismaTemplateRecord) => ({
       id: s.id,
       icon: s.icon,
@@ -224,5 +229,114 @@ export function toPayload(state: TemplateFormState, storeId: string): Record<str
     isDraft: state.isDraft,
     announcementBar: state.announcementBar,
     sectionsConfig: state.sectionsConfig,
+  };
+}
+
+function toHeroSection(raw: PrismaTemplateRecord | null | undefined): HeroSectionItem | null {
+  if (!raw) return null;
+
+  return {
+    id: raw.id ?? 'hero_default',
+
+    enabled: raw.enabled ?? true,
+    visible: raw.visible ?? true,
+    order: raw.order ?? 0,
+
+    badgeText: raw.badgeText ?? '',
+    badgeIcon: raw.badgeIcon ?? '',
+    overline: raw.overline ?? '',
+    title: raw.title ?? '',
+    highlightText: raw.highlightText ?? '',
+    subtitle: raw.subtitle ?? '',
+    description: raw.description ?? '',
+
+    trustText: raw.trustText ?? '',
+    smallNote: raw.smallNote ?? '',
+
+    primaryButtonText: raw.primaryButtonText ?? '',
+    primaryButtonLink: raw.primaryButtonLink ?? '',
+    primaryButtonIcon: raw.primaryButtonIcon ?? '',
+
+    secondaryButtonText: raw.secondaryButtonText ?? '',
+    secondaryButtonLink: raw.secondaryButtonLink ?? '',
+    secondaryButtonIcon: raw.secondaryButtonIcon ?? '',
+
+    heroImage: raw.heroImage ?? null,
+    heroImageAlt: raw.heroImageAlt ?? '',
+    heroImageMobile: raw.heroImageMobile ?? null,
+
+    backgroundType: raw.backgroundType ?? 'COLOR',
+    backgroundImage: raw.backgroundImage ?? null,
+    backgroundImageMobile: raw.backgroundImageMobile ?? null,
+    backgroundColor: raw.backgroundColor ?? '#0f172a',
+    backgroundGradientFrom: raw.backgroundGradientFrom ?? '#111827',
+    backgroundGradientVia: raw.backgroundGradientVia ?? '#0f172a',
+    backgroundGradientTo: raw.backgroundGradientTo ?? '#1d4ed8',
+
+    overlayEnabled: raw.overlayEnabled ?? true,
+    overlayColor: raw.overlayColor ?? '#000000',
+    overlayOpacity: raw.overlayOpacity ?? 35,
+
+    layout: raw.layout ?? 'SPLIT',
+    contentAlign: raw.contentAlign ?? 'center',
+    contentPosition: raw.contentPosition ?? 'center',
+    mediaPosition: raw.mediaPosition ?? 'right',
+
+    contentMaxWidth: raw.contentMaxWidth ?? '640px',
+    sectionHeight: raw.sectionHeight ?? 'lg',
+    containerStyle: raw.containerStyle ?? 'boxed',
+    verticalPadding: raw.verticalPadding ?? 'lg',
+
+    showButtons: raw.showButtons ?? true,
+    showStats: raw.showStats ?? true,
+    showFeatures: raw.showFeatures ?? false,
+    showTrustItems: raw.showTrustItems ?? true,
+
+    roundedMedia: raw.roundedMedia ?? true,
+    glassEffect: raw.glassEffect ?? false,
+    blurBackground: raw.blurBackground ?? false,
+    shadowMedia: raw.shadowMedia ?? true,
+    borderMedia: raw.borderMedia ?? false,
+
+    promoText: raw.promoText ?? '',
+    promoEndsAt: raw.promoEndsAt ? new Date(raw.promoEndsAt).toISOString() : null,
+    urgencyText: raw.urgencyText ?? '',
+
+    ariaLabel: raw.ariaLabel ?? '',
+    sectionId: raw.sectionId ?? 'hero',
+
+    stats: (raw.stats ?? []).map(
+      (item: PrismaTemplateRecord): HeroStatItem => ({
+        id: item.id,
+        label: item.label ?? '',
+        value: item.value ?? '',
+        icon: item.icon ?? '',
+        order: item.order ?? 0,
+        enabled: item.enabled ?? true,
+      })
+    ),
+
+    features: (raw.features ?? []).map(
+      (item: PrismaTemplateRecord): HeroFeatureItem => ({
+        id: item.id,
+        title: item.title ?? '',
+        desc: item.desc ?? '',
+        icon: item.icon ?? '',
+        image: item.image ?? null,
+        link: item.link ?? '',
+        order: item.order ?? 0,
+        enabled: item.enabled ?? true,
+      })
+    ),
+
+    trustItems: (raw.trustItems ?? []).map(
+      (item: PrismaTemplateRecord): HeroTrustItem => ({
+        id: item.id,
+        text: item.text ?? '',
+        icon: item.icon ?? '',
+        order: item.order ?? 0,
+        enabled: item.enabled ?? true,
+      })
+    ),
   };
 }

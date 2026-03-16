@@ -106,6 +106,129 @@ export interface CustomFontItem {
   url: string;
 }
 
+// ───────────────── HERO SECTION TYPES ─────────────────
+
+export type HeroLayout =
+  | 'CENTERED'
+  | 'SPLIT'
+  | 'IMAGE_LEFT'
+  | 'IMAGE_RIGHT'
+  | 'MINIMAL'
+  | 'FULLSCREEN';
+
+export type HeroBackgroundType = 'COLOR' | 'IMAGE' | 'VIDEO' | 'GRADIENT';
+
+export type HeroAlign = 'left' | 'center' | 'right';
+export type HeroContentPosition = 'start' | 'center' | 'end';
+export type HeroMediaPosition = 'left' | 'right' | 'top' | 'bottom';
+export type HeroSectionHeight = 'auto' | 'sm' | 'md' | 'lg' | 'xl' | 'screen';
+export type HeroContainerStyle = 'boxed' | 'full';
+export type HeroVerticalPadding = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+
+export interface HeroStatItem {
+  id: string;
+  label: string;
+  value: string;
+  icon?: string;
+  order: number;
+  enabled: boolean;
+}
+
+export interface HeroFeatureItem {
+  id: string;
+  title: string;
+  desc?: string;
+  icon?: string;
+  image?: string | null;
+  link?: string;
+  order: number;
+  enabled: boolean;
+}
+
+export interface HeroTrustItem {
+  id: string;
+  text: string;
+  icon?: string;
+  order: number;
+  enabled: boolean;
+}
+
+export interface HeroSectionItem {
+  id: string;
+
+  enabled: boolean;
+  visible: boolean;
+  order: number;
+
+  badgeText?: string;
+  badgeIcon?: string;
+  overline?: string;
+
+  title?: string;
+  highlightText?: string;
+  subtitle?: string;
+  description?: string;
+
+  trustText?: string;
+  smallNote?: string;
+
+  primaryButtonText?: string;
+  primaryButtonLink?: string;
+  primaryButtonIcon?: string;
+
+  secondaryButtonText?: string;
+  secondaryButtonLink?: string;
+  secondaryButtonIcon?: string;
+
+  heroImage?: string | null;
+  heroImageAlt?: string;
+  heroImageMobile?: string | null;
+
+  backgroundType: HeroBackgroundType;
+  backgroundImage?: string | null;
+  backgroundImageMobile?: string | null;
+  backgroundColor?: string;
+  backgroundGradientFrom?: string;
+  backgroundGradientTo?: string;
+  backgroundGradientVia?: string;
+
+  overlayEnabled: boolean;
+  overlayColor?: string;
+  overlayOpacity: number;
+
+  layout: HeroLayout;
+  contentAlign: HeroAlign;
+  contentPosition: HeroContentPosition;
+  mediaPosition: HeroMediaPosition;
+
+  contentMaxWidth?: string;
+  sectionHeight?: HeroSectionHeight;
+  containerStyle?: HeroContainerStyle;
+  verticalPadding?: HeroVerticalPadding;
+
+  showButtons: boolean;
+  showStats: boolean;
+  showFeatures: boolean;
+  showTrustItems: boolean;
+
+  roundedMedia: boolean;
+  glassEffect: boolean;
+  blurBackground: boolean;
+  shadowMedia: boolean;
+  borderMedia: boolean;
+
+  promoText?: string;
+  promoEndsAt?: string | null;
+  urgencyText?: string;
+
+  ariaLabel?: string;
+  sectionId?: string;
+
+  stats: HeroStatItem[];
+  features: HeroFeatureItem[];
+  trustItems: HeroTrustItem[];
+}
+
 export interface TemplateFormState {
   // Scalars
   tagline: string;
@@ -143,6 +266,9 @@ export interface TemplateFormState {
   categorySections: CategorySectionItem[];
   categoryIcons: CategoryIconItem[];
   customFonts: CustomFontItem[];
+
+  // Hero
+  heroSection?: HeroSectionItem | null;
 }
 
 // Color preset shape (kept in defaults.ts)

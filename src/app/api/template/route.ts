@@ -49,6 +49,13 @@ export async function GET(req: Request) {
         testimonials: { orderBy: { order: 'asc' } },
         bannerImages: { orderBy: { order: 'asc' } },
         categorySections: { orderBy: { order: 'asc' } },
+        heroSection: {
+          include: {
+            stats: true,
+            features: true,
+            trustItems: true,
+          },
+        },
         categoryIcons: true,
         customFonts: true,
         store: {

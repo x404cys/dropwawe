@@ -1,13 +1,15 @@
 'use client';
 // src/components/template-editor/tabs/BrandTab.tsx
-// Brand (الهوية) tab — tagline, hero buttons, and all sections toggles.
 
 import { useRef, useState } from 'react';
-import { Globe, Image, PenTool, Quote, Sparkles, Trash2, Upload, Zap } from 'lucide-react';
+import { Globe, PenTool, Quote, Sparkles, Trash2, Upload, Zap, Save } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+
 import type {
+  HeroSectionItem,
   ServiceItem,
   TemplateFormState,
   TestimonialItem,
@@ -16,12 +18,15 @@ import type {
 
 import AboutSection from '../sections/AboutSection';
 import CtaSection from '../sections/CtaSection';
+import HeroSectionEditor from '../sections/HeroSectionEditor';
 import TestimonialsSection from '../sections/TestimonialsSection';
 import ContentBlock from '../ui/ContentBlock';
 import ServiceWithWorksSection from '../sections/WorksSection';
+import { useHeroSectionEditor } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 
 interface BrandTabProps {
   state: TemplateFormState;
+  storeId: string;
   storeName: string;
   storeDescription: string;
   onStoreNameChange: (value: string) => void;
@@ -45,8 +50,87 @@ interface BrandTabProps {
 const SECTION_IDS = ['hero', 'services', 'works', 'testimonials', 'cta', 'about', 'store'] as const;
 type SectionId = (typeof SECTION_IDS)[number];
 
+const createDefaultHero = (
+  storeName: string,
+  storeDescription: string,
+  state: TemplateFormState
+): HeroSectionItem => ({
+  id: 'hero_default',
+  enabled: true,
+  visible: true,
+  order: 0,
+
+  badgeText: '',
+  badgeIcon: '',
+  overline: state.tagline || '',
+  title: storeName || '',
+  highlightText: '',
+  subtitle: '',
+  description: state.storeDescription || storeDescription || '',
+
+  trustText: '',
+  smallNote: '',
+
+  primaryButtonText: state.heroButtonText || '',
+  primaryButtonLink: '',
+  primaryButtonIcon: '',
+
+  secondaryButtonText: state.heroSecondaryButton || '',
+  secondaryButtonLink: '',
+  secondaryButtonIcon: '',
+
+  heroImage: null,
+  heroImageAlt: '',
+  heroImageMobile: null,
+
+  backgroundType: 'COLOR',
+  backgroundImage: null,
+  backgroundImageMobile: null,
+  backgroundColor: '#0f172a',
+  backgroundGradientFrom: '#111827',
+  backgroundGradientTo: '#1d4ed8',
+  backgroundGradientVia: '#0f172a',
+
+  overlayEnabled: true,
+  overlayColor: '#000000',
+  overlayOpacity: 35,
+
+  layout: 'SPLIT',
+  contentAlign: 'center',
+  contentPosition: 'center',
+  mediaPosition: 'right',
+
+  contentMaxWidth: '640px',
+  sectionHeight: 'lg',
+  containerStyle: 'boxed',
+  verticalPadding: 'lg',
+
+  showButtons: true,
+  showStats: true,
+  showFeatures: false,
+  showTrustItems: true,
+
+  roundedMedia: true,
+  glassEffect: false,
+  blurBackground: false,
+  shadowMedia: true,
+  borderMedia: false,
+
+  promoText: '',
+  promoEndsAt: null,
+  urgencyText: '',
+
+  ariaLabel: '',
+  sectionId: 'hero',
+
+  stats: [],
+  features: [],
+  trustItems: [],
+});
+
 export default function BrandTab({
   state,
+  storeId,
   storeName,
   storeDescription,
   onStoreNameChange,
@@ -66,22 +150,38 @@ export default function BrandTab({
   onUpdateTestimonial,
   onRemoveTestimonial,
 }: BrandTabProps) {
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    hero: true,
+  });
+
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const heroEditor = useHeroSectionEditor({
+    initialHero: state.heroSection ?? createDefaultHero(storeName, storeDescription, state),
+    storeId,
+  });
 
   const toggleOpen = (key: string) => setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
 
   const toggleSection = (id: SectionId) =>
-    onUpdate({ sectionsConfig: { ...state.sectionsConfig, [id]: !state.sectionsConfig[id] } });
+    onUpdate({
+      sectionsConfig: {
+        ...state.sectionsConfig,
+        [id]: !state.sectionsConfig[id],
+      },
+    });
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     if (file.size > 2 * 1024 * 1024) {
       toast.error('حجم الملف كبير — الحد الأقصى 2MB');
       return;
     }
+
     onLogoFileChange(file);
+
     const reader = new FileReader();
     reader.onloadend = () => onLogoChange(reader.result as string);
     reader.readAsDataURL(file);
@@ -98,6 +198,7 @@ export default function BrandTab({
           className="hidden"
           onChange={handleLogoUpload}
         />
+
         <div className="mb-4 flex items-center gap-4">
           {logoImage ? (
             <div className="group relative">
@@ -108,12 +209,14 @@ export default function BrandTab({
               />
               <div className="bg-foreground/50 absolute inset-0 flex items-center justify-center gap-1 rounded-2xl opacity-0 transition-opacity group-hover:opacity-100">
                 <button
+                  type="button"
                   onClick={() => logoInputRef.current?.click()}
                   className="bg-background/90 flex h-6 w-6 items-center justify-center rounded-lg"
                 >
                   <Upload className="h-3 w-3" />
                 </button>
                 <button
+                  type="button"
                   onClick={() => {
                     onLogoChange(null);
                     onLogoFileChange(null);
@@ -126,6 +229,7 @@ export default function BrandTab({
             </div>
           ) : (
             <button
+              type="button"
               onClick={() => logoInputRef.current?.click()}
               className="bg-muted/50 border-border hover:border-primary/40 flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 border-dashed transition-all"
             >
@@ -133,27 +237,50 @@ export default function BrandTab({
               <span className="text-muted-foreground text-[8px]">شعار</span>
             </button>
           )}
+
           <div className="flex-1 space-y-2">
             <Input
               value={storeName}
-              onChange={e => onStoreNameChange(e.target.value)}
+              onChange={e => {
+                const value = e.target.value;
+                onStoreNameChange(value);
+
+                heroEditor.updateHero({
+                  title: heroEditor.hero.title || value,
+                });
+              }}
               className="rounded-xl font-light"
               placeholder="اسم المتجر"
             />
+
             <Input
               value={state.tagline}
-              onChange={e => onUpdate({ tagline: e.target.value })}
+              onChange={e => {
+                const value = e.target.value;
+
+                onUpdate({ tagline: value });
+
+                heroEditor.updateHero({
+                  overline: value,
+                });
+              }}
               className="rounded-xl font-light"
               placeholder="شعار نصي قصير"
             />
           </div>
         </div>
+
         <Textarea
           value={storeDescription}
           onChange={e => {
             const value = e.target.value;
+
             onStoreDescriptionChange(value);
             onUpdate({ storeDescription: value });
+
+            heroEditor.updateHero({
+              description: value,
+            });
           }}
           rows={2}
           className="resize-none rounded-xl font-light"
@@ -161,40 +288,35 @@ export default function BrandTab({
         />
       </div>
 
-      {state.sectionsConfig.hero && (
-        <div className="bg-card border-border rounded-2xl border p-4">
-          <p className="text-muted-foreground mb-2 text-xs font-semibold">أزرار صفحة الهبوط</p>
-          <div className="grid grid-cols-2 gap-2">
-            <Input
-              value={state.heroButtonText}
-              onChange={e => onUpdate({ heroButtonText: e.target.value })}
-              className="rounded-xl font-light"
-              placeholder="الزر الرئيسي"
-            />
-            <Input
-              value={state.heroSecondaryButton}
-              onChange={e => onUpdate({ heroSecondaryButton: e.target.value })}
-              className="rounded-xl font-light"
-              placeholder="الزر الثانوي"
-            />
-          </div>
-        </div>
-      )}
-
       <div className="space-y-2">
         <p className="text-muted-foreground px-1 text-xs font-semibold">
           أقسام المتجر <span className="text-[10px] font-normal">(فعّل الأقسام التي تحتاجها)</span>
         </p>
 
         <ContentBlock
-          title="صفحة الهبوط"
+          title="الهيرو سكشن" 
           icon={<Sparkles className="h-4 w-4" />}
           enabled={state.sectionsConfig.hero}
           onToggle={() => toggleSection('hero')}
-          open={false}
-          onOpenToggle={() => {}}
-          noContent
-        />
+          open={openSections['hero'] ?? false}
+          onOpenToggle={() => toggleOpen('hero')}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center justify-end">
+              <Button
+                type="button"
+                onClick={heroEditor.saveHero}
+                disabled={heroEditor.isSaving || !heroEditor.isDirty}
+                className="gap-2 rounded-xl"
+              >
+                <Save className="h-4 w-4" />
+                {heroEditor.isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
+              </Button>
+            </div>
+
+            <HeroSectionEditor value={heroEditor.hero} onChange={heroEditor.setHeroValue} />
+          </div>
+        </ContentBlock>
 
         <ContentBlock
           title="الاقسام(عرض اعمالك , اوخدماتك او ماشابه)"

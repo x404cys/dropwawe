@@ -36,7 +36,7 @@ interface TemplateEditorProps {
   storeDescription: string;
   storeLogoImage: string | null;
   categories: string[];
-  storefrontUrl: string;  
+  storefrontUrl: string;
 }
 
 export default function TemplateEditor({
@@ -223,6 +223,7 @@ export default function TemplateEditor({
         {activeTab === 'brand' && (
           <BrandTab
             state={editor.formState}
+            storeId={storeId}
             storeName={storeNameDraft}
             storeDescription={storeDescriptionDraft}
             onStoreNameChange={setStoreNameDraft}
@@ -286,43 +287,41 @@ export default function TemplateEditor({
         )}
       </div>
 
-     <div className="fixed bottom-20 left-0 right-0 z-30 mx-auto px-3 md:bottom-3 md:max-w-lg md:-translate-x-1/4">
-  <div className="bg-card/95 border-border shadow-foreground/5 flex gap-1.5 rounded-xl border p-1.5 shadow-2xl backdrop-blur-xl md:gap-2 md:rounded-2xl md:p-2">
-    
-    <Button
-      onClick={handlePreview}
-      variant="outline"
-      className="h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm"
-      id="template-preview-btn"
-    >
-      <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
-      معاينة
-    </Button>
+      <div className="fixed right-0 bottom-20 left-0 z-30 mx-auto px-3 md:bottom-3 md:max-w-lg md:-translate-x-1/4">
+        <div className="bg-card/95 border-border shadow-foreground/5 flex gap-1.5 rounded-xl border p-1.5 shadow-2xl backdrop-blur-xl md:gap-2 md:rounded-2xl md:p-2">
+          <Button
+            onClick={handlePreview}
+            variant="outline"
+            className="h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm"
+            id="template-preview-btn"
+          >
+            <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            معاينة
+          </Button>
 
-    <Button
-      onClick={handleSave}
-      disabled={editor.isSaving || isSavingStoreBasics || (!editor.isDirty && !isStoreDirty)}
-      className={`h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm ${
-        editor.isDirty || isStoreDirty ? '' : 'opacity-60'
-      }`}
-      id="template-save-btn"
-    >
-      <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
-      {editor.isSaving || isSavingStoreBasics ? 'جارٍ الحفظ...' : 'حفظ'}
-    </Button>
+          <Button
+            onClick={handleSave}
+            disabled={editor.isSaving || isSavingStoreBasics || (!editor.isDirty && !isStoreDirty)}
+            className={`h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm ${
+              editor.isDirty || isStoreDirty ? '' : 'opacity-60'
+            }`}
+            id="template-save-btn"
+          >
+            <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
+            {editor.isSaving || isSavingStoreBasics ? 'جارٍ الحفظ...' : 'حفظ'}
+          </Button>
 
-    <Button
-      onClick={handleReset}
-      variant="ghost"
-      className="text-muted-foreground hover:text-destructive h-9 w-9 rounded-lg p-0 md:h-11 md:w-11 md:rounded-xl"
-      title="إعادة تعيين"
-      id="template-reset-btn"
-    >
-      <RotateCcw className="h-3.5 w-3.5 md:h-4 md:w-4" />
-    </Button>
-
-  </div>
-</div>
+          <Button
+            onClick={handleReset}
+            variant="ghost"
+            className="text-muted-foreground hover:text-destructive h-9 w-9 rounded-lg p-0 md:h-11 md:w-11 md:rounded-xl"
+            title="إعادة تعيين"
+            id="template-reset-btn"
+          >
+            <RotateCcw className="h-3.5 w-3.5 md:h-4 md:w-4" />
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

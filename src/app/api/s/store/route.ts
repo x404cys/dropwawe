@@ -32,6 +32,15 @@ export async function GET(req: Request) {
       categorySections: { orderBy: { order: 'asc' } },
       categoryIcons: true,
       customFonts: true,
+      heroSection: {
+        include: {
+          stats: { orderBy: { order: 'asc' } },
+          features: { orderBy: { order: 'asc' } },
+          trustItems: { orderBy: { order: 'asc' } },
+          badges: { orderBy: { order: 'asc' } },
+          socials: { orderBy: { order: 'asc' } },
+        },
+      },
     },
   });
 
