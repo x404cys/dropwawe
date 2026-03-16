@@ -638,3 +638,5 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
     uploadBackgroundMobileImage,
   };
 }
+
+export type HeroSectionEditorController = ReturnType<typeof useHeroSectionEditor>;

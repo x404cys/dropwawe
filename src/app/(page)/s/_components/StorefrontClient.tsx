@@ -2,21 +2,14 @@
 
 import type { ReactNode } from 'react';
 
-import {
-  ActiveColors,
-  SectionsConfig,
-  StorefrontStore,
-  StorefrontTemplate,
-} from '../_lib/types';
+import { ActiveColors, SectionsConfig, StorefrontStore } from '../_lib/types';
 import { CartProvider, useCart } from '../_context/CartContext';
 import CheckoutDrawer from './checkout/CheckoutDrawer';
 import FloatingCart from './floating/FloatingCart';
-import Navbar from './Navbar';
 import ProductModal from './product/ProductModal';
 
 interface StorefrontClientProps {
   store: StorefrontStore;
-  template: StorefrontTemplate;
   colors: ActiveColors;
   headingStyle: React.CSSProperties;
   sections: SectionsConfig;
@@ -25,7 +18,6 @@ interface StorefrontClientProps {
 
 function StorefrontInner({
   store,
-  template,
   colors,
   headingStyle,
   sections,
@@ -35,14 +27,6 @@ function StorefrontInner({
 
   return (
     <>
-      <Navbar
-        store={store}
-        template={template}
-        colors={colors}
-        headingStyle={headingStyle}
-        sections={sections}
-      />
-
       {children}
 
       {selectedProduct && (

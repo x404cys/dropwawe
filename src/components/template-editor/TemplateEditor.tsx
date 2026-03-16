@@ -14,11 +14,13 @@ import type {
   TestimonialItem,
   WorkItem,
 } from '@/lib/template/types';
+import { useHeroSectionEditor } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 
 import BrandTab from './tabs/BrandTab';
 import ContactTab from './tabs/ContactTab';
 import DesignTab from './tabs/DesignTab';
 import StorefrontTab from './tabs/StorefrontTab';
+import { createDefaultHero } from './utils/createDefaultHero';
 
 type TabId = 'brand' | 'storefront' | 'design' | 'contact';
 
@@ -59,6 +61,12 @@ export default function TemplateEditor({
   const [isSavingStoreBasics, setIsSavingStoreBasics] = useState(false);
 
   const editor = useTemplateEditor({ initialData, storeId });
+  const heroEditor = useHeroSectionEditor({
+    initialHero:
+      editor.formState.heroSection ??
+      createDefaultHero(storeNameDraft, storeDescriptionDraft, editor.formState),
+    storeId,
+  });
 
   useEffect(() => {
     if (activeTab !== 'storefront') return;
@@ -169,8 +177,13 @@ export default function TemplateEditor({
   };
 
   const handleSave = async () => {
+    const hadHeroChanges = heroEditor.isDirty;
     const hadTemplateChanges = editor.isDirty;
     const hadStoreChanges = isStoreDirty;
+
+    if (hadHeroChanges) {
+      await heroEditor.saveHero();
+    }
 
     if (hadTemplateChanges) {
       await editor.saveAll();
@@ -178,10 +191,13 @@ export default function TemplateEditor({
 
     const storeSaved = await saveStoreBasics();
 
-    if (!hadTemplateChanges && hadStoreChanges && storeSaved) {
+    if (!hadHeroChanges && !hadTemplateChanges && hadStoreChanges && storeSaved) {
       toast.success(' تم الحفظ بنجاح');
     }
   };
+
+  const hasUnsavedChanges = heroEditor.isDirty || editor.isDirty || isStoreDirty;
+  const isSavingChanges = heroEditor.isSaving || editor.isSaving || isSavingStoreBasics;
 
   const handlePreview = () => {
     window.open(storefrontUrl, '_blank');
@@ -223,9 +239,9 @@ export default function TemplateEditor({
         {activeTab === 'brand' && (
           <BrandTab
             state={editor.formState}
-            storeId={storeId}
             storeName={storeNameDraft}
             storeDescription={storeDescriptionDraft}
+            heroEditor={heroEditor}
             onStoreNameChange={setStoreNameDraft}
             onStoreDescriptionChange={setStoreDescriptionDraft}
             logoImage={logoImage}
@@ -250,6 +266,9 @@ export default function TemplateEditor({
               editor.updateTestimonial(id, fields as Partial<Omit<TestimonialItem, 'id'>>)
             }
             onRemoveTestimonial={editor.removeTestimonial}
+            onSaveBrandChanges={handleSave}
+            hasUnsavedBrandChanges={hasUnsavedChanges}
+            isSavingBrandChanges={isSavingChanges}
           />
         )}
 
@@ -301,14 +320,14 @@ export default function TemplateEditor({
 
           <Button
             onClick={handleSave}
-            disabled={editor.isSaving || isSavingStoreBasics || (!editor.isDirty && !isStoreDirty)}
+            disabled={isSavingChanges || !hasUnsavedChanges}
             className={`h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm ${
-              editor.isDirty || isStoreDirty ? '' : 'opacity-60'
+              hasUnsavedChanges ? '' : 'opacity-60'
             }`}
             id="template-save-btn"
           >
             <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
-            {editor.isSaving || isSavingStoreBasics ? 'جارٍ الحفظ...' : 'حفظ'}
+            {isSavingChanges ? 'جارٍ الحفظ...' : 'حفظ'}
           </Button>
 
           <Button

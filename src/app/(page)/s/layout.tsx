@@ -1,7 +1,6 @@
 import { headers } from 'next/headers';
 import type { ReactNode } from 'react';
 import { LanguageProvider } from './_context/LanguageContext';
-import StorefrontShell from './_components/StorefrontShell';
 
 type CustomFont = {
   id: string;
@@ -31,12 +30,24 @@ function getFontMimeType(url: string) {
   return undefined;
 }
 
+function resolveSubdomain(host: string, referer: string) {
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    try {
+      const url = new URL(referer || `http://${host}`);
+      return url.searchParams.get('store') ?? 'perfume';
+    } catch {
+      return 'perfume';
+    }
+  }
+
+  return host.split('.')[0] || 'perfume';
+}
+
 export default async function StorefrontLayout({ children }: { children: ReactNode }) {
   const headersList = await headers();
   const host = headersList.get('host') || '';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
-  // const subdomain = host.split('.')[0];
-  const subdomain = "perfume";
+  const subdomain = resolveSubdomain(host, headersList.get('referer') ?? '');
   const baseUrl = `${protocol}://${host}`;
 
   let customFonts: CustomFont[] = [];
@@ -78,7 +89,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
 
   return (
     <LanguageProvider>
-      <StorefrontShell
+      <div
         className="min-h-screen"
         style={{
           margin: 0,
@@ -100,7 +111,7 @@ export default async function StorefrontLayout({ children }: { children: ReactNo
         {fontFaces && <style dangerouslySetInnerHTML={{ __html: fontFaces }} />}
 
         {children}
-      </StorefrontShell>
+      </div>
     </LanguageProvider>
   );
 }

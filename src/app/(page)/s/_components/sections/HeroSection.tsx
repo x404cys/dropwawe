@@ -1,112 +1,23 @@
 'use client';
 
-import { ArrowDown, Check, Zap } from 'lucide-react';
-import { ActiveColors, StorefrontHeroSection, StorefrontTemplate } from '../../_lib/types';
-import { useLanguage } from '../../_context/LanguageContext';
+import Image from 'next/image';
+import { ArrowDownRight } from 'lucide-react';
+import {
+  ActiveColors,
+  StorefrontHeroSection,
+  StorefrontStore,
+  StorefrontTemplate,
+} from '../../_lib/types';
+import { getIconComponent } from '../../_utils/icons';
 
 interface HeroSectionProps {
+  store: StorefrontStore;
   template: StorefrontTemplate;
   colors: ActiveColors;
   headingStyle: React.CSSProperties;
 }
 
-type HeroStatView = {
-  key: string;
-  value: string;
-  label: string;
-};
-
-function splitTitle(baseTitle: string, highlightText?: string | null) {
-  if (highlightText) {
-    return { first: baseTitle, second: highlightText };
-  }
-
-  const words = baseTitle.split(' ').filter(Boolean);
-  const half = Math.ceil(words.length / 2);
-
-  return {
-    first: words.slice(0, half).join(' '),
-    second: words.slice(half).join(' '),
-  };
-}
-
-function buildStats(
-  hero: StorefrontHeroSection | null | undefined,
-  locale: string,
-  t: ReturnType<typeof useLanguage>['t']
-): HeroStatView[] {
-  const enabledStats = hero?.stats?.filter(stat => stat.enabled) ?? [];
-
-  if (enabledStats.length > 0) {
-    return enabledStats.map(stat => ({
-      key: stat.id,
-      value: stat.value,
-      label: stat.label,
-    }));
-  }
-
-  return [
-    {
-      key: 'happy-clients',
-      value: `${new Intl.NumberFormat(locale).format(5000)}+`,
-      label: t.hero.stats.happyClients,
-    },
-    {
-      key: 'products',
-      value: `${new Intl.NumberFormat(locale).format(150)}+`,
-      label: t.hero.stats.products,
-    },
-    {
-      key: 'rating',
-      value: '4.9',
-      label: t.hero.stats.rating,
-    },
-  ];
-}
-
-function buildBackgroundStyle(
-  hero: StorefrontHeroSection | null | undefined,
-  colors: ActiveColors
-) {
-  if (!hero) {
-    return {
-      background: `linear-gradient(to bottom, ${colors.primary}0F, transparent)`,
-    };
-  }
-
-  console.log('backgroundType', hero?.backgroundType);
-  console.log('backgroundImage', hero?.heroImage);
-  if (hero.backgroundType === 'IMAGE' && hero.heroImage) {
-    return {
-      backgroundImage: `url(${hero.heroImage})`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center',
-      backgroundRepeat: 'no-repeat',
-    };
-  }
-
-  if (hero.backgroundType === 'GRADIENT') {
-    const from = hero.backgroundGradientFrom || `${colors.primary}20`;
-    const via = hero.backgroundGradientVia || 'transparent';
-    const to = hero.backgroundGradientTo || 'transparent';
-
-    return {
-      background: `linear-gradient(to bottom, ${from}, ${via}, ${to})`,
-    };
-  }
-
-  if (hero.backgroundType === 'COLOR' && hero.backgroundColor) {
-    return {
-      backgroundColor: hero.backgroundColor,
-    };
-  }
-
-  return {
-    background: `linear-gradient(to bottom, ${colors.primary}0F, transparent)`,
-  };
-}
-
-function buildContentAlign(hero: StorefrontHeroSection | null | undefined) {
+function getTextAlignClass(hero: StorefrontHeroSection | null | undefined) {
   switch (hero?.contentAlign) {
     case 'left':
       return 'text-left';
@@ -117,7 +28,7 @@ function buildContentAlign(hero: StorefrontHeroSection | null | undefined) {
   }
 }
 
-function buildItemsAlign(hero: StorefrontHeroSection | null | undefined) {
+function getItemsClass(hero: StorefrontHeroSection | null | undefined) {
   switch (hero?.contentAlign) {
     case 'left':
       return 'items-start';
@@ -128,7 +39,7 @@ function buildItemsAlign(hero: StorefrontHeroSection | null | undefined) {
   }
 }
 
-function buildJustify(hero: StorefrontHeroSection | null | undefined) {
+function getJustifyClass(hero: StorefrontHeroSection | null | undefined) {
   switch (hero?.contentPosition) {
     case 'start':
       return 'justify-start';
@@ -139,280 +50,411 @@ function buildJustify(hero: StorefrontHeroSection | null | undefined) {
   }
 }
 
-function buildSectionHeight(hero: StorefrontHeroSection | null | undefined) {
+function getMinHeight(hero: StorefrontHeroSection | null | undefined) {
   switch (hero?.sectionHeight) {
-    case 'screen':
-      return 'min-h-screen';
-    case 'xl':
-      return 'min-h-[820px]';
-    case 'lg':
-      return 'min-h-[720px]';
-    case 'md':
-      return 'min-h-[620px]';
     case 'sm':
-      return 'min-h-[520px]';
+      return '60vh';
+    case 'md':
+      return '70vh';
+    case 'lg':
+      return '80vh';
+    case 'xl':
+      return '90vh';
+    case 'screen':
+      return '100vh';
     default:
-      return '';
+      return undefined;
   }
 }
 
-function buildContainerWidth(hero: StorefrontHeroSection | null | undefined) {
-  if (hero?.containerStyle === 'full') {
-    return 'max-w-none';
+function getBackgroundStyle(
+  hero: StorefrontHeroSection | null | undefined,
+  colors: ActiveColors
+): React.CSSProperties {
+  if (!hero) {
+    return { backgroundColor: colors.bg };
   }
 
-  return 'max-w-5xl';
+  const imageSource =
+    hero.backgroundImage || hero.backgroundImageMobile || hero.heroImage || hero.heroImageMobile;
+
+  if (hero.backgroundType === 'IMAGE' && imageSource) {
+    return {
+      backgroundImage: `url(${imageSource})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    };
+  }
+
+  if (hero.backgroundType === 'VIDEO' && (hero.heroVideoPoster || imageSource)) {
+    return {
+      backgroundImage: `url(${hero.heroVideoPoster || imageSource})`,
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      backgroundRepeat: 'no-repeat',
+    };
+  }
+
+  if (hero.backgroundType === 'GRADIENT') {
+    const from = hero.backgroundGradientFrom || colors.bg;
+    const via = hero.backgroundGradientVia || colors.bg;
+    const to = hero.backgroundGradientTo || colors.bg;
+
+    return {
+      background: `linear-gradient(135deg, ${from}, ${via}, ${to})`,
+    };
+  }
+
+  if (hero.backgroundType === 'COLOR' && hero.backgroundColor) {
+    return {
+      backgroundColor: hero.backgroundColor,
+    };
+  }
+
+  return { backgroundColor: colors.bg };
 }
 
-function buildTrustItems(hero: StorefrontHeroSection | null | undefined) {
-  return hero?.trustItems?.filter(item => item.enabled) ?? [];
+function getContentWidth(hero: StorefrontHeroSection | null | undefined) {
+  return hero?.contentMaxWidth?.trim() || '42rem';
 }
 
-export default function HeroSection({ template, colors, headingStyle }: HeroSectionProps) {
-  const { t, locale } = useLanguage();
+function getMediaSource(hero: StorefrontHeroSection | null | undefined) {
+  return hero?.heroImage || hero?.heroImageMobile || null;
+}
+
+function getMediaAlt(hero: StorefrontHeroSection | null | undefined, fallback: string) {
+  return hero?.heroImageAlt?.trim() || fallback;
+}
+
+function getLayout(hero: StorefrontHeroSection | null | undefined) {
+  return hero?.layout || 'SPLIT';
+}
+
+export default function HeroSection({ store, template, colors, headingStyle }: HeroSectionProps) {
   const hero = template.heroSection;
 
   if (hero && (!hero.enabled || hero.visible === false)) {
     return null;
   }
 
-  const fallbackTagline = template.tagline ?? t.hero.taglineFallback;
-  const overlineText = hero?.overline?.trim() || '';
-  const titleText = hero?.title?.trim() || fallbackTagline;
-  const titleParts = splitTitle(titleText, hero?.highlightText);
-
-  const storeDescription = (
-    hero?.description ??
-    hero?.subtitle ??
-    template.storeDescription ??
-    ''
-  ).trim();
-
-  const subtitleText = hero?.subtitle?.trim() || '';
-  const badgeText = hero?.badgeText?.trim() || t.hero.badge;
-  const trustText = hero?.trustText?.trim() || '';
-  const smallNote = hero?.smallNote?.trim() || '';
-
-  const primaryCtaText =
-    hero?.primaryButtonText?.trim() || template.heroButtonText || t.hero.primaryCta;
-
-  const secondaryCtaText =
-    hero?.secondaryButtonText?.trim() || template.heroSecondaryButton || t.hero.secondaryCta;
-
-  const primaryHref = hero?.primaryButtonLink?.trim() || '#store-section';
-  const secondaryHref = hero?.secondaryButtonLink?.trim() || '#works-section';
-
-  const stats = buildStats(hero, locale, t);
-  const trustItems = buildTrustItems(hero);
-
-  const contentAlignClass = buildContentAlign(hero);
-  const itemsAlignClass = buildItemsAlign(hero);
-  const justifyClass = buildJustify(hero);
-  const sectionHeightClass = buildSectionHeight(hero);
-  const containerWidthClass = buildContainerWidth(hero);
-
-  const backgroundStyle = buildBackgroundStyle(hero, colors);
-
-  const overlayColor = hero?.overlayColor || '#000000';
-  const overlayOpacity = 0;
-
+  const layout = getLayout(hero);
   const sectionId = hero?.sectionId?.trim() || 'hero-section';
+  const badgeText = hero?.showBadge === false ? null : hero?.badgeText?.trim() || null;
+  const overlineText = hero?.overline?.trim() || template.tagline?.trim() || null;
+  const titleText = hero?.title?.trim() || store.name?.trim() || null;
+  const subtitleText = hero?.subtitle?.trim() || null;
+  const descriptionText =
+    hero?.description?.trim() ||
+    template.storeDescription?.trim() ||
+    store.description?.trim() ||
+    null;
+  const primaryText = hero?.primaryButtonText?.trim() || template.heroButtonText?.trim() || null;
+  const secondaryText =
+    hero?.secondaryButtonText?.trim() || template.heroSecondaryButton?.trim() || null;
+  const primaryHref = hero?.primaryButtonLink?.trim() || '#store-section';
+  const secondaryHref = hero?.secondaryButtonLink?.trim() || '#about-section';
+  const stats = (hero?.stats ?? []).filter(stat => stat.enabled && stat.label && stat.value);
+  const features = (hero?.features ?? []).filter(feature => feature.enabled && feature.title);
+  const trustItems = (hero?.trustItems ?? []).filter(item => item.enabled && item.text);
+  const mediaSrc = getMediaSource(hero);
+  const minHeight = getMinHeight(hero);
+  const textAlignClass = getTextAlignClass(hero);
+  const itemsClass = getItemsClass(hero);
+  const justifyClass = getJustifyClass(hero);
+  const sectionStyle = getBackgroundStyle(hero, colors);
+  const overlayOpacity = Math.max(0, Math.min(hero?.overlayOpacity ?? 0, 100)) / 100;
+  const mediaAlt = getMediaAlt(hero, titleText || store.name || 'Store hero image');
 
-  return (
-    <section id={sectionId} className={`relative overflow-hidden ${sectionHeightClass}`}>
-      <div className="absolute inset-0" style={backgroundStyle} />
+  const renderButtons = hero?.showButtons !== false && (primaryText || secondaryText);
 
-      {hero?.overlayEnabled && (
+  const renderContent = (isFullscreen = false) => (
+    <div
+      className={`flex flex-col ${itemsClass} ${textAlignClass}`}
+      style={{ maxWidth: getContentWidth(hero) }}
+    >
+      {badgeText ? (
+        <span
+          // REDESIGN: turn the hero badge into a restrained typographic marker.
+          className="mb-6 border border-white/10 px-4 py-2 text-[10px] font-light tracking-[0.32em] uppercase opacity-80"
+          style={{ color: colors.text }}
+        >
+          {badgeText}
+        </span>
+      ) : null}
+
+      {overlineText ? (
+        <p
+          className="mb-6 text-xs font-light tracking-[0.34em] uppercase opacity-50"
+          style={{ color: colors.text }}
+        >
+          {overlineText}
+        </p>
+      ) : null}
+
+      {titleText ? (
+        <h1
+          // REDESIGN: use thin monumental typography instead of decorative split gradients.
+          className="text-5xl font-thin tracking-tight text-balance sm:text-6xl lg:text-8xl"
+          style={{ ...headingStyle, color: colors.text }}
+        >
+          {titleText}
+        </h1>
+      ) : null}
+
+      {subtitleText ? (
+        <p
+          className="mt-6 text-sm font-light tracking-[0.18em] uppercase opacity-60"
+          style={{ color: colors.text }}
+        >
+          {subtitleText}
+        </p>
+      ) : null}
+
+      {descriptionText ? (
+        <p
+          className="mt-6 max-w-xl text-sm leading-relaxed font-light opacity-70 lg:text-base"
+          style={{ color: colors.text }}
+        >
+          {descriptionText}
+        </p>
+      ) : null}
+
+      {renderButtons ? (
         <div
-          className="absolute inset-0"
-          style={{
-            backgroundColor: overlayColor,
-            opacity: overlayOpacity,
-          }}
-        />
-      )}
-
-      <div
-        className="absolute top-20 right-10 h-72 w-72 rounded-full blur-3xl"
-        style={{ backgroundColor: `${colors.primary}0A` }}
-      />
-      <div
-        className="absolute bottom-10 left-10 h-56 w-56 rounded-full blur-3xl"
-        style={{ backgroundColor: `${colors.accent}0A` }}
-      />
-
-      <div
-        className={`relative mx-auto flex ${justifyClass} px-4 pt-16 pb-20 sm:px-6 sm:pt-24 sm:pb-28 ${containerWidthClass} ${sectionHeightClass}`}
-      >
-        <div className={`mx-auto flex max-w-2xl flex-col ${itemsAlignClass} ${contentAlignClass}`}>
-          {!!badgeText && (
-            <div
-              className="mb-6 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5"
-              style={{
-                backgroundColor: `${colors.primary}15`,
-                borderColor: `${colors.primary}30`,
+          // REDESIGN: shift CTAs to outlined luxury controls with accent fill on hover only.
+          className={`mt-10 flex flex-wrap gap-4 ${isFullscreen ? 'items-end' : ''}`}
+        >
+          {primaryText ? (
+            <a
+              href={primaryHref}
+              className="border px-8 py-3 text-xs font-light tracking-[0.28em] uppercase transition-colors duration-200 hover:opacity-100"
+              style={{ color: colors.text, borderColor: colors.text }}
+              onMouseEnter={event => {
+                event.currentTarget.style.backgroundColor = colors.accent;
+                event.currentTarget.style.borderColor = colors.accent;
+                event.currentTarget.style.color = colors.bg;
+              }}
+              onMouseLeave={event => {
+                event.currentTarget.style.backgroundColor = 'transparent';
+                event.currentTarget.style.borderColor = colors.text;
+                event.currentTarget.style.color = colors.text;
               }}
             >
-              <Zap className="h-3 w-3" style={{ color: colors.primary }} />
-              <span className="text-[11px] font-semibold" style={{ color: colors.primary }}>
-                {badgeText}
-              </span>
+              {primaryText}
+            </a>
+          ) : null}
+
+          {secondaryText ? (
+            <a
+              href={secondaryHref}
+              className="inline-flex items-center gap-2 text-xs font-light tracking-[0.28em] uppercase opacity-60 transition-opacity duration-200 hover:opacity-100"
+              style={{ color: colors.text }}
+            >
+              <span>{secondaryText}</span>
+              <ArrowDownRight className="h-3.5 w-3.5" />
+            </a>
+          ) : null}
+        </div>
+      ) : null}
+
+      {hero?.showStats && stats.length > 0 ? (
+        <div
+          // REDESIGN: stats become a flat typographic row with no cards or counters.
+          className="mt-14 grid w-full gap-8 border-t border-white/10 pt-8 sm:grid-cols-2 xl:grid-cols-3"
+        >
+          {stats.map(stat => (
+            <div key={stat.id}>
+              <p
+                className="text-3xl font-thin tracking-tight lg:text-4xl"
+                style={{ ...headingStyle, color: colors.text }}
+              >
+                {stat.value}
+              </p>
+              <p
+                className="mt-2 text-[10px] font-light tracking-[0.28em] uppercase opacity-50"
+                style={{ color: colors.text }}
+              >
+                {stat.label}
+              </p>
             </div>
-          )}
+          ))}
+        </div>
+      ) : null}
 
-          {!!overlineText && (
-            <p
-              className="mb-3 text-xs font-bold tracking-[0.22em] uppercase"
-              style={{ color: `${colors.text}80` }}
+      {hero?.showTrustItems && trustItems.length > 0 ? (
+        <div className="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+          {trustItems.map(item => (
+            <span
+              key={item.id}
+              className="text-xs font-light tracking-[0.18em] uppercase opacity-55"
+              style={{ color: colors.text }}
             >
-              {overlineText}
-            </p>
-          )}
+              {item.text}
+            </span>
+          ))}
+        </div>
+      ) : null}
 
-          <h1
-            className="mb-4 text-3xl leading-tight font-extrabold tracking-tight sm:text-5xl"
-            style={{ ...headingStyle, color: colors.text }}
-          >
-            {titleParts.first}
-            {titleParts.second ? (
-              <>
-                <br />
-                <span style={{ color: colors.primary }}>{titleParts.second}</span>
-              </>
-            ) : null}
-          </h1>
+      {hero?.showFeatures && features.length > 0 ? (
+        <div className="mt-14 grid w-full gap-px border border-white/10 bg-white/10 md:grid-cols-2">
+          {features.map(feature => {
+            const FeatureIcon = feature.icon ? getIconComponent(feature.icon) : null;
 
-          {!!subtitleText && subtitleText !== storeDescription && (
-            <p
-              className="mb-3 text-sm font-semibold sm:text-base"
-              style={{ color: `${colors.text}CC` }}
-            >
-              {subtitleText}
-            </p>
-          )}
+            return (
+              <a
+                key={feature.id}
+                href={feature.link || undefined}
+                className="group bg-white/[0.02] p-6 transition-colors duration-200 hover:bg-white/[0.04]"
+              >
+                <div className="flex items-start gap-4">
+                  {feature.image ? (
+                    <img
+                      src={feature.image}
+                      alt={feature.title}
+                      className="h-12 w-12 object-cover"
+                    />
+                  ) : FeatureIcon ? (
+                    <FeatureIcon
+                      className="mt-1 h-4 w-4 shrink-0 opacity-60"
+                      style={{ color: colors.text }}
+                    />
+                  ) : null}
 
-          {!!storeDescription && (
-            <p
-              className="mx-auto mb-8 max-w-md text-sm leading-relaxed sm:text-base"
-              style={{
-                color: `${colors.text}99`,
-                marginInline:
-                  hero?.contentAlign === 'left'
-                    ? '0'
-                    : hero?.contentAlign === 'right'
-                      ? '0 0 0 auto'
-                      : 'auto',
-              }}
-            >
-              {storeDescription}
-            </p>
-          )}
-
-          {hero?.showButtons !== false && (
-            <div
-              className={`flex w-full flex-col gap-3 sm:w-auto sm:flex-row ${
-                hero?.contentAlign === 'left'
-                  ? 'justify-start'
-                  : hero?.contentAlign === 'right'
-                    ? 'justify-end'
-                    : 'justify-center'
-              }`}
-            >
-              {!!primaryCtaText && (
-                <a
-                  href={primaryHref}
-                  className="w-full rounded-2xl px-8 py-3.5 text-center text-sm font-bold text-white shadow-lg transition-all active:scale-[0.98] sm:w-auto"
-                  style={{
-                    backgroundColor: colors.primary,
-                    boxShadow: `0 10px 25px -5px ${colors.primary}40`,
-                  }}
-                >
-                  {primaryCtaText}
-                </a>
-              )}
-
-              {!!secondaryCtaText && (
-                <a
-                  href={secondaryHref}
-                  className="border-border bg-card text-foreground hover:bg-muted w-full rounded-2xl border px-8 py-3.5 text-center text-sm font-bold transition-colors sm:w-auto"
-                >
-                  {secondaryCtaText}
-                </a>
-              )}
-            </div>
-          )}
-
-          {!!trustText && (
-            <p
-              className="mt-5 text-xs font-semibold sm:text-sm"
-              style={{ color: `${colors.text}B3` }}
-            >
-              {trustText}
-            </p>
-          )}
-
-          {hero?.showTrustItems && trustItems.length > 0 && (
-            <div
-              className={`mt-5 flex flex-wrap gap-2 ${
-                hero?.contentAlign === 'left'
-                  ? 'justify-start'
-                  : hero?.contentAlign === 'right'
-                    ? 'justify-end'
-                    : 'justify-center'
-              }`}
-            >
-              {trustItems.map(item => (
-                <div
-                  key={item.id}
-                  className="bg-card/70 border-border/60 inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs"
-                  style={{ color: `${colors.text}CC` }}
-                >
-                  <Check className="h-3.5 w-3.5" style={{ color: colors.primary }} />
-                  <span>{item.text}</span>
+                  <div>
+                    <p
+                      className="text-sm font-light tracking-[0.08em]"
+                      style={{ color: colors.text }}
+                    >
+                      {feature.title}
+                    </p>
+                    {feature.desc ? (
+                      <p
+                        className="mt-2 text-xs leading-relaxed font-light opacity-60"
+                        style={{ color: colors.text }}
+                      >
+                        {feature.desc}
+                      </p>
+                    ) : null}
+                  </div>
                 </div>
-              ))}
-            </div>
-          )}
+              </a>
+            );
+          })}
+        </div>
+      ) : null}
+    </div>
+  );
 
-          {hero?.showStats !== false && stats.length > 0 && (
-            <div
-              className={`mt-12 flex flex-wrap gap-8 ${
-                hero?.contentAlign === 'left'
-                  ? 'justify-start'
-                  : hero?.contentAlign === 'right'
-                    ? 'justify-end'
-                    : 'justify-center'
-              }`}
-            >
-              {stats.map(stat => (
-                <div key={stat.key} className="text-center">
-                  <p
-                    className="text-xl font-extrabold sm:text-2xl"
-                    style={{ ...headingStyle, color: colors.text }}
-                  >
-                    {stat.value}
-                  </p>
-                  <p
-                    className="mt-0.5 text-[10px] sm:text-xs"
-                    style={{ color: `${colors.text}66` }}
-                  >
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-          )}
+  const renderMedia = () => {
+    if (!mediaSrc || layout === 'MINIMAL' || layout === 'CENTERED' || layout === 'FULLSCREEN') {
+      return null;
+    }
 
-          {!!smallNote && (
-            <p className="mt-6 text-[11px] sm:text-xs" style={{ color: `${colors.text}70` }}>
-              {smallNote}
-            </p>
-          )}
+    return (
+      <div className="relative lg:col-span-6">
+        <div className="relative aspect-[4/5] overflow-hidden border border-white/10 bg-white/[0.03]">
+          <Image
+            // REDESIGN: hero media is full-bleed and unrounded to keep the editorial look.
+            src={mediaSrc}
+            alt={mediaAlt}
+            fill
+            className="object-cover"
+          />
         </div>
       </div>
+    );
+  };
 
-      <div className="absolute bottom-6 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1 opacity-40">
-        <ArrowDown className="text-muted-foreground h-4 w-4 animate-bounce" />
+  if (layout === 'FULLSCREEN') {
+    return (
+      <section
+        id={sectionId}
+        className="relative overflow-hidden border-b border-white/5"
+        style={{ minHeight: minHeight || '100vh', backgroundColor: colors.bg }}
+      >
+        <div className="absolute inset-0" style={sectionStyle} />
+
+        {hero?.overlayEnabled ? (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: hero.overlayColor || colors.bg, opacity: overlayOpacity }}
+          />
+        ) : null}
+
+        <div className="relative mx-auto flex min-h-screen max-w-7xl items-end px-6 py-20 lg:px-12 lg:py-24">
+          {renderContent(true)}
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'CENTERED') {
+    return (
+      <section
+        id={sectionId}
+        className="relative overflow-hidden border-b border-white/5"
+        style={{ ...sectionStyle, minHeight }}
+      >
+        {hero?.overlayEnabled ? (
+          <div
+            className="absolute inset-0"
+            style={{ backgroundColor: hero.overlayColor || colors.bg, opacity: overlayOpacity }}
+          />
+        ) : null}
+
+        <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+          <div className="flex min-h-[60vh] items-center justify-center">{renderContent()}</div>
+        </div>
+      </section>
+    );
+  }
+
+  if (layout === 'MINIMAL') {
+    return (
+      <section
+        id={sectionId}
+        className="relative overflow-hidden border-b border-white/5"
+        style={{ ...sectionStyle, minHeight }}
+      >
+        <div className="relative mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+          {renderContent()}
+        </div>
+      </section>
+    );
+  }
+
+  const mediaFirst = layout === 'IMAGE_LEFT';
+
+  return (
+    <section
+      id={sectionId}
+      className="relative overflow-hidden border-b border-white/5"
+      style={{ ...sectionStyle, minHeight }}
+    >
+      {hero?.overlayEnabled ? (
+        <div
+          className="absolute inset-0"
+          style={{ backgroundColor: hero.overlayColor || colors.bg, opacity: overlayOpacity }}
+        />
+      ) : null}
+
+      <div className="relative mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-28">
+        <div
+          // REDESIGN: move split heroes to a sparse editorial grid with image bleed and generous space.
+          className={`grid items-center gap-12 lg:grid-cols-12 lg:gap-16 ${minHeight ? '' : 'min-h-[70vh]'}`}
+          style={minHeight ? { minHeight } : undefined}
+        >
+          {mediaFirst ? renderMedia() : null}
+
+          <div
+            className={`lg:col-span-6 ${layout === 'SPLIT' || layout === 'IMAGE_RIGHT' ? '' : ''} flex ${justifyClass}`}
+          >
+            {renderContent()}
+          </div>
+
+          {!mediaFirst ? renderMedia() : null}
+        </div>
       </div>
     </section>
   );

@@ -38,26 +38,27 @@ export function useStorefront(products: StorefrontProduct[]) {
     const uniqueCats = Array.from(new Set(products.map(getProductCategory)));
     return [
       { key: ALL_CATEGORY_KEY, label: t.store.all, isAll: true },
-      ...uniqueCats.map((cat) => ({ key: cat, label: resolveCategoryLabel(cat) })),
+      ...uniqueCats.map(cat => ({ key: cat, label: resolveCategoryLabel(cat) })),
     ];
   }, [getProductCategory, products, resolveCategoryLabel, t.store.all]);
 
   const displayFiltered = useMemo(
     () =>
-      products.filter((p) => {
+      products.filter(p => {
         const matchCat =
           activeCategory === ALL_CATEGORY_KEY || getProductCategory(p) === activeCategory;
+        const normalizedQuery = searchQuery.trim().toLocaleLowerCase();
         const matchSearch =
-          !searchQuery ||
-          p.name.includes(searchQuery) ||
-          (p.description ?? '').includes(searchQuery);
+          !normalizedQuery ||
+          p.name.toLocaleLowerCase().includes(normalizedQuery) ||
+          (p.description ?? '').toLocaleLowerCase().includes(normalizedQuery);
         return matchCat && matchSearch;
       }),
     [activeCategory, getProductCategory, products, searchQuery]
   );
 
   const getProductsByCat = useCallback(
-    (cat: string) => products.filter((p) => getProductCategory(p) === cat),
+    (cat: string) => products.filter(p => getProductCategory(p) === cat),
     [getProductCategory, products]
   );
 

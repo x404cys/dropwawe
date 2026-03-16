@@ -1,11 +1,10 @@
-// Purpose: Works/Portfolio section - Client Component.
-// 2�-3 grid with hover overlay. Matches Storefront.tsx case "works".
-
 'use client';
 
-import { ExternalLink, PenTool } from 'lucide-react';
+import Image from 'next/image';
+import { Package } from 'lucide-react';
 import { ActiveColors, StorefrontWork } from '../../_lib/types';
 import { useLanguage } from '../../_context/LanguageContext';
+import { getIconComponent } from '../../_utils/icons';
 
 interface WorksSectionProps {
   works: StorefrontWork[];
@@ -15,58 +14,71 @@ interface WorksSectionProps {
 
 export default function WorksSection({ works, colors, headingStyle }: WorksSectionProps) {
   const { t } = useLanguage();
+  const items = works.filter(work => work.title || work.image || work.icon);
+
+  if (items.length === 0) return null;
 
   return (
-    <section id="works-section" className="py-16 sm:py-20">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6">
-        <div className="text-center mb-10">
-          <span
-            className="text-[11px] font-semibold px-3 py-1 rounded-full"
-            style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
+    <section id="works-section" className="border-b border-white/5 bg-white/[0.02]">
+      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+        <div className="mb-16 max-w-2xl">
+          <p
+            className="text-xs font-light tracking-[0.32em] uppercase opacity-40"
+            style={{ color: colors.text }}
           >
             {t.works.badge}
-          </span>
+          </p>
           <h2
-            className="text-xl sm:text-2xl font-bold mt-4"
+            // REDESIGN: standalone works section follows the same editorial square-grid system.
+            className="mt-6 text-4xl font-thin tracking-tight lg:text-6xl"
             style={{ ...headingStyle, color: colors.text }}
           >
             {t.works.heading}
           </h2>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          {works.map((work, i) => {
+        <div className="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-3">
+          {items.map(work => {
+            const WorkIcon = work.icon ? getIconComponent(work.icon) : Package;
             const Wrapper = work.link ? 'a' : 'div';
-            const wrapperProps = work.link
-              ? { href: work.link, target: '_blank', rel: 'noopener noreferrer' }
-              : {};
-            const overlayText = work.link ? t.works.openLink : t.works.viewProject;
 
             return (
               <Wrapper
-                key={i}
-                {...(wrapperProps as Record<string, string>)}
-                className="group cursor-pointer block"
+                key={work.id}
+                {...(work.link
+                  ? {
+                      href: work.link,
+                      target: '_blank',
+                      rel: 'noopener noreferrer',
+                    }
+                  : {})}
+                className="group bg-white/[0.03]"
               >
-                <div
-                  className="aspect-[4/3] rounded-2xl flex items-center justify-center relative overflow-hidden border border-border"
-                  style={{
-                    background: `linear-gradient(135deg, ${colors.primary}20, ${colors.accent}15)`,
-                  }}
-                >
-                  <PenTool className="h-8 w-8 text-muted-foreground/20" />
-                  <div className="absolute inset-0 bg-foreground/0 group-hover:bg-foreground/60 transition-all duration-300 flex items-center justify-center opacity-0 group-hover:opacity-100">
-                    <div className="text-center">
-                      <ExternalLink className="h-5 w-5 text-background mx-auto mb-1.5" />
-                      <p className="text-[10px] font-bold text-background">{overlayText}</p>
+                <div className="relative aspect-square overflow-hidden">
+                  {work.displayType !== 'ICON' && work.image ? (
+                    <Image
+                      src={work.image}
+                      alt={work.title || t.works.imageAlt}
+                      fill
+                      className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    />
+                  ) : (
+                    <div className="flex h-full items-center justify-center bg-white/[0.02]">
+                      <WorkIcon className="h-6 w-6 opacity-40" style={{ color: colors.text }} />
                     </div>
-                  </div>
+                  )}
                 </div>
-                <div className="mt-2.5 px-1">
-                  <h3 className="text-xs font-bold text-foreground">
+
+                <div className="space-y-2 p-4">
+                  <p
+                    className="text-[10px] font-light tracking-[0.28em] uppercase opacity-45"
+                    style={{ color: colors.text }}
+                  >
+                    {work.category}
+                  </p>
+                  <p className="text-sm font-light" style={{ color: colors.text }}>
                     {work.title || t.works.untitled}
-                  </h3>
-                  <p className="text-[10px] text-muted-foreground">{work.category}</p>
+                  </p>
                 </div>
               </Wrapper>
             );

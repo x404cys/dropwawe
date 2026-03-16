@@ -1,17 +1,8 @@
-// Purpose: About section - Client Component.
-// Two-column layout: story + features grid | contact info card.
-
 'use client';
 
-import { Award } from 'lucide-react';
+import Image from 'next/image';
 import { ActiveColors, StorefrontStore, StorefrontTemplate } from '../../_lib/types';
 import { useLanguage } from '../../_context/LanguageContext';
-import {
-  buildContactItems,
-  getContactHref,
-  getContactIcon,
-  isExternalContact,
-} from '../../_utils/contacts';
 
 interface AboutSectionProps {
   template: StorefrontTemplate;
@@ -22,99 +13,54 @@ interface AboutSectionProps {
 
 export default function AboutSection({ template, store, colors, headingStyle }: AboutSectionProps) {
   const { t } = useLanguage();
-  // Parse aboutFeatures with fallback matching reference defaults.
-  let aboutFeatures: string[] = [];
-  try {
-    const raw = (template as unknown as Record<string, unknown>).aboutFeatures;
-    if (Array.isArray(raw)) aboutFeatures = raw as string[];
-  } catch {
-    /* ignore */
-  }
-  aboutFeatures = aboutFeatures.filter(Boolean);
-  const contactItems = buildContactItems(template, store).filter(
-    item => item.enabled && item.value.trim().length > 0
-  );
+  const aboutText =
+    template.aboutText?.trim() ||
+    template.storeDescription?.trim() ||
+    store.description?.trim() ||
+    '';
+
+  if (!aboutText) return null;
 
   return (
-    <section id="about-section" className="py-16 sm:py-20">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        <div className="items-start gap-10 sm:flex">
-          {/* Left column */}
-          <div className="mb-8 flex-1 sm:mb-0">
-            <span
-              className="rounded-full px-3 py-1 text-[11px] font-semibold"
-              style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
+    <section id="about-section" className="border-b border-white/5">
+      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+        <div className="grid gap-12 lg:grid-cols-12 lg:gap-16">
+          <div className="lg:col-span-4">
+            <p
+              className="text-xs font-light tracking-[0.32em] uppercase opacity-40"
+              style={{ color: colors.text }}
             >
               {t.about.badge}
-            </span>
-            <h2
-              className="mt-4 mb-3 text-xl font-bold sm:text-2xl"
-              style={{ ...headingStyle, color: colors.text }}
-            >
-              {t.about.heading}
-            </h2>
-            <p
-              className="mb-4 text-xs leading-relaxed sm:text-sm"
-              style={{ color: `${colors.text}99` }}
-            >
-              {template.aboutText}
             </p>
 
-            <div className="grid grid-cols-3 gap-3">
-              {aboutFeatures.map(f => (
-                <div key={f} className="bg-card border-border rounded-xl border p-3 text-center">
-                  <Award className="mx-auto mb-1.5 h-4 w-4" style={{ color: colors.primary }} />
-                  <p className="text-foreground text-[9px] font-bold sm:text-[10px]">{f}</p>
-                </div>
-              ))}
-            </div>
+            <h2
+              // REDESIGN: about section shifts to a sparse two-column editorial composition.
+              className="mt-6 text-4xl font-thin tracking-tight lg:text-6xl"
+              style={{ ...headingStyle, color: colors.text }}
+            >
+              {store.name}
+            </h2>
           </div>
 
-          {/* Right column - contact card */}
-          <div className="flex-1">
-            <div className="bg-card border-border rounded-2xl border p-5 sm:p-6">
-              <h3 className="text-foreground mb-4 text-sm font-bold" style={headingStyle}>
-                {t.about.contactTitle}
-              </h3>
-              <div className="space-y-3">
-                {contactItems.map(item => {
-                  const Icon = getContactIcon(item.type);
-                  const href = getContactHref(item);
-                  const value =
-                    item.type === 'custom' && item.label
-                      ? `${item.label}: ${item.value}`
-                      : item.value;
-                  const isExternal = isExternalContact(item.type);
-                  const content = (
-                    <span className="text-muted-foreground text-xs" dir="ltr">
-                      {value}
-                    </span>
-                  );
+          <div className="space-y-8 lg:col-span-8">
+            <p
+              className="max-w-3xl text-base leading-relaxed font-light opacity-70 lg:text-lg"
+              style={{ color: colors.text }}
+            >
+              {aboutText}
+            </p>
 
-                  return (
-                    <div key={item.id} className="flex items-center gap-3">
-                      <div
-                        className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
-                        style={{ backgroundColor: `${colors.primary}15` }}
-                      >
-                        <Icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
-                      </div>
-                      {href ? (
-                        <a
-                          href={href}
-                          target={isExternal ? '_blank' : undefined}
-                          rel={isExternal ? 'noopener noreferrer' : undefined}
-                        >
-                          {content}
-                        </a>
-                      ) : (
-                        content
-                      )}
-                    </div>
-                  );
-                })}
+            {store.image ? (
+              <div className="relative aspect-[16/9] overflow-hidden border border-white/10">
+                <Image
+                  // REDESIGN: optional store imagery is shown as a full-bleed editorial frame.
+                  src={store.image}
+                  alt={store.name || t.about.heading}
+                  fill
+                  className="object-cover"
+                />
               </div>
-            </div>
+            ) : null}
           </div>
         </div>
       </div>

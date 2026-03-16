@@ -46,28 +46,25 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
     .replace('{count}', new Intl.NumberFormat(locale).format(128));
 
   const deliveryText = deliveryDays
-    ? t.product.deliveryIn.replace(
-        '{days}',
-        new Intl.NumberFormat(locale).format(deliveryDays)
-      )
+    ? t.product.deliveryIn.replace('{days}', new Intl.NumberFormat(locale).format(deliveryDays))
     : t.product.deliveryFast;
 
   return (
-    <div className="fixed inset-0 z-50 bg-background overflow-y-auto">
+    <div className="bg-background fixed inset-0 z-50 overflow-y-auto">
       {/* Sticky top bar */}
-      <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-4 py-3 flex items-center justify-between">
+      <div className="bg-background/95 border-border sticky top-0 z-10 flex items-center justify-between border-b px-4 py-3 backdrop-blur-sm">
         <button
           onClick={handleClose}
-          className="w-8 h-8 rounded-full bg-muted flex items-center justify-center"
+          className="bg-muted flex h-8 w-8 items-center justify-center rounded-full"
         >
-          <ArrowRight className="h-4 w-4 text-foreground" />
+          <ArrowRight className="text-foreground h-4 w-4" />
         </button>
-        <span className="text-xs font-bold text-foreground">{t.product.details}</span>
+        <span className="text-foreground text-xs font-bold">{t.product.details}</span>
         <button onClick={handleOpenCart} className="relative">
-          <ShoppingCart className="h-5 w-5 text-foreground" />
+          <ShoppingCart className="text-foreground h-5 w-5" />
           {cartCount > 0 && (
             <span
-              className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full text-[8px] font-bold flex items-center justify-center text-white"
+              className="absolute -top-1.5 -right-1.5 flex h-4 w-4 items-center justify-center rounded-full text-[8px] font-bold text-white"
               style={{ backgroundColor: colors.primary }}
             >
               {cartCount}
@@ -78,37 +75,34 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
 
       {/* Image */}
       <div
-        className="h-52 flex flex-col items-center justify-center relative"
+        className="relative flex h-52 flex-col items-center justify-center"
         style={{ background: `linear-gradient(135deg, ${colors.primary}15, ${colors.primary}08)` }}
       >
-        {product.images?.[0] ? (
-          <img
-            src={product.images[0].url}
-            alt={product.name}
-            className="w-full h-full object-cover"
-          />
-        ) : (
-          <Package className="h-14 w-14" style={{ color: `${colors.primary}30` }} />
-        )}
+        <img
+          src={product.image as string}
+          alt={product.name}
+          className="h-full w-full object-cover"
+        />
+
         {(product.discount ?? 0) > 0 && (
-          <span className="absolute top-4 right-4 px-3 py-1 rounded-full text-[10px] font-bold bg-destructive text-destructive-foreground">
+          <span className="bg-destructive text-destructive-foreground absolute top-4 right-4 rounded-full px-3 py-1 text-[10px] font-bold">
             {t.store.discount} {product.discount}%
           </span>
         )}
       </div>
 
       {/* Content */}
-      <div className="max-w-2xl mx-auto p-5 space-y-5">
+      <div className="mx-auto max-w-2xl space-y-5 p-5">
         <div>
-          <span className="text-[10px] px-2 py-0.5 rounded-full bg-secondary text-secondary-foreground">
+          <span className="bg-secondary text-secondary-foreground rounded-full px-2 py-0.5 text-[10px]">
             {product.category ?? t.store.general}
           </span>
-          <h2 className="text-lg font-bold text-foreground mt-2 mb-1" style={headingStyle}>
+          <h2 className="text-foreground mt-2 mb-1 text-lg font-bold" style={headingStyle}>
             {product.name}
           </h2>
-          <div className="flex items-center gap-2 mb-3">
+          <div className="mb-3 flex items-center gap-2">
             <div className="flex items-center gap-0.5">
-              {[1, 2, 3, 4, 5].map((s) => (
+              {[1, 2, 3, 4, 5].map(s => (
                 <Star
                   key={s}
                   className="h-3 w-3"
@@ -116,15 +110,15 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
                 />
               ))}
             </div>
-            <span className="text-[11px] text-muted-foreground">{ratingSummary}</span>
+            <span className="text-muted-foreground text-[11px]">{ratingSummary}</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold" style={{ color: colors.primary }}>
               {finalPrice.toLocaleString(locale)}
             </span>
-            <span className="text-sm text-muted-foreground">{t.store.currency}</span>
+            <span className="text-muted-foreground text-sm">{t.store.currency}</span>
             {(product.discount ?? 0) > 0 && (
-              <span className="text-sm line-through text-muted-foreground">
+              <span className="text-muted-foreground text-sm line-through">
                 {product.price.toLocaleString(locale)}
               </span>
             )}
@@ -133,19 +127,19 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
 
         {/* Description */}
         <div>
-          <p className="text-xs font-bold text-foreground mb-1">{t.product.description}</p>
-          <p className="text-xs text-muted-foreground leading-relaxed">{product.description}</p>
+          <p className="text-foreground mb-1 text-xs font-bold">{t.product.description}</p>
+          <p className="text-muted-foreground text-xs leading-relaxed">{product.description}</p>
         </div>
 
         {/* Sizes */}
         {product.sizes && product.sizes.length > 0 && (
           <div>
-            <p className="text-xs font-bold text-foreground mb-2">{t.product.sizes}</p>
+            <p className="text-foreground mb-2 text-xs font-bold">{t.product.sizes}</p>
             <div className="flex gap-2">
-              {product.sizes.map((s) => (
+              {product.sizes.map(s => (
                 <span
                   key={s.id}
-                  className="px-3 py-1.5 rounded-lg border border-border text-[11px] font-medium text-foreground"
+                  className="border-border text-foreground rounded-lg border px-3 py-1.5 text-[11px] font-medium"
                 >
                   {s.size}
                 </span>
@@ -157,12 +151,12 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
         {/* Colors */}
         {product.colors && product.colors.length > 0 && (
           <div>
-            <p className="text-xs font-bold text-foreground mb-2">{t.product.colors}</p>
+            <p className="text-foreground mb-2 text-xs font-bold">{t.product.colors}</p>
             <div className="flex gap-2">
-              {product.colors.map((c) => (
+              {product.colors.map(c => (
                 <div
                   key={c.id}
-                  className="w-7 h-7 rounded-full border-2 border-border"
+                  className="border-border h-7 w-7 rounded-full border-2"
                   style={{ backgroundColor: c.hex ?? c.name }}
                 />
               ))}
@@ -172,17 +166,17 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
 
         {/* Features */}
         <div>
-          <p className="text-xs font-bold text-foreground mb-2">{t.product.features}</p>
+          <p className="text-foreground mb-2 text-xs font-bold">{t.product.features}</p>
           <div className="grid grid-cols-2 gap-2">
             {[
               { icon: Truck, text: deliveryText },
               { icon: Shield, text: t.product.qualityGuarantee },
               { icon: Award, text: t.product.originalProduct },
               { icon: MessageCircle, text: t.product.techSupport },
-            ].map((item) => (
-              <div key={item.text} className="flex items-center gap-2 bg-muted/50 rounded-xl p-2.5">
+            ].map(item => (
+              <div key={item.text} className="bg-muted/50 flex items-center gap-2 rounded-xl p-2.5">
                 <item.icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
-                <span className="text-[11px] text-foreground">{item.text}</span>
+                <span className="text-foreground text-[11px]">{item.text}</span>
               </div>
             ))}
           </div>
@@ -190,19 +184,19 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
       </div>
 
       {/* Sticky footer */}
-      <div className="sticky bottom-0 bg-card border-t border-border p-4 flex gap-2 max-w-2xl mx-auto">
+      <div className="bg-card border-border sticky bottom-0 mx-auto flex max-w-2xl gap-2 border-t p-4">
         <button
           onClick={() => {
             addToCart(product);
             handleClose();
           }}
-          className="h-12 px-5 rounded-xl border border-border bg-card text-foreground font-bold text-xs flex items-center justify-center gap-2"
+          className="border-border bg-card text-foreground flex h-12 items-center justify-center gap-2 rounded-xl border px-5 text-xs font-bold"
         >
           <ShoppingCart className="h-4 w-4" /> {t.product.addToCart}
         </button>
         <button
           onClick={() => buyNow(product)}
-          className="flex-1 h-12 rounded-xl font-bold text-sm flex items-center justify-center gap-2 active:scale-[0.98] transition-transform text-white"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-[0.98]"
           style={{ backgroundColor: colors.primary }}
         >
           <Sparkles className="h-4 w-4" /> {t.product.buyNow}

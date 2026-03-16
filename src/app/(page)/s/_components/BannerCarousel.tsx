@@ -1,6 +1,3 @@
-// Purpose: Banner image carousel - "use client", prev/next + dot indicators.
-// Matches Storefront.tsx banner section exactly.
-
 'use client';
 
 import { useState } from 'react';
@@ -19,47 +16,59 @@ export default function BannerCarousel({ banners, colors }: BannerCarouselProps)
 
   if (banners.length === 0) return null;
 
-  const prev = () => setCurrent((p) => (p - 1 + banners.length) % banners.length);
-  const next = () => setCurrent((p) => (p + 1) % banners.length);
+  const previous = () => setCurrent(index => (index - 1 + banners.length) % banners.length);
+  const next = () => setCurrent(index => (index + 1) % banners.length);
 
   return (
-    <div className="relative">
-      <div className="w-full overflow-hidden" style={{ maxHeight: 300 }}>
+    <div className="relative border border-white/10 bg-white/[0.02]">
+      <div className="relative aspect-[21/8] overflow-hidden">
         <img
+          // REDESIGN: banners become flat editorial panels with restrained controls.
           src={banners[current]}
           alt={t.store.bannerAlt}
-          className="w-full h-48 sm:h-72 object-cover"
+          className="h-full w-full object-cover"
         />
       </div>
 
-      {banners.length > 1 && (
+      {banners.length > 1 ? (
         <>
           <button
-            onClick={prev}
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm border border-border flex items-center justify-center shadow-sm"
+            type="button"
+            onClick={previous}
+            className="absolute top-1/2 left-4 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-white/10 bg-black/30 transition-opacity duration-200 hover:opacity-70"
+            style={{ color: colors.text }}
+            aria-label="Previous banner"
           >
-            <ChevronLeft className="h-4 w-4 text-foreground" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
+
           <button
+            type="button"
             onClick={next}
-            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-card/80 backdrop-blur-sm border border-border flex items-center justify-center shadow-sm"
+            className="absolute top-1/2 right-4 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-white/10 bg-black/30 transition-opacity duration-200 hover:opacity-70"
+            style={{ color: colors.text }}
+            aria-label="Next banner"
           >
-            <ChevronRight className="h-4 w-4 text-foreground" />
+            <ChevronRight className="h-4 w-4" />
           </button>
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5">
-            {banners.map((_, i) => (
+
+          <div className="absolute right-4 bottom-4 flex gap-2">
+            {banners.map((_, index) => (
               <button
-                key={i}
-                onClick={() => setCurrent(i)}
-                className={`h-2 rounded-full transition-all ${
-                  i === current ? 'w-6' : 'w-2 bg-white/50'
-                }`}
-                style={i === current ? { backgroundColor: colors.primary } : undefined}
+                key={index}
+                type="button"
+                onClick={() => setCurrent(index)}
+                className="h-[2px] w-8 transition-opacity duration-200"
+                style={{
+                  backgroundColor: index === current ? colors.accent : colors.text,
+                  opacity: index === current ? 1 : 0.25,
+                }}
+                aria-label={`Banner ${index + 1}`}
               />
             ))}
           </div>
         </>
-      )}
+      ) : null}
     </div>
   );
 }

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
 import type {
-  HeroSectionItem,
   ServiceItem,
   TemplateFormState,
   TestimonialItem,
@@ -22,13 +21,13 @@ import HeroSectionEditor from '../sections/HeroSectionEditor';
 import TestimonialsSection from '../sections/TestimonialsSection';
 import ContentBlock from '../ui/ContentBlock';
 import ServiceWithWorksSection from '../sections/WorksSection';
-import { useHeroSectionEditor } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
+import type { HeroSectionEditorController } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 
 interface BrandTabProps {
   state: TemplateFormState;
-  storeId: string;
   storeName: string;
   storeDescription: string;
+  heroEditor: HeroSectionEditorController;
   onStoreNameChange: (value: string) => void;
   onStoreDescriptionChange: (value: string) => void;
   logoImage: string | null;
@@ -45,94 +44,19 @@ interface BrandTabProps {
   onUpdateTestimonial: (id: string, fields: Partial<Omit<TestimonialItem, 'id'>>) => void;
   onRemoveTestimonial: (id: string) => void;
   uploadWorkImage: (serviceId: string, workId: string, file: File) => void;
+  onSaveBrandChanges: () => Promise<void>;
+  hasUnsavedBrandChanges: boolean;
+  isSavingBrandChanges: boolean;
 }
 
 const SECTION_IDS = ['hero', 'services', 'works', 'testimonials', 'cta', 'about', 'store'] as const;
 type SectionId = (typeof SECTION_IDS)[number];
 
-const createDefaultHero = (
-  storeName: string,
-  storeDescription: string,
-  state: TemplateFormState
-): HeroSectionItem => ({
-  id: 'hero_default',
-  enabled: true,
-  visible: true,
-  order: 0,
-
-  badgeText: '',
-  badgeIcon: '',
-  overline: state.tagline || '',
-  title: storeName || '',
-  highlightText: '',
-  subtitle: '',
-  description: state.storeDescription || storeDescription || '',
-
-  trustText: '',
-  smallNote: '',
-
-  primaryButtonText: state.heroButtonText || '',
-  primaryButtonLink: '',
-  primaryButtonIcon: '',
-
-  secondaryButtonText: state.heroSecondaryButton || '',
-  secondaryButtonLink: '',
-  secondaryButtonIcon: '',
-
-  heroImage: null,
-  heroImageAlt: '',
-  heroImageMobile: null,
-
-  backgroundType: 'COLOR',
-  backgroundImage: null,
-  backgroundImageMobile: null,
-  backgroundColor: '#0f172a',
-  backgroundGradientFrom: '#111827',
-  backgroundGradientTo: '#1d4ed8',
-  backgroundGradientVia: '#0f172a',
-
-  overlayEnabled: true,
-  overlayColor: '#000000',
-  overlayOpacity: 35,
-
-  layout: 'SPLIT',
-  contentAlign: 'center',
-  contentPosition: 'center',
-  mediaPosition: 'right',
-
-  contentMaxWidth: '640px',
-  sectionHeight: 'lg',
-  containerStyle: 'boxed',
-  verticalPadding: 'lg',
-
-  showButtons: true,
-  showStats: true,
-  showFeatures: false,
-  showTrustItems: true,
-
-  roundedMedia: true,
-  glassEffect: false,
-  blurBackground: false,
-  shadowMedia: true,
-  borderMedia: false,
-
-  promoText: '',
-  promoEndsAt: null,
-  urgencyText: '',
-
-  ariaLabel: '',
-  sectionId: 'hero',
-
-  stats: [],
-  features: [],
-  trustItems: [],
-});
-
 export default function BrandTab({
   state,
-  storeId,
   storeName,
   storeDescription,
+  heroEditor,
   onStoreNameChange,
   onStoreDescriptionChange,
   logoImage,
@@ -149,17 +73,15 @@ export default function BrandTab({
   onAddTestimonial,
   onUpdateTestimonial,
   onRemoveTestimonial,
+  onSaveBrandChanges,
+  hasUnsavedBrandChanges,
+  isSavingBrandChanges,
 }: BrandTabProps) {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     hero: true,
   });
 
   const logoInputRef = useRef<HTMLInputElement>(null);
-
-  const heroEditor = useHeroSectionEditor({
-    initialHero: state.heroSection ?? createDefaultHero(storeName, storeDescription, state),
-    storeId,
-  });
 
   const toggleOpen = (key: string) => setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -170,6 +92,11 @@ export default function BrandTab({
         [id]: !state.sectionsConfig[id],
       },
     });
+
+  const handleSaveBrand = async () => {
+    if (!hasUnsavedBrandChanges) return;
+    await onSaveBrandChanges();
+  };
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -245,9 +172,11 @@ export default function BrandTab({
                 const value = e.target.value;
                 onStoreNameChange(value);
 
-                heroEditor.updateHero({
-                  title: heroEditor.hero.title || value,
-                });
+                if (!heroEditor.hero.title || heroEditor.hero.title === storeName) {
+                  heroEditor.updateHero({
+                    title: value,
+                  });
+                }
               }}
               className="rounded-xl font-light"
               placeholder="اسم المتجر"
@@ -294,7 +223,7 @@ export default function BrandTab({
         </p>
 
         <ContentBlock
-          title="الهيرو سكشن" 
+          title="الهيرو سكشن"
           icon={<Sparkles className="h-4 w-4" />}
           enabled={state.sectionsConfig.hero}
           onToggle={() => toggleSection('hero')}
@@ -303,15 +232,7 @@ export default function BrandTab({
         >
           <div className="space-y-4">
             <div className="flex items-center justify-end">
-              <Button
-                type="button"
-                onClick={heroEditor.saveHero}
-                disabled={heroEditor.isSaving || !heroEditor.isDirty}
-                className="gap-2 rounded-xl"
-              >
-                <Save className="h-4 w-4" />
-                {heroEditor.isSaving ? 'جاري الحفظ...' : 'حفظ التغييرات'}
-              </Button>
+               
             </div>
 
             <HeroSectionEditor value={heroEditor.hero} onChange={heroEditor.setHeroValue} />

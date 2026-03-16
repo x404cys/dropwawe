@@ -1,6 +1,7 @@
 // Purpose: Centralized TypeScript types for the /s storefront route group.
 // All types are derived from the Prisma schema + UI-specific shapes.
 
+import type { CSSProperties } from 'react';
 import { ProductPricing, subInfo } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
 
@@ -9,6 +10,11 @@ export type ActiveColors = {
   accent: string;
   bg: string;
   text: string;
+};
+
+export type StorefrontFonts = {
+  heading: string;
+  body: string;
 };
 
 export type AnnouncementBarConfig = {
@@ -347,3 +353,100 @@ export type CustomerInfo = {
   email: string;
   notes: string;
 };
+
+export interface AnnouncementBarProps {
+  config: AnnouncementBarConfig;
+}
+
+export interface BannerCarouselProps {
+  banners: string[];
+  colors: ActiveColors;
+}
+
+export interface NavbarProps {
+  store: StorefrontStore;
+  template: StorefrontTemplate;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+  sections: SectionsConfig;
+  hasAnnouncementBar: boolean;
+}
+
+export interface FooterProps {
+  store: StorefrontStore;
+  template: StorefrontTemplate;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+  sections: SectionsConfig;
+}
+
+export interface HeroSectionProps {
+  store: StorefrontStore;
+  template: StorefrontTemplate;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface ServicesSectionProps {
+  services: StorefrontService[];
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+  showWorksSection?: boolean;
+}
+
+export interface StoreSectionProps {
+  products: StorefrontProduct[];
+  template: StorefrontTemplate;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+  enabledCategorySections: StorefrontCategorySection[];
+  centerBanners?: string[];
+}
+
+export interface AboutSectionProps {
+  template: StorefrontTemplate;
+  store: StorefrontStore;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface CtaSectionProps {
+  template: StorefrontTemplate;
+  store: StorefrontStore;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface TestimonialsSectionProps {
+  testimonials: StorefrontTestimonial[];
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface ProductCardProps {
+  product: StorefrontProduct;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface SearchBarProps {
+  value: string;
+  onChange: (q: string) => void;
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+}
+
+export interface StorefrontShellProps {
+  store: StorefrontStore;
+  template: StorefrontTemplate;
+  products: StorefrontProduct[];
+  colors: ActiveColors;
+  fonts: StorefrontFonts;
+  sections: SectionsConfig;
+  announcement: AnnouncementBarConfig | null;
+  topBanners: string[];
+  centerBanners?: string[];
+  enabledCategorySections: StorefrontCategorySection[];
+  style?: CSSProperties;
+  className?: string;
+}

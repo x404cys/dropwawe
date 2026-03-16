@@ -1,6 +1,3 @@
-// Purpose: Category icons filter - "use client", horizontal scroll of icon buttons.
-// Used when categoryDisplayMode === "icons". Matches Storefront.tsx exactly.
-
 'use client';
 
 import { Package } from 'lucide-react';
@@ -24,48 +21,44 @@ export default function CategoryIcons({
   colors,
 }: CategoryIconsProps) {
   return (
-    <div className="flex gap-4 overflow-x-auto pb-4 mb-6 justify-start sm:justify-center px-2">
-      {categories.map((cat) => {
-        const iconItem = categoryIcons.find((ci) => ci.category === cat.key);
-        const CatIcon = cat.isAll ? Package : getCategoryIcon(iconItem?.icon ?? 'Package');
-        const isActive = activeCategory === cat.key;
+    <div className="mb-12 grid grid-cols-3 gap-4 sm:grid-cols-4 lg:grid-cols-6">
+      {categories.map(category => {
+        const iconItem = categoryIcons.find(item => item.category === category.key);
+        const CategoryIcon = category.isAll
+          ? Package
+          : getCategoryIcon(iconItem?.icon ?? 'Package');
+        const isActive = activeCategory === category.key;
 
         return (
           <button
-            key={cat.key}
-            onClick={() => onSelect(cat.key)}
-            className="flex flex-col items-center gap-1.5 flex-shrink-0 min-w-[60px] transition-all"
+            key={category.key}
+            type="button"
+            onClick={() => onSelect(category.key)}
+            // REDESIGN: replace playful icon chips with a stricter category tile system.
+            className="group border px-3 py-4 text-center transition-colors duration-200"
+            style={{
+              borderColor: isActive ? colors.accent : 'rgba(255,255,255,0.08)',
+              backgroundColor: isActive ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.02)',
+              color: isActive ? colors.accent : colors.text,
+            }}
           >
-            <div
-              className={`w-14 h-14 rounded-2xl flex items-center justify-center border-2 transition-all overflow-hidden ${
-                isActive ? 'shadow-md' : 'border-border bg-card'
-              }`}
-              style={
-                isActive
-                  ? { borderColor: colors.primary, backgroundColor: `${colors.primary}15` }
-                  : undefined
-              }
-            >
+            <div className="mx-auto flex h-12 w-12 items-center justify-center overflow-hidden border border-white/10">
               {iconItem?.image ? (
                 <img
                   src={iconItem.image}
-                  alt={cat.label}
-                  className="w-full h-full object-cover rounded-xl"
+                  alt={category.label}
+                  className="h-full w-full object-cover"
                 />
               ) : (
-                <CatIcon
-                  className="h-6 w-6 transition-colors"
-                  style={{ color: isActive ? colors.primary : undefined }}
-                />
+                <CategoryIcon className="h-4 w-4 opacity-80" />
               )}
             </div>
+
             <span
-              className={`text-[10px] font-semibold transition-colors ${
-                isActive ? '' : 'text-muted-foreground'
-              }`}
-              style={isActive ? { color: colors.primary } : undefined}
+              className="mt-3 block text-[10px] font-light tracking-[0.22em] uppercase"
+              style={{ opacity: isActive ? 1 : 0.65 }}
             >
-              {cat.label}
+              {category.label}
             </span>
           </button>
         );

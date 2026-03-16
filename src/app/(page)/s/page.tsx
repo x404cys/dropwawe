@@ -2,21 +2,12 @@ import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
-import AboutSection from './_components/sections/AboutSection';
-import AnnouncementBar from './_components/AnnouncementBar';
-import BannerCarousel from './_components/BannerCarousel';
-import CtaSection from './_components/sections/CtaSection';
 import FloatingWhatsApp from './_components/floating/FloatingWhatsApp';
-import Footer from './_components/Footer';
-import HeroSection from './_components/sections/HeroSection';
-import ServicesSection from './_components/sections/ServicesSection';
 import StorefrontClient from './_components/StorefrontClient';
-import StoreSection from './_components/sections/StoreSection';
-import TestimonialsSection from './_components/sections/TestimonialsSection';
-import WorksSection from './_components/sections/WorksSection';
+import StorefrontShell from './_components/StorefrontShell';
 import type {
-  AnnouncementBarConfig,
   SectionsConfig,
+  StorefrontFonts,
   StorefrontProduct,
   StorefrontStore,
   StorefrontTemplate,
@@ -30,23 +21,44 @@ interface StorefrontData {
   products: StorefrontProduct[];
 }
 
+async function resolveSubdomain() {
+  const headersList = await headers();
+  const host = headersList.get('host') || '';
+
+  if (host.includes('localhost') || host.includes('127.0.0.1')) {
+    const referer = headersList.get('referer') ?? '';
+
+    try {
+      const url = new URL(referer || `http://${host}`);
+      return url.searchParams.get('store') ?? 'perfume';
+    } catch {
+      return 'perfume';
+    }
+  }
+
+  return host.split('.')[0] || 'perfume';
+}
+
 async function getStorefrontData(): Promise<StorefrontData | null> {
   const headersList = await headers();
   const host = headersList.get('host') || '';
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   const baseUrl = `${protocol}://${host}`;
-  const subdomain = host.split('.')[0];
+  const subdomain = await resolveSubdomain();
 
   try {
-    const storeRes = await fetch(`${baseUrl}/api/s/store?subdomain=perfume`, {
-      next: { revalidate: 30 },
-    });
+    const storeRes = await fetch(
+      `${baseUrl}/api/s/store?subdomain=${encodeURIComponent(subdomain)}`
+      // {
+      //   next: { revalidate: 30 },
+      // }
+    );
     if (!storeRes.ok) return null;
 
     const { store, template } = await storeRes.json();
 
     const productsRes = await fetch(`${baseUrl}/api/s/products?storeId=${store.id}`, {
-      next: { revalidate: 30 },
+      // next: { revalidate: 30 },
     });
     const { products } = productsRes.ok ? await productsRes.json() : { products: [] };
 
@@ -93,13 +105,17 @@ export default async function StorefrontPage() {
   const { store, template, products } = data;
   const colors = getActiveColors(template);
   const { headingStyle, bodyStyle } = buildFontStyles(template);
+  const fonts: StorefrontFonts = {
+    heading: template.headingFont ?? 'IBM Plex Sans Arabic',
+    body: template.bodyFont ?? 'IBM Plex Sans Arabic',
+  };
 
   const sections: SectionsConfig = {
     ...DEFAULT_SECTIONS,
     ...((template.sectionsConfig as Partial<SectionsConfig>) ?? {}),
   };
 
-  const announcement = template.announcementBar as AnnouncementBarConfig | null;
+  const announcement = template.announcementBar;
   const rawBanners = template.bannerImages ?? [];
   const topBanners: string[] = [];
   const centerBanners: string[] = [];
@@ -122,67 +138,25 @@ export default async function StorefrontPage() {
   };
 
   return (
-    <div className="min-h-screen" style={rootStyle}>
-      {announcement?.enabled && <AnnouncementBar config={announcement} />}
-
+    <div className="min-h-screen overflow-x-clip" style={rootStyle}>
       <StorefrontClient
         store={store}
-        template={template}
         colors={colors}
         headingStyle={headingStyle}
         sections={sections}
       >
-        {topBanners.length > 0 && <BannerCarousel banners={topBanners} colors={colors} />}
-
-        <HeroSection template={template} colors={colors} headingStyle={headingStyle} />
-
-        {sections.services && (
-          <ServicesSection
-            services={template.services}
-            colors={colors}
-            headingStyle={headingStyle}
-            showWorksSection={sections.works}
-          />
-        )}
-
-        {sections.store && (
-          <StoreSection
-            products={products}
-            template={template}
-            colors={colors}
-            headingStyle={headingStyle}
-            enabledCategorySections={enabledCategorySections}
-            centerBanners={centerBanners}
-          />
-        )}
-
-        {sections.testimonials && template.testimonials.length > 0 && (
-          <TestimonialsSection
-            testimonials={template.testimonials}
-            colors={colors}
-            headingStyle={headingStyle}
-          />
-        )}
-
-        {sections.cta && (
-          <CtaSection
-            template={template}
-            store={store}
-            colors={colors}
-            headingStyle={headingStyle}
-          />
-        )}
-
-        {sections.about && (
-          <AboutSection
-            template={template}
-            store={store}
-            colors={colors}
-            headingStyle={headingStyle}
-          />
-        )}
-
-        <Footer store={store} template={template} colors={colors} />
+        <StorefrontShell
+          store={store}
+          template={template}
+          products={products}
+          colors={colors}
+          fonts={fonts}
+          sections={sections}
+          announcement={announcement}
+          topBanners={topBanners}
+          centerBanners={centerBanners}
+          enabledCategorySections={enabledCategorySections}
+        />
       </StorefrontClient>
 
       <FloatingWhatsApp template={template} store={store} />

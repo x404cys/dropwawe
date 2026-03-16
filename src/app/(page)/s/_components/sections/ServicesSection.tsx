@@ -1,10 +1,10 @@
 'use client';
 
 import Image from 'next/image';
-import { ExternalLink, PenTool, Shapes } from 'lucide-react';
+import { Package } from 'lucide-react';
 import { ActiveColors, StorefrontService } from '../../_lib/types';
-import { getIconComponent } from '../../_utils/icons';
 import { useLanguage } from '../../_context/LanguageContext';
+import { getIconComponent } from '../../_utils/icons';
 
 interface ServicesSectionProps {
   services: StorefrontService[];
@@ -22,175 +22,136 @@ export default function ServicesSection({
   const { t } = useLanguage();
   const enabledServices = services.filter(service => service.enabled !== false);
 
+  if (enabledServices.length === 0) return null;
+
   return (
     <section
       id="services-section"
-      className="py-16 sm:py-20"
-      style={{ backgroundColor: `${colors.primary}06` }}
+      className="border-b border-white/5 bg-white/[0.02]"
+      style={{ backgroundColor: 'rgba(255,255,255,0.02)' }}
     >
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        {showWorksSection && enabledServices.some(service => (service.works ?? []).length > 0) && (
-          <div className="mt-16 space-y-14">
-            {enabledServices.map(service => {
-              const works = (service.works ?? []).filter(Boolean);
+      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+        <div className="mb-16 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
+          <div className="max-w-xl">
+            <p
+              className="text-xs font-light tracking-[0.32em] uppercase opacity-40"
+              style={{ color: colors.text }}
+            >
+              {t.nav.services}
+            </p>
+            <h2
+              // REDESIGN: section heading uses thin display typography and more open spacing.
+              className="mt-6 text-4xl font-thin tracking-tight lg:text-6xl"
+              style={{ ...headingStyle, color: colors.text }}
+            >
+              {t.nav.services}
+            </h2>
+          </div>
+        </div>
 
-              if (works.length === 0) return null;
+        <div className="space-y-20">
+          {enabledServices.map(service => {
+            const works = (service.works ?? []).filter(Boolean);
 
-              return (
-                <div key={`works-${service.id}`} className="space-y-6">
-                  <div className="text-center">
-                    <span
-                      className="rounded-full px-3 py-1 text-[11px] font-semibold"
-                      style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
+            return (
+              <article key={service.id} className="border-t border-white/10 pt-10">
+                <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+                  <div className="lg:col-span-4">
+                    <p
+                      className="text-[10px] font-light tracking-[0.3em] uppercase opacity-40"
+                      style={{ color: colors.text }}
                     >
-                      {service.title}
-                    </span>
-
+                      {service.name || service.title}
+                    </p>
                     <h3
-                      className="mt-4 text-lg font-bold sm:text-xl"
+                      className="mt-4 text-3xl font-light tracking-tight lg:text-4xl"
                       style={{ ...headingStyle, color: colors.text }}
                     >
-                      {service.worksTitle || `${t.services.worksTitlePrefix} ${service.title}`}
+                      {service.title}
                     </h3>
-
-                    {service.worksDesc ? (
+                    {service.desc || service.description ? (
                       <p
-                        className="mx-auto mt-2 max-w-2xl text-xs sm:text-sm"
-                        style={{ color: `${colors.text}88` }}
+                        className="mt-5 max-w-md text-sm leading-relaxed font-light opacity-70"
+                        style={{ color: colors.text }}
                       >
-                        {service.worksDesc}
+                        {service.desc || service.description}
                       </p>
                     ) : null}
                   </div>
 
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
-                    {works.map(work => {
-                      const Wrapper = work.link ? 'a' : 'div';
-                      const wrapperProps = work.link
-                        ? {
-                            href: work.link,
-                            target: '_blank',
-                            rel: 'noopener noreferrer',
-                          }
-                        : {};
+                  <div className="lg:col-span-8">
+                    {showWorksSection && works.length > 0 ? (
+                      <div className="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-3">
+                        {works.map(work => {
+                          const WorkIcon = work.icon ? getIconComponent(work.icon) : Package;
+                          const hasImage = work.displayType !== 'ICON' && Boolean(work.image);
+                          const Wrapper = work.link ? 'a' : 'div';
 
-                      const viewMode = work.displayType ?? 'IMAGE';
-                      const WorkIcon = getIconComponent(work.icon ?? '');
-                      const hasImage = !!work.image;
-                      const hasIcon = !!work.icon?.trim() && viewMode === 'ICON';
-                      const overlayText = work.link ? t.services.openLink : t.services.viewProject;
-
-                      return (
-                        <Wrapper
-                          key={work.id}
-                          {...(wrapperProps as Record<string, string>)}
-                          className="group block"
-                        >
-                          <div className="border-border bg-card overflow-hidden rounded-2xl border transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg">
-                            <div
-                              className="relative aspect-[4/3] overflow-hidden"
-                              style={{
-                                background:
-                                  viewMode === 'ICON' || !hasImage
-                                    ? `linear-gradient(135deg, ${colors.primary}16, ${colors.accent}12)`
-                                    : undefined,
-                              }}
+                          return (
+                            <Wrapper
+                              key={work.id}
+                              {...(work.link
+                                ? {
+                                    href: work.link,
+                                    target: '_blank',
+                                    rel: 'noopener noreferrer',
+                                  }
+                                : {})}
+                              className="group bg-white/[0.03]"
                             >
-                              {viewMode === 'IMAGE' && hasImage ? (
-                                <>
+                              <div className="relative aspect-square overflow-hidden">
+                                {hasImage && work.image ? (
                                   <Image
-                                    src={work.image!}
+                                    // REDESIGN: works are presented as unrounded square visuals with minimal captions.
+                                    src={work.image}
                                     alt={work.title || t.services.imageAlt}
                                     fill
-                                    className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
+                                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                                   />
-
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
-                                </>
-                              ) : hasIcon ? (
-                                <div className="flex h-full w-full items-center justify-center">
-                                  <div
-                                    className="flex h-20 w-20 items-center justify-center rounded-3xl border backdrop-blur-sm"
-                                    style={{
-                                      backgroundColor: 'rgba(255,255,255,0.65)',
-                                      borderColor: `${colors.primary}25`,
-                                    }}
-                                  >
+                                ) : (
+                                  <div className="flex h-full items-center justify-center bg-white/[0.02]">
                                     <WorkIcon
-                                      className="h-10 w-10"
-                                      style={{ color: colors.primary }}
+                                      className="h-6 w-6 opacity-40"
+                                      style={{ color: colors.text }}
                                     />
                                   </div>
-                                </div>
-                              ) : (
-                                <div className="flex h-full w-full items-center justify-center">
-                                  <div
-                                    className="flex h-20 w-20 items-center justify-center rounded-3xl border backdrop-blur-sm"
-                                    style={{
-                                      backgroundColor: 'rgba(255,255,255,0.55)',
-                                      borderColor: `${colors.primary}20`,
-                                    }}
-                                  >
-                                    {viewMode === 'ICON' ? (
-                                      <Shapes
-                                        className="h-9 w-9"
-                                        style={{ color: `${colors.text}55` }}
-                                      />
-                                    ) : (
-                                      <PenTool
-                                        className="h-9 w-9"
-                                        style={{ color: `${colors.text}55` }}
-                                      />
-                                    )}
-                                  </div>
-                                </div>
-                              )}
-
-                              <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/45 group-hover:opacity-100">
-                                <div className="text-center">
-                                  <ExternalLink className="mx-auto mb-1.5 h-5 w-5 text-white" />
-                                  <p className="text-[10px] font-bold text-white">{overlayText}</p>
-                                </div>
+                                )}
                               </div>
-                            </div>
 
-                            <div className="space-y-1 p-3">
-                              <div className="flex items-start justify-between gap-2">
-                                <div className="min-w-0 flex-1">
-                                  <h4 className="text-foreground truncate text-xs font-bold sm:text-sm">
-                                    {work.title || t.services.untitled}
-                                  </h4>
-
-                                  {work.category ? (
-                                    <p className="text-muted-foreground mt-1 truncate text-[10px] sm:text-xs">
-                                      {work.category}
-                                    </p>
-                                  ) : null}
-                                </div>
-
-                                {viewMode === 'ICON' && hasIcon ? (
-                                  <div
-                                    className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
-                                    style={{ backgroundColor: `${colors.primary}12` }}
-                                  >
-                                    <WorkIcon
-                                      className="h-4 w-4"
-                                      style={{ color: colors.primary }}
-                                    />
-                                  </div>
-                                ) : null}
+                              <div className="space-y-2 p-4">
+                                <p
+                                  className="text-[10px] font-light tracking-[0.28em] uppercase opacity-45"
+                                  style={{ color: colors.text }}
+                                >
+                                  {work.category || service.title}
+                                </p>
+                                <p className="text-sm font-light" style={{ color: colors.text }}>
+                                  {work.title || t.services.untitled}
+                                </p>
                               </div>
-                            </div>
-                          </div>
-                        </Wrapper>
-                      );
-                    })}
+                            </Wrapper>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="border border-white/10 bg-white/[0.03] p-8">
+                        <p
+                          className="text-sm leading-relaxed font-light opacity-70"
+                          style={{ color: colors.text }}
+                        >
+                          {service.worksDesc ||
+                            service.description ||
+                            service.desc ||
+                            service.title}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
-              );
-            })}
-          </div>
-        )}
+              </article>
+            );
+          })}
+        </div>
       </div>
     </section>
   );

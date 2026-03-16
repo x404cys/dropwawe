@@ -1,7 +1,3 @@
-// Purpose: Store section - "use client". Orchestrates search bar, category filter,
-// category rows, and product grid. Reads/writes cart via CartContext.
-// Matches Storefront.tsx case "store" exactly.
-
 'use client';
 
 import { Package } from 'lucide-react';
@@ -53,16 +49,31 @@ export default function StoreSection({
   const showCategoryRows = enabledCategorySections.length > 0 && isAllCategory && !searchQuery;
 
   return (
-    <section id="store-section" className="py-10 sm:py-16">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6">
-        {/* Search */}
-        <SearchBar value={searchQuery} onChange={setSearchQuery} />
+    <section id="store-section" className="border-b border-white/5">
+      <div className="mx-auto max-w-7xl px-6 py-24 lg:px-12 lg:py-32">
+        <div className="mb-12 max-w-2xl">
+          <p
+            className="text-xs font-light tracking-[0.32em] uppercase opacity-40"
+            style={{ color: colors.text }}
+          >
+            {t.nav.store}
+          </p>
+          <h2
+            // REDESIGN: storefront heading is simplified to a single monumental line.
+            className="mt-6 text-4xl font-thin tracking-tight lg:text-6xl"
+            style={{ ...headingStyle, color: colors.text }}
+          >
+            {t.nav.store}
+          </h2>
+        </div>
 
-        {centerBanners.length > 0 && (
-          <div className="my-4">
+        <SearchBar value={searchQuery} onChange={setSearchQuery} colors={colors} />
+
+        {centerBanners.length > 0 ? (
+          <div className="mb-12">
             <BannerCarousel banners={centerBanners} colors={colors} />
           </div>
-        )}
+        ) : null}
 
         {template.categoryDisplayMode === 'icons' ? (
           <CategoryIcons
@@ -81,15 +92,13 @@ export default function StoreSection({
           />
         )}
 
-        {/* Products content */}
         {showCategoryRows ? (
-          <div className="space-y-8">
-            {/* Per-category rows */}
-            {enabledCategorySections.map(cs => (
+          <div className="space-y-16">
+            {enabledCategorySections.map(section => (
               <CategoryRow
-                key={cs.id}
-                category={cs.category}
-                products={getProductsByCat(cs.category)}
+                key={section.id}
+                category={section.category}
+                products={getProductsByCat(section.category)}
                 colors={colors}
                 headingStyle={headingStyle}
                 categoryIcons={template.categoryIcons}
@@ -97,18 +106,35 @@ export default function StoreSection({
               />
             ))}
 
-            {/* Remaining products not in any category section */}
             {(() => {
-              const sectionCats = enabledCategorySections.map(cs => cs.category);
-              const remaining = products.filter(p => !sectionCats.includes(getProductCategory(p)));
-              if (remaining.length === 0) return null;
+              const usedCategories = new Set(
+                enabledCategorySections.map(section => section.category)
+              );
+              const remainingProducts = products.filter(
+                product => !usedCategories.has(getProductCategory(product))
+              );
+
+              if (remainingProducts.length === 0) return null;
+
               return (
-                <div>
-                  <h3 className="text-foreground mb-3 text-sm font-bold" style={headingStyle}>
-                    {t.store.otherProducts}
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                    {remaining.map(product => (
+                <div className="space-y-8 border-t border-white/10 pt-10">
+                  <div>
+                    <p
+                      className="text-[10px] font-light tracking-[0.3em] uppercase opacity-45"
+                      style={{ color: colors.text }}
+                    >
+                      {t.store.otherProducts}
+                    </p>
+                    <h3
+                      className="mt-4 text-2xl font-light tracking-tight lg:text-3xl"
+                      style={{ ...headingStyle, color: colors.text }}
+                    >
+                      {t.store.otherProducts}
+                    </h3>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-4">
+                    {remainingProducts.map(product => (
                       <ProductCard key={product.id} product={product} colors={colors} />
                     ))}
                   </div>
@@ -116,20 +142,21 @@ export default function StoreSection({
               );
             })()}
           </div>
-        ) : (
-          /* Regular grid when category is selected or search is active */
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
+        ) : displayFiltered.length > 0 ? (
+          <div
+            // REDESIGN: products move to an editorial grid with tight gutters and no decorative cards.
+            className="grid grid-cols-2 gap-px bg-white/10 lg:grid-cols-4"
+          >
             {displayFiltered.map(product => (
               <ProductCard key={product.id} product={product} colors={colors} />
             ))}
           </div>
-        )}
-
-        {/* Empty state */}
-        {displayFiltered.length === 0 && (!isAllCategory || searchQuery) && (
-          <div className="py-16 text-center">
-            <Package className="text-muted-foreground/20 mx-auto mb-3 h-12 w-12" />
-            <p className="text-muted-foreground text-sm">{t.store.noProducts}</p>
+        ) : (
+          <div className="border border-white/10 bg-white/[0.02] px-6 py-16 text-center">
+            <Package className="mx-auto h-8 w-8 opacity-30" style={{ color: colors.text }} />
+            <p className="mt-4 text-sm font-light opacity-60" style={{ color: colors.text }}>
+              {t.store.noProducts}
+            </p>
           </div>
         )}
       </div>
