@@ -1,6 +1,7 @@
 import { headers } from 'next/headers';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import type { CSSProperties } from 'react';
 
 import FloatingWhatsApp from './_components/floating/FloatingWhatsApp';
 import StorefrontClient from './_components/StorefrontClient';
@@ -137,9 +138,27 @@ export default async function StorefrontPage() {
   const enabledCategorySections = template.categorySections?.filter(cs => cs.enabled) ?? [];
   const baseFontSizeRaw = (template as unknown as { baseFontSize?: string | number }).baseFontSize;
   const baseFontSize = Number(baseFontSizeRaw ?? 16);
-  const rootStyle = {
+  const rootStyle: CSSProperties & Record<string, string> = {
     backgroundColor: colors.bg,
     color: colors.text,
+    '--store-primary': colors.primary,
+    '--store-accent': colors.accent,
+    '--store-bg': colors.bg,
+    '--store-text': colors.text,
+    '--store-surface': `color-mix(in srgb, ${colors.bg} 96%, ${colors.text} 4%)`,
+    '--store-surface-strong': `color-mix(in srgb, ${colors.bg} 92%, ${colors.text} 8%)`,
+    '--store-border': `color-mix(in srgb, ${colors.bg} 84%, ${colors.text} 16%)`,
+    '--store-border-strong': `color-mix(in srgb, ${colors.bg} 72%, ${colors.text} 28%)`,
+    '--store-text-soft': `color-mix(in srgb, ${colors.text} 72%, ${colors.bg} 28%)`,
+    '--store-text-muted': `color-mix(in srgb, ${colors.text} 58%, ${colors.bg} 42%)`,
+    '--store-text-faint': `color-mix(in srgb, ${colors.text} 42%, ${colors.bg} 58%)`,
+    '--store-primary-soft': `color-mix(in srgb, ${colors.primary} 12%, ${colors.bg} 88%)`,
+    '--store-primary-faint': `color-mix(in srgb, ${colors.primary} 6%, ${colors.bg} 94%)`,
+    '--store-accent-soft': `color-mix(in srgb, ${colors.accent} 12%, ${colors.bg} 88%)`,
+    '--store-shadow-sm': `0 14px 36px -28px color-mix(in srgb, ${colors.text} 18%, transparent)`,
+    '--store-shadow-lg': `0 24px 64px -40px color-mix(in srgb, ${colors.text} 22%, transparent)`,
+    '--store-radius': '12px',
+    '--store-max-width': '1280px',
     ...bodyStyle,
     ...(Number.isFinite(baseFontSize) ? { fontSize: `${baseFontSize}px` } : {}),
   };

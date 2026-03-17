@@ -38,20 +38,20 @@ export default function CategoryRow({
             {iconItem?.image ? (
               <img src={iconItem.image} alt={category} className="h-full w-full object-cover" />
             ) : (
-              <CategoryIcon className="h-4 w-4 opacity-70" style={{ color: colors.text }} />
+              <CategoryIcon className="h-4 w-4 opacity-70" style={{ color: colors.primary }} />
             )}
           </div>
 
           <div>
             <p
               className="text-[10px] font-light tracking-[0.3em] uppercase opacity-45"
-              style={{ color: colors.text }}
+              style={{ color: colors.primary }}
             >
               {t.nav.store}
             </p>
             <h3
               className="text-2xl font-light tracking-tight lg:text-3xl"
-              style={{ ...headingStyle, color: colors.text }}
+              style={{ ...headingStyle, color: colors.primary }}
             >
               {category}
             </h3>
