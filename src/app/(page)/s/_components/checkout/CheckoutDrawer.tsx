@@ -127,7 +127,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
             >
               <X className="text-foreground h-4 w-4" />
             </button>
-            <h2 className="text-foreground text-sm font-bold">
+            <h2 className="text-foreground font-bold">
               {checkoutStep === 'success'
                 ? t.checkout.orderDone
                 : `${t.checkout.title} (${cartCount.toLocaleString(locale)})`}
@@ -147,7 +147,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                 <Check className="h-10 w-10" style={{ color: primaryColor }} />
               </div>
               <h2 className="text-foreground mb-2 text-xl font-bold">{t.checkout.successTitle}</h2>
-              <p className="text-muted-foreground mb-1 text-sm">
+              <p className="text-muted-foreground mb-1">
                 {t.checkout.orderNumber}: #{Math.floor(1000 + Math.random() * 9000)}
               </p>
               <p className="text-muted-foreground mb-6 text-xs">{t.checkout.contactNote}</p>
@@ -155,7 +155,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
           ) : cart.length === 0 ? (
             <div className="text-muted-foreground flex h-full flex-col items-center justify-center">
               <ShoppingCart className="mb-3 h-12 w-12 opacity-20" />
-              <p className="text-sm">{t.checkout.emptyCart}</p>
+              <p className="">{t.checkout.emptyCart}</p>
             </div>
           ) : (
             <div className="space-y-5 p-4">
@@ -224,7 +224,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                   <input
                     value={customerInfo.name}
                     onChange={e => setCustomerInfo({ ...customerInfo, name: e.target.value })}
-                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
+                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 transition-colors outline-none"
                     placeholder={t.checkout.fullNamePlaceholder}
                   />
                 </div>
@@ -233,7 +233,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                   <input
                     value={customerInfo.phone}
                     onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
-                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
+                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 transition-colors outline-none"
                     placeholder="07701234567"
                     type="tel"
                     dir="ltr"
@@ -313,7 +313,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
         {checkoutStep !== 'success' && cart.length > 0 && (
           <div className="border-border space-y-3 border-t p-4">
             <div className="flex items-center justify-between">
-              <span className="text-foreground text-sm font-bold">{t.checkout.total}</span>
+              <span className="text-foreground font-bold">{t.checkout.total}</span>
               <span className="text-lg font-bold" style={{ color: primaryColor }}>
                 {cartTotal.toLocaleString(locale)}{' '}
                 <span className="text-muted-foreground text-xs">{t.store.currency}</span>
@@ -322,7 +322,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
             <button
               disabled={!isInfoValid}
               onClick={placeOrder}
-              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl text-sm font-bold text-white transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-12 w-full items-center justify-center gap-2 rounded-xl font-bold text-white transition-transform active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50"
               style={{ backgroundColor: primaryColor }}
             >
               <Check className="h-4 w-4" /> {t.checkout.confirmOrder}
