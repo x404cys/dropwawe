@@ -94,7 +94,7 @@ export const orderPaymentService = {
       storeId,
       userId!,
       calculatedTotal,
-      fullName, 
+      fullName,
       location,
       safePaymentMethod,
       phone,
@@ -138,8 +138,8 @@ export const orderPaymentService = {
     }
 
     const cart_id = order.id;
-    const CALLBACK_URL = `${SITE_URL}/api/s/payment/paytabs/order/callback`;
-    const RETURN_URL = `${SITE_URL}/checkout/payment-result?orderId=${order.id}`;
+    const CALLBACK_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
+    const RETURN_URL = `${SITE_URL}/api/storev2/payment/paytabs/order/callback`;
 
     const payload: PayTabsPayload = {
       profile_id: PAYTABS_PROFILE_ID,
