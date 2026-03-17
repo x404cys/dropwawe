@@ -52,13 +52,13 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
   );
 
   return (
-    <div dir="rtl" className="bg-background fixed inset-0 z-50 overflow-y-auto">
+    <div dir="rtl" className="fixed inset-0 z-50 overflow-y-auto">
       {/* HEADER */}
-      <div className="sticky top-0 z-30 border-b border-[var(--border)] bg-[var(--background)]">
+      <div style={{ background: colors.bg }} className="sticky top-0 z-30 border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 md:px-6">
           <button
             onClick={handleClose}
-            className="flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border)]"
+            className="flex h-10 w-10 items-center justify-center rounded-lg border"
           >
             <ArrowRight className="h-4 w-4" />
           </button>
@@ -70,11 +70,11 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
       </div>
 
       {/* BODY */}
-      <div className="mx-auto max-w-6xl px-4 py-8 md:px-6">
+      <div style={{ background: colors.bg }} className="mx-auto max-w-6xl px-4 py-8 md:px-6">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2">
           {/* IMAGE */}
           <div>
-            <div className="overflow-hidden rounded-xl border border-[var(--border)]">
+            <div className="overflow-hidden rounded-xl border">
               <div className="aspect-[4/5] w-full">
                 <img
                   src={product.image as string}
@@ -136,9 +136,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
                         key={size.id}
                         onClick={() => setSelectedSize(size.id)}
                         className={`rounded-lg border px-4 py-2 text-sm transition ${
-                          active
-                            ? 'border-transparent text-white'
-                            : 'border-[var(--border)] hover:bg-[var(--muted)]'
+                          active ? 'border-transparent text-white' : 'hover:bg-[var(--muted)]'
                         }`}
                         style={active ? { backgroundColor: colors.primary } : undefined}
                       >
@@ -167,7 +165,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
                       <button
                         key={color.id}
                         onClick={() => setSelectedColor(color.id)}
-                        className="relative flex items-center gap-2 rounded-lg border border-[var(--border)] px-3 py-2 hover:bg-[var(--muted)]"
+                        className="relative flex items-center gap-2 rounded-lg border px-3 py-2 hover:bg-[var(--muted)]"
                       >
                         <span
                           className="h-5 w-5 rounded-full border border-black/10"
@@ -200,7 +198,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
             <div>
               <p className="mb-3 text-sm font-semibold">{t.product.quantity}</p>
 
-              <div className="flex items-center container w-32 rounded-lg border border-[var(--border)]">
+              <div className="container flex w-32 items-center rounded-lg border">
                 <button
                   onClick={() => setQuantity(prev => Math.max(1, prev - 1))}
                   className="flex h-10 w-10 items-center justify-center hover:bg-[var(--muted)]"
@@ -223,7 +221,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
       </div>
 
       {/* STICKY ACTION BAR */}
-      <div className="sticky bottom-0 border-t border-[var(--border)] bg-[var(--background)]">
+      <div style={{ background: colors.bg }} className="sticky bottom-0 border-t">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-4 md:px-6 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p className="text-muted-foreground text-xs">{t.product.total}</p>
@@ -235,7 +233,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
           <div className="flex w-full gap-3 lg:w-auto">
             <button
               onClick={handleAddToCart}
-              className="h-12 flex-1 rounded-lg border border-[var(--border)] px-6 text-sm font-semibold transition hover:bg-[var(--muted)] lg:flex-none"
+              className="h-12 flex-1 rounded-lg border px-6 text-sm font-semibold transition hover:bg-[var(--muted)] lg:flex-none"
             >
               {t.product.addToCart}
             </button>
