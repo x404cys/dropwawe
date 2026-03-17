@@ -218,7 +218,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
               <div className="space-y-3">
                 <p className="text-foreground text-xs font-bold">{t.checkout.orderInfo}</p>
                 <div>
-                  <label className="text-muted-foreground mb-1 block text-[10px]">
+                  <label className="text-muted-foreground mb-1 block">
                     {t.checkout.fullName} *
                   </label>
                   <input
@@ -229,9 +229,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                   />
                 </div>
                 <div>
-                  <label className="text-muted-foreground mb-1 block text-[10px]">
-                    {t.checkout.phone} *
-                  </label>
+                  <label className="text-muted-foreground mb-1 block">{t.checkout.phone} *</label>
                   <input
                     value={customerInfo.phone}
                     onChange={e => setCustomerInfo({ ...customerInfo, phone: e.target.value })}
@@ -242,13 +240,11 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                   />
                 </div>
                 <div>
-                  <label className="text-muted-foreground mb-1 block text-[10px]">
-                    العنوان - location
-                  </label>
+                  <label className="text-muted-foreground mb-1 block">العنوان - location</label>
                   <input
                     value={`${customerInfo.location}`}
                     onChange={e => setCustomerInfo({ ...customerInfo, location: e.target.value })}
-                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 text-sm transition-colors outline-none"
+                    className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 transition-colors outline-none"
                     placeholder="مثال : بغداد - الكرادة داخل "
                     type="text"
                     dir="rtl"
@@ -305,7 +301,7 @@ export default function CheckoutDrawer({ storeId, primaryColor }: CheckoutDrawer
                 <textarea
                   value={customerInfo.notes}
                   onChange={e => setCustomerInfo({ ...customerInfo, notes: e.target.value })}
-                  className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-16 w-full resize-none rounded-xl border px-3 py-2 text-sm transition-colors outline-none"
+                  className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-16 w-full resize-none rounded-xl border px-3 py-2 transition-colors outline-none"
                   placeholder={t.checkout.notesPlaceholder}
                 />
               </div>
