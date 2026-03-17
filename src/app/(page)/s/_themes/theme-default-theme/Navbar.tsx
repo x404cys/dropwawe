@@ -41,7 +41,7 @@ export default function DefaultThemeNavbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-xl">
+    <nav style={{background:colors.bg}} className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-xl">
       {/* DESIGN: The navbar recreates the original storefront balance: logo block, centered section links, cart/search utilities. */}
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex h-14 items-center justify-between gap-4">

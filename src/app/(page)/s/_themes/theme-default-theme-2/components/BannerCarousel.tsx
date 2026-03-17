@@ -22,11 +22,7 @@ export default function DefaultThemeBannerCarousel({ banners }: BannerCarouselPr
   return (
     <section className="relative isolate overflow-hidden">
       <div className="relative h-[240px] w-full sm:h-[360px] lg:h-[440px]">
-        <img
-          src={banners[currentBanner]}
-          alt=""
-          className="h-full w-full object-cover"
-        />
+        <img src={banners[currentBanner]} alt="" className="h-full w-full object-cover" />
         <div className="absolute inset-0 bg-gradient-to-t from-black/35 via-black/10 to-black/5" />
       </div>
 

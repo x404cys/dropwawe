@@ -22,6 +22,10 @@ interface StorefrontData {
   products: StorefrontProduct[];
 }
 
+type StorefrontRootStyle = CSSProperties & {
+  [key: `--${string}`]: string;
+};
+
 async function resolveSubdomain() {
   const headersList = await headers();
   const host = headersList.get('host') || '';
@@ -138,7 +142,7 @@ export default async function StorefrontPage() {
   const enabledCategorySections = template.categorySections?.filter(cs => cs.enabled) ?? [];
   const baseFontSizeRaw = (template as unknown as { baseFontSize?: string | number }).baseFontSize;
   const baseFontSize = Number(baseFontSizeRaw ?? 16);
-  const rootStyle: CSSProperties & Record<string, string> = {
+  const rootStyle: StorefrontRootStyle = {
     backgroundColor: colors.bg,
     color: colors.text,
     '--store-primary': colors.primary,

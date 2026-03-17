@@ -10,8 +10,7 @@ export const storefrontSectionTightClass = 'py-10 sm:py-12 lg:py-16';
 export const storefrontTitleClass =
   'text-2xl font-bold tracking-[-0.02em] sm:text-3xl lg:text-[2.5rem]';
 
-export const storefrontSubtitleClass =
-  'max-w-2xl text-sm leading-7 sm:text-base sm:leading-8';
+export const storefrontSubtitleClass = 'max-w-2xl text-sm leading-7 sm:text-base sm:leading-8';
 
 export const surfaceStyle: CSSProperties = {
   backgroundColor: 'var(--store-surface)',

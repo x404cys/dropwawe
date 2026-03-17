@@ -37,7 +37,10 @@ export default function DefaultThemeCtaSection({ template, store, fonts }: CtaSe
             ) : null}
 
             {template.ctaDesc ? (
-              <p className="text-sm leading-7 sm:text-base sm:leading-8" style={{ color: 'var(--store-text-muted)' }}>
+              <p
+                className="text-sm leading-7 sm:text-base sm:leading-8"
+                style={{ color: 'var(--store-text-muted)' }}
+              >
                 {template.ctaDesc}
               </p>
             ) : null}

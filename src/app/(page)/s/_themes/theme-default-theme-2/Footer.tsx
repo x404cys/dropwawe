@@ -11,7 +11,9 @@ export default function DefaultThemeFooter({ store, template, fonts, sections }:
     store.instaLink ? { href: store.instaLink, icon: Instagram, label: 'Instagram' } : null,
     store.facebookLink ? { href: store.facebookLink, icon: Facebook, label: 'Facebook' } : null,
     store.telegram ? { href: store.telegram, icon: Send, label: 'Telegram' } : null,
-    template.contactWebsite ? { href: template.contactWebsite, icon: Globe, label: 'Website' } : null,
+    template.contactWebsite
+      ? { href: template.contactWebsite, icon: Globe, label: 'Website' }
+      : null,
     template.whatsappNumber || store.phone
       ? {
           href: `https://wa.me/${(template.whatsappNumber || store.phone || '').replace(/\s+/g, '')}`,
@@ -30,7 +32,9 @@ export default function DefaultThemeFooter({ store, template, fonts, sections }:
 
   return (
     <footer className="border-t py-10 sm:py-12" style={{ borderColor: 'var(--store-border)' }}>
-      <div className={`${storefrontContainerClass} grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_auto_auto] lg:items-start`}>
+      <div
+        className={`${storefrontContainerClass} grid gap-10 lg:grid-cols-[minmax(0,1.1fr)_auto_auto] lg:items-start`}
+      >
         <div className="space-y-4">
           <div className="flex items-center gap-3">
             {store.image ? (
@@ -52,7 +56,10 @@ export default function DefaultThemeFooter({ store, template, fonts, sections }:
             )}
 
             <div className="space-y-1">
-              <p className="text-base font-bold tracking-[-0.02em]" style={{ fontFamily: fonts.heading }}>
+              <p
+                className="text-base font-bold tracking-[-0.02em]"
+                style={{ fontFamily: fonts.heading }}
+              >
                 {store.name}
               </p>
               {template.tagline ? (
@@ -64,7 +71,9 @@ export default function DefaultThemeFooter({ store, template, fonts, sections }:
           </div>
 
           <p className="max-w-md text-sm leading-7" style={{ color: 'var(--store-text-muted)' }}>
-            {template.storeDescription?.trim() || store.description?.trim() || 'تجربة تسوق واضحة وسريعة تركز على المنتج أولاً.'}
+            {template.storeDescription?.trim() ||
+              store.description?.trim() ||
+              'تجربة تسوق واضحة وسريعة تركز على المنتج أولاً.'}
           </p>
         </div>
 
@@ -113,8 +122,13 @@ export default function DefaultThemeFooter({ store, template, fonts, sections }:
         </div>
       </div>
 
-      <div className={`${storefrontContainerClass} mt-10 flex flex-col gap-2 border-t pt-5 text-sm sm:flex-row sm:items-center sm:justify-between`} style={{ borderColor: 'var(--store-border)' }}>
-        <p style={{ color: 'var(--store-text-faint)' }}>© {year} {store.name}</p>
+      <div
+        className={`${storefrontContainerClass} mt-10 flex flex-col gap-2 border-t pt-5 text-sm sm:flex-row sm:items-center sm:justify-between`}
+        style={{ borderColor: 'var(--store-border)' }}
+      >
+        <p style={{ color: 'var(--store-text-faint)' }}>
+          © {year} {store.name}
+        </p>
         <p style={{ color: 'var(--store-text-faint)' }}>
           مدعوم من <span style={{ color: 'var(--store-text)' }}>Dropwave</span>
         </p>

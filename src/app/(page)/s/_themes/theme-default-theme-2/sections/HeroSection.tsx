@@ -58,7 +58,8 @@ function getSectionStyle(hero: HeroSectionProps['template']['heroSection']) {
 function getOverlayStyle(hero: HeroSectionProps['template']['heroSection']) {
   if (!hero?.overlayEnabled) {
     return {
-      background: 'linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.14) 56%, rgba(0,0,0,0.08))',
+      background:
+        'linear-gradient(90deg, rgba(0,0,0,0.45), rgba(0,0,0,0.14) 56%, rgba(0,0,0,0.08))',
     };
   }
 
@@ -86,7 +87,9 @@ function HeroBadges({
           style={{
             backgroundColor: isInverted ? 'rgba(255,255,255,0.14)' : 'var(--store-primary-faint)',
             color: isInverted ? '#fff' : 'var(--store-primary)',
-            border: isInverted ? '1px solid rgba(255,255,255,0.18)' : '1px solid var(--store-border)',
+            border: isInverted
+              ? '1px solid rgba(255,255,255,0.18)'
+              : '1px solid var(--store-border)',
           }}
         >
           <Sparkles className="h-3 w-3" />
@@ -187,7 +190,9 @@ function HeroFeatures({
             <div
               className="mb-4 flex h-10 w-10 items-center justify-center rounded-xl"
               style={{
-                backgroundColor: isInverted ? 'rgba(255,255,255,0.12)' : 'var(--store-primary-faint)',
+                backgroundColor: isInverted
+                  ? 'rgba(255,255,255,0.12)'
+                  : 'var(--store-primary-faint)',
                 color: isInverted ? '#fff' : 'var(--store-primary)',
               }}
             >
@@ -195,7 +200,10 @@ function HeroFeatures({
             </div>
             <h3
               className="text-base font-bold tracking-[-0.02em]"
-              style={{ fontFamily: fonts.heading, color: isInverted ? '#fff' : 'var(--store-text)' }}
+              style={{
+                fontFamily: fonts.heading,
+                color: isInverted ? '#fff' : 'var(--store-text)',
+              }}
             >
               {feature.title}
             </h3>
@@ -233,10 +241,7 @@ function HeroFeatures({
 function MediaBlock({ hero }: { hero: NonNullable<HeroSectionProps['template']['heroSection']> }) {
   if (hero.heroVideo) {
     return (
-      <div
-        className="overflow-hidden rounded-xl"
-        style={{ boxShadow: 'var(--store-shadow-lg)' }}
-      >
+      <div className="overflow-hidden rounded-xl" style={{ boxShadow: 'var(--store-shadow-lg)' }}>
         <video
           autoPlay
           muted
@@ -253,10 +258,7 @@ function MediaBlock({ hero }: { hero: NonNullable<HeroSectionProps['template']['
 
   if (hero.heroImage) {
     return (
-      <div
-        className="overflow-hidden rounded-xl"
-        style={{ boxShadow: 'var(--store-shadow-lg)' }}
-      >
+      <div className="overflow-hidden rounded-xl" style={{ boxShadow: 'var(--store-shadow-lg)' }}>
         <picture>
           {hero.heroImageMobile ? (
             <source media="(max-width: 768px)" srcSet={hero.heroImageMobile} />
@@ -274,11 +276,7 @@ function MediaBlock({ hero }: { hero: NonNullable<HeroSectionProps['template']['
   return null;
 }
 
-export default function DefaultThemeHeroSection({
-  store,
-  template,
-  fonts,
-}: HeroSectionProps) {
+export default function DefaultThemeHeroSection({ store, template, fonts }: HeroSectionProps) {
   const hero = template.heroSection;
 
   if (hero && (!hero.enabled || hero.visible === false)) return null;
@@ -292,7 +290,8 @@ export default function DefaultThemeHeroSection({
     '';
   const subtitle = hero?.subtitle?.trim() || '';
   const overline = hero?.overline?.trim() || '';
-  const primaryText = hero?.primaryButtonText?.trim() || template.heroButtonText?.trim() || 'تسوق الآن';
+  const primaryText =
+    hero?.primaryButtonText?.trim() || template.heroButtonText?.trim() || 'تسوق الآن';
   const secondaryText =
     hero?.secondaryButtonText?.trim() || template.heroSecondaryButton?.trim() || 'استكشف المزيد';
   const tertiaryText = hero?.tertiaryButtonText?.trim() || '';
@@ -309,8 +308,7 @@ export default function DefaultThemeHeroSection({
     media && (layout === 'SPLIT' || layout === 'IMAGE_RIGHT' || layout === 'IMAGE_LEFT');
   const mediaFirst = layout === 'IMAGE_LEFT';
   const minHeightClass = getMinHeight(hero?.sectionHeight);
-  const hasBackgroundMedia =
-    hero?.backgroundType === 'IMAGE' || hero?.backgroundType === 'VIDEO';
+  const hasBackgroundMedia = hero?.backgroundType === 'IMAGE' || hero?.backgroundType === 'VIDEO';
   const isInverted = hasBackgroundMedia || layout === 'FULLSCREEN';
   const fallbackBadge = hero?.badgeText?.trim();
   const badgeItems =
@@ -363,7 +361,9 @@ export default function DefaultThemeHeroSection({
         </video>
       ) : null}
 
-      {hasBackgroundMedia ? <div className="absolute inset-0" style={getOverlayStyle(hero)} /> : null}
+      {hasBackgroundMedia ? (
+        <div className="absolute inset-0" style={getOverlayStyle(hero)} />
+      ) : null}
 
       <div className={`relative ${storefrontContainerClass}`}>
         {layout === 'FULLSCREEN' ? (
@@ -371,14 +371,19 @@ export default function DefaultThemeHeroSection({
             <div className="max-w-2xl space-y-6">
               <HeroBadges badges={badgeItems} isInverted={true} />
               {overline ? (
-                <p className="text-sm font-medium tracking-[0.12em] uppercase text-white/70">
+                <p className="text-sm font-medium tracking-[0.12em] text-white/70 uppercase">
                   {overline}
                 </p>
               ) : null}
               <div className="space-y-4">
-                <h1 className={storefrontTitleClass} style={{ fontFamily: fonts.heading, color: '#fff' }}>
+                <h1
+                  className={storefrontTitleClass}
+                  style={{ fontFamily: fonts.heading, color: '#fff' }}
+                >
                   {title}
-                  {hero?.highlightText ? <span style={{ color: 'var(--store-primary)' }}> {hero.highlightText}</span> : null}
+                  {hero?.highlightText ? (
+                    <span style={{ color: 'var(--store-primary)' }}> {hero.highlightText}</span>
+                  ) : null}
                 </h1>
                 {description ? (
                   <p className="max-w-xl text-sm leading-7 text-white/78 sm:text-base sm:leading-8">
@@ -396,7 +401,9 @@ export default function DefaultThemeHeroSection({
                 {overline ? (
                   <p
                     className="text-sm font-medium tracking-[0.12em] uppercase"
-                    style={{ color: isInverted ? 'rgba(255,255,255,0.7)' : 'var(--store-text-faint)' }}
+                    style={{
+                      color: isInverted ? 'rgba(255,255,255,0.7)' : 'var(--store-text-faint)',
+                    }}
                   >
                     {overline}
                   </p>
@@ -404,7 +411,10 @@ export default function DefaultThemeHeroSection({
                 <div className="space-y-4">
                   <h1
                     className={storefrontTitleClass}
-                    style={{ fontFamily: fonts.heading, color: isInverted ? '#fff' : 'var(--store-text)' }}
+                    style={{
+                      fontFamily: fonts.heading,
+                      color: isInverted ? '#fff' : 'var(--store-text)',
+                    }}
                   >
                     {title}
                     {hero?.highlightText ? (
@@ -414,7 +424,9 @@ export default function DefaultThemeHeroSection({
                   {subtitle ? (
                     <p
                       className="text-base font-medium"
-                      style={{ color: isInverted ? 'rgba(255,255,255,0.82)' : 'var(--store-text-soft)' }}
+                      style={{
+                        color: isInverted ? 'rgba(255,255,255,0.82)' : 'var(--store-text-soft)',
+                      }}
                     >
                       {subtitle}
                     </p>
@@ -422,7 +434,9 @@ export default function DefaultThemeHeroSection({
                   {description ? (
                     <p
                       className="max-w-xl text-sm leading-7 sm:text-base sm:leading-8"
-                      style={{ color: isInverted ? 'rgba(255,255,255,0.74)' : 'var(--store-text-muted)' }}
+                      style={{
+                        color: isInverted ? 'rgba(255,255,255,0.74)' : 'var(--store-text-muted)',
+                      }}
                     >
                       {description}
                     </p>
@@ -447,7 +461,9 @@ export default function DefaultThemeHeroSection({
                     <a
                       href={secondaryHref}
                       target={hero?.secondaryButtonTarget === '_blank' ? '_blank' : undefined}
-                      rel={hero?.secondaryButtonTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                      rel={
+                        hero?.secondaryButtonTarget === '_blank' ? 'noopener noreferrer' : undefined
+                      }
                       className="inline-flex h-12 items-center justify-center rounded-xl border px-6 text-sm font-semibold transition-colors duration-200"
                       style={{
                         borderColor: isInverted ? 'rgba(255,255,255,0.2)' : 'var(--store-border)',
@@ -463,9 +479,13 @@ export default function DefaultThemeHeroSection({
                     <a
                       href={tertiaryHref}
                       target={hero?.tertiaryButtonTarget === '_blank' ? '_blank' : undefined}
-                      rel={hero?.tertiaryButtonTarget === '_blank' ? 'noopener noreferrer' : undefined}
+                      rel={
+                        hero?.tertiaryButtonTarget === '_blank' ? 'noopener noreferrer' : undefined
+                      }
                       className="inline-flex h-12 items-center justify-center px-2 text-sm font-medium"
-                      style={{ color: isInverted ? 'rgba(255,255,255,0.72)' : 'var(--store-text-muted)' }}
+                      style={{
+                        color: isInverted ? 'rgba(255,255,255,0.72)' : 'var(--store-text-muted)',
+                      }}
                     >
                       {tertiaryText}
                     </a>
@@ -477,9 +497,7 @@ export default function DefaultThemeHeroSection({
               </div>
             </div>
 
-            <div className={mediaFirst ? 'lg:order-1' : ''}>
-              {media}
-            </div>
+            <div className={mediaFirst ? 'lg:order-1' : ''}>{media}</div>
           </div>
         ) : (
           <div className="mx-auto max-w-4xl space-y-8 text-center">
@@ -496,7 +514,10 @@ export default function DefaultThemeHeroSection({
             <div className="space-y-4">
               <h1
                 className={storefrontTitleClass}
-                style={{ fontFamily: fonts.heading, color: isInverted ? '#fff' : 'var(--store-text)' }}
+                style={{
+                  fontFamily: fonts.heading,
+                  color: isInverted ? '#fff' : 'var(--store-text)',
+                }}
               >
                 {title}
                 {hero?.highlightText ? (
@@ -506,7 +527,9 @@ export default function DefaultThemeHeroSection({
               {subtitle ? (
                 <p
                   className="text-base font-medium"
-                  style={{ color: isInverted ? 'rgba(255,255,255,0.82)' : 'var(--store-text-soft)' }}
+                  style={{
+                    color: isInverted ? 'rgba(255,255,255,0.82)' : 'var(--store-text-soft)',
+                  }}
                 >
                   {subtitle}
                 </p>
@@ -514,7 +537,9 @@ export default function DefaultThemeHeroSection({
               {description ? (
                 <p
                   className="mx-auto max-w-2xl text-sm leading-7 sm:text-base sm:leading-8"
-                  style={{ color: isInverted ? 'rgba(255,255,255,0.74)' : 'var(--store-text-muted)' }}
+                  style={{
+                    color: isInverted ? 'rgba(255,255,255,0.74)' : 'var(--store-text-muted)',
+                  }}
                 >
                   {description}
                 </p>
@@ -554,7 +579,9 @@ export default function DefaultThemeHeroSection({
 
             <HeroTrustItems items={trustItems} isInverted={isInverted} />
             <HeroStats stats={stats} fonts={fonts} isInverted={isInverted} />
-            {features.length > 0 ? <HeroFeatures features={features} fonts={fonts} isInverted={isInverted} /> : null}
+            {features.length > 0 ? (
+              <HeroFeatures features={features} fonts={fonts} isInverted={isInverted} />
+            ) : null}
             {media ? <div>{media}</div> : null}
           </div>
         )}
