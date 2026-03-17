@@ -5,9 +5,7 @@
 'use client';
 
 import React, { createContext, useContext, useState } from 'react';
-import {
-  CartItem, CheckoutStep, CustomerInfo, StorefrontProduct,
-} from '../_lib/types';
+import { CartItem, CheckoutStep, CustomerInfo, StorefrontProduct } from '../_lib/types';
 import { getDiscountedPrice } from '../_utils/price';
 
 interface CartContextValue {
@@ -45,18 +43,20 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [showCart, setShowCart] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState<CheckoutStep>('cart');
   const [customerInfo, setCustomerInfo] = useState<CustomerInfo>({
-    name: '', phone: '', email: '', notes: '',
+    name: '',
+    phone: '',
+    email: '',
+    notes: '',
+    location: '',
   });
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'electronic'>('electronic');
   const [liked, setLiked] = useState<string[]>([]);
 
   const addToCart = (product: StorefrontProduct) => {
-    setCart((prev) => {
-      const existing = prev.find((c) => c.product.id === product.id);
+    setCart(prev => {
+      const existing = prev.find(c => c.product.id === product.id);
       if (existing)
-        return prev.map((c) =>
-          c.product.id === product.id ? { ...c, qty: c.qty + 1 } : c
-        );
+        return prev.map(c => (c.product.id === product.id ? { ...c, qty: c.qty + 1 } : c));
       return [...prev, { product, qty: 1 }];
     });
   };
@@ -69,12 +69,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const updateCartQty = (productId: string, delta: number) => {
-    setCart((prev) =>
+    setCart(prev =>
       prev
-        .map((c) =>
-          c.product.id === productId ? { ...c, qty: Math.max(0, c.qty + delta) } : c
-        )
-        .filter((c) => c.qty > 0)
+        .map(c => (c.product.id === productId ? { ...c, qty: Math.max(0, c.qty + delta) } : c))
+        .filter(c => c.qty > 0)
     );
   };
 
@@ -86,21 +84,31 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }, 0);
 
   const toggleLike = (id: string) => {
-    setLiked((prev) =>
-      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
-    );
+    setLiked(prev => (prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id]));
   };
 
   return (
     <CartContext.Provider
       value={{
-        cart, addToCart, buyNow, updateCartQty, clearCart, cartCount, cartTotal,
-        selectedProduct, setSelectedProduct,
-        showCart, setShowCart,
-        checkoutStep, setCheckoutStep,
-        customerInfo, setCustomerInfo,
-        paymentMethod, setPaymentMethod,
-        liked, toggleLike,
+        cart,
+        addToCart,
+        buyNow,
+        updateCartQty,
+        clearCart,
+        cartCount,
+        cartTotal,
+        selectedProduct,
+        setSelectedProduct,
+        showCart,
+        setShowCart,
+        checkoutStep,
+        setCheckoutStep,
+        customerInfo,
+        setCustomerInfo,
+        paymentMethod,
+        setPaymentMethod,
+        liked,
+        toggleLike,
       }}
     >
       {children}

@@ -59,7 +59,7 @@ const PaymentPage = () => {
         paymentLinkId: id,
         payerName: payerName.trim(),
         payerPhone: payerPhone.trim(),
-        payerEmail: '',
+        payerEmail: 'e',
       });
       window.location.href = redirectUrl;
     } catch (err: any) {
@@ -235,7 +235,7 @@ const PaymentPage = () => {
 
             <Button
               onClick={handleSubmit}
-              disabled={!payerName.trim() || !payerPhone.trim() || !payerEmail.trim() || submitting}
+              disabled={!payerName.trim() || !payerPhone.trim() || submitting}
               className="h-13 w-full gap-2 rounded-2xl text-sm font-bold shadow-lg"
               size="lg"
             >

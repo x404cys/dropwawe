@@ -377,7 +377,7 @@ export default function HeroSectionEditor({ value, onChange }: HeroSectionEditor
         }}
       />
 
-      <EditorSection title="المحتوى الرئيسي" defaultOpen>
+      <EditorSection title="المحتوى الرئيسي">
         <SectionTitle
           icon={<Sparkles className="h-4 w-4" />}
           title="المحتوى الرئيسي"

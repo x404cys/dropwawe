@@ -266,6 +266,8 @@ model Order {
   finalTotal   Float         @default(0)
   couponUsages CouponUsage[]
   ledgers      Ledger[]
+
+  paymentMethod String?
 }
 
 model OrderItem {

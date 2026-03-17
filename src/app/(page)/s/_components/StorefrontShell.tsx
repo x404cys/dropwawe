@@ -14,6 +14,8 @@ export default function StorefrontShell({
   announcement,
   topBanners,
   centerBanners = [],
+  upStoreBanners,
+  btwCatBanners,
   enabledCategorySections,
   style,
   className,
@@ -28,6 +30,7 @@ export default function StorefrontShell({
     ServicesSection,
     StoreSection,
     TestimonialsSection,
+    
     CtaSection,
     AboutSection,
     Footer,
@@ -75,6 +78,8 @@ export default function StorefrontShell({
             fonts={fonts}
             enabledCategorySections={enabledCategorySections}
             centerBanners={centerBanners}
+            upStoreBanners={upStoreBanners}
+            btwCatBanners={btwCatBanners}
           />
         ) : null}
 

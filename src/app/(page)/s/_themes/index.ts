@@ -11,12 +11,12 @@ export const themes: ThemeConfig[] = [];
 
 themes[0] = darkLuxury;
 themes[1] = minimalLight;
-themes[5] = techFuturistic;
-themes[6] = cleanMarketplace;
-themes[7] = modernStructured;
-themes[8] = glassmorphism;
-themes[9] = defaultTheme;
+themes[2] = techFuturistic;
+themes[3] = cleanMarketplace;
+themes[4] = modernStructured;
+themes[5] = glassmorphism;
+themes[6] = defaultTheme;
 
 export function getTheme(preset: number): ThemeConfig {
-  return themes[preset] ?? themes[9];
+  return themes[preset] ?? themes[6];
 }

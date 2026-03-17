@@ -119,10 +119,17 @@ export default async function StorefrontPage() {
   const rawBanners = template.bannerImages ?? [];
   const topBanners: string[] = [];
   const centerBanners: string[] = [];
+  const upStoreBanners: string[] = [];
+  const btwCatBanners: string[] = [];
+
   for (const banner of rawBanners) {
     const position = (banner.postion || '').toLowerCase();
     if (position === 'center') {
       centerBanners.push(banner.url);
+    } else if (position === 'upstore') {
+      upStoreBanners.push(banner.url);
+    } else if (position === 'btwcat') {
+      btwCatBanners.push(banner.url);
     } else {
       topBanners.push(banner.url);
     }
@@ -155,6 +162,8 @@ export default async function StorefrontPage() {
           announcement={announcement}
           topBanners={topBanners}
           centerBanners={centerBanners}
+          upStoreBanners={upStoreBanners}
+          btwCatBanners={btwCatBanners}
           enabledCategorySections={enabledCategorySections}
         />
       </StorefrontClient>

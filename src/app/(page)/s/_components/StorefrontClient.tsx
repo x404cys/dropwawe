@@ -14,6 +14,7 @@ interface StorefrontClientProps {
   headingStyle: React.CSSProperties;
   sections: SectionsConfig;
   children: ReactNode;
+  
 }
 
 function StorefrontInner({

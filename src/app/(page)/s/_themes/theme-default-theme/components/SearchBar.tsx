@@ -14,7 +14,7 @@ export default function DefaultThemeSearchBar({ value, onChange, fonts }: Search
         value={value}
         onChange={event => onChange(event.target.value)}
         placeholder="ابحث عن منتج..."
-        className="flex-1 bg-transparent text-sm text-gray-900 outline-none placeholder:text-gray-400"
+        className="flex-1 bg-transparent font-light text-gray-900 outline-none placeholder:text-gray-400"
         style={{ fontFamily: fonts.body }}
       />
       {value ? (

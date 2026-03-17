@@ -263,8 +263,10 @@ export default function StorefrontTab({
                   </SelectTrigger>
 
                   <SelectContent>
-                    <SelectItem value="top">اعلى المتجر</SelectItem>
+                    <SelectItem value="top">اعلى الصفحة</SelectItem>
                     <SelectItem value="center">مع الاصناف</SelectItem>
+                    <SelectItem value="upstore">اعلى المتجر</SelectItem>
+                    <SelectItem value="btwcat">بعد اول صنف</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

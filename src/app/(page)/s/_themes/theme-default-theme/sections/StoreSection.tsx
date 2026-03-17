@@ -13,107 +13,6 @@ import DefaultThemeBannerCarousel from '../components/BannerCarousel';
 import DefaultThemeProductCard from '../components/ProductCard';
 import DefaultThemeSearchBar from '../components/SearchBar';
 
-function CompactRowCard({
-  product,
-  colors,
-  fonts,
-  liked,
-  toggleLike,
-  addToCart,
-  setSelectedProduct,
-}: {
-  product: StorefrontProduct;
-  colors: StoreSectionProps['colors'];
-  fonts: StoreSectionProps['fonts'];
-  liked: string[];
-  toggleLike: (id: string) => void;
-  addToCart: (product: StorefrontProduct) => void;
-  setSelectedProduct: (product: StorefrontProduct | null) => void;
-}) {
-  const image = product.images?.[0]?.url || product.image || null;
-  const finalPrice = getDiscountedPrice(product);
-  const isLiked = liked.includes(product.id);
-  const isOutOfStock = !product.unlimited && product.quantity === 0;
-
-  return (
-    <div className="w-40 flex-shrink-0 overflow-hidden rounded-2xl border border-gray-200 bg-white transition-all duration-200 ease-in-out hover:shadow-md sm:w-48">
-      <button
-        type="button"
-        onClick={() => !isOutOfStock && setSelectedProduct(product)}
-        disabled={isOutOfStock}
-        className="block w-full text-start disabled:cursor-not-allowed"
-      >
-        <div className="relative h-32 bg-gradient-to-br from-gray-100 to-gray-50">
-          {image ? (
-            <img src={image} alt={product.name} className="h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full items-center justify-center">
-              <Package className="h-8 w-8 text-gray-300" />
-            </div>
-          )}
-
-          {(product.discount ?? 0) > 0 ? (
-            <span className="absolute start-2 top-2 rounded-full bg-red-500 px-2 py-0.5 text-[8px] font-bold text-white">
-              خصم {product.discount}%
-            </span>
-          ) : null}
-
-          <button
-            type="button"
-            onClick={event => {
-              event.stopPropagation();
-              toggleLike(product.id);
-            }}
-            className="absolute end-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm"
-            aria-label="إعجاب"
-          >
-            <Heart
-              className={`h-3.5 w-3.5 ${isLiked ? 'fill-current text-red-500' : 'text-gray-500'}`}
-            />
-          </button>
-        </div>
-
-        <div className="p-3">
-          <p className="mb-1 line-clamp-2 text-[11px] leading-tight font-bold text-gray-900">
-            {product.name}
-          </p>
-          <div className="mb-1.5 flex items-center gap-1">
-            {[1, 2, 3, 4, 5].map(star => (
-              <Star
-                key={star}
-                className="h-2.5 w-2.5"
-                style={{ color: colors.primary, fill: star <= 4 ? 'currentColor' : 'none' }}
-              />
-            ))}
-          </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-xs font-bold" style={{ color: colors.primary }}>
-              {formatPrice(finalPrice)}
-            </span>
-          </div>
-        </div>
-      </button>
-
-      <div className="px-3 pb-3">
-        <button
-          type="button"
-          onClick={() => addToCart(product)}
-          disabled={isOutOfStock}
-          className="flex w-full items-center justify-center gap-1 rounded-xl px-3 py-2 text-[10px] font-bold text-white transition-transform duration-200 ease-in-out active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300"
-          style={
-            isOutOfStock
-              ? undefined
-              : { backgroundColor: colors.primary, fontFamily: fonts.heading }
-          }
-        >
-          <ShoppingCart className="h-3 w-3" />
-          {isOutOfStock ? 'نفد المخزون' : 'أضف للسلة'}
-        </button>
-      </div>
-    </div>
-  );
-}
-
 export default function DefaultThemeStoreSection({
   products,
   template,
@@ -121,6 +20,8 @@ export default function DefaultThemeStoreSection({
   fonts,
   enabledCategorySections,
   centerBanners = [],
+  upStoreBanners = [],
+  btwCatBanners = [],
 }: StoreSectionProps) {
   const { addToCart, liked, setSelectedProduct, toggleLike } = useCart();
   const {
@@ -166,6 +67,11 @@ export default function DefaultThemeStoreSection({
   return (
     <section id="store-section" className="py-10 sm:py-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
+        {upStoreBanners.length > 0 ? (
+          <div className="mb-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+            <DefaultThemeBannerCarousel banners={upStoreBanners} colors={colors} />
+          </div>
+        ) : null}
         {/* DESIGN: The store block copies the reference browsing flow: centered search, icon/pill categories, then sectional rows or a regular grid. */}
         <div id="store-search" className="mx-auto mb-6 max-w-md">
           <DefaultThemeSearchBar
@@ -176,6 +82,11 @@ export default function DefaultThemeStoreSection({
           />
         </div>
 
+        {centerBanners.length > 0 ? (
+          <div className="mb-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+            <DefaultThemeBannerCarousel banners={centerBanners} colors={colors} />
+          </div>
+        ) : null}
         {template.categoryDisplayMode === 'icons' ? (
           <div className="mb-6 flex justify-start gap-4 overflow-x-auto px-2 pb-4 sm:justify-center">
             {navigationCategories.map(category => {
@@ -255,15 +166,9 @@ export default function DefaultThemeStoreSection({
           </div>
         )}
 
-        {centerBanners.length > 0 ? (
-          <div className="mb-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
-            <DefaultThemeBannerCarousel banners={centerBanners} colors={colors} />
-          </div>
-        ) : null}
-
         {showSectionRows ? (
           <div className="space-y-8">
-            {sectionCategories.map(section => {
+            {sectionCategories.map((section, index) => {
               const productsInCategory = getProductsByCat(section.category);
               if (productsInCategory.length === 0) return null;
 
@@ -302,20 +207,21 @@ export default function DefaultThemeStoreSection({
                     </button>
                   </div>
 
-                  <div className="flex gap-3 overflow-x-auto pb-2">
+                  <div className="grid grid-cols-2 gap-3 overflow-x-auto pb-2 md:grid-cols-4">
                     {productsInCategory.map(product => (
-                      <CompactRowCard
+                      <DefaultThemeProductCard
                         key={product.id}
                         product={product}
                         colors={colors}
                         fonts={fonts}
-                        liked={liked}
-                        toggleLike={toggleLike}
-                        addToCart={addToCart}
-                        setSelectedProduct={setSelectedProduct}
                       />
                     ))}
                   </div>
+                  {index === 0 && centerBanners.length > 0 && (
+                    <div className="mt-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+                      <DefaultThemeBannerCarousel banners={centerBanners} colors={colors} />
+                    </div>
+                  )}
                 </div>
               );
             })}

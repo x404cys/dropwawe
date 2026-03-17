@@ -352,6 +352,7 @@ export type CustomerInfo = {
   phone: string;
   email: string;
   notes: string;
+  location: string;
 };
 
 export interface AnnouncementBarProps {
@@ -399,6 +400,8 @@ export interface StoreSectionProps {
   template: StorefrontTemplate;
   colors: ActiveColors;
   fonts: StorefrontFonts;
+  upStoreBanners?: string[];
+  btwCatBanners?: string[];
   enabledCategorySections: StorefrontCategorySection[];
   centerBanners?: string[];
 }
@@ -445,6 +448,8 @@ export interface StorefrontShellProps {
   sections: SectionsConfig;
   announcement: AnnouncementBarConfig | null;
   topBanners: string[];
+  upStoreBanners?: string[];
+  btwCatBanners?: string[];
   centerBanners?: string[];
   enabledCategorySections: StorefrontCategorySection[];
   style?: CSSProperties;

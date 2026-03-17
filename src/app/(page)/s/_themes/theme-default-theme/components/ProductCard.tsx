@@ -6,6 +6,7 @@ import { Heart, Package, ShoppingCart, Star, Truck } from 'lucide-react';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
 import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function DefaultThemeProductCard({ product, colors, fonts }: ProductCardProps) {
   const { addToCart, liked, setSelectedProduct, toggleLike } = useCart();
@@ -51,14 +52,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
                   خصم {product.discount}%
                 </span>
               ) : null}
-              {product.isFromSupplier ? (
-                <span
-                  className="rounded-full px-2 py-0.5 text-[8px] font-bold text-white"
-                  style={{ backgroundColor: colors.accent }}
-                >
-                  مورد
-                </span>
-              ) : null}
+
               {isOutOfStock ? (
                 <span className="rounded-full bg-gray-900 px-2 py-0.5 text-[8px] font-bold text-white">
                   نفد المخزون
@@ -97,24 +91,15 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
           {product.name}
         </p>
 
-        <div className="mb-1.5 flex items-center gap-1">
-          {[1, 2, 3, 4, 5].map(star => (
-            <Star
-              key={star}
-              className="h-2.5 w-2.5"
-              style={{ color: colors.primary, fill: star <= 4 ? 'currentColor' : 'none' }}
-            />
-          ))}
-          <span className="text-[8px] text-gray-400">(4.0)</span>
-        </div>
+        <span className="my-1 line-clamp-2 text-xs">{product.description}</span>
 
         <div className="flex items-center gap-1.5">
           <span className="text-xs font-bold" style={{ color: colors.primary }}>
-            {formatPrice(finalPrice)}
+            {formatIQD(finalPrice)} د.ع
           </span>
           {compareAtPrice && compareAtPrice > finalPrice ? (
             <span className="text-[9px] text-gray-400 line-through">
-              {formatPrice(compareAtPrice)}
+              {formatIQD(compareAtPrice)} د.ع
             </span>
           ) : null}
         </div>

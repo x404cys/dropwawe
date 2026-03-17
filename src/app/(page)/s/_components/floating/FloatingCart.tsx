@@ -7,6 +7,7 @@
 import { ShoppingCart } from 'lucide-react';
 import { useCart } from '../../_context/CartContext';
 import { useLanguage } from '../../_context/LanguageContext';
+import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 interface FloatingCartProps {
   primaryColor: string;
@@ -25,11 +26,11 @@ export default function FloatingCart({ primaryColor }: FloatingCartProps) {
         setCheckoutStep('cart');
         setShowCart(true);
       }}
-      className="fixed bottom-6 right-4 h-12 px-5 rounded-full shadow-lg z-30 flex items-center gap-2 animate-in slide-in-from-bottom font-bold text-sm active:scale-95 transition-transform text-white"
+      className="animate-in slide-in-from-bottom fixed right-4 bottom-6 z-30 flex h-12 items-center gap-2 rounded-full px-5 text-sm font-bold text-white shadow-lg transition-transform active:scale-95"
       style={{ backgroundColor: primaryColor }}
     >
       <ShoppingCart className="h-4 w-4" />
-      {cartCount.toLocaleString(locale)} • {cartTotal.toLocaleString(locale)} {t.store.currency}
+      {cartCount} • {formatIQD(cartTotal)} {t.store.currency}
     </button>
   );
 }

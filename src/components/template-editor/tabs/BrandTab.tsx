@@ -77,9 +77,7 @@ export default function BrandTab({
   hasUnsavedBrandChanges,
   isSavingBrandChanges,
 }: BrandTabProps) {
-  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    hero: true,
-  });
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
 
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -223,7 +221,7 @@ export default function BrandTab({
         </p>
 
         <ContentBlock
-          title="الهيرو سكشن"
+          title="الهيرو سكشن (العرض الرئيسي)"
           icon={<Sparkles className="h-4 w-4" />}
           enabled={state.sectionsConfig.hero}
           onToggle={() => toggleSection('hero')}
@@ -231,10 +229,6 @@ export default function BrandTab({
           onOpenToggle={() => toggleOpen('hero')}
         >
           <div className="space-y-4">
-            <div className="flex items-center justify-end">
-               
-            </div>
-
             <HeroSectionEditor value={heroEditor.hero} onChange={heroEditor.setHeroValue} />
           </div>
         </ContentBlock>
