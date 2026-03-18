@@ -308,7 +308,7 @@ export default function CheckoutDrawer({
                         }
                       }}
                       onKeyDown={e => e.key === 'Enter' && applyCoupon()}
-                      className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 flex-1 rounded-xl border px-3 text-sm transition-colors outline-none"
+                      className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 flex-1 rounded-xl border px-3  transition-colors outline-none"
                       placeholder="أدخل كود الخصم"
                       dir="ltr"
                     />
