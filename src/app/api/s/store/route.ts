@@ -41,6 +41,7 @@ export async function GET(req: Request) {
           socials: { orderBy: { order: 'asc' } },
         },
       },
+      
     },
   });
 

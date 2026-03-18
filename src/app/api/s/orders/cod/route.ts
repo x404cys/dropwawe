@@ -26,6 +26,7 @@ type OrderBody = {
   items: ItemInput[];
   customerInfo: CustomerInfo;
   paymentMethod?: string | null;
+  couponCode?: string;
 };
 
 type SupplierItem = {
@@ -38,12 +39,20 @@ type SupplierItem = {
   supplierId: string;
 };
 
+type OrderItem = {
+  productId: string;
+  quantity: number;
+  price: number;
+  color: string | null;
+  size: string | null;
+};
+
 export async function POST(request: NextRequest) {
   try {
     const body: OrderBody = await request.json();
-    const { storeId, userId, items, customerInfo, paymentMethod } = body;
+    const { storeId, userId, items, customerInfo, paymentMethod, couponCode } = body;
 
-    // ── 1. Basic input validation ──────────────────────────────────────────────
+    // ── BASIC VALIDATION ──
     if (
       !storeId ||
       !Array.isArray(items) ||
@@ -54,26 +63,24 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'بيانات ناقصة أو غير صالحة' }, { status: 400 });
     }
 
-    // ── 2. Verify store exists ─────────────────────────────────────────────────
+    // ── STORE ──
     const store = await prisma.store.findUnique({ where: { id: storeId } });
     if (!store) {
       return NextResponse.json({ error: 'المتجر غير موجود' }, { status: 404 });
     }
 
-    // ── 3. Fetch products from DB ──────────────────────────────────────────────
+    // ── PRODUCTS ──
     const productIds = items.map(i => i.productId);
     const productsInDb = await prisma.product.findMany({
       where: { id: { in: productIds } },
       include: { pricingDetails: true },
     });
 
-    // ── 4. Validate products & build order items (prices from DB, not client) ──
     const validationErrors: { productId: string; type: string; message: string }[] = [];
-    let total = 0;
+    let subtotal = 0;
 
     const orderItems = items.map(item => {
       const product = productsInDb.find(p => p.id === item.productId);
-
       if (!product) {
         validationErrors.push({
           productId: item.productId,
@@ -83,12 +90,11 @@ export async function POST(request: NextRequest) {
         return null;
       }
 
-      // Always compute price server-side, applying discount if present
       const basePrice = product.discount
         ? product.price - product.price * (product.discount / 100)
         : product.price;
 
-      total += basePrice * item.qty;
+      subtotal += basePrice * item.qty;
 
       return {
         productId: product.id,
@@ -106,16 +112,89 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    type OrderItem = {
-      productId: string;
-      quantity: number;
-      price: number;
-      color: string | null;
-      size: string | null;
-    };
     const safeOrderItems = orderItems.filter((i): i is OrderItem => i !== null);
 
-    // ── 5. Create the order ────────────────────────────────────────────────────
+    // ── SHIPPING PRICE ──
+    const shippingPrice: number = store.shippingPrice ?? 0;
+
+    // ── COUPON ──
+    let couponDiscount = 0;
+    let shippingDiscount = 0;
+    let appliedCouponId: string | null = null;
+
+    if (couponCode?.trim()) {
+      const coupon = await prisma.coupon.findFirst({
+        where: {
+          code: couponCode.trim(),
+          isActive: true,
+          OR: [{ storeId: storeId }, { storeId: null }],
+        },
+      });
+
+      // وجود الكوبون
+      if (!coupon) {
+        return NextResponse.json({ error: 'الكوبون غير صالح' }, { status: 400 });
+      }
+
+      // انتهاء الصلاحية
+      if (coupon.expiresAt && coupon.expiresAt < new Date()) {
+        return NextResponse.json({ error: 'انتهت صلاحية الكوبون' }, { status: 400 });
+      }
+
+      // حد الاستخدام الكلي
+      if (coupon.maxUsage && coupon.usedCount >= coupon.maxUsage) {
+        return NextResponse.json(
+          { error: 'تم الوصول للحد الأقصى لاستخدام الكوبون' },
+          { status: 400 }
+        );
+      }
+
+      // حد الاستخدام لكل مستخدم
+      if (coupon.perUser && userId) {
+        const usageCount = await prisma.couponUsage.count({
+          where: { couponId: coupon.id, userId },
+        });
+        if (usageCount >= coupon.perUser) {
+          return NextResponse.json({ error: 'لقد استخدمت هذا الكوبون من قبل' }, { status: 400 });
+        }
+      }
+
+      // الحد الأدنى للطلب
+      if (coupon.minOrder && subtotal < coupon.minOrder) {
+        return NextResponse.json(
+          { error: `الحد الأدنى للطلب ${coupon.minOrder.toLocaleString('ar-IQ')} د.ع` },
+          { status: 400 }
+        );
+      }
+
+      // ── حساب الخصم حسب النوع ──
+      if (coupon.type === 'FREE_SHIPPING') {
+        shippingDiscount = shippingPrice; // توصيل مجاني كامل
+      } else if (coupon.productId) {
+        // خصم على منتج معين
+        const targetItem = safeOrderItems.find(i => i.productId === coupon.productId);
+        if (!targetItem) {
+          return NextResponse.json(
+            { error: 'الكوبون غير قابل للتطبيق على منتجات السلة' },
+            { status: 400 }
+          );
+        }
+        couponDiscount = calculateDiscount(
+          targetItem.price * targetItem.quantity,
+          coupon.value,
+          coupon.type,
+          coupon.maxDiscount
+        );
+      } else {
+        couponDiscount = calculateDiscount(subtotal, coupon.value, coupon.type, coupon.maxDiscount);
+      }
+
+      appliedCouponId = coupon.id;
+    }
+
+    const effectiveShipping = Math.max(0, shippingPrice - shippingDiscount);
+    const finalTotal = Math.max(0, subtotal - couponDiscount + effectiveShipping);
+
     const order = await prisma.order.create({
       data: {
         storeId,
@@ -124,8 +203,9 @@ export async function POST(request: NextRequest) {
         phone: customerInfo.phone,
         email: customerInfo.email ?? null,
         location: customerInfo.address ?? customerInfo.notes ?? null,
-        total,
-        finalTotal: total,
+        total: finalTotal,
+        discount: couponDiscount + shippingDiscount,
+        finalTotal,
         paymentMethod: paymentMethod ?? null,
         status: 'PENDING',
         items: { create: safeOrderItems },
@@ -133,7 +213,21 @@ export async function POST(request: NextRequest) {
       include: { items: true },
     });
 
-    // ── 6. Decrement inventory ─────────────────────────────────────────────────
+    // ── UPDATE COUPON USAGE ──
+    if (appliedCouponId) {
+      await prisma.coupon.update({
+        where: { id: appliedCouponId },
+        data: { usedCount: { increment: 1 } },
+      });
+
+      if (userId) {
+        await prisma.couponUsage.create({
+          data: { couponId: appliedCouponId, userId },
+        });
+      }
+    }
+
+    // ── DECREMENT STOCK ──
     await Promise.all(
       items.map(item =>
         prisma.product.update({
@@ -143,14 +237,13 @@ export async function POST(request: NextRequest) {
       )
     );
 
-    // ── 7. Supplier / trader split (only when applicable) ─────────────────────
+    // ── SUPPLIER ORDERS ──
     const supplierItems: SupplierItem[] = safeOrderItems
       .map((orderItem): SupplierItem | null => {
         const product = productsInDb.find(p => p.id === orderItem.productId);
         if (!product?.isFromSupplier || !product.supplierId) return null;
 
         const wholesalePrice = product.pricingDetails?.wholesalePrice ?? 0;
-
         return {
           productId: product.id,
           quantity: orderItem.quantity,
@@ -164,7 +257,6 @@ export async function POST(request: NextRequest) {
       .filter((item): item is SupplierItem => item !== null);
 
     if (supplierItems.length > 0 && userId) {
-      // Group by supplier so each supplier gets their own OrderFromTrader record
       const bySupplierId = supplierItems.reduce<Record<string, SupplierItem[]>>((acc, item) => {
         (acc[item.supplierId] ??= []).push(item);
         return acc;
@@ -198,25 +290,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── 8. Notification ────────────────────────────────────────────────────────
+    // ── NOTIFICATION ──
     await prisma.notification.create({
       data: {
         userId: userId ?? null,
         storeId,
-        message: `وصل طلب جديد (${order.fullName}) الموقع: ${order.location ?? 'غير محدد'}. الرجاء مراجعة الطلب لمعالجته.`,
+        message: `${
+          couponCode
+            ? `وصل طلب جديد (${order.fullName}) — المبلغ: ${finalTotal.toLocaleString('ar-IQ')} د.ع — الموقع: ${order.location ?? 'غير محدد'}`
+            : `وصل طلب جديد (${order.fullName}) — المبلغ: ${finalTotal.toLocaleString('ar-IQ')} د.ع — الموقع: ${order.location ?? 'غير محدد , مستخ'} مستخدما الكوبون التالي : ${couponCode}`
+        }`,
         type: 'order',
         orderId: order.id,
         isRead: false,
       },
     });
 
-    // ── 9. Response ────────────────────────────────────────────────────────────
     return NextResponse.json(
-      { success: true, orderId: order.id, total, finalTotal: total },
+      {
+        success: true,
+        orderId: order.id,
+        subtotal,
+        shippingPrice: effectiveShipping,
+        discount: couponDiscount + shippingDiscount,
+        finalTotal,
+      },
       { status: 201 }
     );
   } catch (error) {
     console.error('[ORDER_CREATE]', error);
     return NextResponse.json({ error: 'حدث خطأ، حاول مجدداً' }, { status: 500 });
   }
+}
+
+// ── HELPER ──
+function calculateDiscount(
+  amount: number,
+  value: number,
+  type: 'PERCENTAGE' | 'FIXED' | 'FREE_SHIPPING',
+  maxDiscount?: number | null
+): number {
+  const discount = type === 'PERCENTAGE' ? (amount * value) / 100 : value;
+
+  return Math.max(0, maxDiscount ? Math.min(discount, maxDiscount) : discount);
 }

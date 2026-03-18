@@ -17,6 +17,10 @@ export const orderPaymentRepository = {
     location: string,
     paymentMethod: string,
     phone: string,
+    shippingPrice: number,
+    discount: number,
+    finalTotal: number,
+    couponCode: string | null,
     items: PayTabsItemInput[]
   ) => {
     return prisma.order.create({

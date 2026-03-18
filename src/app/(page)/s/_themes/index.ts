@@ -4,19 +4,19 @@ import defaultTheme from './theme-default-theme';
 import glassmorphism from './theme-glassmorphism';
 import minimalLight from './theme-minimal-light';
 import modernStructured from './theme-modern-structured';
-import techFuturistic from './theme-tech-futuristic';
+import themeclothesno1 from './theme-clothes-no1';
 import type { ThemeConfig } from './types';
 
 export const themes: ThemeConfig[] = [];
 
 themes[0] = darkLuxury;
 themes[1] = minimalLight;
-themes[2] = techFuturistic;
+themes[2] = themeclothesno1;
 themes[3] = cleanMarketplace;
 themes[4] = modernStructured;
 themes[5] = glassmorphism;
 themes[6] = defaultTheme;
 
 export function getTheme(preset: number): ThemeConfig {
-  return themes[preset] ?? themes[6];
-}
+  return themes[preset] ?? themes[0];
+} 

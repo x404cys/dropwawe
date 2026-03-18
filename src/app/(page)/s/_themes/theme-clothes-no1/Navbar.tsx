@@ -55,23 +55,15 @@ export default function TechFuturisticNavbar({
     const updateActiveSection = () => {
       const threshold = window.scrollY + 160;
       let current = navItems[0]?.id ?? 'hero-section';
-
       for (const item of navItems) {
         const node = document.getElementById(item.id);
-        if (node && node.offsetTop <= threshold) {
-          current = item.id;
-        }
+        if (node && node.offsetTop <= threshold) current = item.id;
       }
-
       setActiveSection(current);
     };
-
     updateActiveSection();
     window.addEventListener('scroll', updateActiveSection, { passive: true });
-
-    return () => {
-      window.removeEventListener('scroll', updateActiveSection);
-    };
+    return () => window.removeEventListener('scroll', updateActiveSection);
   }, [navItems]);
 
   useEffect(() => {
@@ -93,20 +85,33 @@ export default function TechFuturisticNavbar({
   };
 
   const cycleLanguage = () => {
-    const currentIndex = STORE_LANG_OPTIONS.findIndex(option => option.value === lang);
+    const currentIndex = STORE_LANG_OPTIONS.findIndex(o => o.value === lang);
     const next = STORE_LANG_OPTIONS[(currentIndex + 1) % STORE_LANG_OPTIONS.length];
     setLang(next.value);
   };
 
+  // ✅ border خفيف بدل النص الكامل
+  const iconBtnStyle: CSSProperties = {
+    fontFamily: fonts.body,
+    color: colors.text,
+    background: colors.bg,
+    borderColor: colors.text + '33',
+  };
+
   return (
     <>
+      {/* ── HEADER ── */}
       <header
-        className={`fixed inset-x-0 z-[65] border-b border-white/[0.06] bg-[#080808]/95 backdrop-blur-sm ${
+        className={`fixed inset-x-0 z-[65] border-b backdrop-blur-sm ${
           hasAnnouncementBar ? 'top-8' : 'top-0'
         }`}
-        style={accentVars}
+        style={{
+          background: colors.bg,
+          borderColor: colors.text + '0f',
+        }}
       >
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:h-16 lg:px-10">
+          {/* ── LOGO ── */}
           <button
             type="button"
             onClick={() => scrollTo('hero-section')}
@@ -115,36 +120,35 @@ export default function TechFuturisticNavbar({
             {logoSrc ? (
               <img src={logoSrc} alt={store.name ?? ''} className="h-6 w-6 object-cover" />
             ) : (
-              <div className="grid h-6 w-6 place-items-center border border-white/[0.08] bg-[#0f0f0f] font-mono text-[10px] text-white/30">
+              <div
+                className="grid h-6 w-6 place-items-center border font-mono text-[10px]"
+                style={{ borderColor: colors.text + '14', background: colors.bg }}
+              >
                 //
               </div>
             )}
             <span
-              className="truncate font-mono text-sm tracking-[0.22em] text-[#f2f2f2] uppercase"
-              style={{ fontFamily: fonts.heading }}
+              className="truncate font-mono text-sm tracking-[0.22em] uppercase"
+              style={{ fontFamily: fonts.heading, color: colors.text }}
             >
               {store.name}
             </span>
           </button>
 
-          <nav className="hidden items-center gap-1 lg:flex">
+          {/* ── DESKTOP NAV ── */}
+          <nav className="hidden items-center gap-1 lg:flex" style={accentVars}>
             {navItems.map(item => {
               const isActive = activeSection === item.id;
-
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => scrollTo(item.id)}
-                  className="border-b border-transparent px-3 py-5 font-mono text-[11px] tracking-[0.24em] text-white/45 uppercase transition-all duration-150 ease-out hover:text-[var(--tech-accent)]"
+                  className="border-b border-transparent px-3 py-5 font-mono text-[11px] tracking-[0.24em] uppercase transition-all duration-150 ease-out hover:text-[var(--tech-accent)]"
                   style={
                     isActive
-                      ? {
-                          color: colors.accent,
-                          borderColor: colors.accent,
-                          fontFamily: fonts.body,
-                        }
-                      : { fontFamily: fonts.body }
+                      ? { color: colors.text, borderColor: colors.text, fontFamily: fonts.body }
+                      : { color: colors.text, fontFamily: fonts.body, opacity: 0.5 }
                   }
                 >
                   {item.label}
@@ -153,50 +157,62 @@ export default function TechFuturisticNavbar({
             })}
           </nav>
 
+          {/* ── ICONS ── */}
           <div className="flex items-center gap-2">
+            {/* Search */}
             <button
               type="button"
               onClick={() => scrollTo('store-section')}
-              className="flex h-9 w-9 items-center justify-center border border-white/[0.08] bg-[#0f0f0f] text-white/45 transition-all duration-150 ease-out hover:border-white/[0.15] hover:text-[var(--tech-accent)]"
+              className="flex h-9 w-9 cursor-pointer items-center justify-center border transition-all duration-150 ease-out"
               aria-label={t.store.searchPlaceholder}
+              style={iconBtnStyle}
             >
               <Search className="h-4 w-4" />
             </button>
 
+            {/* Language — desktop only ✅ */}
             <button
               type="button"
               onClick={cycleLanguage}
-              className="hidden h-9 min-w-11 items-center justify-center border border-white/[0.08] bg-[#0f0f0f] px-2 font-mono text-[11px] tracking-[0.18em] text-white/45 uppercase transition-all duration-150 ease-out hover:border-white/[0.15] hover:text-[var(--tech-accent)] sm:flex"
+              className="hidden h-9 min-w-11 cursor-pointer items-center justify-center border font-mono text-[11px] tracking-[0.18em] uppercase transition-all duration-150 ease-out lg:flex"
               aria-label="Switch language"
-              style={{ fontFamily: fonts.body }}
+              style={iconBtnStyle}
             >
               {lang}
             </button>
 
-            {sections.store ? (
+            {/* Cart */}
+            {sections.store && (
               <button
                 type="button"
                 onClick={openCart}
-                className="relative flex h-9 w-9 items-center justify-center border border-white/[0.08] bg-[#0f0f0f] text-white/70 transition-all duration-150 ease-out hover:border-white/[0.15] hover:text-[var(--tech-accent)]"
+                className="relative flex h-9 w-9 items-center justify-center border transition-all duration-150 ease-out"
                 aria-label={t.store.addToCart}
+                style={iconBtnStyle}
               >
                 <ShoppingBag className="h-4 w-4" />
-                {cartCount > 0 ? (
+                {cartCount > 0 && (
                   <span
-                    className="absolute -end-1 -top-1 grid min-h-4 min-w-4 place-items-center px-1 font-mono text-[10px] text-[#080808]"
-                    style={{ backgroundColor: colors.accent, fontFamily: fonts.body }}
+                    className="absolute -end-1 -top-1 grid min-h-4 min-w-4 place-items-center px-1 font-mono text-[10px]"
+                    style={{
+                      backgroundColor: colors.primary,
+                      color: colors.bg,
+                      fontFamily: fonts.body,
+                    }}
                   >
                     {cartCount}
                   </span>
-                ) : null}
+                )}
               </button>
-            ) : null}
+            )}
 
+            {/* Hamburger */}
             <button
               type="button"
-              onClick={() => setMobileOpen(current => !current)}
-              className="flex h-9 w-9 items-center justify-center border border-white/[0.08] bg-[#0f0f0f] text-white/70 transition-all duration-150 ease-out hover:border-white/[0.15] lg:hidden"
+              onClick={() => setMobileOpen(c => !c)}
+              className="flex h-9 w-9 items-center justify-center border transition-all duration-150 ease-out lg:hidden"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              style={iconBtnStyle}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -204,59 +220,81 @@ export default function TechFuturisticNavbar({
         </div>
       </header>
 
+      {/* ── MOBILE DRAWER ── */}
       <div
-        className={`fixed inset-x-0 z-[60] border-b border-white/[0.08] bg-[#0f0f0f] backdrop-blur-xl transition-all duration-150 ease-out lg:hidden ${
+        className={`fixed inset-x-0 z-[60] border-b backdrop-blur-xl transition-all duration-150 ease-out lg:hidden ${
           hasAnnouncementBar ? 'top-[5.5rem]' : 'top-14'
         } ${mobileOpen ? 'translate-y-0 opacity-100' : 'pointer-events-none -translate-y-2 opacity-0'}`}
-        style={accentVars}
+        style={{
+          ...accentVars,
+          background: colors.bg,
+          borderColor: colors.text + '14',
+        }}
       >
         <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6">
+          {/* Nav items */}
           <div className="grid gap-2">
             {navItems.map(item => {
               const isActive = activeSection === item.id;
-
               return (
                 <button
                   key={item.id}
                   type="button"
                   onClick={() => scrollTo(item.id)}
-                  className="flex items-center justify-between border border-white/[0.08] bg-[#080808] px-4 py-3 text-start font-mono text-xs tracking-[0.22em] text-white/50 uppercase transition-all duration-150 ease-out hover:border-white/[0.15]"
+                  className="flex items-center justify-between border px-4 py-3 text-start font-mono text-xs tracking-[0.22em] uppercase transition-all duration-150 ease-out"
                   style={
                     isActive
                       ? {
                           color: colors.accent,
                           borderColor: colors.accent,
+                          background: colors.accent + '0f',
                           fontFamily: fonts.body,
                         }
-                      : { fontFamily: fonts.body }
+                      : {
+                          color: colors.text,
+                          borderColor: colors.text + '1a', // ✅ خفيف للغير نشط
+                          background: colors.bg,
+                          fontFamily: fonts.body,
+                          opacity: 0.6,
+                        }
                   }
                 >
                   <span>{item.label}</span>
-                  <span className="text-white/25">/{item.id.replace('-section', '')}</span>
+                  <span style={{ color: colors.text, opacity: 0.25 }}>
+                    /{item.id.replace('-section', '')}
+                  </span>
                 </button>
               );
             })}
           </div>
 
-          <div className="mt-4 border-t border-white/[0.06] pt-4">
+          {/* Language + Social */}
+          <div className="mt-4 border-t pt-4" style={{ borderColor: colors.text + '14' }}>
+            {/* Language options */}
             <div className="flex flex-wrap gap-2">
               {STORE_LANG_OPTIONS.map(option => {
                 const isActive = option.value === lang;
-
                 return (
                   <button
                     key={option.value}
                     type="button"
                     onClick={() => setLang(option.value)}
-                    className="border border-white/[0.08] px-3 py-2 font-mono text-[11px] tracking-[0.18em] text-white/45 uppercase transition-all duration-150 ease-out hover:border-white/[0.15]"
+                    className="border px-3 py-2 font-mono text-[11px] tracking-[0.18em] uppercase transition-all duration-150 ease-out"
                     style={
                       isActive
                         ? {
                             color: colors.accent,
                             borderColor: colors.accent,
+                            background: colors.accent + '0f',
                             fontFamily: fonts.body,
                           }
-                        : { fontFamily: fonts.body }
+                        : {
+                            color: colors.text,
+                            borderColor: colors.text + '1a',
+                            background: colors.bg,
+                            fontFamily: fonts.body,
+                            opacity: 0.5,
+                          }
                     }
                   >
                     {option.value}
@@ -265,28 +303,46 @@ export default function TechFuturisticNavbar({
               })}
             </div>
 
-            {socialItems.length > 0 ? (
+            {/* Social links */}
+            {socialItems.length > 0 && (
               <div className="mt-4 flex flex-wrap gap-2">
                 {socialItems.map(item => {
                   const href = getContactHref(item);
                   const label = SOCIAL_LABELS[item.type];
                   if (!href || !label) return null;
-
                   return (
                     <a
                       key={item.id}
                       href={href}
                       target={isExternalContact(item.type) ? '_blank' : undefined}
                       rel={isExternalContact(item.type) ? 'noopener noreferrer' : undefined}
-                      className="border border-white/[0.08] px-3 py-2 font-mono text-[11px] tracking-[0.18em] text-white/45 uppercase transition-all duration-150 ease-out hover:border-white/[0.15] hover:text-[var(--tech-accent)]"
-                      style={{ fontFamily: fonts.body }}
+                      className="border px-3 py-2 font-mono text-[11px] tracking-[0.18em] uppercase transition-all duration-150 ease-out"
+                      style={{
+                        color: colors.text,
+                        borderColor: colors.text + '1a',
+                        background: colors.bg,
+                        fontFamily: fonts.body,
+                        opacity: 0.5,
+                      }}
+                      onMouseEnter={e => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.color = colors.accent;
+                        el.style.borderColor = colors.accent;
+                        el.style.opacity = '1';
+                      }}
+                      onMouseLeave={e => {
+                        const el = e.currentTarget as HTMLElement;
+                        el.style.color = colors.text;
+                        el.style.borderColor = colors.text + '1a';
+                        el.style.opacity = '0.5';
+                      }}
                     >
                       {label}
                     </a>
                   );
                 })}
               </div>
-            ) : null}
+            )}
           </div>
         </div>
       </div>

@@ -28,14 +28,17 @@ export default function TechFuturisticFooter({
   const { t, locale } = useLanguage();
   const accentVars = { ['--tech-accent' as string]: colors.accent } as CSSProperties;
   const year = new Date().getFullYear().toLocaleString(locale);
+
   const tagline =
     template.tagline?.trim() ||
     template.storeDescription?.trim() ||
     store.description?.trim() ||
     '';
+
   const contactItems = buildContactItems(template, store).filter(
     item => item.enabled && item.value.trim().length > 0
   );
+
   const navItems = [
     sections.hero ? { id: 'hero-section', label: t.nav.home } : null,
     sections.services ? { id: 'services-section', label: t.nav.services } : null,
@@ -43,52 +46,80 @@ export default function TechFuturisticFooter({
     sections.testimonials ? { id: 'testimonials-section', label: t.nav.testimonials } : null,
     sections.about ? { id: 'about-section', label: t.nav.about } : null,
   ].filter(Boolean) as Array<{ id: string; label: string }>;
+
   const socialLinks = [
     store.instaLink ? { label: '[IG]', href: store.instaLink } : null,
     store.facebookLink ? { label: '[FB]', href: store.facebookLink } : null,
     store.telegram ? { label: '[TG]', href: store.telegram } : null,
   ].filter(Boolean) as Array<{ label: string; href: string }>;
 
+  const contactLinkClass =
+    'flex items-start gap-3 font-mono text-xs transition-all duration-150 ease-out';
+
   return (
-    <footer className="border-t border-white/[0.06] bg-[#050505]" style={accentVars}>
+    <footer
+      className="border-t"
+      style={{
+        ...accentVars,
+        background: colors.bg,
+        borderColor: colors.text + '0f',
+      }}
+    >
       <div className="mx-auto max-w-7xl px-6 py-16 lg:px-12">
-        {/* DESIGN: Footer columns mimic a terminal dashboard to keep utility links readable without decorative clutter. */}
-        <div className="grid gap-10 border-b border-white/[0.06] pb-12 lg:grid-cols-3">
+        {/* ── COLUMNS ── */}
+        <div
+          className="grid gap-10 border-b pb-12 lg:grid-cols-3"
+          style={{ borderColor: colors.text + '0f' }}
+        >
+          {/* ── COL 1: Brand + Contacts ── */}
           <div className="space-y-4">
+            {/* Logo + Name */}
             <div className="flex items-center gap-3">
               {store.image ? (
                 <img src={store.image} alt={store.name ?? ''} className="h-6 w-6 object-cover" />
               ) : (
-                <div className="h-6 w-6 border border-white/[0.08] bg-[#0f0f0f]" />
+                <div
+                  className="h-6 w-6 border"
+                  style={{
+                    borderColor: colors.text + '14',
+                    background: colors.text + '08',
+                  }}
+                />
               )}
               <p
-                className="font-mono text-sm tracking-[0.18em] text-[#f2f2f2] uppercase"
-                style={{ fontFamily: fonts.heading }}
+                className="font-mono text-sm tracking-[0.18em] uppercase"
+                style={{ fontFamily: fonts.heading, color: colors.text }}
               >
                 {store.name}
               </p>
             </div>
 
-            {tagline ? (
+            {/* Tagline */}
+            {tagline && (
               <p
-                className="max-w-sm font-mono text-xs leading-6 text-white/40"
-                style={{ fontFamily: fonts.body }}
+                className="max-w-sm font-mono text-xs leading-6"
+                style={{ fontFamily: fonts.body, color: colors.text + '66' }}
               >
                 {tagline}
               </p>
-            ) : null}
+            )}
 
+            {/* Contact items */}
             <div className="space-y-3">
               {contactItems.map(item => {
                 const href = getContactHref(item);
                 const prefix = CONTACT_LABELS[item.type] ?? '->';
-                const commonClass =
-                  'flex items-start gap-3 font-mono text-xs text-white/40 transition-all duration-150 ease-out hover:text-[#f2f2f2]';
 
                 if (!href) {
                   return (
-                    <div key={item.id} className={commonClass} style={{ fontFamily: fonts.body }}>
-                      <span className="w-6 shrink-0 text-white/25">{prefix}</span>
+                    <div
+                      key={item.id}
+                      className={contactLinkClass}
+                      style={{ fontFamily: fonts.body, color: colors.text + '66' }}
+                    >
+                      <span className="w-6 shrink-0" style={{ color: colors.text + '40' }}>
+                        {prefix}
+                      </span>
                       <span>{item.value}</span>
                     </div>
                   );
@@ -100,10 +131,18 @@ export default function TechFuturisticFooter({
                     href={href}
                     target={isExternalContact(item.type) ? '_blank' : undefined}
                     rel={isExternalContact(item.type) ? 'noopener noreferrer' : undefined}
-                    className={commonClass}
-                    style={{ fontFamily: fonts.body }}
+                    className={contactLinkClass}
+                    style={{ fontFamily: fonts.body, color: colors.text + '66' }}
+                    onMouseEnter={e => {
+                      (e.currentTarget as HTMLElement).style.color = colors.text;
+                    }}
+                    onMouseLeave={e => {
+                      (e.currentTarget as HTMLElement).style.color = colors.text + '66';
+                    }}
                   >
-                    <span className="w-6 shrink-0 text-white/25">{prefix}</span>
+                    <span className="w-6 shrink-0" style={{ color: colors.text + '40' }}>
+                      {prefix}
+                    </span>
                     <span>{item.value}</span>
                   </a>
                 );
@@ -111,10 +150,11 @@ export default function TechFuturisticFooter({
             </div>
           </div>
 
+          {/* ── COL 2: Navigation ── */}
           <div>
             <p
-              className="font-mono text-xs tracking-[0.22em] text-white/30 uppercase"
-              style={{ fontFamily: fonts.body }}
+              className="font-mono text-xs tracking-[0.22em] uppercase"
+              style={{ fontFamily: fonts.body, color: colors.text + '4d' }}
             >
               NAVIGATION
             </p>
@@ -123,8 +163,8 @@ export default function TechFuturisticFooter({
                 <a
                   key={item.id}
                   href={`#${item.id}`}
-                  className="font-mono text-xs tracking-[0.18em] text-white/30 uppercase transition-all duration-150 ease-out hover:text-[var(--tech-accent)]"
-                  style={{ fontFamily: fonts.body }}
+                  className="font-mono text-xs tracking-[0.18em] uppercase transition-all duration-150 ease-out hover:text-[var(--tech-accent)]"
+                  style={{ fontFamily: fonts.body, color: colors.text + '4d' }}
                 >
                   {item.label}
                 </a>
@@ -132,10 +172,11 @@ export default function TechFuturisticFooter({
             </div>
           </div>
 
+          {/* ── COL 3: Social ── */}
           <div>
             <p
-              className="font-mono text-xs tracking-[0.22em] text-white/30 uppercase"
-              style={{ fontFamily: fonts.body }}
+              className="font-mono text-xs tracking-[0.22em] uppercase"
+              style={{ fontFamily: fonts.body, color: colors.text + '4d' }}
             >
               SOCIAL
             </p>
@@ -146,8 +187,12 @@ export default function TechFuturisticFooter({
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="border border-white/[0.08] px-3 py-2 font-mono text-xs tracking-[0.18em] text-white/40 uppercase transition-all duration-150 ease-out hover:border-[var(--tech-accent)] hover:text-[var(--tech-accent)]"
-                  style={{ fontFamily: fonts.body }}
+                  className="border px-3 py-2 font-mono text-xs tracking-[0.18em] uppercase transition-all duration-150 ease-out hover:border-[var(--tech-accent)] hover:text-[var(--tech-accent)]"
+                  style={{
+                    fontFamily: fonts.body,
+                    color: colors.text + '66',
+                    borderColor: colors.text + '14',
+                  }}
                 >
                   {link.label}
                 </a>
@@ -156,14 +201,19 @@ export default function TechFuturisticFooter({
           </div>
         </div>
 
+        {/* ── BOTTOM BAR ── */}
         <div
-          className="mt-6 flex flex-col gap-3 border-t border-white/[0.04] pt-6 font-mono text-xs text-white/20 sm:flex-row sm:items-center sm:justify-between"
-          style={{ fontFamily: fonts.body }}
+          className="mt-6 flex flex-col gap-3 border-t pt-6 sm:flex-row sm:items-center sm:justify-between"
+          style={{
+            borderColor: colors.text + '0a',
+            fontFamily: fonts.body,
+            color: colors.text + '33',
+          }}
         >
-          <span>
+          <span className="font-mono text-xs">
             © {year} {store.name}
           </span>
-          <span>BUILT ON DROPWAVE</span>
+          <span className="font-mono text-xs tracking-[0.18em] uppercase">BUILT ON DROPWAVE</span>
         </div>
       </div>
     </footer>

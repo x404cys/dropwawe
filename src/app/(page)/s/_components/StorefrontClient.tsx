@@ -34,7 +34,7 @@ function StorefrontInner({
         <ProductModal product={selectedProduct} colors={colors} headingStyle={headingStyle} />
       )}
 
-      <CheckoutDrawer storeId={store.id} primaryColor={colors.primary} />
+      <CheckoutDrawer storeId={store.id} primaryColor={colors.primary} shippingPrice={store.shippingPrice} />
       {sections.store && <FloatingCart primaryColor={colors.primary} />}
     </>
   );

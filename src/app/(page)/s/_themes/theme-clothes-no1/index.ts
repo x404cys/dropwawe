@@ -15,7 +15,7 @@ import TestimonialsSection from './sections/TestimonialsSection';
 import type { ThemeConfig } from '../types';
 
 // DESIGN: The registry entry is intentionally thin so preset swapping only changes visual components.
-const techFuturistic: ThemeConfig = {
+const themeclothesno1: ThemeConfig = {
   id: 5,
   name: 'tech-futuristic',
   description:
@@ -36,4 +36,4 @@ const techFuturistic: ThemeConfig = {
   },
 };
 
-export default techFuturistic;
+export default themeclothesno1;

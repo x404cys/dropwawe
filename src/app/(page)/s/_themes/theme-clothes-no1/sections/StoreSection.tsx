@@ -25,7 +25,7 @@ function ProductGrid({
   fonts: StoreSectionProps['fonts'];
 }) {
   return (
-    <div className="grid grid-cols-2 gap-px bg-[#161616] md:grid-cols-3 xl:grid-cols-4">
+    <div className="grid grid-cols-2 gap-px md:grid-cols-3 xl:grid-cols-4">
       {products.map(product => (
         <TechFuturisticProductCard
           key={product.id}
@@ -53,19 +53,17 @@ function CategoryBlock({
 
   return (
     <div className="space-y-5">
-      <div className="flex items-end justify-between gap-4 border-b border-white/[0.06] pb-3">
+      <div
+        className="flex items-end justify-between gap-4 border-b pb-3"
+        style={{ borderColor: colors.text + '0f' }}
+      >
         <p
-          className="font-mono text-xs tracking-[0.22em] text-white/30 uppercase"
-          style={{ fontFamily: fonts.body }}
+          className="font-mono text-xs tracking-[0.22em] uppercase"
+          style={{ fontFamily: fonts.body, color: colors.text  }}
         >
           {section.category}
         </p>
-        <span
-          className="font-mono text-[11px] tracking-[0.18em] text-white/25 uppercase"
-          style={{ fontFamily: fonts.body }}
-        >
-          {products.length} ITEMS
-        </span>
+ 
       </div>
       <ProductGrid products={products} colors={colors} fonts={fonts} />
     </div>
@@ -82,6 +80,7 @@ export default function TechFuturisticStoreSection({
 }: StoreSectionProps) {
   const { t } = useLanguage();
   const accentVars = { ['--tech-accent' as string]: colors.accent } as CSSProperties;
+
   const {
     activeCategory,
     setActiveCategory,
@@ -99,27 +98,36 @@ export default function TechFuturisticStoreSection({
   return (
     <section
       id="store-section"
-      className="border-b border-white/[0.06] bg-[#080808]"
-      style={accentVars}
+      className="border-b"
+      style={{
+        ...accentVars,
+        background: colors.bg,
+        borderColor: colors.text + '0f',
+      }}
     >
       <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-10 lg:py-24">
-        <div className="flex flex-col gap-3 border-b border-white/[0.06] pb-6 lg:flex-row lg:items-end lg:justify-between">
+        {/* ── HEADER ── */}
+        <div
+          className="flex flex-col gap-3 border-b pb-6 lg:flex-row lg:items-end lg:justify-between"
+          style={{ borderColor: colors.text + '0f' }}
+        >
           <div>
             <p
-              className="font-mono text-xs tracking-[0.24em] text-white/30 uppercase"
-              style={{ fontFamily: fonts.body }}
+              className="font-mono text-xs tracking-[0.24em] uppercase"
+              style={{ fontFamily: fonts.body, color: colors.text + '4d' }}
             >
-              PRODUCTS - {displayFiltered.length} ITEMS
+              PRODUCTS — {displayFiltered.length} ITEMS
             </p>
             <h2
-              className="mt-3 font-mono text-3xl font-light tracking-tight text-[#f2f2f2] lg:text-5xl"
-              style={{ fontFamily: fonts.heading }}
+              className="mt-3 font-mono text-3xl font-light tracking-tight lg:text-5xl"
+              style={{ fontFamily: fonts.heading, color: colors.text }}
             >
               {t.nav.store}
             </h2>
           </div>
         </div>
 
+        {/* ── SEARCH ── */}
         <div className="mt-8">
           <TechFuturisticSearchBar
             value={searchQuery}
@@ -129,31 +137,52 @@ export default function TechFuturisticStoreSection({
           />
         </div>
 
-        {centerBanners.length > 0 ? (
+        {/* ── CENTER BANNERS ── */}
+        {centerBanners.length > 0 && (
           <div className="mt-8">
             <TechFuturisticBannerCarousel banners={centerBanners} colors={colors} />
           </div>
-        ) : null}
+        )}
 
+        {/* ── CATEGORY FILTERS ── */}
         <div className="mt-8 flex flex-wrap gap-2">
           {displayCategories.map(category => {
             const isActive = activeCategory === category.key;
-
             return (
               <button
                 key={category.key}
                 type="button"
                 onClick={() => setActiveCategory(category.key)}
-                className="border border-white/[0.08] px-4 py-2 font-mono text-xs tracking-[0.2em] text-white/45 uppercase transition-all duration-150 ease-out hover:border-white/[0.15]"
+                className="border px-4 py-2 font-mono text-xs tracking-[0.2em] uppercase transition-all duration-150 ease-out"
                 style={
                   isActive
                     ? {
                         borderColor: colors.accent,
                         color: colors.accent,
                         fontFamily: fonts.body,
+                        background: colors.accent + '0f',
                       }
-                    : { fontFamily: fonts.body }
+                    : {
+                        borderColor: colors.text + '14',
+                        color: colors.text + '73',
+                        fontFamily: fonts.body,
+                        background: 'transparent',
+                      }
                 }
+                onMouseEnter={e => {
+                  if (!isActive) {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = colors.text + '26';
+                    el.style.color = colors.text + 'b3';
+                  }
+                }}
+                onMouseLeave={e => {
+                  if (!isActive) {
+                    const el = e.currentTarget as HTMLElement;
+                    el.style.borderColor = colors.text + '14';
+                    el.style.color = colors.text + '73';
+                  }
+                }}
               >
                 {category.label}
               </button>
@@ -161,7 +190,7 @@ export default function TechFuturisticStoreSection({
           })}
         </div>
 
-        {/* DESIGN: The catalog grid uses gap-px on a darker parent so the layout reads as a visible product matrix. */}
+        {/* ── PRODUCTS ── */}
         <div className="mt-10 space-y-12">
           {showCategoryRows ? (
             <>
@@ -176,13 +205,10 @@ export default function TechFuturisticStoreSection({
               ))}
 
               {(() => {
-                const sectionCategories = new Set(
-                  enabledCategorySections.map(section => section.category)
-                );
+                const sectionCategories = new Set(enabledCategorySections.map(s => s.category));
                 const remainingProducts = products.filter(
-                  product => !sectionCategories.has(getProductCategory(product))
+                  p => !sectionCategories.has(getProductCategory(p))
                 );
-
                 if (remainingProducts.length === 0) return null;
 
                 return (
@@ -203,12 +229,19 @@ export default function TechFuturisticStoreSection({
           ) : displayFiltered.length > 0 ? (
             <ProductGrid products={displayFiltered} colors={colors} fonts={fonts} />
           ) : (
-            <div className="grid min-h-56 place-items-center border border-white/[0.06] bg-[#0f0f0f] text-center">
+            /* ── EMPTY STATE ── */
+            <div
+              className="grid min-h-56 place-items-center border text-center"
+              style={{
+                borderColor: colors.text + '0f',
+                background: colors.text + '05',
+              }}
+            >
               <div>
-                <Package className="mx-auto h-8 w-8 text-white/20" />
+                <Package className="mx-auto h-8 w-8" style={{ color: colors.text + '33' }} />
                 <p
-                  className="mt-4 font-mono text-sm text-white/35"
-                  style={{ fontFamily: fonts.body }}
+                  className="mt-4 font-mono text-sm"
+                  style={{ fontFamily: fonts.body, color: colors.text + '59' }}
                 >
                   {t.store.noProducts}
                 </p>

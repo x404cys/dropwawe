@@ -290,6 +290,7 @@ export type StorefrontStore = {
   facebookLink: string | null;
   telegram: string | null;
   description: string | null;
+  shippingPrice?: number;
 };
 
 export type StorefrontProductImage = {

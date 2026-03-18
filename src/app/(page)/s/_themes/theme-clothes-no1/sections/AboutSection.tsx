@@ -23,7 +23,6 @@ export default function TechFuturisticAboutSection({
   return (
     <section id="about-section" className="border-b border-white/[0.06] bg-[#080808]">
       <div className="mx-auto max-w-7xl px-6 py-20 lg:px-12 lg:py-24">
-        {/* DESIGN: Oversized numerals create orientation without introducing decorative imagery. */}
         <div className="grid gap-10 lg:grid-cols-[40%_60%] lg:gap-16">
           <div className="border-b border-white/[0.06] pb-8 lg:border-e lg:border-b-0 lg:pe-10 lg:pb-0">
             <div

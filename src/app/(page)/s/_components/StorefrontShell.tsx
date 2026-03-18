@@ -21,7 +21,7 @@ export default function StorefrontShell({
   className,
 }: StorefrontShellProps) {
   const { dir, lang } = useLanguage();
-  const theme = getTheme(9);
+  const theme = getTheme(6);
   const {
     AnnouncementBar,
     BannerCarousel,
@@ -30,7 +30,7 @@ export default function StorefrontShell({
     ServicesSection,
     StoreSection,
     TestimonialsSection,
-    
+
     CtaSection,
     AboutSection,
     Footer,
