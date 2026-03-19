@@ -206,6 +206,7 @@ export const ku = {
     basicSettings: 'ڕێکخستنە بنچینەییەکان',
     generalSettings: 'ڕێکخستنە گشتییەکان',
     generalSettingsDesc: 'ناوی فرۆشگا، بەستەر، وەسف',
+    generalSettingsStore: 'ڕێکخستنە گشتییەکانی فرۆشگا',
     socialLinksDesc: 'فەیسبوک، ئینستاگرام، تێلیگرام',
     growthFeatures: 'تایبەتمەندییەکانی گەشەکردن',
     selfDelivery: 'خۆگەیاندن',

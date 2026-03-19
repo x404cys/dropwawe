@@ -205,6 +205,7 @@ export const en = {
     title: 'Store Settings',
     basicSettings: 'Basic Settings',
     generalSettings: 'General Settings',
+    generalSettingsStore: 'Store General Settings',
     generalSettingsDesc: 'Store Name, Link, Description',
     socialLinksDesc: 'Facebook, Instagram, Telegram',
     growthFeatures: 'Growth Features',
