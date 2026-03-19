@@ -21,13 +21,15 @@ function ReadonlyRow({
   value: string;
 }) {
   return (
-    <div className="flex items-start gap-3 py-3.5 border-b border-border/50 last:border-0">
-      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center mt-0.5">
-        <Icon className="w-3.5 h-3.5 text-primary" />
+    <div className="border-border/50 flex items-start gap-3 border-b py-3.5 last:border-0">
+      <div className="bg-primary/10 mt-0.5 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-lg">
+        <Icon className="text-primary h-3.5 w-3.5" />
       </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">{label}</p>
-        <p className="text-sm text-foreground break-all leading-relaxed">
+      <div className="min-w-0 flex-1">
+        <p className="text-muted-foreground mb-1 text-[11px] font-semibold tracking-wide uppercase">
+          {label}
+        </p>
+        <p className="text-foreground text-sm leading-relaxed break-all">
           {value || <span className="text-muted-foreground italic">—</span>}
         </p>
       </div>
@@ -87,19 +89,14 @@ export default function BasicSettingsPage() {
         variant="ghost"
         onClick={() => setEditing(false)}
         disabled={loading}
-        className="h-8 text-xs text-muted-foreground"
+        className="text-muted-foreground h-8 text-xs"
       >
         {t.cancel || 'إلغاء'}
       </Button>
-      <Button
-        size="sm"
-        onClick={handleSave}
-        disabled={loading}
-        className="h-8 gap-1.5 text-xs"
-      >
+      <Button size="sm" onClick={handleSave} disabled={loading} className="h-8 gap-1.5 text-xs">
         {loading ? (
           <span className="flex items-center gap-1.5">
-            <span className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+            <span className="h-3 w-3 animate-spin rounded-full border-2 border-white/30 border-t-white" />
             {t.store?.saving || 'جارٍ الحفظ...'}
           </span>
         ) : (
@@ -129,7 +126,7 @@ export default function BasicSettingsPage() {
         action={headerAction}
       />
 
-      <div className="mx-auto max-w-xl px-4 pt-4 space-y-4">
+      <div className="mx-auto max-w-xl space-y-4 px-4 pt-4">
         {isLoading ? (
           <div className="flex justify-center py-20">
             <Loader />
@@ -145,9 +142,14 @@ export default function BasicSettingsPage() {
                 transition={{ duration: 0.18 }}
               >
                 <SettingsSectionCard>
-                  <div className="space-y-1 pb-4 mb-2 border-b border-border/50">
-                    <p className="text-sm font-bold text-foreground">{t.store?.generalSettings || 'الإعدادات العامة'}</p>
-                    <p className="text-xs text-muted-foreground">{t.store?.generalSettingsDesc || 'اسم المتجر ورابطه يظهران للعملاء في صفحة المتجر'}</p>
+                  <div className="border-border/50 mb-2 space-y-1 border-b pb-4">
+                    <p className="text-foreground text-sm font-bold">
+                      {t.store?.generalSettings || 'الإعدادات العامة'}
+                    </p>
+                    <p className="text-muted-foreground text-xs">
+                      {t.store?.generalSettingsDesc ||
+                        'اسم المتجر ورابطه يظهران للعملاء في صفحة المتجر'}
+                    </p>
                   </div>
                   <BasicInfoSection
                     storeSlug={storeSlug}
@@ -174,20 +176,26 @@ export default function BasicSettingsPage() {
               >
                 <SettingsSectionCard>
                   {/* Store Profile Header */}
-                  <div className="flex items-center gap-4 px-1 py-2 mb-2 border-b border-border/50">
-                    <div className="h-16 w-16 overflow-hidden rounded-2xl border border-border bg-muted/30 flex-shrink-0">
+                  <div className="border-border/50 mb-2 flex items-center gap-4 border-b px-1 py-2">
+                    <div className="border-border bg-muted/30 h-16 w-16 flex-shrink-0 overflow-hidden rounded-2xl border">
                       {imagePreview ? (
-                        <img src={imagePreview} alt="Store Logo" className="h-full w-full object-cover" />
+                        <img
+                          src={imagePreview}
+                          alt="Store Logo"
+                          className="h-full w-full object-cover"
+                        />
                       ) : (
                         <div className="flex h-full w-full items-center justify-center">
-                          <Store className="h-6 w-6 text-muted-foreground/30" />
+                          <Store className="text-muted-foreground/30 h-6 w-6" />
                         </div>
                       )}
                     </div>
                     <div>
-                      <h3 className="font-bold text-lg text-foreground">{storeName || 'متجر جديد'}</h3>
-                      <p className="text-sm text-muted-foreground mt-0.5" dir="ltr">
-                        {storeSlug ? `${storeSlug}.drop-wave.com` : 'لم يتم التحديد'}
+                      <h3 className="text-foreground text-lg font-bold">
+                        {storeName || 'متجر جديد'}
+                      </h3>
+                      <p className="text-muted-foreground mt-0.5 text-sm" dir="ltr">
+                        {storeSlug ? `${storeSlug}.matager.store` : 'لم يتم التحديد'}
                       </p>
                     </div>
                   </div>
@@ -195,7 +203,7 @@ export default function BasicSettingsPage() {
                   <ReadonlyRow
                     icon={Link}
                     label={t.profile?.domain || 'رابط المتجر'}
-                    value={storeSlug ? `${storeSlug}.drop-wave.com` : ''}
+                    value={storeSlug ? `${storeSlug}.matager.store` : ''}
                   />
                   <ReadonlyRow
                     icon={Store}
@@ -210,7 +218,7 @@ export default function BasicSettingsPage() {
                 </SettingsSectionCard>
 
                 {/* Quick edit hint */}
-                <p className="text-center text-xs text-muted-foreground py-2">
+                <p className="text-muted-foreground py-2 text-center text-xs">
                   اضغط زر <strong>تعديل</strong> لتغيير بيانات المتجر
                 </p>
               </motion.div>

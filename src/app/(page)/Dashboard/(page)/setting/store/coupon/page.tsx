@@ -58,12 +58,18 @@ export default function CouponSettingsPage() {
     }
   };
 
-  const filtered = coupons.filter(c => !search || c.code.toLowerCase().includes(search.toLowerCase()));
+  const filtered = coupons.filter(
+    c => !search || c.code.toLowerCase().includes(search.toLowerCase())
+  );
 
-  // We don't have an update API, so the toggle modifies local state only for the visual mockup effect
-  const toggleCoupon = (id: string) => {
+  const toggleCoupon = async (id: string) => {
+    const res = await fetch(`/api/coupons/toggle/${id}`, { method: 'POST' });
     setCoupons(prev => prev.map(c => (c.id === id ? { ...c, isActive: !c.isActive } : c)));
-    toast.success('تم تحديث حالة الكوبون');
+    if (res.ok) {
+      toast.success('تم تحديث حالة الكوبون');
+      fetchCoupons();
+    }
+    if (!res.ok) toast.error('فشل في تحديث حالة الكوبون');
   };
 
   const deleteCoupon = async (id: string) => {
@@ -113,7 +119,14 @@ export default function CouponSettingsPage() {
 
       toast.success('تم إنشاء الكوبون بنجاح');
       fetchCoupons();
-      setNewCoupon({ code: '', type: 'PERCENTAGE', value: '', minOrder: '', maxUsage: '100', expiresAt: '' });
+      setNewCoupon({
+        code: '',
+        type: 'PERCENTAGE',
+        value: '',
+        minOrder: '',
+        maxUsage: '100',
+        expiresAt: '',
+      });
       setShowForm(false);
     } catch (err: any) {
       toast.error(err.message || 'حدث خطأ عند إنشاء الكوبون');
@@ -123,43 +136,47 @@ export default function CouponSettingsPage() {
   };
 
   const headerActions = (
-    <Button onClick={() => setShowForm(!showForm)} size="sm" className="gap-1.5 h-8 text-xs bg-primary hover:bg-primary/90">
+    <Button
+      onClick={() => setShowForm(!showForm)}
+      size="sm"
+      className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
+    >
       <Plus className="h-3.5 w-3.5" />
       إنشاء كود
     </Button>
   );
 
   return (
-    <div dir="rtl" className="min-h-screen bg-background pb-28">
+    <div dir="rtl" className="bg-background min-h-screen pb-28">
       <SettingsPageHeader
         title="أكواد الخصم"
         subtitle={isFetching ? 'جاري التحميل...' : `${coupons.length} كود مضاف`}
         action={headerActions}
       />
 
-      <main className="max-w-xl mx-auto px-4 pt-4 space-y-4">
+      <main className="mx-auto max-w-xl space-y-4 px-4 pt-4">
         {showForm && (
-          <div className="bg-card border border-border rounded-xl p-4 space-y-4 shadow-sm animate-in slide-in-from-top-2">
-            <h3 className="text-sm font-semibold text-foreground">كود خصم جديد</h3>
+          <div className="bg-card border-border animate-in slide-in-from-top-2 space-y-4 rounded-xl border p-4 shadow-sm">
+            <h3 className="text-foreground text-sm font-semibold">كود خصم جديد</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="text-xs text-muted-foreground mb-1 block">الكود</label>
+                <label className="text-muted-foreground mb-1 block text-xs">الكود</label>
                 <Input
                   value={newCoupon.code}
                   onChange={e => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
                   placeholder="مثال: WELCOME10"
-                  className="uppercase h-10 text-sm"
+                  className="h-10 text-sm uppercase"
                   dir="ltr"
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <label className="text-xs text-muted-foreground mb-1 block">النوع</label>
+                <label className="text-muted-foreground mb-1 block text-xs">النوع</label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setNewCoupon({ ...newCoupon, type: 'PERCENTAGE' })}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-medium border transition-colors ${
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border py-2.5 text-xs font-medium transition-colors ${
                       newCoupon.type === 'PERCENTAGE'
-                        ? 'bg-primary/10 text-primary border-primary ring-1 ring-primary/20'
+                        ? 'bg-primary/10 text-primary border-primary ring-primary/20 ring-1'
                         : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
@@ -167,9 +184,9 @@ export default function CouponSettingsPage() {
                   </button>
                   <button
                     onClick={() => setNewCoupon({ ...newCoupon, type: 'FIXED' })}
-                    className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-lg text-xs font-medium border transition-colors ${
+                    className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg border py-2.5 text-xs font-medium transition-colors ${
                       newCoupon.type === 'FIXED'
-                        ? 'bg-primary/10 text-primary border-primary ring-1 ring-primary/20'
+                        ? 'bg-primary/10 text-primary border-primary ring-primary/20 ring-1'
                         : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
@@ -178,7 +195,7 @@ export default function CouponSettingsPage() {
                 </div>
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <label className="text-xs text-muted-foreground mb-1 block">
+                <label className="text-muted-foreground mb-1 block text-xs">
                   القيمة {newCoupon.type === 'PERCENTAGE' ? '(%)' : '(د.ع)'}
                 </label>
                 <Input
@@ -189,7 +206,9 @@ export default function CouponSettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">حد أدنى للطلب (د.ع)</label>
+                <label className="text-muted-foreground mb-1 block text-xs">
+                  حد أدنى للطلب (د.ع)
+                </label>
                 <Input
                   type="number"
                   value={newCoupon.minOrder}
@@ -199,7 +218,7 @@ export default function CouponSettingsPage() {
                 />
               </div>
               <div>
-                <label className="text-xs text-muted-foreground mb-1 block">عدد الاستخدامات</label>
+                <label className="text-muted-foreground mb-1 block text-xs">عدد الاستخدامات</label>
                 <Input
                   type="number"
                   value={newCoupon.maxUsage}
@@ -209,7 +228,7 @@ export default function CouponSettingsPage() {
                 />
               </div>
               <div className="col-span-2">
-                <label className="text-xs text-muted-foreground mb-1 block">تاريخ الانتهاء</label>
+                <label className="text-muted-foreground mb-1 block text-xs">تاريخ الانتهاء</label>
                 <Input
                   type="date"
                   value={newCoupon.expiresAt}
@@ -219,7 +238,12 @@ export default function CouponSettingsPage() {
               </div>
             </div>
             <div className="flex gap-2 pt-2">
-              <Button onClick={addCoupon} disabled={loading} size="sm" className="flex-1 bg-primary hover:bg-primary/90">
+              <Button
+                onClick={addCoupon}
+                disabled={loading}
+                size="sm"
+                className="bg-primary hover:bg-primary/90 flex-1"
+              >
                 {loading ? 'جاري الإنشاء...' : 'إنشاء'}
               </Button>
               <Button onClick={() => setShowForm(false)} variant="outline" size="sm">
@@ -230,24 +254,24 @@ export default function CouponSettingsPage() {
         )}
 
         <div className="relative">
-          <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder="ابحث عن كود..."
-            className="pr-10 h-10 text-sm bg-card border-border"
+            className="bg-card border-border h-10 pr-10 text-sm"
           />
         </div>
 
         <div className="space-y-3">
           {isFetching ? (
-             <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-             <Ticket className="h-10 w-10 mb-3 opacity-20 animate-pulse" />
-             <p className="text-sm font-medium animate-pulse">جاري التحميل...</p>
-           </div>
+            <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
+              <Ticket className="mb-3 h-10 w-10 animate-pulse opacity-20" />
+              <p className="animate-pulse text-sm font-medium">جاري التحميل...</p>
+            </div>
           ) : filtered.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground">
-              <Ticket className="h-10 w-10 mb-3 opacity-20" />
+            <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
+              <Ticket className="mb-3 h-10 w-10 opacity-20" />
               <p className="text-sm font-medium">لا توجد أكواد</p>
             </div>
           ) : (
@@ -257,53 +281,67 @@ export default function CouponSettingsPage() {
               const percentageUsed = Math.min((used / maxUses) * 100, 100);
 
               return (
-                <div key={coupon.id} className="bg-card border border-border rounded-xl p-4 shadow-sm hover:border-primary/30 transition-colors">
+                <div
+                  key={coupon.id}
+                  className="bg-card border-border hover:border-primary/30 rounded-xl border p-4 shadow-sm transition-colors"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-3">
                       <div
-                        className={`w-10 h-10 rounded-xl flex items-center justify-center border border-border/50 flex-shrink-0 ${
+                        className={`border-border/50 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border ${
                           coupon.isActive ? 'bg-primary/10' : 'bg-muted'
                         }`}
                       >
-                        <Ticket className={`h-4 w-4 ${coupon.isActive ? 'text-primary' : 'text-muted-foreground'}`} />
+                        <Ticket
+                          className={`h-4 w-4 ${coupon.isActive ? 'text-primary' : 'text-muted-foreground'}`}
+                        />
                       </div>
                       <div>
                         <div className="flex items-center gap-2">
-                          <span className="text-sm font-bold text-foreground font-mono" dir="ltr">{coupon.code}</span>
+                          <span className="text-foreground font-mono text-sm font-bold" dir="ltr">
+                            {coupon.code}
+                          </span>
                           <button
                             onClick={() => copyCode(coupon.code)}
-                            className="text-muted-foreground hover:text-primary transition-colors p-1"
+                            className="text-muted-foreground hover:text-primary p-1 transition-colors"
                             title="نسخ الكود"
                           >
                             <Copy className="h-3.5 w-3.5" />
                           </button>
                         </div>
-                        <span className="text-[11px] text-muted-foreground mt-0.5 block">
+                        <span className="text-muted-foreground mt-0.5 block text-[11px]">
                           {coupon.type === 'PERCENTAGE'
                             ? `${coupon.value}% خصم`
                             : `${Number(coupon.value).toLocaleString('ar-IQ')} د.ع خصم`}
-                          {coupon.minOrder ? ` • حد أدنى ${Number(coupon.minOrder).toLocaleString('ar-IQ')}` : ''}
+                          {coupon.minOrder
+                            ? ` • حد أدنى ${Number(coupon.minOrder).toLocaleString('ar-IQ')}`
+                            : ''}
                         </span>
                       </div>
                     </div>
-                    <Switch checked={coupon.isActive} onCheckedChange={() => toggleCoupon(coupon.id)} />
+                    <Switch
+                      checked={coupon.isActive}
+                      onCheckedChange={() => toggleCoupon(coupon.id)}
+                    />
                   </div>
-                  <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
-                    <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                      <span>استخدام {used}/{coupon.maxUsage ? maxUses : '∞'}</span>
+                  <div className="border-border mt-4 flex items-center justify-between border-t pt-3">
+                    <div className="text-muted-foreground flex items-center gap-3 text-[11px]">
+                      <span>
+                        استخدام {used}/{coupon.maxUsage ? maxUses : '∞'}
+                      </span>
                       <span>ينتهي {new Date(coupon.expiresAt).toLocaleDateString()}</span>
                     </div>
                     <button
                       onClick={() => deleteCoupon(coupon.id)}
-                      className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors p-2 rounded-lg"
+                      className="text-muted-foreground hover:text-destructive p-1 transition-colors"
                       title="حذف الكوبون"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>
                   </div>
-                  <div className="mt-3 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="bg-muted mt-3 h-1.5 overflow-hidden rounded-full">
                     <div
-                      className="h-full bg-primary rounded-full transition-all duration-500"
+                      className="bg-primary h-full rounded-full transition-all duration-500"
                       style={{ width: `${percentageUsed}%` }}
                     />
                   </div>

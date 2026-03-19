@@ -12,6 +12,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { useNotifications } from '../../hooks/useNotifications';
 import { useTheme } from '../../context/ThemeContext';
 import { useStoreProvider } from '../../hooks';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function UserActions() {
   const pathname = usePathname();
@@ -27,7 +28,7 @@ export default function UserActions() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const { theme, toggleTheme } = useTheme();
-  const allowPath = ['/Dashboard', '/' , '/Dashboard/ProductManagment/add-product'];
+  const allowPath = ['/Dashboard', '/', '/Dashboard/ProductManagment/add-product'];
 
   const { notifications, unreadCount, markAsRead } = useNotifications(session?.user?.id);
 
@@ -45,7 +46,11 @@ export default function UserActions() {
   }, []);
 
   if (!session?.user) return null;
-
+  const dropdownVariants = {
+    hidden: { opacity: 0, y: -6, scale: 0.96 },
+    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.15 } },
+    exit: { opacity: 0, y: -4, scale: 0.96, transition: { duration: 0.1 } },
+  };
   return (
     <div
       dir="rtl"
@@ -177,52 +182,85 @@ export default function UserActions() {
             )}
           </button>
 
-          {openNotifications && (
-            <div className="border-border bg-card absolute left-0 z-50 mt-2 w-72 rounded-xl border shadow-lg">
-              <div className="border-border border-b px-4 py-2 text-sm font-semibold">
-                {t.profile.notificationSettings}
-              </div>
+          <AnimatePresence>
+            {openNotifications && (
+              <motion.div
+                variants={dropdownVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+                className="border-border/60 bg-card absolute left-0 z-50 mt-1.5 w-80 overflow-hidden rounded-2xl border shadow-xl shadow-black/10"
+              >
+                <div className="border-border/50 flex items-center justify-between border-b px-4 py-3">
+                  <span className="text-foreground text-sm font-bold">
+                    {t.profile.notificationSettings}
+                  </span>
+                  {unreadCount > 0 && (
+                    <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-500">
+                      {unreadCount} جديد
+                    </span>
+                  )}
+                </div>
 
-              {!notifications || notifications.length === 0 ? (
-                <div className="text-muted-foreground p-4 text-center text-sm">لا توجد إشعارات</div>
-              ) : (
-                <ul className="max-h-64 overflow-y-auto">
-                  {notifications.map(n => (
-                    <Link
-                      key={n.id}
-                      href={`/Dashboard/orderDetails/${n.orderId}`}
-                      onClick={() => {
-                        markAsRead(n.id);
-                        setOpenNotifications(false);
-                      }}
-                      className="hover:bg-muted block transition"
-                    >
-                      <li className="flex items-center gap-3 px-4 py-2">
+                {!notifications || notifications.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-2 py-10">
+                    <MdOutlineNotificationsNone className="text-muted-foreground/40 text-3xl" />
+                    <p className="text-muted-foreground text-sm">لا توجد إشعارات</p>
+                  </div>
+                ) : (
+                  <ul className="divide-border/50 max-h-72 divide-y overflow-y-auto">
+                    {notifications.map(n => (
+                      <Link
+                        key={n.id}
+                        href={`/Dashboard/orderDetails/${n.orderId}`}
+                        onClick={() => {
+                          markAsRead(n.id);
+                          setOpenNotifications(false);
+                        }}
+                        className="hover:bg-muted/50 flex items-center gap-3 px-4 py-3 transition-colors"
+                      >
                         <div
-                          className={`flex h-7 w-7 items-center justify-center rounded-full text-xs ${
-                            !n.isRead ? 'bg-green-500 text-white' : 'bg-muted text-muted-foreground'
+                          className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
+                            !n.isRead
+                              ? 'bg-primary/10 text-primary'
+                              : 'bg-muted text-muted-foreground'
                           }`}
                         >
                           {n.type ?? 'إ'}
                         </div>
-
-                        <div className="flex flex-col">
-                          <span className="text-xs font-medium">{n.message}</span>
-
-                          <time className="text-muted-foreground text-[10px]">
-                            {new Date(n.createdAt).toLocaleDateString(
-                              lang === 'ar' ? 'ar-EG' : lang === 'ku' ? 'ar-IQ' : 'en-US',
-                              { month: 'short', day: 'numeric' }
-                            )}
+                        <div className="min-w-0 flex-1">
+                          <p className="text-foreground max-w-[30ch] text-sm leading-snug font-medium break-words whitespace-pre-wrap">
+                            {n.message}
+                          </p>
+                          <time className="text-muted-foreground text-[11px]">
+                            {new Date(n.createdAt).toLocaleDateString('ar-IQ', {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
                           </time>
                         </div>
-                      </li>
-                    </Link>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+                        {!n.isRead && (
+                          <span className="bg-primary h-2 w-2 flex-shrink-0 rounded-full" />
+                        )}
+                      </Link>
+                    ))}
+                  </ul>
+                )}
+                <div className="border-border/50 mt-1 flex items-center justify-center border-t px-4 py-3">
+                  <button
+                    onClick={() => {
+                      router.push('/Dashboard/notification');
+                      setOpenNotifications(false);
+                    }}
+                    className="text-foreground bg-primary w-full cursor-pointer rounded-lg px-4 py-2 text-xs"
+                  >
+                    عرض جميع الإشعارات
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
     </div>

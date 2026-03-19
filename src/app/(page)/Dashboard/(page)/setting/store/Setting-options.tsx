@@ -2,7 +2,7 @@
 import { useLanguage } from '../../../context/LanguageContext';
 
 import { useRouter } from 'next/navigation';
-import { ChevronLeft, ExternalLink, MessageCircle, Settings } from 'lucide-react';
+import { ChevronLeft, ExternalLink, MessageCircle, Settings, Store } from 'lucide-react';
 import type { ElementType } from 'react';
 
 import { LuUserRoundPen } from 'react-icons/lu';
@@ -74,9 +74,9 @@ export default function SettingOptions() {
       title: t.store?.basicSettings || 'الإعدادات الأساسية',
       sections: [
         {
-          label: t.store?.generalSettings || 'الإعدادات العامة',
+          label: t.store?.generalSettingsStore || 'الإعدادات العامة',
           desc: t.store?.generalSettingsDesc || 'اسم المتجر، الرابط، الوصف',
-          icon: LuUserRoundPen,
+          icon: Store,
           path: `${base}/basic`,
         },
         {
@@ -84,12 +84,6 @@ export default function SettingOptions() {
           desc: 'سعر الشحن ورقم التواصل',
           icon: LiaShippingFastSolid,
           path: `${base}/shipping`,
-        },
-        {
-          label: t.store?.socialLinks || 'روابط التواصل',
-          desc: t.store?.socialLinksDesc || 'فيسبوك، انستغرام، تيليغرام',
-          icon: IoShareSocialOutline,
-          path: `${base}/social`,
         },
       ],
     },

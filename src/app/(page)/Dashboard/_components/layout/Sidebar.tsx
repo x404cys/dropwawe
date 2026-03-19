@@ -104,7 +104,7 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           </div>
         </div>
 
-         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
+        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-3">
           <NavSection
             title={t.more.general}
             items={navItems}
@@ -115,14 +115,14 @@ export default function Sidebar({ children }: { children: React.ReactNode }) {
           />
         </nav>
 
-         <div className="border-border/60 border-t px-4 py-3">
+        <div className="border-border/60 border-t px-4 py-3">
           <p className="text-muted-foreground/50 text-center text-[10px]">
-            Matager v2.0 · drop-wave.com
+            Matager v2.0 · matager.store
           </p>
         </div>
       </aside>
 
-       <div className="flex flex-1 flex-col overflow-hidden">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <NavBarForDesktop />
         <main className="bg-background flex-1 overflow-y-auto p-2">{children}</main>
       </div>

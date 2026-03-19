@@ -12,3 +12,7 @@ export const fetcherAxios = (url: string) =>
 export async function markNotificationAsRead(id: string): Promise<void> {
   await fetch(`/api/notifications/${id}/read`, { method: 'PATCH' });
 }
+
+export async function markNotificationAsReadAll(): Promise<void> {
+  await fetch(`/api/notifications/read`, { method: 'PATCH' });
+}

@@ -205,6 +205,7 @@ export const ar = {
     title: 'إعدادات المتجر',
     basicSettings: 'الإعدادات الأساسية',
     generalSettings: 'الإعدادات العامة',
+    generalSettingsStore: 'إعدادات المتجر العامة',
     generalSettingsDesc: 'اسم المتجر، الرابط، الوصف',
     socialLinksDesc: 'فيسبوك، انستغرام، تيليغرام',
     growthFeatures: 'ميزات النمو',

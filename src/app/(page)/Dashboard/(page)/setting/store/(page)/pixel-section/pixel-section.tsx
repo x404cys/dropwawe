@@ -193,8 +193,7 @@ export default function PixelSection({
                     </div>
                   </div>
                 </div>
-                <Switch checked={pixel.active} />
-              </div>
+               </div>
               <div className="flex items-center justify-between mt-4 pt-3 border-t border-border">
                 <div className="flex flex-wrap gap-1">
                   {pixel.events.map((event) => (

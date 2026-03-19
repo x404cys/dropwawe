@@ -26,7 +26,7 @@ export default function CreateInvitePage() {
   const [inviteCode, setInviteCode] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
-  const inviteLink = inviteCode && `https://login.drop-wave.com/login/invite/${inviteCode}`;
+  const inviteLink = inviteCode && `https://login.matager.store/login/invite/${inviteCode}`;
 
   const { data } = useSWR<MultiUser[]>(
     '/api/dashboard/setting/multi-user/get-users',
@@ -67,17 +67,16 @@ export default function CreateInvitePage() {
 
   return (
     <div dir="rtl" className="space-y-6">
-
       {/* Header section */}
       <div className="flex items-start gap-3">
-        <div className="flex-shrink-0 w-11 h-11 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center">
-          <UserPlus className="w-5 h-5 text-primary" />
+        <div className="bg-primary/10 border-primary/20 flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border">
+          <UserPlus className="text-primary h-5 w-5" />
         </div>
         <div>
-          <h2 className="text-lg font-bold text-foreground">
+          <h2 className="text-foreground text-lg font-bold">
             {t.teamSettings?.title || 'دعوة أعضاء لإدارة المتجر'}
           </h2>
-          <p className="text-sm text-muted-foreground leading-relaxed mt-1">
+          <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
             {t.teamSettings?.subtitle ||
               'أضف أعضاء إلى فريقك وامنحهم صلاحيات لإدارة الطلبات والمخزون.'}
           </p>
@@ -86,25 +85,29 @@ export default function CreateInvitePage() {
 
       {/* Feature highlights */}
       <div className="grid grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-border bg-card p-4 text-center space-y-2">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-            <Users className="w-4 h-4 text-primary" />
+        <div className="border-border bg-card space-y-2 rounded-2xl border p-4 text-center">
+          <div className="bg-primary/10 mx-auto flex h-9 w-9 items-center justify-center rounded-xl">
+            <Users className="text-primary h-4 w-4" />
           </div>
           <div>
-            <p className="text-xs font-bold text-foreground">{t.teamSettings?.teamwork || 'عمل جماعي'}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-foreground text-xs font-bold">
+              {t.teamSettings?.teamwork || 'عمل جماعي'}
+            </p>
+            <p className="text-muted-foreground mt-0.5 text-[11px]">
               {t.teamSettings?.teamworkDesc || 'إدارة المتجر بالتعاون'}
             </p>
           </div>
         </div>
 
-        <div className="rounded-2xl border border-border bg-card p-4 text-center space-y-2">
-          <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-            <ShieldCheck className="w-4 h-4 text-primary" />
+        <div className="border-border bg-card space-y-2 rounded-2xl border p-4 text-center">
+          <div className="bg-primary/10 mx-auto flex h-9 w-9 items-center justify-center rounded-xl">
+            <ShieldCheck className="text-primary h-4 w-4" />
           </div>
           <div>
-            <p className="text-xs font-bold text-foreground">{t.teamSettings?.quickInvite || 'دعوة سريعة'}</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-foreground text-xs font-bold">
+              {t.teamSettings?.quickInvite || 'دعوة سريعة'}
+            </p>
+            <p className="text-muted-foreground mt-0.5 text-[11px]">
               {t.teamSettings?.quickInviteDesc || 'إضافة أعضاء برابط'}
             </p>
           </div>
@@ -115,17 +118,17 @@ export default function CreateInvitePage() {
       <Button
         onClick={handleCreateInvite}
         disabled={loading}
-        className="w-full h-12 rounded-xl font-bold text-base active:scale-[0.98] transition-all"
+        className="h-12 w-full rounded-xl text-base font-bold transition-all active:scale-[0.98]"
         size="lg"
       >
         {loading ? (
           <span className="flex items-center gap-2">
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="h-4 w-4 animate-spin" />
             {t.teamSettings?.creatingInvite || 'جارٍ إنشاء رابط الدعوة...'}
           </span>
         ) : (
           <span className="flex items-center gap-2">
-            <Link2 className="w-4 h-4" />
+            <Link2 className="h-4 w-4" />
             {t.teamSettings?.createInvite || 'إنشاء رابط دعوة جديد'}
           </span>
         )}
@@ -138,20 +141,20 @@ export default function CreateInvitePage() {
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="rounded-2xl border border-primary/20 bg-primary/5 p-4 space-y-3"
+            className="border-primary/20 bg-primary/5 space-y-3 rounded-2xl border p-4"
           >
             <div className="flex items-center justify-between">
-              <p className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+              <p className="text-muted-foreground text-xs font-bold tracking-wide uppercase">
                 {t.teamSettings?.inviteCode || 'كود الدعوة'}
               </p>
-              <span className="font-mono text-sm font-bold text-foreground bg-card border border-border/50 px-2.5 py-0.5 rounded-lg">
+              <span className="text-foreground bg-card border-border/50 rounded-lg border px-2.5 py-0.5 font-mono text-sm font-bold">
                 {inviteCode}
               </span>
             </div>
 
-            <div className="flex items-center gap-2 bg-card border border-border/50 rounded-xl p-3">
-              <Link2 className="w-4 h-4 text-muted-foreground flex-shrink-0" />
-              <span className="text-xs text-muted-foreground truncate flex-1" dir="ltr">
+            <div className="bg-card border-border/50 flex items-center gap-2 rounded-xl border p-3">
+              <Link2 className="text-muted-foreground h-4 w-4 flex-shrink-0" />
+              <span className="text-muted-foreground flex-1 truncate text-xs" dir="ltr">
                 {inviteLink}
               </span>
             </div>
@@ -159,16 +162,16 @@ export default function CreateInvitePage() {
             <Button
               onClick={copyToClipboard}
               variant="outline"
-              className="w-full h-11 rounded-xl font-bold gap-2"
+              className="h-11 w-full gap-2 rounded-xl font-bold"
             >
               {copied ? (
                 <>
-                  <Check className="w-4 h-4 text-emerald-500" />
+                  <Check className="h-4 w-4 text-emerald-500" />
                   <span className="text-emerald-600">تم النسخ!</span>
                 </>
               ) : (
                 <>
-                  <Copy className="w-4 h-4" />
+                  <Copy className="h-4 w-4" />
                   {t.teamSettings?.copyInviteLink || 'نسخ رابط الدعوة'}
                 </>
               )}
@@ -180,11 +183,11 @@ export default function CreateInvitePage() {
       {/* Members list */}
       <div className="space-y-3 pt-2">
         <div className="flex items-center gap-2">
-          <h3 className="text-sm font-bold text-foreground">
+          <h3 className="text-foreground text-sm font-bold">
             {t.teamSettings?.addedMembers || 'الأعضاء المضافون'}
           </h3>
           {data && data.length > 0 && (
-            <span className="bg-muted text-muted-foreground text-[11px] font-bold px-2 py-0.5 rounded-full">
+            <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[11px] font-bold">
               {data.length}
             </span>
           )}
@@ -204,7 +207,7 @@ export default function CreateInvitePage() {
               return (
                 <div
                   key={item.user.id}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-card p-3 hover:shadow-sm transition-shadow"
+                  className="border-border bg-card flex items-center gap-3 rounded-2xl border p-3 transition-shadow hover:shadow-sm"
                 >
                   {item.user.image ? (
                     <Image
@@ -212,24 +215,26 @@ export default function CreateInvitePage() {
                       alt={item.user.name}
                       width={40}
                       height={40}
-                      className="rounded-xl object-cover flex-shrink-0"
+                      className="flex-shrink-0 rounded-xl object-cover"
                     />
                   ) : (
-                    <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center text-sm font-bold text-primary">
+                    <div className="bg-primary/10 text-primary flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold">
                       {initials}
                     </div>
                   )}
 
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-foreground truncate">{item.user.name}</p>
-                    <p className="text-xs text-muted-foreground truncate">{item.user.email}</p>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-foreground truncate text-sm font-semibold">
+                      {item.user.name}
+                    </p>
+                    <p className="text-muted-foreground truncate text-xs">{item.user.email}</p>
                   </div>
 
-                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
-                    <span className="text-[10px] font-bold bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
+                  <div className="flex flex-shrink-0 flex-col items-end gap-1">
+                    <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[10px] font-bold">
                       {item.role}
                     </span>
-                    <span className="text-[10px] text-muted-foreground">
+                    <span className="text-muted-foreground text-[10px]">
                       {new Date(item.createdAt).toLocaleDateString('ar-IQ')}
                     </span>
                   </div>
@@ -238,11 +243,11 @@ export default function CreateInvitePage() {
             })}
           </div>
         ) : (
-          <div className="text-center py-10 space-y-2">
-            <div className="w-12 h-12 rounded-2xl bg-muted flex items-center justify-center mx-auto">
-              <Users className="w-6 h-6 text-muted-foreground" />
+          <div className="space-y-2 py-10 text-center">
+            <div className="bg-muted mx-auto flex h-12 w-12 items-center justify-center rounded-2xl">
+              <Users className="text-muted-foreground h-6 w-6" />
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               {t.teamSettings?.noMembers || 'لا يوجد أعضاء مضافون حتى الآن.'}
             </p>
           </div>

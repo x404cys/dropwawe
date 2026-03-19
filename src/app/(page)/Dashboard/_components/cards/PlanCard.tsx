@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 import { format, differenceInDays } from 'date-fns';
 import { BiTestTube } from 'react-icons/bi';
 import { RiFireLine } from 'react-icons/ri';
-import { Rocket, ChevronRight, CreditCard, Sparkles } from 'lucide-react';
+import { Rocket, ChevronRight, CreditCard } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SubscriptionResponse } from '@/types/users/User';
 
@@ -102,9 +102,6 @@ export default function PlanCard() {
           <div className="flex min-w-0 flex-1 flex-col">
             <h3 className="text-foreground flex items-center gap-2 text-sm font-bold md:text-base">
               <span className="truncate">{planName}</span>
-              {status === 'ACTIVE' && (
-                <Sparkles className="h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
-              )}
             </h3>
             <p className="text-muted-foreground mt-0.5 truncate text-xs font-medium md:text-sm">
               {description}
