@@ -95,7 +95,7 @@ export default function CreateAnotherStorePage() {
         >
           <Button
             size="lg"
-            onClick={() => router.push('/Dashboard/create-store/create-another')}
+            onClick={() => router.push('/create-store/create-another')}
             className="w-full h-13 text-base font-bold rounded-2xl active:scale-[0.98] transition-all shadow-md"
           >
             {t.store?.createNewStore || 'إنشاء متجر جديد'}

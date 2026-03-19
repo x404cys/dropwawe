@@ -3,6 +3,7 @@
 import { Heart, Package, ShoppingCart } from 'lucide-react';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
+import { productHasVariants } from '../../../_utils/cart';
 import { getDiscountedPrice } from '../../../_utils/price';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
@@ -19,6 +20,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
   const lowStock = !product.unlimited && product.quantity > 0 && product.quantity < 5;
 
   const isLiked = liked.includes(product.id);
+  const hasVariants = productHasVariants(product);
 
   return (
     <article className="group flex h-full flex-col">
@@ -94,7 +96,8 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
         {/* fixed button */}
         <div className="mt-auto pt-3">
           <button
-            onClick={() => addToCart(product)}
+            type="button"
+            onClick={() => (hasVariants ? setSelectedProduct(product) : addToCart(product))}
             disabled={isOutOfStock}
             style={{ background: colors.accent }}
             className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-sm px-4 py-2 text-sm font-medium text-[var(--foreground)] transition disabled:opacity-50"

@@ -5,6 +5,7 @@
 import { Heart, Package, ShoppingCart, Star, Truck } from 'lucide-react';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
+import { productHasVariants } from '../../../_utils/cart';
 import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
@@ -18,6 +19,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
   const isOutOfStock = !product.unlimited && product.quantity === 0;
   const lowStock = !product.unlimited && product.quantity > 0 && product.quantity < 5;
   const isLiked = liked.includes(product.id);
+  const hasVariants = productHasVariants(product);
 
   return (
     <article
@@ -126,7 +128,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
       <div className="px-3 pt-2 pb-3">
         <button
           type="button"
-          onClick={() => addToCart(product)}
+          onClick={() => (hasVariants ? setSelectedProduct(product) : addToCart(product))}
           disabled={isOutOfStock}
           className="flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[11px] font-bold text-white transition-transform duration-200 ease-in-out active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300"
           style={isOutOfStock ? undefined : { backgroundColor: colors.primary }}

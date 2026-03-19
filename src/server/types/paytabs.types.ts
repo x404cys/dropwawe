@@ -2,8 +2,8 @@ export interface PayTabsItemInput {
   productId: string;
   quantity: number;
   price: number;
-  selectedColor: string;
-  selectedSize: string;
+  selectedColor: string | null;
+  selectedSize: string | null;
 }
 
 export interface PayTabsCustomerDetails {

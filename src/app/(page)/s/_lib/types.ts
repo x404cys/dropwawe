@@ -306,7 +306,7 @@ export type StorefrontProductSize = {
 
 export type StorefrontProductColor = {
   id: string;
-  color: string;
+  name: string;
   hex: string | null;
   stock: number;
 };
@@ -321,13 +321,13 @@ export type StorefrontProduct = {
   discount: number;
   image?: string;
   description?: string;
-  selectedColor?: string;
-  selectedSize?: string;
+  selectedColor?: string | undefined;
+  selectedSize?: string | undefined;
   hasReturnPolicy?: string;
   shippingType?: string;
-  images?: { id: string; url: string }[];
-  sizes?: { id: string; size: string; stock: number }[];
-  colors?: { id: string; name: string; hex: string; stock: number }[];
+  images?: StorefrontProductImage[];
+  sizes?: StorefrontProductSize[];
+  colors?: StorefrontProductColor[];
   unlimited?: boolean;
   isFromSupplier?: boolean;
   user?: {

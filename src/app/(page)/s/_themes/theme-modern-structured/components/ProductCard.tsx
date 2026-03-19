@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { Package } from 'lucide-react';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
+import { productHasVariants } from '../../../_utils/cart';
 import { getDiscountedPrice } from '../../../_utils/price';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
@@ -19,6 +20,7 @@ export default function ModernStructuredProductCard({ product, colors, fonts }: 
     typeof product.quantity === 'number' && product.quantity > 0 && product.quantity < 5;
   const visibleColors = product.colors?.slice(0, 5) ?? [];
   const remainingColors = Math.max((product.colors?.length ?? 0) - visibleColors.length, 0);
+  const hasVariants = productHasVariants(product);
 
   return (
     <div className="group relative overflow-hidden rounded-xl">
@@ -120,7 +122,7 @@ export default function ModernStructuredProductCard({ product, colors, fonts }: 
 
       <button
         type="button"
-        onClick={() => addToCart(product)}
+        onClick={() => (hasVariants ? setSelectedProduct(product) : addToCart(product))}
         className="absolute inset-x-0 bottom-0 translate-y-full bg-slate-900 py-2.5 text-center text-xs font-medium text-white transition-transform duration-200 ease-in-out group-hover:translate-y-0 hover:bg-slate-800"
         style={{ fontFamily: fonts.body }}
       >

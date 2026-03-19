@@ -35,13 +35,13 @@ async function resolveSubdomain() {
 
     try {
       const url = new URL(referer || `http://${host}`);
-      return url.searchParams.get('store') ?? 'perfume';
+      return url.searchParams.get('store') ?? '0000ppp';
     } catch {
-      return 'perfume';
+      return '0000ppp';
     }
   }
 
-  return host.split('.')[0] || 'perfume';
+  return host.split('.')[0] || '0000ppp';
 }
 
 async function getStorefrontData(): Promise<StorefrontData | null> {

@@ -99,8 +99,8 @@ export const StoreProvider = ({ children }: Props) => {
     if (stores.length > 0) return;
 
     const timer = setTimeout(() => {
-      toast.warning('عزيزي لا تملك متجر انشاء واحد');
-      router.push('/Dashboard/create-store');
+      toast.warning('عزيزي لا تملك متجر انشاء واحد'); 
+      router.push('/create-store');
     }, 60 * 1000);
 
     return () => clearTimeout(timer);

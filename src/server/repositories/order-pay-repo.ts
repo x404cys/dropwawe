@@ -11,8 +11,8 @@ export const orderPaymentRepository = {
 
   createOrder: async (
     storeId: string,
-    userId: string,
-    total: number,
+    userId: string | null,
+    subtotal: number,
     fullName: string,
     location: string,
     paymentMethod: string,
@@ -27,7 +27,9 @@ export const orderPaymentRepository = {
       data: {
         storeId,
         userId,
-        total,
+        total: finalTotal,
+        finalTotal,
+        discount,
         fullName,
         location,
         paymentMethod,
@@ -46,7 +48,6 @@ export const orderPaymentRepository = {
       include: { items: true },
     });
   },
-
   createTraderOrder: async (
     traderId: string,
     supplierId: string,
@@ -62,6 +63,8 @@ export const orderPaymentRepository = {
       wholesalePrice: number;
       traderProfit: number;
       supplierProfit: number;
+      selectedColor: string | null;
+      selectedSize: string | null;
     }>
   ) => {
     return prisma.orderFromTrader.create({
@@ -82,6 +85,8 @@ export const orderPaymentRepository = {
             wholesalePrice: i.wholesalePrice,
             traderProfit: i.traderProfit,
             supplierProfit: i.supplierProfit,
+            color: i.selectedColor,
+            size: i.selectedSize,
           })),
         },
       },

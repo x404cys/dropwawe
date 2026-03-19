@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowRight, Check, Minus, Plus, ShoppingCart } from 'lucide-react';
+import { ArrowRight, Check, Minus, Plus } from 'lucide-react';
 
 import { ActiveColors, StorefrontProduct } from '../../_lib/types';
 import { getDiscountedPrice } from '../../_utils/price';
@@ -15,9 +15,8 @@ interface ProductModalProps {
 }
 
 export default function ProductModal({ product, colors, headingStyle }: ProductModalProps) {
-  const { t, locale } = useLanguage();
-  const { addToCart, buyNow, setSelectedProduct, cartCount, setShowCart, setCheckoutStep } =
-    useCart();
+  const { t } = useLanguage();
+  const { addToCart, buyNow, setSelectedProduct } = useCart();
 
   const finalPrice = getDiscountedPrice(product);
   const discountValue = Math.max(0, (product.price ?? 0) - finalPrice);
@@ -30,26 +29,34 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
 
   const handleClose = () => setSelectedProduct(null);
 
+  const selectedSizeLabel = useMemo(
+    () => product.sizes?.find(size => size.id === selectedSize)?.size ?? null,
+    [product.sizes, selectedSize]
+  );
+
+  const selectedColorData = useMemo(
+    () => product.colors?.find(color => color.id === selectedColor) ?? null,
+    [product.colors, selectedColor]
+  );
+
+  const buildConfiguredProduct = (): StorefrontProduct => ({
+    ...product,
+    selectedColor: selectedColorData?.name ?? undefined,
+    selectedSize: selectedSizeLabel ?? undefined,
+  });
+
   const handleAddToCart = () => {
+    const productWithVariants = buildConfiguredProduct();
+
     for (let i = 0; i < quantity; i++) {
-      addToCart(product);
+      addToCart(productWithVariants);
     }
     handleClose();
   };
 
   const handleBuyNow = () => {
-    buyNow(product);
+    buyNow(buildConfiguredProduct());
   };
-
-  const selectedSizeLabel = useMemo(
-    () => product.sizes?.find(s => s.id === selectedSize)?.size ?? null,
-    [product.sizes, selectedSize]
-  );
-
-  const selectedColorData = useMemo(
-    () => product.colors?.find(c => c.id === selectedColor) ?? null,
-    [product.colors, selectedColor]
-  );
 
   return (
     <div dir="rtl" className="fixed inset-0 z-50 overflow-y-auto">

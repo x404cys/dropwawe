@@ -21,5 +21,20 @@ export async function GET(req: Request) {
     orderBy: { createdAt: 'desc' },
   });
 
-  return Response.json({ products });
+  const normalizedProducts = products.map(product => ({
+    ...product,
+    colors: product.colors.map(color => ({
+      id: color.id,
+      name: color.color,
+      hex: color.hex,
+      stock: color.stock,
+    })),
+    sizes: product.sizes.map(size => ({
+      id: size.id,
+      size: size.size,
+      stock: size.stock,
+    })),
+  }));
+
+  return Response.json({ products: normalizedProducts });
 }

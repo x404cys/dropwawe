@@ -8,6 +8,7 @@ import type { MouseEvent } from 'react';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
 import { useLikes } from '../../../_hooks/useLikes';
+import { productHasVariants } from '../../../_utils/cart';
 import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
 
 export default function GlassmorphismProductCard({ product, colors, fonts }: ProductCardProps) {
@@ -29,6 +30,10 @@ export default function GlassmorphismProductCard({ product, colors, fonts }: Pro
   const handleAddToCart = (event: MouseEvent<HTMLButtonElement>) => {
     event.stopPropagation();
     if (isSoldOut) return;
+    if (productHasVariants(product)) {
+      setSelectedProduct(product);
+      return;
+    }
     addToCart(product);
   };
 

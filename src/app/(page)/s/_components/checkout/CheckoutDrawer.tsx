@@ -1,5 +1,3 @@
-// Purpose: Checkout drawer - "use client", left-side fixed panel with backdrop.
-
 'use client';
 
 import {
@@ -16,6 +14,7 @@ import {
 import { useState } from 'react';
 import { useCart } from '../../_context/CartContext';
 import { useLanguage } from '../../_context/LanguageContext';
+import { getCartItemKey } from '../../_utils/cart';
 import { getDiscountedPrice } from '../../_utils/price';
 
 interface CheckoutDrawerProps {
@@ -43,7 +42,7 @@ export default function CheckoutDrawer({
     setCustomerInfo,
     paymentMethod,
     setPaymentMethod,
-  } = useCart();
+   } = useCart();
   const { t, locale } = useLanguage();
 
   const [couponCode, setCouponCode] = useState('');
@@ -120,7 +119,12 @@ export default function CheckoutDrawer({
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             storeId,
-            items: cart.map(c => ({ productId: c.product.id, qty: c.qty })),
+            items: cart.map(c => ({
+              productId: c.product.id,
+              qty: c.qty,
+              selectedColor: c.product.selectedColor,
+              selectedSize: c.product.selectedSize,
+            })),
             customerInfo: {
               name: customerInfo.name,
               phone: customerInfo.phone,
@@ -130,7 +134,6 @@ export default function CheckoutDrawer({
             },
             paymentMethod,
             couponCode: couponState.status === 'valid' ? couponCode : undefined,
-             
           }),
         }
       );
@@ -221,8 +224,10 @@ export default function CheckoutDrawer({
                 <p className="text-foreground text-xs font-bold">{t.checkout.products}</p>
                 {cart.map(({ product, qty }) => {
                   const price = getDiscountedPrice(product);
+                  const key = getCartItemKey(product);
+
                   return (
-                    <div key={product.id} className="bg-muted/30 flex gap-3 rounded-xl p-3">
+                    <div key={key} className="bg-muted/30 flex gap-3 rounded-xl p-3">
                       <div className="bg-muted/50 flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg">
                         {product.image ? (
                           <img
@@ -238,13 +243,34 @@ export default function CheckoutDrawer({
                         <p className="text-foreground line-clamp-1 text-[11px] font-medium">
                           {product.name}
                         </p>
+                        {(product.selectedColor || product.selectedSize) && (
+                          <div className="text-muted-foreground mt-1 space-y-0.5 text-[10px]">
+                            {product.selectedColor ? (
+                              <p>
+                                {t.product.colors}: {product.selectedColor}
+                              </p>
+                            ) : null}
+                            {product.selectedSize ? (
+                              <p>
+                                {t.product.sizes}: {product.selectedSize}
+                              </p>
+                            ) : null}
+                          </div>
+                        )}
                         <p className="mt-0.5 text-[11px] font-bold" style={{ color: primaryColor }}>
                           {price.toLocaleString(locale)} {t.store.currency}
                         </p>
                       </div>
                       <div className="flex items-center gap-1.5">
                         <button
-                          onClick={() => updateCartQty(product.id, -1)}
+                          onClick={() =>
+                            updateCartQty(
+                              product.id,
+                              -1,
+                              product.selectedColor,
+                              product.selectedSize
+                            )
+                          }
                           className="border-border flex h-6 w-6 items-center justify-center rounded-lg border"
                         >
                           <Minus className="text-foreground h-3 w-3" />
@@ -253,7 +279,14 @@ export default function CheckoutDrawer({
                           {qty}
                         </span>
                         <button
-                          onClick={() => updateCartQty(product.id, 1)}
+                          onClick={() =>
+                            updateCartQty(
+                              product.id,
+                              1,
+                              product.selectedColor,
+                              product.selectedSize
+                            )
+                          }
                           className="flex h-6 w-6 items-center justify-center rounded-lg text-white"
                           style={{ backgroundColor: primaryColor }}
                         >
@@ -261,7 +294,14 @@ export default function CheckoutDrawer({
                         </button>
                       </div>
                       <button
-                        onClick={() => updateCartQty(product.id, -qty)}
+                        onClick={() =>
+                          updateCartQty(
+                            product.id,
+                            -qty,
+                            product.selectedColor,
+                            product.selectedSize
+                          )
+                        }
                         className="self-center"
                       >
                         <X className="text-muted-foreground h-3.5 w-3.5" />
@@ -271,12 +311,10 @@ export default function CheckoutDrawer({
                 })}
               </div>
 
-              {/* ── COUPON ── */}
               <div className="space-y-2">
                 <p className="text-foreground text-xs font-bold">كوبون الخصم</p>
 
                 {couponState.status === 'valid' ? (
-                  /* Applied state */
                   <div
                     className="flex items-center justify-between rounded-xl border px-3 py-2.5"
                     style={{ borderColor: primaryColor, backgroundColor: `${primaryColor}08` }}
@@ -297,7 +335,6 @@ export default function CheckoutDrawer({
                     </button>
                   </div>
                 ) : (
-                  /* Input state */
                   <div className="flex gap-2">
                     <input
                       value={couponCode}
@@ -308,7 +345,7 @@ export default function CheckoutDrawer({
                         }
                       }}
                       onKeyDown={e => e.key === 'Enter' && applyCoupon()}
-                      className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 flex-1 rounded-xl border px-3  transition-colors outline-none"
+                      className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 flex-1 rounded-xl border px-3 transition-colors outline-none"
                       placeholder="أدخل كود الخصم"
                       dir="ltr"
                     />
@@ -323,13 +360,11 @@ export default function CheckoutDrawer({
                   </div>
                 )}
 
-                {/* Error message */}
                 {couponState.status === 'error' && (
                   <p className="text-xs text-red-500">{couponState.message}</p>
                 )}
               </div>
 
-              {/* ── CUSTOMER INFO ── */}
               <div className="space-y-3">
                 <p className="text-foreground text-xs font-bold">{t.checkout.orderInfo}</p>
                 <div>
@@ -431,7 +466,7 @@ export default function CheckoutDrawer({
                 </span>
               </div>
 
-              {/* Discount row — يظهر فقط لو في خصم */}
+              {/* Discount row */}
               {orderDiscount > 0 && (
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground text-sm">خصم الكوبون</span>

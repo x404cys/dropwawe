@@ -8,6 +8,8 @@ import { prisma } from '@/app/lib/db';
 type ItemInput = {
   productId: string;
   qty: number;
+  selectedColor?: string | null;
+  selectedSize?: string | null;
   color?: string | null;
   size?: string | null;
 };
@@ -27,6 +29,8 @@ type OrderBody = {
   customerInfo: CustomerInfo;
   paymentMethod?: string | null;
   couponCode?: string;
+  selectedSize?: string | null;
+  selectedColor?: string | null;
 };
 
 type SupplierItem = {
@@ -37,6 +41,8 @@ type SupplierItem = {
   traderProfit: number;
   supplierProfit: number;
   supplierId: string;
+  color: string | null;
+  size: string | null;
 };
 
 type OrderItem = {
@@ -50,9 +56,17 @@ type OrderItem = {
 export async function POST(request: NextRequest) {
   try {
     const body: OrderBody = await request.json();
-    const { storeId, userId, items, customerInfo, paymentMethod, couponCode } = body;
+    const {
+      storeId,
+      userId,
+      items,
+      customerInfo,
+      paymentMethod,
+      couponCode,
+      selectedColor,
+      selectedSize,
+    } = body;
 
-    // ── BASIC VALIDATION ──
     if (
       !storeId ||
       !Array.isArray(items) ||
@@ -96,12 +110,15 @@ export async function POST(request: NextRequest) {
 
       subtotal += basePrice * item.qty;
 
+      const selectedColor = item.selectedColor ?? item.color ?? null;
+      const selectedSize = item.selectedSize ?? item.size ?? null;
+
       return {
         productId: product.id,
         quantity: item.qty,
         price: basePrice,
-        color: item.color ?? null,
-        size: item.size ?? null,
+        color: selectedColor,
+        size: selectedSize,
       };
     });
 
@@ -114,10 +131,8 @@ export async function POST(request: NextRequest) {
 
     const safeOrderItems = orderItems.filter((i): i is OrderItem => i !== null);
 
-    // ── SHIPPING PRICE ──
     const shippingPrice: number = store.shippingPrice ?? 0;
 
-    // ── COUPON ──
     let couponDiscount = 0;
     let shippingDiscount = 0;
     let appliedCouponId: string | null = null;
@@ -131,17 +146,14 @@ export async function POST(request: NextRequest) {
         },
       });
 
-      // وجود الكوبون
       if (!coupon) {
         return NextResponse.json({ error: 'الكوبون غير صالح' }, { status: 400 });
       }
 
-      // انتهاء الصلاحية
       if (coupon.expiresAt && coupon.expiresAt < new Date()) {
         return NextResponse.json({ error: 'انتهت صلاحية الكوبون' }, { status: 400 });
       }
 
-      // حد الاستخدام الكلي
       if (coupon.maxUsage && coupon.usedCount >= coupon.maxUsage) {
         return NextResponse.json(
           { error: 'تم الوصول للحد الأقصى لاستخدام الكوبون' },
@@ -149,7 +161,6 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // حد الاستخدام لكل مستخدم
       if (coupon.perUser && userId) {
         const usageCount = await prisma.couponUsage.count({
           where: { couponId: coupon.id, userId },
@@ -159,7 +170,6 @@ export async function POST(request: NextRequest) {
         }
       }
 
-      // الحد الأدنى للطلب
       if (coupon.minOrder && subtotal < coupon.minOrder) {
         return NextResponse.json(
           { error: `الحد الأدنى للطلب ${coupon.minOrder.toLocaleString('ar-IQ')} د.ع` },
@@ -167,11 +177,9 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // ── حساب الخصم حسب النوع ──
       if (coupon.type === 'FREE_SHIPPING') {
-        shippingDiscount = shippingPrice; // توصيل مجاني كامل
+        shippingDiscount = shippingPrice;
       } else if (coupon.productId) {
-        // خصم على منتج معين
         const targetItem = safeOrderItems.find(i => i.productId === coupon.productId);
         if (!targetItem) {
           return NextResponse.json(
@@ -213,7 +221,6 @@ export async function POST(request: NextRequest) {
       include: { items: true },
     });
 
-    // ── UPDATE COUPON USAGE ──
     if (appliedCouponId) {
       await prisma.coupon.update({
         where: { id: appliedCouponId },
@@ -227,7 +234,6 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // ── DECREMENT STOCK ──
     await Promise.all(
       items.map(item =>
         prisma.product.update({
@@ -237,7 +243,6 @@ export async function POST(request: NextRequest) {
       )
     );
 
-    // ── SUPPLIER ORDERS ──
     const supplierItems: SupplierItem[] = safeOrderItems
       .map((orderItem): SupplierItem | null => {
         const product = productsInDb.find(p => p.id === orderItem.productId);
@@ -252,6 +257,8 @@ export async function POST(request: NextRequest) {
           traderProfit: (orderItem.price - wholesalePrice) * orderItem.quantity,
           supplierProfit: wholesalePrice * orderItem.quantity,
           supplierId: product.supplierId,
+          color: orderItem.color,
+          size: orderItem.size,
         };
       })
       .filter((item): item is SupplierItem => item !== null);
@@ -282,6 +289,8 @@ export async function POST(request: NextRequest) {
                   wholesalePrice: i.wholesalePrice,
                   traderProfit: i.traderProfit,
                   supplierProfit: i.supplierProfit,
+                  color: i.color,
+                  size: i.size,
                 })),
               },
             },
@@ -290,7 +299,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── NOTIFICATION ──
     await prisma.notification.create({
       data: {
         userId: userId ?? null,
@@ -323,7 +331,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// ── HELPER ──
 function calculateDiscount(
   amount: number,
   value: number,

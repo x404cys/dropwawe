@@ -127,6 +127,15 @@ const OrderDetailDialog = ({
                       <p className="text-muted-foreground text-[11px]">الكمية: {item.quantity}</p>
                       <img src={item.product?.image} alt="" className="h-12 w-12" />
                     </div>
+                    {item.color && (
+                      <div className="flex items-center gap-1">
+                        <span className="h-3 w-3 rounded-full border" />
+                        <span className="text-muted-foreground text-xs">{item.color}</span>
+                      </div>
+                    )}
+                    {item.size && (
+                      <span className="text-muted-foreground text-xs">{item.size}</span>
+                    )}
                     <span className="text-foreground text-sm font-medium">
                       {item.price.toLocaleString('ar-IQ')} {t.currency}
                     </span>

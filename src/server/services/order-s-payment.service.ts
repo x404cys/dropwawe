@@ -7,6 +7,8 @@ import { prisma } from '@/app/lib/db';
 type ItemInput = {
   productId: string;
   qty: number;
+  selectedColor?: string | null;
+  selectedSize?: string | null;
   color?: string | null;
   size?: string | null;
 };
@@ -36,6 +38,8 @@ type SupplierItem = {
   traderProfit: number;
   supplierProfit: number;
   supplierId: string;
+  selectedColor: string | null;
+  selectedSize: string | null;
 };
 
 // ── HELPER ──────────────────────────────────────────────
@@ -90,12 +94,15 @@ export const orderPaymentService = {
 
       subtotal += basePrice * item.qty;
 
+      const selectedColor = item.selectedColor ?? item.color ?? null;
+      const selectedSize = item.selectedSize ?? item.size ?? null;
+
       return {
         productId: product.id,
         quantity: item.qty,
         price: basePrice,
-        selectedColor: item.color ?? null,
-        selectedSize: item.size ?? null,
+        selectedColor,
+        selectedSize,
       };
     });
 
@@ -214,6 +221,8 @@ export const orderPaymentService = {
             traderProfit: (orderItem.price - wholesalePrice) * orderItem.quantity,
             supplierProfit: wholesalePrice * orderItem.quantity,
             supplierId: product.supplierId,
+            selectedColor: orderItem.selectedColor,
+            selectedSize: orderItem.selectedSize,
           };
         })
         .filter((i): i is SupplierItem => i !== null);

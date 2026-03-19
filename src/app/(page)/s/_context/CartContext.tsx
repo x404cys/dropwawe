@@ -6,6 +6,7 @@
 import React, { createContext, useContext, useState } from 'react';
 import { CartItem, CheckoutStep, CustomerInfo, StorefrontProduct } from '../_lib/types';
 import { getDiscountedPrice } from '../_utils/price';
+import { isSameCartLine, productNeedsVariantSelection } from '../_utils/cart';
 
 // ── COUPON TYPES ──
 export interface CouponState {
@@ -29,7 +30,12 @@ interface CartContextValue {
   cart: CartItem[];
   addToCart: (product: StorefrontProduct) => void;
   buyNow: (product: StorefrontProduct) => void;
-  updateCartQty: (productId: string, delta: number) => void;
+  updateCartQty: (
+    productId: string,
+    delta: number,
+    selectedColor?: string,
+    selectedSize?: string
+  ) => void;
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
@@ -82,29 +88,49 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   // ── CART ──
   const addToCart = (product: StorefrontProduct) => {
+    if (productNeedsVariantSelection(product)) {
+      setSelectedProduct(product);
+      return;
+    }
+
     setCart(prev => {
-      const existing = prev.find(c => c.product.id === product.id);
+      const existing = prev.find(c => isSameCartLine(c.product, product));
       if (existing)
-        return prev.map(c => (c.product.id === product.id ? { ...c, qty: c.qty + 1 } : c));
+        return prev.map(c =>
+          isSameCartLine(c.product, product) ? { ...c, qty: c.qty + 1 } : c
+        );
       return [...prev, { product, qty: 1 }];
     });
   };
 
   const buyNow = (product: StorefrontProduct) => {
+    if (productNeedsVariantSelection(product)) {
+      setSelectedProduct(product);
+      return;
+    }
+
     setCart([{ product, qty: 1 }]);
     setCheckoutStep('cart');
     setShowCart(true);
     setSelectedProduct(null);
   };
 
-  const updateCartQty = (productId: string, delta: number) => {
+  const updateCartQty = (
+    productId: string,
+    delta: number,
+    selectedColor?: string,
+    selectedSize?: string
+  ) => {
+    const targetLine = { id: productId, selectedColor, selectedSize };
+
     setCart(prev =>
       prev
-        .map(c => (c.product.id === productId ? { ...c, qty: Math.max(0, c.qty + delta) } : c))
+        .map(c =>
+          isSameCartLine(c.product, targetLine) ? { ...c, qty: Math.max(0, c.qty + delta) } : c
+        )
         .filter(c => c.qty > 0)
     );
   };
-
   const clearCart = () => setCart([]);
 
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
