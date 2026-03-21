@@ -288,12 +288,12 @@ export default function OrderSummaryPage() {
                   {/* Details */}
                   <div className="min-w-0 flex-1">
                     {order?.paymentMethod === 'cod' ? (
-                      <div className="bg-muted/50 flex items-center gap-2 rounded-lg py-2">
+                      <div className="flex items-center gap-2 rounded-lg py-2">
                         <CreditCard className="text-primary h-4 w-4" />
                         <span className="text-foreground text-xs font-medium">دفع الكتروني</span>
                       </div>
                     ) : (
-                      <div className="bg-muted/50 text-primary flex items-center gap-2 rounded-lg py-2">
+                      <div className="text-primary flex items-center gap-2 rounded-lg py-2">
                         <Banknote className="text-primary h-4 w-4" />
                         <span className="text-foreground text-xs font-medium">
                           الدفع عند الاستلام

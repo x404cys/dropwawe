@@ -187,7 +187,7 @@ export default function OrderDetailsPage() {
 
   return (
     <>
-      <div dir="rtl" className="mb-12 min-h-screen py-8 md:px-8">
+      <div dir="rtl" className="mb-12 min-h-screen px-2 py-8 md:px-8">
         <div className="mx-auto max-w-5xl">
           <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
             <span className="hover:text-foreground cursor-pointer">{t.orders.title}</span>
