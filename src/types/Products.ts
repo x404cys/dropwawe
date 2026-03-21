@@ -83,7 +83,7 @@ export interface Order {
   location: string;
   phone: string;
   storeId: string;
-
+  paymentMethod?: string;
   items: {
     id: string;
     quantity?: number;

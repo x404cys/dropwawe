@@ -4,6 +4,8 @@ import { Package, MapPin, Truck, Clock, Check, X, CreditCard, Banknote } from 'l
 import { useLanguage } from '../../../context/LanguageContext';
 import { Order } from '@/types/Products';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { CgMoreVertical } from 'react-icons/cg';
+import { useRouter } from 'next/navigation';
 
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | string;
 
@@ -33,21 +35,8 @@ const OrderDetailDialog = ({
 }: OrderDetailDialogProps) => {
   const { t, lang } = useLanguage();
   if (!order) return null;
-
+  const router = useRouter();
   const status = lang === 'ku' ? order.status : order.status;
-
-  const statusColor: Record<string, string> = {
-    جديد: 'bg-primary/10 text-primary',
-    نوێ: 'bg-primary/10 text-primary',
-    مقبول: 'bg-success/10 text-success',
-    'قيد التوصيل': 'bg-accent/10 text-accent-foreground',
-    'لە گەیاندندا': 'bg-accent/10 text-accent-foreground',
-    مكتمل: 'bg-success/10 text-success',
-    تەواوبوو: 'bg-success/10 text-success',
-    مرفوض: 'bg-destructive/10 text-destructive',
-    ملغي: 'bg-destructive/10 text-destructive',
-    هەڵوەشێنراوە: 'bg-destructive/10 text-destructive',
-  };
 
   const itemsToDisplay = order.items || [];
 
@@ -58,14 +47,13 @@ const OrderDetailDialog = ({
       case 'CONFIRMED':
         return STATUS_FLOW.filter(s => s.status === 'SHIPPED' || s.status === 'CANCELLED');
       case 'SHIPPED':
-        return STATUS_FLOW.filter(s => s.status === 'DELIVERED' || s.status === 'CANCELLED');
+        return STATUS_FLOW.filter(s => s.status === 'CONFIRMED' || s.status === 'CANCELLED');
       default:
         return [];
     }
   };
 
   const actions = getAvailableActions();
-  const paymentMethod = 'cod';
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -86,19 +74,6 @@ const OrderDetailDialog = ({
           </div>
 
           {/* Payment Method */}
-          <div className="bg-muted/50 flex items-center gap-2 rounded-lg px-3 py-2">
-            {paymentMethod === 'cod' ? (
-              <>
-                <CreditCard className="text-primary h-4 w-4" />
-                <span className="text-foreground text-xs font-medium">دفع إلكتروني</span>
-              </>
-            ) : (
-              <>
-                <Banknote className="text-success h-4 w-4" />
-                <span className="text-foreground text-xs font-medium">دفع عند التوصيل</span>
-              </>
-            )}
-          </div>
 
           {/* Customer */}
           <div className="bg-muted space-y-1 rounded-lg p-3">
@@ -112,7 +87,6 @@ const OrderDetailDialog = ({
             </p>
           </div>
 
-          {/* Items */}
           <div className="space-y-2">
             <h4 className="text-muted-foreground flex items-center gap-1 text-xs font-semibold">
               <Package className="h-3 w-3" />
@@ -147,7 +121,6 @@ const OrderDetailDialog = ({
             </div>
           </div>
 
-          {/* Delivery status */}
           <div className="text-muted-foreground flex items-center gap-2 text-xs">
             <Truck className="h-3.5 w-3.5" />
             <span>
@@ -166,7 +139,6 @@ const OrderDetailDialog = ({
             </span>
           </div>
 
-          {/* Total */}
           <div className="border-border flex items-center justify-between border-t pt-3">
             <span className="text-foreground text-sm font-semibold">{t.orders.total}</span>
             <span className="text-primary text-base font-bold">
@@ -174,7 +146,6 @@ const OrderDetailDialog = ({
             </span>
           </div>
 
-          {/* Action Buttons */}
           <div className="flex gap-2 pt-1">
             {actions.map(action => {
               const Icon = action.icon;
@@ -183,18 +154,26 @@ const OrderDetailDialog = ({
                   key={action.status}
                   variant={action.variant}
                   size="sm"
-                  className="flex-1 gap-1.5 text-xs"
+                  className="flex-1 cursor-pointer gap-1.5 text-xs"
                   onClick={() => {
                     onUpdateStatus?.(order.id, action.status);
                     onOpenChange(false);
                   }}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  {action.label}
+                  {`${order.status === 'SHIPPED' && action.status === 'CONFIRMED' ? 'تاكيد اتمام التوصيل' : action.label}`}
                 </Button>
               );
             })}
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full flex-1 cursor-pointer gap-1.5 text-xs hover:bg-none"
+            onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
+          >
+            <span>تفاصيل اكثر</span>
+          </Button>
         </div>
       </DialogContent>
     </Dialog>

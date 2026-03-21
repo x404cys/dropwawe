@@ -32,7 +32,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
- import { Product } from '@/types/Products';
+import { Product } from '@/types/Products';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import axios from 'axios';
@@ -101,7 +101,7 @@ export default function OrderDetailsPage() {
     CANCELLED: {
       color: 'text-red-700',
       bgColor: 'bg-red-50 border-red-200',
-      label:t.orders.cancelled,
+      label: t.orders.cancelled,
       icon: <XCircle className="h-4 w-4" />,
     },
   };
@@ -289,24 +289,25 @@ export default function OrderDetailsPage() {
               </div>
 
               <div className="flex flex-wrap-reverse gap-3">
-                {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
-                  <Button
-                    size="lg"
-                    className="bg-foreground text-background hover:bg-foreground/90 flex-1"
-                    onClick={() => setOpenAccept(true)}
-                  >
-                    <CheckCircle className="ml-2 h-5 w-5" />
-                    تأكيد الطلب
-                  </Button>
-                )}
-                {session.data?.user.role === 'SUPPLIER' && (
+                {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier &&
+                  order.status !== 'CONFIRMED' && (
+                    <Button
+                      size="lg"
+                      className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
+                      onClick={() => setOpenAccept(true)}
+                    >
+                      <CheckCircle className="ml-2 h-5 w-5" />
+                      {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
+                    </Button>
+                  )}
+                {session.data?.user.role === 'SUPPLIER' && order.status !== 'CONFIRMED' && (
                   <Button
                     size="lg"
                     className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
                     onClick={() => setOpenAccept(true)}
                   >
                     <CheckCircle className="ml-2 h-5 w-5" />
-                    تأكيد الطلب
+                    {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
                   </Button>
                 )}
                 <Button
@@ -386,101 +387,121 @@ export default function OrderDetailsPage() {
         </div>
       </div>
 
-      <Dialog open={openAccept} onOpenChange={setOpenAccept}>
-        <DialogContent dir="rtl" className="max-w-md">
-          <DialogHeader className="text-right">
-            <DialogTitle className="text-2xl font-bold">تأكيد الطلب</DialogTitle>
-            <DialogDescription className="text-base">
-              يرجى التأكد من تفاصيل الطلب قبل المتابعة. سيتم إشعار العميل بالتأكيد.
-            </DialogDescription>
-          </DialogHeader>
+      {order.status !== 'CONFIRMED' && (
+        <>
+          <Dialog open={openAccept} onOpenChange={setOpenAccept}>
+            <DialogContent dir="rtl" className="max-w-md">
+              <DialogHeader className="text-right">
+                <DialogTitle className="text-2xl font-bold">
+                  {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}
+                </DialogTitle>
+                <DialogDescription className="text-base">
+                  يرجى التأكد من تفاصيل الطلب قبل المتابعة. سيتم إشعار العميل بالتأكيد.
+                </DialogDescription>
+              </DialogHeader>
 
-          <div className="bg-muted/50 my-4 space-y-4 rounded-lg border p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">رقم الطلب</span>
-              <span className="font-mono text-sm font-semibold">
-                #{order.id.slice(0, 8).toUpperCase()}
-              </span>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
-              <span className="font-semibold">{order.fullName}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">عدد المنتجات</span>
-              <span className="font-semibold">{order.items.length}</span>
-            </div>
-            <Separator />
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-semibold">المبلغ الإجمالي</span>
-              <span className="text-foreground text-xl font-bold">
-                {order.total.toLocaleString()} د.ع
-              </span>
-            </div>
-          </div>
+              <div className="bg-muted/50 my-4 space-y-4 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">رقم الطلب</span>
+                  <span className="font-mono text-sm font-semibold">
+                    #{order.id.slice(0, 8).toUpperCase()}
+                  </span>
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
+                  <span className="font-semibold">{order.fullName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">عدد المنتجات</span>
+                  <span className="font-semibold">{order.items.length}</span>
+                </div>
+                <Separator />
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-semibold">المبلغ الإجمالي</span>
+                  <span className="text-foreground text-xl font-bold">
+                    {order.total.toLocaleString()} د.ع
+                  </span>
+                </div>
+              </div>
 
-          <DialogFooter className="flex flex-col flex-wrap gap-4">
-            <Button
-              variant={'outline'}
-              onClick={handleAccept}
-              className="flex-1 border border-black"
-            >
-              <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
-              تأكيد الطلب ,والتوصيل ذاتي
-            </Button>
-            {data?.subscription?.type === 'trader-basic' ? (
-              <></>
-            ) : (
-              <Button
-                variant={'ghost'}
-                onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
-                className="flex-1 border border-black"
-              >
-                <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
-                التوصيل مع الوسيط
-              </Button>
-            )}
-            <Button variant="destructive" onClick={() => setOpenAccept(false)} className="flex-1"> {t.cancel} </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <DialogFooter className="flex flex-col flex-wrap gap-4">
+                <Button
+                  variant={'outline'}
+                  onClick={handleAccept}
+                  className="flex-1 cursor-pointer border border-black"
+                >
+                  <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
+                  {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
+                </Button>
+                {data?.subscription?.type === 'trader-basic' || order.status === 'SHIPPED' ? (
+                  <></>
+                ) : (
+                  <Button
+                    variant={'ghost'}
+                    onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
+                    className="flex-1 border border-black"
+                  >
+                    <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
+                    التوصيل مع الوسيط
+                  </Button>
+                )}
+                <Button
+                  variant="destructive"
+                  onClick={() => setOpenAccept(false)}
+                  className="flex-1"
+                >
+                  {' '}
+                  {t.cancel}{' '}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-      <Dialog open={openCancel} onOpenChange={setOpenCancel}>
-        <DialogContent dir="rtl" className="max-w-md">
-          <DialogHeader className="text-right">
-            <DialogTitle className="text-destructive text-2xl font-bold">إلغاء الطلب</DialogTitle>
-            <DialogDescription className="text-base">
-              هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
-            </DialogDescription>
-          </DialogHeader>
+          <Dialog open={openCancel} onOpenChange={setOpenCancel}>
+            <DialogContent dir="rtl" className="max-w-md">
+              <DialogHeader className="text-right">
+                <DialogTitle className="text-destructive text-2xl font-bold">
+                  إلغاء الطلب
+                </DialogTitle>
+                <DialogDescription className="text-base">
+                  هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
+                </DialogDescription>
+              </DialogHeader>
 
-          <div className="border-destructive/20 bg-destructive/5 my-4 space-y-3 rounded-lg border p-4">
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">رقم الطلب</span>
-              <span className="font-mono text-sm font-semibold">
-                #{order.id.slice(0, 8).toUpperCase()}
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
-              <span className="font-semibold">{order.fullName}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground text-sm">المبلغ</span>
-              <span className="text-destructive font-bold">{order.total.toLocaleString()} د.ع</span>
-            </div>
-          </div>
+              <div className="border-destructive/20 bg-destructive/5 my-4 space-y-3 rounded-lg border p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">رقم الطلب</span>
+                  <span className="font-mono text-sm font-semibold">
+                    #{order.id.slice(0, 8).toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
+                  <span className="font-semibold">{order.fullName}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground text-sm">المبلغ</span>
+                  <span className="text-destructive font-bold">
+                    {order.total.toLocaleString()} د.ع
+                  </span>
+                </div>
+              </div>
 
-          <DialogFooter className="gap-4">
-            <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1"> {t.back} </Button>
-            <Button variant="destructive" onClick={handleDelete} className="flex-1">
-              <XCircle className="ml-2 h-4 w-4" />
-              نعم، إلغاء الطلب
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+              <DialogFooter className="gap-4">
+                <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1">
+                  {' '}
+                  {t.back}{' '}
+                </Button>
+                <Button variant="destructive" onClick={handleDelete} className="flex-1">
+                  <XCircle className="ml-2 h-4 w-4" />
+                  نعم، إلغاء الطلب
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+        </>
+      )}
     </>
   );
 }

@@ -11,11 +11,11 @@ export const COLOR_PRESETS: ColorConfig[] = [
   { primary: '#EC4899', accent: '#F472B6', bg: '#FFFFFF', text: '#2e1a24' },
   { primary: '#6366F1', accent: '#818CF8', bg: '#0F172A', text: '#F1F5F9' },
   { primary: '#D4AF37', accent: '#F0D060', bg: '#1A1A1A', text: '#FAFAFA' },
-  { primary: '#EF4444', accent: '#F87171', bg: '#FFFFFF', text: '#1a1a1a' },
+  { primary: '#E85D8E', accent: '#F9B4CC', bg: '#FFF8FB', text: '#4B3340' },
 ];
 
 export function getActiveColors(template: StorefrontTemplate | null): ActiveColors {
-  if (!template) return COLOR_PRESETS[0];
+  if (!template) return COLOR_PRESETS[7];
   if (
     template.useCustomColors &&
     template.colorPrimary &&
@@ -30,7 +30,7 @@ export function getActiveColors(template: StorefrontTemplate | null): ActiveColo
       text: template.colorText,
     };
   }
-  return COLOR_PRESETS[template.selectedPreset] ?? COLOR_PRESETS[0];
+  return COLOR_PRESETS[template.selectedPreset] ?? COLOR_PRESETS[7];
 }
 
 export const DEFAULT_TEMPLATE = {
@@ -49,7 +49,7 @@ export const DEFAULT_TEMPLATE = {
   whatsappNumber: null,
   headingFont: 'IBM Plex Sans Arabic',
   bodyFont: 'IBM Plex Sans Arabic',
-  selectedPreset: 0,
+  selectedPreset: 7,
   useCustomColors: false,
   colorPrimary: null,
   colorAccent: null,

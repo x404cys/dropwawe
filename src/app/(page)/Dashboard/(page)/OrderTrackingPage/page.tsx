@@ -7,13 +7,12 @@ import { useSession } from 'next-auth/react';
 import React, { useMemo, useState } from 'react';
 import OrderDetailDialog, { type OrderStatus } from './components/OrderDetailDialog';
 import { useDashboardData } from '../../context/useDashboardData';
-import { Search, ShoppingBag, Trash2 } from 'lucide-react';
+import { Banknote, CreditCard, Search, ShoppingBag, Trash2, AlertTriangle } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useStoreProvider } from '../../context/StoreContext';
 import { Skeleton } from '@/components/ui/skeleton';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Order } from '@/types/Products';
-
 const fetcher = (url: string) =>
   fetch(url).then(res => {
     if (!res.ok) throw new Error('فشل في تحميل الطلبات');
@@ -81,7 +80,8 @@ export default function OrderSummaryPage() {
   const [search, setSearch] = useState('');
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [dialogOpen, setDialogOpen] = useState(false);
-
+  const [deleteTarget, setDeleteTarget] = useState<Order | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
     if (newStatus === 'CANCELLED') {
       await axios.patch(`/api/orders/option/${orderId}`);
@@ -153,8 +153,14 @@ export default function OrderSummaryPage() {
   }, [orders, statusFilter, dateFilter, search]);
 
   const deleteOrder = async (id: string) => {
-    await axios.delete(`/api/orders/details/delete/${id}`);
-    mutate(`/api/orders/store/${currentStore?.id}`);
+    try {
+      setIsDeleting(true);
+      await axios.delete(`/api/orders/details/delete/${id}`);
+      await mutate(`/api/orders/store/${currentStore?.id}`);
+      setDeleteTarget(null);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   // ── Loading state ─────────────────────────────────────────────────────
@@ -281,6 +287,19 @@ export default function OrderSummaryPage() {
 
                   {/* Details */}
                   <div className="min-w-0 flex-1">
+                    {order?.paymentMethod === 'cod' ? (
+                      <div className="bg-muted/50 flex items-center gap-2 rounded-lg py-2">
+                        <CreditCard className="text-primary h-4 w-4" />
+                        <span className="text-foreground text-xs font-medium">دفع الكتروني</span>
+                      </div>
+                    ) : (
+                      <div className="bg-muted/50 text-primary flex items-center gap-2 rounded-lg py-2">
+                        <Banknote className="text-primary h-4 w-4" />
+                        <span className="text-foreground text-xs font-medium">
+                          الدفع عند الاستلام
+                        </span>
+                      </div>
+                    )}{' '}
                     <div className="flex items-center gap-2">
                       <span className="text-foreground truncate text-sm font-semibold">
                         {order.fullName}
@@ -313,16 +332,16 @@ export default function OrderSummaryPage() {
                   </div>
                 </div>
 
-                {/* Delete strip */}
                 <div className="border-border/50 bg-card/50 flex justify-end border-t px-4 py-2">
                   <button
                     onClick={e => {
                       e.stopPropagation();
-                      deleteOrder(order.id);
+                      setDeleteTarget(order);
                     }}
-                    className="flex items-center gap-1 text-[11px] text-red-500 transition-colors hover:text-red-600"
+                    className="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-[11px] font-medium text-red-500 transition-all hover:bg-red-500/10 hover:text-red-600"
                   >
-                    <Trash2 className="h-3 w-3" /> {t.delete}{' '}
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {t.delete}
                   </button>
                 </div>
               </motion.div>
@@ -330,7 +349,70 @@ export default function OrderSummaryPage() {
           </div>
         )}
       </div>
+      <AnimatePresence>
+        {deleteTarget && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !isDeleting && setDeleteTarget(null)}
+              className="fixed inset-0 z-50 bg-black/40 backdrop-blur-[2px]"
+            />
 
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 10, scale: 0.98 }}
+                transition={{ duration: 0.2 }}
+                onClick={e => e.stopPropagation()}
+                className="border-border bg-background w-full max-w-sm rounded-2xl border shadow-2xl"
+              >
+                <div className="p-5">
+                  <div className="mb-4 flex items-start gap-3">
+                    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-red-500/10 text-red-500">
+                      <AlertTriangle className="h-5 w-5" />
+                    </div>
+
+                    <div className="min-w-0">
+                      <h3 className="text-foreground text-sm font-bold">تأكيد حذف الطلب</h3>
+                      <p className="text-muted-foreground mt-1 text-sm leading-6">
+                        هل تريد حذف طلب
+                        <span className="text-foreground mx-1 font-semibold">
+                          {deleteTarget.fullName || 'هذا العميل'}
+                        </span>
+                        ؟
+                      </p>
+                      <p className="text-muted-foreground text-xs">
+                        لا يمكن التراجع عن هذا الإجراء.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-end gap-2">
+                    <button
+                      onClick={() => setDeleteTarget(null)}
+                      disabled={isDeleting}
+                      className="border-border bg-card text-foreground hover:bg-muted rounded-xl border px-4 py-2 text-sm transition disabled:opacity-50"
+                    >
+                      إلغاء
+                    </button>
+
+                    <button
+                      onClick={() => deleteTarget?.id && deleteOrder(deleteTarget.id)}
+                      disabled={isDeleting}
+                      className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
+                    >
+                      {isDeleting ? 'جاري الحذف...' : 'حذف الطلب'}
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          </>
+        )}
+      </AnimatePresence>
       <OrderDetailDialog
         order={selectedOrder ? toDialogOrder(selectedOrder) : null}
         open={dialogOpen}

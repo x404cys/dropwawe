@@ -1,22 +1,14 @@
-﻿import cleanMarketplace from './theme-clean-marketplace';
-import darkLuxury from './theme-dark-luxury';
-import defaultTheme from './theme-default-theme';
-import glassmorphism from './theme-glassmorphism';
-import minimalLight from './theme-minimal-light';
-import modernStructured from './theme-modern-structured';
+﻿import defaultTheme from './theme-default-theme';
 import themeclothesno1 from './theme-clothes-no1';
-import type { ThemeConfig } from './types';
+import defaultTheme2 from './theme-default-theme-2';
+ import type { ThemeConfig } from './types';
 
 export const themes: ThemeConfig[] = [];
 
-themes[0] = darkLuxury;
-themes[1] = minimalLight;
+themes[1] = defaultTheme;
 themes[2] = themeclothesno1;
-themes[3] = cleanMarketplace;
-themes[4] = modernStructured;
-themes[5] = glassmorphism;
-themes[6] = defaultTheme;
+themes[3] = defaultTheme2;
 
 export function getTheme(preset: number): ThemeConfig {
-  return themes[preset] ?? themes[0];
-} 
+  return themes[preset] ?? themes[2];
+}

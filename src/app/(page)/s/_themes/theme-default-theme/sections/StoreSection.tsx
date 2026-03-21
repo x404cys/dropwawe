@@ -217,9 +217,9 @@ export default function DefaultThemeStoreSection({
                       />
                     ))}
                   </div>
-                  {index === 0 && centerBanners.length > 0 && (
+                  {index === 0 && btwCatBanners.length > 0 && (
                     <div className="mt-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
-                      <DefaultThemeBannerCarousel banners={centerBanners} colors={colors} />
+                      <DefaultThemeBannerCarousel banners={btwCatBanners} colors={colors} />
                     </div>
                   )}
                 </div>

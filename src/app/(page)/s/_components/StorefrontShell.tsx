@@ -21,7 +21,7 @@ export default function StorefrontShell({
   className,
 }: StorefrontShellProps) {
   const { dir, lang } = useLanguage();
-  const theme = getTheme(6);
+  const theme = getTheme(1);
   const {
     AnnouncementBar,
     BannerCarousel,
@@ -55,7 +55,11 @@ export default function StorefrontShell({
       />
 
       <div className={contentOffsetClass}>
-        {topBanners.length > 0 ? <BannerCarousel banners={topBanners} colors={colors} /> : null}
+        {topBanners.length > 0 ? (
+          <div className="mx-auto max-w-7xl px-4 pt-4 sm:px-6 lg:px-10">
+            <BannerCarousel banners={topBanners} colors={colors} />
+          </div>
+        ) : null}
 
         {sections.hero ? (
           <HeroSection store={store} template={template} colors={colors} fonts={fonts} />

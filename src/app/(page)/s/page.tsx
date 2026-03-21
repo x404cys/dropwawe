@@ -14,7 +14,7 @@ import type {
   StorefrontTemplate,
 } from './_lib/types';
 import { getActiveColors, DEFAULT_SECTIONS, DEFAULT_TEMPLATE } from './_utils/colors';
-import { buildFontStyles } from './_utils/fonts';
+import { buildFontStyles, resolveStorefrontFonts } from './_utils/fonts';
 
 interface StorefrontData {
   store: StorefrontStore;
@@ -110,10 +110,7 @@ export default async function StorefrontPage() {
   const { store, template, products } = data;
   const colors = getActiveColors(template);
   const { headingStyle, bodyStyle } = buildFontStyles(template);
-  const fonts: StorefrontFonts = {
-    heading: template.headingFont ?? 'IBM Plex Sans Arabic',
-    body: template.bodyFont ?? 'IBM Plex Sans Arabic',
-  };
+  const fonts: StorefrontFonts = resolveStorefrontFonts(template);
 
   const sections: SectionsConfig = {
     ...DEFAULT_SECTIONS,
@@ -149,19 +146,34 @@ export default async function StorefrontPage() {
     '--store-accent': colors.accent,
     '--store-bg': colors.bg,
     '--store-text': colors.text,
-    '--store-surface': `color-mix(in srgb, ${colors.bg} 96%, ${colors.text} 4%)`,
-    '--store-surface-strong': `color-mix(in srgb, ${colors.bg} 92%, ${colors.text} 8%)`,
-    '--store-border': `color-mix(in srgb, ${colors.bg} 84%, ${colors.text} 16%)`,
-    '--store-border-strong': `color-mix(in srgb, ${colors.bg} 72%, ${colors.text} 28%)`,
+    '--store-surface': `color-mix(in srgb, ${colors.bg} 94%, white 6%)`,
+    '--store-surface-strong': `color-mix(in srgb, ${colors.bg} 88%, white 12%)`,
+    '--store-surface-soft': `color-mix(in srgb, ${colors.primary} 6%, ${colors.bg} 94%)`,
+    '--store-paper': `color-mix(in srgb, ${colors.bg} 74%, white 26%)`,
+    '--store-paper-strong': `color-mix(in srgb, ${colors.bg} 62%, white 38%)`,
+    '--store-tint': `color-mix(in srgb, ${colors.primary} 10%, ${colors.bg} 90%)`,
+    '--store-tint-strong': `color-mix(in srgb, ${colors.primary} 16%, ${colors.bg} 84%)`,
+    '--store-accent-soft': `color-mix(in srgb, ${colors.accent} 28%, ${colors.bg} 72%)`,
+    '--store-border': `color-mix(in srgb, ${colors.primary} 14%, ${colors.bg} 86%)`,
+    '--store-border-soft': `color-mix(in srgb, ${colors.primary} 10%, ${colors.bg} 90%)`,
+    '--store-border-strong': `color-mix(in srgb, ${colors.primary} 22%, ${colors.bg} 78%)`,
     '--store-text-soft': `color-mix(in srgb, ${colors.text} 72%, ${colors.bg} 28%)`,
     '--store-text-muted': `color-mix(in srgb, ${colors.text} 58%, ${colors.bg} 42%)`,
     '--store-text-faint': `color-mix(in srgb, ${colors.text} 42%, ${colors.bg} 58%)`,
     '--store-primary-soft': `color-mix(in srgb, ${colors.primary} 12%, ${colors.bg} 88%)`,
     '--store-primary-faint': `color-mix(in srgb, ${colors.primary} 6%, ${colors.bg} 94%)`,
-    '--store-accent-soft': `color-mix(in srgb, ${colors.accent} 12%, ${colors.bg} 88%)`,
-    '--store-shadow-sm': `0 14px 36px -28px color-mix(in srgb, ${colors.text} 18%, transparent)`,
-    '--store-shadow-lg': `0 24px 64px -40px color-mix(in srgb, ${colors.text} 22%, transparent)`,
-    '--store-radius': '12px',
+    '--store-gradient-brand': `linear-gradient(135deg, color-mix(in srgb, ${colors.accent} 78%, white 22%) 0%, ${colors.primary} 54%, color-mix(in srgb, ${colors.primary} 76%, ${colors.text} 24%) 100%)`,
+    '--store-gradient-soft': `linear-gradient(180deg, color-mix(in srgb, ${colors.bg} 82%, white 18%) 0%, color-mix(in srgb, ${colors.primary} 8%, ${colors.bg} 92%) 100%)`,
+    '--store-gradient-hero': `linear-gradient(135deg, color-mix(in srgb, ${colors.accent} 52%, white 48%) 0%, color-mix(in srgb, ${colors.bg} 76%, white 24%) 38%, color-mix(in srgb, ${colors.primary} 12%, ${colors.bg} 88%) 100%)`,
+    '--store-gradient-overlay': `linear-gradient(180deg, transparent 0%, color-mix(in srgb, ${colors.text} 24%, transparent) 38%, color-mix(in srgb, ${colors.text} 82%, transparent) 100%)`,
+    '--store-shadow-sm': `0 16px 34px -26px color-mix(in srgb, ${colors.text} 16%, transparent)`,
+    '--store-shadow-soft': `0 18px 42px -30px color-mix(in srgb, ${colors.text} 14%, transparent)`,
+    '--store-shadow-card': `0 24px 56px -36px color-mix(in srgb, ${colors.text} 18%, transparent)`,
+    '--store-shadow-floating': `0 28px 72px -38px color-mix(in srgb, ${colors.primary} 36%, transparent)`,
+    '--store-shadow-lg': `0 32px 78px -42px color-mix(in srgb, ${colors.text} 24%, transparent)`,
+    '--store-radius': '20px',
+    '--store-radius-lg': '24px',
+    '--store-radius-xl': '28px',
     '--store-max-width': '1280px',
     ...bodyStyle,
     ...(Number.isFinite(baseFontSize) ? { fontSize: `${baseFontSize}px` } : {}),

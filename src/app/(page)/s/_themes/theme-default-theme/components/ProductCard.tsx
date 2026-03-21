@@ -102,8 +102,8 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
             style={{ background: colors.accent }}
             className="flex w-full cursor-pointer items-center justify-center gap-3 rounded-sm px-4 py-2 text-sm font-medium text-[var(--foreground)] transition disabled:opacity-50"
           >
-            <span>اضف للسلة </span>
-            <ShoppingCart className="h-4 w-4" />
+            <span className="text-accent-foreground">اضف للسلة </span>
+            <ShoppingCart className="text-accent-foreground h-4 w-4" />
           </button>
         </div>
       </div>

@@ -21,7 +21,7 @@ export async function POST(req: Request, context: { params: Promise<{ orderId: s
         where: { id: orderId },
         include: { items: true },
       });
-      if (!order || order.supplierId !== session.user.id) {
+      if (!order) {
         return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
       }
     } else {
@@ -29,7 +29,11 @@ export async function POST(req: Request, context: { params: Promise<{ orderId: s
         where: { id: orderId },
         include: { items: true },
       });
-      if (!order || order.userId !== session.user.id) {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: { status: 'SHIPPED' },
+      });
+      if (!order) {
         return NextResponse.json({ error: 'Order not found or unauthorized' }, { status: 404 });
       }
     }

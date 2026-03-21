@@ -69,7 +69,7 @@ export default function DefaultThemeFooter({ store, template, colors, fonts }: F
           <p className="text-[10px] text-gray-400">
             مدعوم من{' '}
             <span className="font-bold" style={{ color: colors.primary }}>
-              Dropwave
+              Matager - متاجر
             </span>{' '}
             • © {year}
           </p>
