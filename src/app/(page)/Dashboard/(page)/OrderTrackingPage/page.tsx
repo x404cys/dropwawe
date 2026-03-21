@@ -155,7 +155,7 @@ export default function OrderSummaryPage() {
   const deleteOrder = async (id: string) => {
     try {
       setIsDeleting(true);
-      await axios.delete(`/api/orders/details/delete/${id}`);
+      await axios.delete(`/api/orders/option/delete/${id}`);
       await mutate(`/api/orders/store/${currentStore?.id}`);
       setDeleteTarget(null);
     } finally {
