@@ -21,6 +21,42 @@ async function verifyStoreOwnership(storeId: string, userEmail: string): Promise
   return !!storeUser;
 }
 
+type HeroButtonActionType = 'scroll' | 'url' | 'whatsapp' | 'phone' | 'email' | 'none';
+
+const HERO_BUTTON_ACTION_TYPES = new Set<HeroButtonActionType>([
+  'scroll',
+  'url',
+  'whatsapp',
+  'phone',
+  'email',
+  'none',
+]);
+
+function normalizeHeroButtons(raw: unknown) {
+  if (!Array.isArray(raw)) return undefined;
+
+  return raw.map((item, index) => {
+    const button = item && typeof item === 'object' ? (item as Record<string, unknown>) : {};
+    const actionType = HERO_BUTTON_ACTION_TYPES.has(button.actionType as HeroButtonActionType)
+      ? (button.actionType as HeroButtonActionType)
+      : 'none';
+    const actionDetail = typeof button.actionDetail === 'string' ? button.actionDetail : '';
+
+    return {
+      label: typeof button.label === 'string' ? button.label : '',
+      text: typeof button.text === 'string' ? button.text : '',
+      actionType,
+      actionTarget: actionType === 'scroll' ? actionDetail : null,
+      actionUrl: actionType === 'url' ? actionDetail : null,
+      actionMessage:
+        actionType === 'whatsapp' || actionType === 'phone' || actionType === 'email'
+          ? actionDetail
+          : null,
+      order: typeof button.order === 'number' ? button.order : index,
+    };
+  });
+}
+
 // ── GET ───────────────────────────────────────────────────────────────────────
 
 export async function GET(req: Request) {
@@ -49,6 +85,7 @@ export async function GET(req: Request) {
         testimonials: { orderBy: { order: 'asc' } },
         bannerImages: { orderBy: { order: 'asc' } },
         categorySections: { orderBy: { order: 'asc' } },
+        heroButtons: { orderBy: { order: 'asc' } },
         heroSection: {
           include: {
             stats: true,
@@ -100,6 +137,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
     }
 
+    const heroButtons = normalizeHeroButtons(fields.heroButtons);
     const data = {
       tagline: typeof fields.tagline === 'string' ? fields.tagline : undefined,
       heroButtonText: typeof fields.heroButtonText === 'string' ? fields.heroButtonText : undefined,
@@ -133,11 +171,27 @@ export async function POST(req: Request) {
 
     // Remove undefined keys so Prisma doesn't overwrite with undefined
     const cleanData = Object.fromEntries(Object.entries(data).filter(([, v]) => v !== undefined));
+    const createData = {
+      storeId,
+      ...cleanData,
+      ...(heroButtons !== undefined ? { heroButtons: { create: heroButtons } } : {}),
+    };
+    const updateData = {
+      ...cleanData,
+      ...(heroButtons !== undefined
+        ? {
+            heroButtons: {
+              deleteMany: {},
+              create: heroButtons,
+            },
+          }
+        : {}),
+    };
 
     const updated = await prisma.storeTemplate.upsert({
       where: { storeId },
-      create: { storeId, ...cleanData },
-      update: cleanData,
+      create: createData,
+      update: updateData,
     });
 
     return NextResponse.json(updated, { status: 200 });

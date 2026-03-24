@@ -8,6 +8,7 @@ import type {
   SectionsConfig,
   ContactItem,
   ContactType,
+  HeroButtonItem,
   HeroSectionItem,
   HeroFeatureItem,
   HeroTrustItem,
@@ -44,6 +45,15 @@ const CONTACT_TYPES = new Set<ContactType>([
   'custom',
 ]);
 
+const HERO_BUTTON_ACTION_TYPES = new Set<HeroButtonItem['actionType']>([
+  'scroll',
+  'url',
+  'whatsapp',
+  'phone',
+  'email',
+  'none',
+]);
+
 function normalizeContactItems(items: ContactItem[]): ContactItem[] {
   return items.map((raw, index) => {
     const type: ContactType = CONTACT_TYPES.has(raw.type) ? raw.type : 'custom';
@@ -72,6 +82,32 @@ function buildLegacyContactItems(db: PrismaTemplateRecord): ContactItem[] {
       value: item.value!.trim(),
       enabled: true,
     }));
+}
+
+function normalizeHeroButtons(items: PrismaTemplateRecord[]): HeroButtonItem[] {
+  return items.map((raw, index) => {
+    const actionType: HeroButtonItem['actionType'] = HERO_BUTTON_ACTION_TYPES.has(raw.actionType)
+      ? raw.actionType
+      : 'none';
+
+    const actionDetail =
+      actionType === 'scroll'
+        ? raw.actionTarget ?? ''
+        : actionType === 'url'
+          ? raw.actionUrl ?? ''
+          : actionType === 'whatsapp' || actionType === 'phone' || actionType === 'email'
+            ? raw.actionMessage ?? ''
+            : '';
+
+    return {
+      id: typeof raw.id === 'string' && raw.id ? raw.id : `hero-button-${index}`,
+      label: typeof raw.label === 'string' ? raw.label : '',
+      text: typeof raw.text === 'string' ? raw.text : '',
+      actionType,
+      actionDetail,
+      order: typeof raw.order === 'number' ? raw.order : index,
+    };
+  });
 }
 
 function parseJson<T>(raw: unknown, fallback: T): T {
@@ -103,6 +139,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
     contactItemsRaw.length > 0
       ? normalizeContactItems(contactItemsRaw)
       : buildLegacyContactItems(db);
+  const heroButtons = Array.isArray(db.heroButtons) ? normalizeHeroButtons(db.heroButtons) : [];
 
   return {
     tagline: db.tagline ?? '',
@@ -127,6 +164,7 @@ export function toFormState(db: PrismaTemplateRecord | null | undefined): Templa
     colorText: db.colorText ?? '#f4f4f5',
     categoryDisplayMode: (db.categoryDisplayMode ?? 'icons') as 'icons' | 'pills',
     isDraft: db.isDraft ?? true,
+    heroButtons,
     announcementBar,
     sectionsConfig,
     heroSection: toHeroSection(db.heroSection),
@@ -227,6 +265,7 @@ export function toPayload(state: TemplateFormState, storeId: string): Record<str
     colorText: state.colorText,
     categoryDisplayMode: state.categoryDisplayMode,
     isDraft: state.isDraft,
+    heroButtons: state.heroButtons,
     announcementBar: state.announcementBar,
     sectionsConfig: state.sectionsConfig,
   };

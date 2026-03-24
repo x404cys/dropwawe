@@ -17,11 +17,11 @@ import type {
 
 import AboutSection from '../sections/AboutSection';
 import CtaSection from '../sections/CtaSection';
-import HeroSectionEditor from '../sections/HeroSectionEditor';
 import TestimonialsSection from '../sections/TestimonialsSection';
 import ContentBlock from '../ui/ContentBlock';
 import ServiceWithWorksSection from '../sections/WorksSection';
 import type { HeroSectionEditorController } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
+import HeroButtonsTable, { type HeroButton } from '../sections/ButtonHeroSection';
 
 interface BrandTabProps {
   state: TemplateFormState;
@@ -51,6 +51,25 @@ interface BrandTabProps {
 
 const SECTION_IDS = ['hero', 'services', 'works', 'testimonials', 'cta', 'about', 'store'] as const;
 type SectionId = (typeof SECTION_IDS)[number];
+
+const DEFAULT_HERO_BUTTONS: HeroButton[] = [
+  {
+    id: 'btn-1',
+    label: 'Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ',
+    text: '',
+    actionType: 'none',
+    actionDetail: '',
+    order: 0,
+  },
+  {
+    id: 'btn-2',
+    label: 'Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ',
+    text: '',
+    actionType: 'none',
+    actionDetail: '',
+    order: 1,
+  },
+];
 
 export default function BrandTab({
   state,
@@ -229,7 +248,12 @@ export default function BrandTab({
           onOpenToggle={() => toggleOpen('hero')}
         >
           <div className="space-y-4">
-            <HeroSectionEditor value={heroEditor.hero} onChange={heroEditor.setHeroValue} />
+            <HeroButtonsTable
+              buttons={
+                state.heroButtons?.length ? state.heroButtons : DEFAULT_HERO_BUTTONS
+              }
+              onChange={buttons => onUpdate({ heroButtons: buttons })}
+            />
           </div>
         </ContentBlock>
 

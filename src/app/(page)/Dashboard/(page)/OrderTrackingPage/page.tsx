@@ -163,8 +163,7 @@ export default function OrderSummaryPage() {
     }
   };
 
-  // ── Loading state ─────────────────────────────────────────────────────
-  if (isLoading) {
+   if (isLoading) {
     return (
       <section dir="rtl" className="space-y-3 p-4">
         <Skeleton className="bg-muted h-11 w-full rounded-xl" />
@@ -184,12 +183,10 @@ export default function OrderSummaryPage() {
     return <div className="p-6 text-center text-red-500">فشل تحميل الطلبات</div>;
   }
 
-  // ── UI ────────────────────────────────────────────────────────────────
-  return (
+   return (
     <section dir="rtl" className="bg-background min-h-screen">
       <div className="space-y-4 p-4 pb-10">
-        {/* Page header */}
-        <div className="flex items-center justify-between">
+         <div className="flex items-center justify-between">
           <div>
             <h1 className="text-foreground text-lg font-bold">{t.orders.title}</h1>
             <p className="text-muted-foreground text-xs">{orders.length} طلب إجمالي</p>
@@ -210,8 +207,7 @@ export default function OrderSummaryPage() {
           )}
         </div>
 
-        {/* Search bar */}
-        <div className="relative">
+         <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           <input
             value={search}
@@ -221,8 +217,7 @@ export default function OrderSummaryPage() {
           />
         </div>
 
-        {/* Status filter tabs */}
-        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {STATUS_TABS.map(tab => (
             <button
               key={tab.key}
@@ -238,8 +233,7 @@ export default function OrderSummaryPage() {
           ))}
         </div>
 
-        {/* Period filter pills */}
-        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {DATE_FILTERS.map(f => (
             <button
               key={f.key}
@@ -255,8 +249,7 @@ export default function OrderSummaryPage() {
           ))}
         </div>
 
-        {/* Orders list */}
-        {filteredOrders.length === 0 ? (
+         {filteredOrders.length === 0 ? (
           <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
             <ShoppingBag className="mb-3 h-14 w-14 opacity-25" />
             <p className="text-sm font-medium">{t.orders.noOrders}</p>
@@ -325,8 +318,7 @@ export default function OrderSummaryPage() {
                     </div>
                   </div>
 
-                  {/* Amount */}
-                  <div className="flex-shrink-0 text-left">
+                   <div className="flex-shrink-0 text-left">
                     <p className="text-foreground text-sm font-bold">{formatIQD(order.total)}</p>
                     <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
                   </div>

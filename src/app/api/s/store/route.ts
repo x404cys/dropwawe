@@ -30,6 +30,7 @@ export async function GET(req: Request) {
       testimonials: { orderBy: { order: 'asc' } },
       bannerImages: { orderBy: { order: 'asc' } },
       categorySections: { orderBy: { order: 'asc' } },
+      heroButtons: { orderBy: { order: 'asc' } },
       categoryIcons: true,
       customFonts: true,
       heroSection: {
@@ -41,12 +42,24 @@ export async function GET(req: Request) {
           socials: { orderBy: { order: 'asc' } },
         },
       },
-      
     },
   });
 
+  const normalizedTemplate = template
+    ? {
+        ...template,
+        heroButtons: template.heroButtons ?? [],
+        heroSection: template.heroSection
+          ? {
+              ...template.heroSection,
+              heroButtons: template.heroButtons ?? [],
+            }
+          : null,
+      }
+    : null;
+
   return Response.json({
     store,
-    template: template ?? null,
+    template: normalizedTemplate,
   });
 }

@@ -4,6 +4,7 @@
 import type { CSSProperties } from 'react';
 import { ProductPricing, subInfo } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
+import { text } from 'stream/consumers';
 
 export type ActiveColors = {
   primary: string;
@@ -243,6 +244,17 @@ export type StorefrontHeroSection = {
   trustItems: StorefrontHeroTrustItem[];
   badges: StorefrontHeroBadge[];
   socials: StorefrontHeroSocialLink[];
+  heroButtons: StorefrontHeroButton[];
+};
+
+export type StorefrontHeroButton = {
+  label: string;
+  text: string | null;
+  actionType: string;
+  actionTarget: string;
+  actionUrl: string;
+  actionMessage: string;
+  order: number;
 };
 
 export type StorefrontTemplate = {

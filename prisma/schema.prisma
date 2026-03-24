@@ -690,7 +690,7 @@ model StoreTemplate {
   heroSecondaryButton String?
   aboutText           String?
   storeDescription    String?
-
+  
   ctaTitle  String?
   ctaDesc   String?
   ctaButton String?
@@ -730,8 +730,24 @@ model StoreTemplate {
   categoryIcons    TemplateCategoryIcon[]
   customFonts      TemplateCustomFont[]
   heroSection      TemplateHeroSection?
-}
+  heroButtons TemplateHeroButton[]
 
+}
+model TemplateHeroButton {
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+
+  label      String         
+  text       String?
+  actionType String        @default("none")  
+  actionTarget  String?    
+  actionUrl     String?     
+  actionMessage String?    
+  order      Int           @default(0)
+
+  @@index([templateId])
+}
 model TemplateService {
   id          String        @id @default(cuid())
   templateId  String

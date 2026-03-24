@@ -60,6 +60,7 @@ export const DEFAULT_TEMPLATE_STATE: TemplateFormState = {
   colorText: COLOR_PRESETS[0].text,
   categoryDisplayMode: 'icons',
   isDraft: true,
+  heroButtons: [],
   announcementBar: DEFAULT_ANNOUNCEMENT_BAR,
   sectionsConfig: DEFAULT_SECTIONS_CONFIG,
   services: [],

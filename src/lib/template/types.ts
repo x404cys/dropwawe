@@ -228,7 +228,14 @@ export interface HeroSectionItem {
   features: HeroFeatureItem[];
   trustItems: HeroTrustItem[];
 }
-
+export interface HeroButtonItem {
+  id: string;
+  label: string;
+  text: string;
+  actionType: 'scroll' | 'url' | 'whatsapp' | 'phone' | 'email' | 'none';
+  actionDetail: string;
+  order: number;
+}
 export interface TemplateFormState {
   // Scalars
   tagline: string;
@@ -253,7 +260,7 @@ export interface TemplateFormState {
   colorText: string;
   categoryDisplayMode: 'icons' | 'pills';
   isDraft: boolean;
-
+  heroButtons: HeroButtonItem[];
   // JSON fields (parsed)
   announcementBar: AnnouncementBarConfig;
   sectionsConfig: SectionsConfig;
