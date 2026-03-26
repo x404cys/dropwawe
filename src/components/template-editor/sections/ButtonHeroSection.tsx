@@ -12,10 +12,8 @@ import {
 } from 'lucide-react';
 import type { HeroButtonItem } from '@/lib/template/types';
 
-// ── Types ──────────────────────────────────────────────
 export type HeroButton = Omit<HeroButtonItem, 'order'> & { order?: number };
 
-// ── Constants ──────────────────────────────────────────
 const BUTTON_ACTION_TYPES = [
   { type: 'scroll' as const, label: 'انتقال لقسم', icon: ArrowUpDown },
   { type: 'url' as const, label: 'فتح رابط', icon: ExternalLink },
@@ -36,7 +34,6 @@ const SCROLL_TARGETS = [
 
 const DEFAULT_LABELS = ['الرئيسي', 'الثانوي', 'الإضافي'];
 
-// ── Main Component ─────────────────────────────────────
 const normalizeButtons = (buttons: HeroButton[]): HeroButtonItem[] =>
   buttons.map((button, index) => ({
     ...button,
@@ -51,7 +48,7 @@ const HeroButtonsTable = ({
   onChange: (buttons: HeroButtonItem[]) => void;
 }) => {
   const normalizedButtons = normalizeButtons(
-    [...buttons].sort((left, right) => (left.order ?? 0) - (right.order ?? 0)),
+    [...buttons].sort((left, right) => (left.order ?? 0) - (right.order ?? 0))
   );
 
   const update = (id: string, patch: Partial<HeroButton>) =>
@@ -79,7 +76,6 @@ const HeroButtonsTable = ({
 
   return (
     <div className="space-y-2">
-      {/* Cards */}
       {normalizedButtons.map((btn, idx) => (
         <HeroButtonCard
           key={btn.id}
@@ -87,11 +83,12 @@ const HeroButtonsTable = ({
           isFixed={idx < 2}
           onUpdate={patch => update(btn.id, patch)}
           onActionChange={type => handleActionChange(btn.id, type)}
-          onRemove={() => onChange(normalizeButtons(normalizedButtons.filter(b => b.id !== btn.id)))}
+          onRemove={() =>
+            onChange(normalizeButtons(normalizedButtons.filter(b => b.id !== btn.id)))
+          }
         />
       ))}
 
-      {/* Add button */}
       <button
         onClick={addButton}
         className="border-border text-muted-foreground hover:border-primary/30 hover:text-primary flex w-full items-center justify-center gap-1.5 rounded-xl border-2 border-dashed py-2 text-xs font-medium transition-all"
@@ -103,7 +100,6 @@ const HeroButtonsTable = ({
   );
 };
 
-// ── Card per button (same style as ButtonActionEditor) ─
 const HeroButtonCard = ({
   btn,
   isFixed,
@@ -118,7 +114,6 @@ const HeroButtonCard = ({
   onRemove: () => void;
 }) => (
   <div className="bg-background border-border/50 space-y-2.5 rounded-xl border p-3">
-    {/* Header */}
     <div className="flex items-center gap-2">
       <MousePointerClick className="text-primary h-3.5 w-3.5 flex-shrink-0" />
       <p className="text-foreground text-[11px] font-semibold">{btn.label}</p>
@@ -132,7 +127,6 @@ const HeroButtonCard = ({
       )}
     </div>
 
-    {/* Text input */}
     <Input
       value={btn.text}
       onChange={e => onUpdate({ text: e.target.value })}
@@ -140,7 +134,6 @@ const HeroButtonCard = ({
       placeholder="نص الزر"
     />
 
-    {/* Action type grid — نفس تصميم ButtonActionEditor */}
     <div className="grid grid-cols-3 gap-1">
       {BUTTON_ACTION_TYPES.map(({ type, label, icon: Icon }) => (
         <button
@@ -158,12 +151,10 @@ const HeroButtonCard = ({
       ))}
     </div>
 
-    {/* Detail field */}
     <DetailField btn={btn} onUpdate={onUpdate} />
   </div>
 );
 
-// ── Detail Field ───────────────────────────────────────
 const DetailField = ({
   btn,
   onUpdate,

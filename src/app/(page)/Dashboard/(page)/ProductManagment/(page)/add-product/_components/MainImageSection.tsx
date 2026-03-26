@@ -1,5 +1,5 @@
 ﻿'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { SlCloudUpload } from 'react-icons/sl';
@@ -77,8 +77,8 @@ export function MainImageSection({
           </button>
         </div>
       ) : (
-        <label className="text-muted-foreground flex aspect-square max-h-2/4  cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 transition">
-          <div className="rounded-lg bg-primary p-2.5">
+        <label className="text-muted-foreground flex aspect-square max-h-2/4 cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-300 transition">
+          <div className="bg-primary rounded-lg p-2.5">
             <SlCloudUpload size={20} className="text-foreground" />
           </div>
 

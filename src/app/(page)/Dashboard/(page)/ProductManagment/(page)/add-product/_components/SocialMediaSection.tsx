@@ -1,5 +1,5 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { BsTelegram } from 'react-icons/bs';
@@ -48,7 +48,7 @@ export function SocialMediaSection({
 
         <ModernInputGroup
           label={t.inventory?.videoLink || 'رابط الفيديو'}
-          icon={<ImageIcon className="h-4 w-4 text-muted-foreground" />}
+          icon={<ImageIcon className="text-muted-foreground h-4 w-4" />}
           value={newProduct.subInfo?.videoLink || ''}
           onChange={value =>
             setNewProduct({

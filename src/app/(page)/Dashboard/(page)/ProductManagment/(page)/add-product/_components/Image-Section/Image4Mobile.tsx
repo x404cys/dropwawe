@@ -1,5 +1,5 @@
 ﻿'use client';
-import { useLanguage } from '../../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../../context/LanguageContext';
 
 import React from 'react';
 import { SlCloudUpload } from 'react-icons/sl';
@@ -27,7 +27,7 @@ export function ImageForMobile({
     <div className="relative mb-6 block w-full px-4 md:hidden">
       <div className="flex items-center justify-center gap-6">
         {!newProduct.imagePreview && (
-          <label className="flex h-60 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-gray-400">
+          <label className="bg-muted text-muted-foreground flex h-60 w-full cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 transition hover:border-gray-400">
             <SlCloudUpload size={26} />
 
             <span className="text-sm">{t.inventory?.uploadImage || 'رفع صورة'}</span>
@@ -44,7 +44,7 @@ export function ImageForMobile({
         )}
 
         {newProduct.imagePreview && (
-          <div className="relative h-60 w-72 overflow-hidden rounded-xl border-2 border-dashed border-gray-300 bg-muted text-muted-foreground transition hover:border-gray-400">
+          <div className="bg-muted text-muted-foreground relative h-60 w-72 overflow-hidden rounded-xl border-2 border-dashed border-gray-300 transition hover:border-gray-400">
             <img
               src={newProduct.imagePreview}
               alt="Preview"
@@ -70,17 +70,19 @@ export function ImageForMobile({
       </div>
 
       {isCompressing && (
-        <div className="absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl bg-card/70 backdrop-blur-sm">
-          <p className="mb-3 text-sm font-semibold text-foreground">{t.inventory?.preparingImage || 'جاري تجهيز الصورة...'}</p>
+        <div className="bg-card/70 absolute inset-0 z-20 flex flex-col items-center justify-center rounded-xl backdrop-blur-sm">
+          <p className="text-foreground mb-3 text-sm font-semibold">
+            {t.inventory?.preparingImage || 'جاري تجهيز الصورة...'}
+          </p>
 
-          <div className="w-3/4 overflow-hidden rounded-full bg-muted">
+          <div className="bg-muted w-3/4 overflow-hidden rounded-full">
             <div
               className="h-2 bg-sky-500 transition-all duration-300"
               style={{ width: `${compressionProgress}%` }}
             />
           </div>
 
-          <span className="mt-2 text-xs text-muted-foreground">{compressionProgress}%</span>
+          <span className="text-muted-foreground mt-2 text-xs">{compressionProgress}%</span>
         </div>
       )}
     </div>

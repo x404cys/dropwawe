@@ -55,7 +55,7 @@ type SectionId = (typeof SECTION_IDS)[number];
 const DEFAULT_HERO_BUTTONS: HeroButton[] = [
   {
     id: 'btn-1',
-    label: 'Ø§Ù„Ø±Ø¦ÙŠØ³ÙŠ',
+    label: 'الزر الرئيسي',
     text: '',
     actionType: 'none',
     actionDetail: '',
@@ -63,7 +63,7 @@ const DEFAULT_HERO_BUTTONS: HeroButton[] = [
   },
   {
     id: 'btn-2',
-    label: 'Ø§Ù„Ø«Ø§Ù†ÙˆÙŠ',
+    label: 'الزر الثانوي',
     text: '',
     actionType: 'none',
     actionDetail: '',
@@ -249,9 +249,7 @@ export default function BrandTab({
         >
           <div className="space-y-4">
             <HeroButtonsTable
-              buttons={
-                state.heroButtons?.length ? state.heroButtons : DEFAULT_HERO_BUTTONS
-              }
+              buttons={state.heroButtons?.length ? state.heroButtons : DEFAULT_HERO_BUTTONS}
               onChange={buttons => onUpdate({ heroButtons: buttons })}
             />
           </div>

@@ -240,7 +240,7 @@ export default function ProductTable() {
                 bg: 'bg-purple-50',
               },
               {
-                label: t.stats?.totalRevenue || 'إجمالي الأسعار',
+                label: 'إجمالي الأسعار',
                 value: `${formatIQD(totalValue)} ${t.currency || 'د.ع'}`,
                 icon: BarChart3,
                 color: 'text-green-600',
@@ -307,7 +307,7 @@ export default function ProductTable() {
             value={search}
             onChange={e => setSearch(e.target.value)}
             placeholder={t.inventory.searchPlaceholder}
-            className="border-border font-light bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
+            className="border-border bg-card w-full rounded-xl border py-2.5 pr-10 pl-4 font-light transition outline-none focus:border-[#04BAF6] focus:ring-2 focus:ring-[#04BAF6]/20"
           />
         </div>
 

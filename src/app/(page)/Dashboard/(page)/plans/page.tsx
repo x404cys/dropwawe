@@ -227,22 +227,6 @@ export default function Plans() {
   const router = useRouter();
   const { update } = useSession();
 
-  const [timeLeft, setTimeLeft] = useState(0);
-  useEffect(() => {
-    const endDate =
-      Number(localStorage.getItem('ramadanEnd')) || Date.now() + 35 * 24 * 60 * 60 * 1000;
-    localStorage.setItem('ramadanEnd', String(endDate));
-    const id = setInterval(() => setTimeLeft(endDate - Date.now()), 1000);
-    return () => clearInterval(id);
-  }, []);
-  const d = Math.max(0, timeLeft);
-  const timer = {
-    days: Math.floor(d / (1000 * 60 * 60 * 24)),
-    hours: Math.floor((d / (1000 * 60 * 60)) % 24),
-    minutes: Math.floor((d / (1000 * 60)) % 60),
-    seconds: Math.floor((d / 1000) % 60),
-  };
-
   const handleSelect = (planId: string) => {
     const all = [
       ...TRADERS,
@@ -269,12 +253,6 @@ export default function Plans() {
   };
 
   const plans = activeTab === 'traders' ? TRADERS : DROPSHIPPERS;
-  const timerItems = [
-    { label: t.plans.days, value: timer.days },
-    { label: 'ساعة', value: timer.hours },
-    { label: 'دقيقة', value: timer.minutes },
-    { label: 'ثانية', value: timer.seconds, pulse: true },
-  ];
 
   return (
     <div dir="rtl" className="min-h-screen pb-24 md:pb-12">
@@ -303,71 +281,6 @@ export default function Plans() {
           className="border-primary/20 from-card via-card to-primary/5 relative overflow-hidden rounded-3xl border bg-gradient-to-br shadow-lg"
         >
           <div className="bg-primary/10 pointer-events-none absolute -top-16 -right-16 h-56 w-56 rounded-full blur-3xl" />
-
-          <div className="relative space-y-5 p-6">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-bold text-emerald-600">
-                عرض خاص 🌙
-              </span>
-              <h2 className="text-foreground text-xl font-extrabold">الباقة الرمضانية</h2>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Timer className="text-muted-foreground h-4 w-4 flex-shrink-0" />
-              <div className="flex items-center gap-1.5">
-                {timerItems.map((item, i, arr) => (
-                  <div key={item.label} className="flex items-center gap-1.5">
-                    <div
-                      className={`flex min-w-[3rem] flex-col items-center rounded-xl border p-1.5 text-center ${
-                        item.pulse
-                          ? 'bg-primary/5 border-primary/20 text-primary'
-                          : 'bg-muted/60 border-border/50 text-foreground'
-                      }`}
-                    >
-                      <span className="font-mono text-base leading-none font-black">
-                        {item.value.toString().padStart(2, '0')}
-                      </span>
-                      <span className="mt-0.5 text-[9px] opacity-70">{item.label}</span>
-                    </div>
-                    {i < arr.length - 1 && (
-                      <span className="text-muted-foreground text-sm font-bold">:</span>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
-              <div>
-                <p className="text-muted-foreground max-w-xs text-sm leading-relaxed">
-                  مميزات استثنائية وخصم 43% لمضاعفة مبيعاتك في رمضان المبارك
-                </p>
-                <ul className="mt-3 space-y-1.5">
-                  {['تصميم رمضاني حصري', 'دعم تسويقي مكثف', 'كل مميزات الاحترافية'].map(f => (
-                    <li key={f} className="flex items-center gap-2 text-sm font-medium">
-                      <span className="bg-primary/10 text-primary flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full">
-                        <Check className="h-2.5 w-2.5" />
-                      </span>
-                      {f}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex flex-col items-start gap-2 sm:items-end">
-                <p className="text-muted-foreground text-sm line-through">69,000 {t.currency}</p>
-                <p className="text-foreground text-3xl font-black">
-                  39,000 <span className="text-base font-medium">{t.currency}</span>
-                </p>
-                <Button
-                  onClick={() => handleSelect('ramadan-plan')}
-                  className="h-11 w-full rounded-xl px-6 font-bold transition-all active:scale-[0.98] sm:w-auto"
-                >
-                  استغل العرض
-                </Button>
-              </div>
-            </div>
-          </div>
         </motion.div>
 
         <div className="flex justify-center">

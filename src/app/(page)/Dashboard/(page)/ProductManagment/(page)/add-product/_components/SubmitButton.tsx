@@ -1,5 +1,5 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { PlusCircle } from 'lucide-react';
@@ -17,7 +17,7 @@ export function SubmitButton({ loading, onClick }: SubmitButtonProps) {
     <Button
       onClick={onClick}
       disabled={loading}
-      className="mt-6 w-full gap-2 rounded-2xl bg-primary py-6 text-foreground transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
+      className="bg-primary text-foreground mt-6 w-full gap-2 rounded-2xl py-6 transition hover:bg-sky-700 disabled:cursor-not-allowed disabled:opacity-50"
     >
       {loading ? (
         <>

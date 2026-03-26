@@ -8,7 +8,6 @@ import { CartItem, CheckoutStep, CustomerInfo, StorefrontProduct } from '../_lib
 import { getDiscountedPrice } from '../_utils/price';
 import { isSameCartLine, productNeedsVariantSelection } from '../_utils/cart';
 
-// ── COUPON TYPES ──
 export interface CouponState {
   status: 'idle' | 'loading' | 'valid' | 'error';
   code: string;
@@ -26,7 +25,6 @@ const COUPON_IDLE: CouponState = {
 };
 
 interface CartContextValue {
-  // Cart
   cart: CartItem[];
   addToCart: (product: StorefrontProduct) => void;
   buyNow: (product: StorefrontProduct) => void;
@@ -39,23 +37,20 @@ interface CartContextValue {
   clearCart: () => void;
   cartCount: number;
   cartTotal: number;
-  // Modal
   selectedProduct: StorefrontProduct | null;
   setSelectedProduct: (p: StorefrontProduct | null) => void;
-  // Drawer
   showCart: boolean;
   setShowCart: (v: boolean) => void;
-  // Checkout
   checkoutStep: CheckoutStep;
   setCheckoutStep: (s: CheckoutStep) => void;
   customerInfo: CustomerInfo;
   setCustomerInfo: (info: CustomerInfo) => void;
   paymentMethod: 'cod' | 'electronic';
   setPaymentMethod: (m: 'cod' | 'electronic') => void;
-  // Likes
+
   liked: string[];
   toggleLike: (id: string) => void;
-  // Coupon
+
   coupon: CouponState;
   setCouponCode: (code: string) => void;
   applyCoupon: (
@@ -63,7 +58,6 @@ interface CartContextValue {
     products: { id: string; price: number; quantity: number }[]
   ) => Promise<void>;
   removeCoupon: () => void;
-  // Derived totals (with coupon applied)
   effectiveShipping: (shippingPrice?: number) => number;
   grandTotal: (shippingPrice?: number) => number;
 }
@@ -86,7 +80,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [liked, setLiked] = useState<string[]>([]);
   const [coupon, setCoupon] = useState<CouponState>(COUPON_IDLE);
 
-  // ── CART ──
   const addToCart = (product: StorefrontProduct) => {
     if (productNeedsVariantSelection(product)) {
       setSelectedProduct(product);
@@ -96,9 +89,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCart(prev => {
       const existing = prev.find(c => isSameCartLine(c.product, product));
       if (existing)
-        return prev.map(c =>
-          isSameCartLine(c.product, product) ? { ...c, qty: c.qty + 1 } : c
-        );
+        return prev.map(c => (isSameCartLine(c.product, product) ? { ...c, qty: c.qty + 1 } : c));
       return [...prev, { product, qty: 1 }];
     });
   };
@@ -136,12 +127,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
   const cartTotal = cart.reduce((s, c) => s + getDiscountedPrice(c.product) * c.qty, 0);
 
-  // ── LIKES ──
   const toggleLike = (id: string) => {
     setLiked(prev => (prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id]));
   };
 
-  // ── COUPON ──
   const setCouponCode = (code: string) => {
     setCoupon(prev => ({ ...prev, code: code.toUpperCase() }));
   };
@@ -195,7 +184,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const removeCoupon = () => setCoupon(COUPON_IDLE);
 
-  // ── DERIVED TOTALS ──
   const effectiveShipping = (shippingPrice = 0) =>
     Math.max(0, shippingPrice - coupon.shippingDiscount);
 

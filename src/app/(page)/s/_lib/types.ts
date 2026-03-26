@@ -4,7 +4,6 @@
 import type { CSSProperties } from 'react';
 import { ProductPricing, subInfo } from '@/types/Products';
 import { StoreProps } from '@/types/store/StoreType';
-import { text } from 'stream/consumers';
 
 export type ActiveColors = {
   primary: string;

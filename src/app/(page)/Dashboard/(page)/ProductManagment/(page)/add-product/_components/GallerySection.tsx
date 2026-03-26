@@ -1,5 +1,5 @@
 ﻿'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { TbUpload } from 'react-icons/tb';
@@ -65,7 +65,7 @@ export function GallerySection({
         ))}
 
         {galleryFiles.length < 3 && (
-          <label className=" rounded-2xl text-muted-foreground flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 transition">
+          <label className="text-muted-foreground flex aspect-square cursor-pointer flex-col items-center justify-center gap-2 rounded-2xl border-2 border-dashed border-gray-300 transition">
             <TbUpload size={24} className="text-sky-500" />
             <span className="text-xs font-medium">{t.inventory?.uploadImage || 'رفع صورة'}</span>
             <input

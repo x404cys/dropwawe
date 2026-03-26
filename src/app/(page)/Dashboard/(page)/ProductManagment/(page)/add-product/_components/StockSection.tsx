@@ -1,12 +1,12 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { Package, Store, Infinity } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ModernInputGroup } from './ModernInputGroup';
 import type { Product } from '@/types/Products';
-import CategoryDropdown from '../../_components/InputForCatogery';
+import CategoryDropdown from '../../../_components/InputForCatogery';
 import { useSession } from 'next-auth/react';
 
 interface StockSectionProps {
@@ -77,7 +77,6 @@ export function StockSection({
           <Infinity className="h-4 w-4 text-xs" /> {t.inventory.unlimited}{' '}
         </Button>
       </div>
-       
     </div>
   );
 }

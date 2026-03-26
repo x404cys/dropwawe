@@ -1,5 +1,5 @@
 'use client';
-import { useLanguage } from '../../../../context/LanguageContext';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
 import { Package, DollarSign, Percent } from 'lucide-react';

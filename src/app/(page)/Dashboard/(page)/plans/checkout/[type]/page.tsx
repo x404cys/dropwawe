@@ -47,6 +47,7 @@ export default function PlanCheckout() {
         value: plan.price,
       });
       toast.success(`تم الاشتراك في ${plan.name}`);
+      router.push('/Dashboard');
       setConfirming(false);
     } catch {
       toast.error('حدث خطأ أثناء الاشتراك');
@@ -78,7 +79,6 @@ export default function PlanCheckout() {
   return (
     <div dir="rtl" className="min-h-screen pb-28 md:pb-12">
       <div className="mx-auto max-w-lg space-y-6 px-4 py-8 md:max-w-5xl md:py-12">
-        {/* ── Back link ── */}
         <button
           onClick={() => router.push('/Dashboard/plans')}
           className="text-muted-foreground hover:text-foreground inline-flex items-center gap-1.5 text-sm transition-colors"
@@ -87,15 +87,12 @@ export default function PlanCheckout() {
           العودة للخطط
         </button>
 
-        {/* ── Main layout ── */}
         <div className="grid grid-cols-1 gap-6 md:grid-cols-[1fr_380px]">
-          {/* ── Left: Plan Details ── */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             className="border-border bg-card space-y-6 rounded-3xl border p-6 shadow-sm md:p-8"
           >
-            {/* Header */}
             <div className="space-y-2">
               <div className="bg-primary/10 border-primary/20 text-primary inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[11px] font-bold">
                 <Sparkles className="h-3 w-3" />
@@ -107,7 +104,6 @@ export default function PlanCheckout() {
               <p className="text-muted-foreground text-sm leading-relaxed">{plan.description}</p>
             </div>
 
-            {/* Price highlight */}
             <div className="bg-muted/50 border-border/50 flex items-center gap-4 rounded-2xl border p-4">
               <div className="flex-1">
                 <p className="text-muted-foreground mb-1 text-xs font-medium">السعر الشهري</p>
@@ -130,7 +126,6 @@ export default function PlanCheckout() {
               )}
             </div>
 
-            {/* Features */}
             <div className="border-border/50 space-y-3 border-t pt-6">
               <p className="text-muted-foreground text-xs font-bold tracking-wider uppercase">
                 ما يشمله الاشتراك
@@ -168,7 +163,6 @@ export default function PlanCheckout() {
               )}
             </div>
 
-            {/* Trust note */}
             <div className="bg-muted/40 border-border/40 flex items-center gap-3 rounded-2xl border p-4">
               <ShieldCheck className="h-5 w-5 flex-shrink-0 text-emerald-500" />
               <p className="text-muted-foreground text-xs leading-relaxed">
@@ -177,20 +171,17 @@ export default function PlanCheckout() {
             </div>
           </motion.div>
 
-          {/* ── Right: Payment Summary ── */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="border-border bg-card h-fit space-y-6 rounded-3xl border p-6 shadow-sm"
           >
-            {/* Summary header */}
             <div className="flex items-center gap-2">
               <CreditCard className="text-primary h-5 w-5" />
               <h2 className="text-foreground text-base font-bold">ملخص الدفع</h2>
             </div>
 
-            {/* Price box */}
             <div className="from-primary/5 border-primary/10 space-y-1 rounded-2xl border bg-gradient-to-b to-transparent py-6 text-center">
               <p className="text-muted-foreground text-xs font-medium">المبلغ الإجمالي</p>
               <p className="text-foreground text-4xl font-black tracking-tight">
@@ -251,14 +242,12 @@ export default function PlanCheckout() {
               dir="rtl"
               className="bg-card border-border w-full max-w-md space-y-5 rounded-3xl border p-7 shadow-2xl"
             >
-              {/* Icon */}
               <div className="flex justify-center">
                 <div className="bg-primary/10 flex h-16 w-16 items-center justify-center rounded-full">
                   <ShieldCheck className="text-primary h-9 w-9" />
                 </div>
               </div>
 
-              {/* Text */}
               <div className="space-y-1.5 text-center">
                 <h3 className="text-foreground text-xl font-bold">تأكيد الاشتراك</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
