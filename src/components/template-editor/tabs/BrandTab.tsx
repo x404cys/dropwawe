@@ -22,6 +22,7 @@ import ContentBlock from '../ui/ContentBlock';
 import ServiceWithWorksSection from '../sections/WorksSection';
 import type { HeroSectionEditorController } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 import HeroButtonsTable, { type HeroButton } from '../sections/ButtonHeroSection';
+import { CgWebsite } from 'react-icons/cg';
 
 interface BrandTabProps {
   state: TemplateFormState;
@@ -240,8 +241,8 @@ export default function BrandTab({
         </p>
 
         <ContentBlock
-          title="الهيرو سكشن (العرض الرئيسي)"
-          icon={<Sparkles className="h-4 w-4" />}
+          title="صفحة الهبوط"
+          icon={<CgWebsite className="h-4 w-4" />}
           enabled={state.sectionsConfig.hero}
           onToggle={() => toggleSection('hero')}
           open={openSections['hero'] ?? false}
