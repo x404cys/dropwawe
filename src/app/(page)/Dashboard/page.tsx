@@ -124,7 +124,7 @@ export default function Dashboard() {
       {data.productCount === 0 && (
         <div
           dir="rtl"
-          className="from-primary/10 via-primary/5 border-primary/20 relative mt-2 overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
+          className="from-primary/10 via-primary/5 border-primary/20 relative mx-2 mt-2 overflow-hidden rounded-2xl border bg-gradient-to-l to-transparent p-4"
         >
           <div className="flex items-start justify-between gap-3">
             <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl">
