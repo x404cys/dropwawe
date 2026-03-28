@@ -17,7 +17,7 @@ import QuickActionsGrid from './_components/cards/QuickActionsGrid';
 import UrlCard from './_components/cards/UrlCard';
 import PlanCard from './_components/cards/PlanCard';
 import RecentOrdersPanel from './_components/cards/RecentOrdersPanel';
-import { OrderDetails } from '../Test-Mode/Dashboard/(page)/orderDetails/[orderId]/page';
+import { type OrderDetails } from './_types/order-details';
 import { TriangleAlert } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';

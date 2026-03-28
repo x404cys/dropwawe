@@ -15,7 +15,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { Order } from '@/types/Products';
 const fetcher = (url: string) =>
   fetch(url).then(res => {
-    if (!res.ok) throw new Error('فشل في تحميل الطلبات');
+    if (!res.ok) throw new Error('LOAD_ORDERS_FAILED');
     return res.json();
   });
 
@@ -27,38 +27,30 @@ const STATUS_STYLES: Record<string, string> = {
   CANCELLED: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
 };
 
-const STATUS_AR_MAP: Record<string, string> = {
-  PENDING: 'جديد',
-  CONFIRMED: 'تم التأكيد',
-  SHIPPED: 'قيد الشحن',
-  DELIVERED: 'مكتمل',
-  CANCELLED: 'ملغي',
-};
-
-const DATE_FILTERS = [
-  { key: 'week', label: 'أسبوع' },
-  { key: 'month', label: 'شهر' },
-  { key: '3months', label: '3 أشهر' },
-  { key: 'year', label: 'سنة' },
-];
-
 export default function OrderSummaryPage() {
   const { t } = useLanguage();
 
+  const DATE_FILTERS = [
+    { key: 'week', label: t.orders.week },
+    { key: 'month', label: t.orders.month },
+    { key: '3months', label: t.orders.threeMonths },
+    { key: 'year', label: t.orders.year },
+  ];
+
   const STATUS_TABS = [
     { key: 'all', label: t.all },
-    { key: 'PENDING', label: 'جديد' },
-    { key: 'CONFIRMED', label: 'تم التأكيد' },
-    { key: 'SHIPPED', label: 'قيد الشحن' },
+    { key: 'PENDING', label: t.orders.new },
+    { key: 'CONFIRMED', label: t.orders.confirmed },
+    { key: 'SHIPPED', label: t.orders.transit },
     { key: 'DELIVERED', label: t.orders.completed },
     { key: 'CANCELLED', label: t.orders.cancelled },
   ];
 
   const STATUS_LABELS: Record<string, string> = {
-    PENDING: 'جديد',
-    CONFIRMED: 'تم التأكيد',
-    SHIPPED: 'قيد الشحن',
-    DELIVERED: 'مكتمل',
+    PENDING: t.orders.new,
+    CONFIRMED: t.orders.confirmed,
+    SHIPPED: t.orders.transit,
+    DELIVERED: t.orders.completed,
     CANCELLED: t.orders.cancelled,
   };
 
@@ -163,7 +155,7 @@ export default function OrderSummaryPage() {
     }
   };
 
-   if (isLoading) {
+  if (isLoading) {
     return (
       <section dir="rtl" className="space-y-3 p-4">
         <Skeleton className="bg-muted h-11 w-full rounded-xl" />
@@ -180,16 +172,18 @@ export default function OrderSummaryPage() {
   }
 
   if (error) {
-    return <div className="p-6 text-center text-red-500">فشل تحميل الطلبات</div>;
+    return <div className="p-6 text-center text-red-500">{t.orders.loadFailed}</div>;
   }
 
-   return (
+  return (
     <section dir="rtl" className="bg-background min-h-screen">
       <div className="space-y-4 p-4 pb-10">
-         <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between">
           <div>
             <h1 className="text-foreground text-lg font-bold">{t.orders.title}</h1>
-            <p className="text-muted-foreground text-xs">{orders.length} طلب إجمالي</p>
+            <p className="text-muted-foreground text-xs">
+              {orders.length} {t.orders.totalOrdersLabel}
+            </p>
           </div>
           {data?.Stores && data.Stores.length > 1 && (
             <select
@@ -197,7 +191,7 @@ export default function OrderSummaryPage() {
               onChange={e => setStoreId(e.target.value)}
               className="border-border bg-card text-foreground rounded-xl border px-3 py-2 text-xs"
             >
-              <option value="">كل المتاجر</option>
+              <option value="">{t.orders.allStores}</option>
               {data?.Stores?.map(store => (
                 <option key={store.id} value={store.id}>
                   {store.name}
@@ -207,17 +201,17 @@ export default function OrderSummaryPage() {
           )}
         </div>
 
-         <div className="relative">
+        <div className="relative">
           <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
           <input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="ابحث بالاسم، الهاتف، الموقع..."
+            placeholder={t.orders.searchByNamePhoneLocation}
             className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 w-full rounded-xl border py-2.5 pr-10 pl-4 font-light transition outline-none focus:ring-2"
           />
         </div>
 
-         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {STATUS_TABS.map(tab => (
             <button
               key={tab.key}
@@ -233,7 +227,7 @@ export default function OrderSummaryPage() {
           ))}
         </div>
 
-         <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
+        <div className="no-scrollbar flex gap-2 overflow-x-auto pb-1">
           {DATE_FILTERS.map(f => (
             <button
               key={f.key}
@@ -249,7 +243,7 @@ export default function OrderSummaryPage() {
           ))}
         </div>
 
-         {filteredOrders.length === 0 ? (
+        {filteredOrders.length === 0 ? (
           <div className="text-muted-foreground flex flex-col items-center justify-center py-20">
             <ShoppingBag className="mb-3 h-14 w-14 opacity-25" />
             <p className="text-sm font-medium">{t.orders.noOrders}</p>
@@ -281,15 +275,17 @@ export default function OrderSummaryPage() {
                   {/* Details */}
                   <div className="min-w-0 flex-1">
                     {order?.paymentMethod === 'cod' ? (
-                      <div className="flex items-center gap-2 rounded-lg py-2">
-                        <CreditCard className="text-primary h-4 w-4" />
-                        <span className="text-foreground text-xs font-medium">دفع الكتروني</span>
-                      </div>
-                    ) : (
                       <div className="text-primary flex items-center gap-2 rounded-lg py-2">
                         <Banknote className="text-primary h-4 w-4" />
                         <span className="text-foreground text-xs font-medium">
-                          الدفع عند الاستلام
+                          {t.orders.cashOnDelivery}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 rounded-lg py-2">
+                        <CreditCard className="text-primary h-4 w-4" />
+                        <span className="text-foreground text-xs font-medium">
+                          {t.orders.electronicPayment}
                         </span>
                       </div>
                     )}{' '}
@@ -318,7 +314,7 @@ export default function OrderSummaryPage() {
                     </div>
                   </div>
 
-                   <div className="flex-shrink-0 text-left">
+                  <div className="flex-shrink-0 text-left">
                     <p className="text-foreground text-sm font-bold">{formatIQD(order.total)}</p>
                     <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
                   </div>
@@ -368,17 +364,17 @@ export default function OrderSummaryPage() {
                     </div>
 
                     <div className="min-w-0">
-                      <h3 className="text-foreground text-sm font-bold">تأكيد حذف الطلب</h3>
+                      <h3 className="text-foreground text-sm font-bold">
+                        {t.orders.deleteConfirmTitle}
+                      </h3>
                       <p className="text-muted-foreground mt-1 text-sm leading-6">
-                        هل تريد حذف طلب
+                        {t.orders.deleteConfirmMessage}
                         <span className="text-foreground mx-1 font-semibold">
-                          {deleteTarget.fullName || 'هذا العميل'}
+                          {deleteTarget.fullName || t.orders.thisCustomer}
                         </span>
                         ؟
                       </p>
-                      <p className="text-muted-foreground text-xs">
-                        لا يمكن التراجع عن هذا الإجراء.
-                      </p>
+                      <p className="text-muted-foreground text-xs">{t.orders.deleteIrreversible}</p>
                     </div>
                   </div>
 
@@ -388,7 +384,7 @@ export default function OrderSummaryPage() {
                       disabled={isDeleting}
                       className="border-border bg-card text-foreground hover:bg-muted rounded-xl border px-4 py-2 text-sm transition disabled:opacity-50"
                     >
-                      إلغاء
+                      {t.cancel}
                     </button>
 
                     <button
@@ -396,7 +392,7 @@ export default function OrderSummaryPage() {
                       disabled={isDeleting}
                       className="rounded-lg bg-red-500 px-4 py-2 text-sm font-semibold text-white transition hover:bg-red-600 disabled:opacity-50"
                     >
-                      {isDeleting ? 'جاري الحذف...' : 'حذف الطلب'}
+                      {isDeleting ? t.orders.deletingOrder : t.orders.deleteOrder}
                     </button>
                   </div>
                 </div>

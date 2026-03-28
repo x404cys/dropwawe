@@ -1,7 +1,6 @@
 'use client';
-// src/components/template-editor/sections/CtaSection.tsx
-// CTA (Call To Action) section inputs: title, description, button text.
 
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Input } from '@/components/ui/input';
 import type { TemplateFormState } from '@/lib/template/types';
 
@@ -9,29 +8,34 @@ interface CtaSectionProps {
   ctaTitle: TemplateFormState['ctaTitle'];
   ctaDesc: TemplateFormState['ctaDesc'];
   ctaButton: TemplateFormState['ctaButton'];
-  onChange: (partial: Partial<Pick<TemplateFormState, 'ctaTitle' | 'ctaDesc' | 'ctaButton'>>) => void;
+  onChange: (
+    partial: Partial<Pick<TemplateFormState, 'ctaTitle' | 'ctaDesc' | 'ctaButton'>>
+  ) => void;
 }
 
 export default function CtaSection({ ctaTitle, ctaDesc, ctaButton, onChange }: CtaSectionProps) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
+
   return (
     <div className="space-y-2">
       <Input
         value={ctaTitle}
-        onChange={e => onChange({ ctaTitle: e.target.value })}
-        className=" rounded-xl"
-        placeholder="العنوان"
+        onChange={event => onChange({ ctaTitle: event.target.value })}
+        className="rounded-xl"
+        placeholder={tt.cta.titlePlaceholder}
       />
       <Input
         value={ctaDesc}
-        onChange={e => onChange({ ctaDesc: e.target.value })}
-        className=" rounded-xl"
-        placeholder="الوصف"
+        onChange={event => onChange({ ctaDesc: event.target.value })}
+        className="rounded-xl"
+        placeholder={tt.cta.descriptionPlaceholder}
       />
       <Input
         value={ctaButton}
-        onChange={e => onChange({ ctaButton: e.target.value })}
-        className=" rounded-xl"
-        placeholder="نص الزر"
+        onChange={event => onChange({ ctaButton: event.target.value })}
+        className="rounded-xl"
+        placeholder={tt.cta.buttonPlaceholder}
       />
     </div>
   );

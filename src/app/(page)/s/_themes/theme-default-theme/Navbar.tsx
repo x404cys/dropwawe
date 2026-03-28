@@ -2,46 +2,65 @@
 
 'use client';
 
-import { Menu, Search, ShoppingCart, Sparkles, X } from 'lucide-react';
+import { Globe, Menu, Search, ShoppingCart, Sparkles, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import type { NavbarProps } from '../../_lib/types';
 import { useCart } from '../../_context/CartContext';
-
-const sectionNavMap = {
-  hero: { scrollId: 'hero-section', label: 'الرئيسية' },
-  services: { scrollId: 'services-section', label: 'الخدمات' },
-  works: { scrollId: 'works-section', label: 'الأعمال' },
-  store: { scrollId: 'store-section', label: 'المتجر' },
-  testimonials: { scrollId: 'testimonials-section', label: 'آراء العملاء' },
-  about: { scrollId: 'about-section', label: 'من نحن' },
-  cta: { scrollId: 'cta-section', label: 'تواصل معنا' },
-} as const;
+import { STORE_LANG_OPTIONS, useLanguage } from '../../_context/LanguageContext';
+import { getReadableTextColor } from './themeSystem';
 
 export default function DefaultThemeNavbar({
   store,
   template,
   colors,
-  fonts,
   sections,
+  fonts,
 }: NavbarProps) {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const { cartCount, setCheckoutStep, setShowCart } = useCart();
+  const { t, lang, setLang } = useLanguage();
+  const primaryTextColor = getReadableTextColor(colors.primary);
 
   const navItems = useMemo(
     () =>
-      Object.entries(sectionNavMap)
-        .filter(([key]) => sections[key as keyof typeof sections])
-        .map(([, item]) => item),
-    [sections]
+      [
+        sections.hero ? { scrollId: 'hero-section', label: t.nav.home } : null,
+        sections.services ? { scrollId: 'services-section', label: t.nav.services } : null,
+        sections.works ? { scrollId: 'works-section', label: t.nav.works } : null,
+        sections.store ? { scrollId: 'store-section', label: t.nav.store } : null,
+        sections.testimonials
+          ? { scrollId: 'testimonials-section', label: t.nav.testimonials }
+          : null,
+        sections.about ? { scrollId: 'about-section', label: t.nav.about } : null,
+        sections.cta ? { scrollId: 'cta-section', label: t.about.contactTitle } : null,
+      ].filter(Boolean) as Array<{ scrollId: string; label: string }>,
+    [sections, t]
   );
+
+  const cycleLanguage = () => {
+    const currentIndex = STORE_LANG_OPTIONS.findIndex(option => option.value === lang);
+    const nextOption = STORE_LANG_OPTIONS[(currentIndex + 1) % STORE_LANG_OPTIONS.length];
+    setLang(nextOption.value);
+  };
 
   const scrollTo = (id: string) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
     setShowMobileMenu(false);
   };
 
+  const openCart = () => {
+    setCheckoutStep('cart');
+    setShowCart(true);
+  };
+
   return (
-    <nav style={{background:colors.bg}} className="sticky top-0 z-50 border-b border-gray-200 bg-white/90 backdrop-blur-xl">
+    <nav
+      className="sticky top-0 z-50 border-b backdrop-blur-xl"
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--store-bg) 92%, transparent)',
+        borderColor: 'var(--store-border)',
+      }}
+    >
       {/* DESIGN: The navbar recreates the original storefront balance: logo block, centered section links, cart/search utilities. */}
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         <div className="flex h-14 items-center justify-between gap-4">
@@ -55,20 +74,23 @@ export default function DefaultThemeNavbar({
             ) : (
               <div
                 className="flex h-8 w-8 items-center justify-center rounded-xl"
-                style={{ backgroundColor: colors.primary }}
+                style={{ backgroundColor: 'var(--store-primary)' }}
               >
-                <Sparkles className="h-4 w-4 text-white" />
+                <Sparkles className="h-4 w-4" style={{ color: primaryTextColor }} />
               </div>
             )}
             <div className="min-w-0">
               <span
-                className="block truncate text-sm font-bold text-gray-900"
-                style={{ fontFamily: fonts.heading }}
+                className="block truncate text-sm font-bold"
+                style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
               >
                 {store.name}
               </span>
               {template.tagline ? (
-                <span className="hidden truncate text-[10px] text-gray-400 sm:block">
+                <span
+                  className="hidden truncate text-[10px] sm:block"
+                  style={{ color: 'var(--store-text-faint)' }}
+                >
                   {template.tagline}
                 </span>
               ) : null}
@@ -81,7 +103,8 @@ export default function DefaultThemeNavbar({
                 key={item.scrollId}
                 type="button"
                 onClick={() => scrollTo(item.scrollId)}
-                className="text-xs font-medium text-gray-600 transition-colors duration-200 ease-in-out hover:text-gray-900"
+                className="cursor-pointer text-xs font-medium transition-opacity duration-200 ease-in-out hover:opacity-75"
+                style={{ color: 'var(--store-text-muted)' }}
               >
                 {item.label}
               </button>
@@ -89,6 +112,22 @@ export default function DefaultThemeNavbar({
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={cycleLanguage}
+              className="flex h-9 min-w-[56px] items-center justify-center gap-1 rounded-xl border px-2.5 transition-opacity duration-200 ease-in-out hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--store-surface)',
+                borderColor: 'var(--store-border)',
+                color: 'var(--store-text)',
+              }}
+              aria-label={t.language.label}
+              title={t.language.label}
+            >
+              <Globe className="h-3.5 w-3.5" />
+              <span className="text-[11px] font-semibold tracking-[0.08em] uppercase">{lang}</span>
+            </button>
+
             {sections.store ? (
               <button
                 type="button"
@@ -97,8 +136,13 @@ export default function DefaultThemeNavbar({
                     .getElementById('store-search')
                     ?.scrollIntoView({ behavior: 'smooth', block: 'center' })
                 }
-                className="hidden h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-600 transition-colors duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900 sm:flex"
-                aria-label="بحث"
+                className="hidden h-9 w-9 items-center justify-center rounded-xl border transition-opacity duration-200 ease-in-out hover:opacity-90 sm:flex"
+                style={{
+                  backgroundColor: 'var(--store-surface)',
+                  borderColor: 'var(--store-border)',
+                  color: 'var(--store-text-muted)',
+                }}
+                aria-label={t.store.searchPlaceholder}
               >
                 <Search className="h-4 w-4" />
               </button>
@@ -107,18 +151,20 @@ export default function DefaultThemeNavbar({
             {sections.store ? (
               <button
                 type="button"
-                onClick={() => {
-                  setCheckoutStep('cart');
-                  setShowCart(true);
+                onClick={openCart}
+                className="relative flex h-9 w-9 items-center justify-center rounded-xl border transition-opacity duration-200 ease-in-out hover:opacity-90"
+                style={{
+                  backgroundColor: 'var(--store-surface)',
+                  borderColor: 'var(--store-border)',
+                  color: 'var(--store-text)',
                 }}
-                className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition-colors duration-200 ease-in-out hover:bg-gray-50 hover:text-gray-900"
-                aria-label="السلة"
+                aria-label={t.store.addToCart}
               >
                 <ShoppingCart className="h-4 w-4" />
                 {cartCount > 0 ? (
                   <span
-                    className="absolute -end-1.5 -top-1.5 flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[8px] font-bold text-white"
-                    style={{ backgroundColor: colors.primary }}
+                    className="absolute -end-1.5 -top-1.5 flex min-h-[18px] min-w-[18px] items-center justify-center rounded-full px-1 text-[8px] font-bold"
+                    style={{ backgroundColor: 'var(--store-primary)', color: primaryTextColor }}
                   >
                     {cartCount}
                   </span>
@@ -129,8 +175,13 @@ export default function DefaultThemeNavbar({
             <button
               type="button"
               onClick={() => setShowMobileMenu(current => !current)}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white text-gray-700 transition-colors duration-200 ease-in-out hover:bg-gray-50 sm:hidden"
-              aria-label="القائمة"
+              className="flex h-9 w-9 items-center justify-center rounded-xl border transition-opacity duration-200 ease-in-out hover:opacity-90 sm:hidden"
+              style={{
+                backgroundColor: 'var(--store-surface)',
+                borderColor: 'var(--store-border)',
+                color: 'var(--store-text)',
+              }}
+              aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
             >
               {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -139,14 +190,45 @@ export default function DefaultThemeNavbar({
       </div>
 
       {showMobileMenu ? (
-        <div className="border-t border-gray-200 bg-white/95 backdrop-blur-xl sm:hidden">
-          <div className="space-y-1 px-4 py-3">
+        <div
+          className="border-t backdrop-blur-xl sm:hidden"
+          style={{
+            backgroundColor: 'color-mix(in srgb, var(--store-bg) 96%, transparent)',
+            borderColor: 'var(--store-border)',
+          }}
+        >
+          <div className="space-y-3 px-4 py-3">
+            <button
+              type="button"
+              onClick={cycleLanguage}
+              className="flex w-full items-center justify-between rounded-xl border px-3 py-2.5 text-start text-sm font-medium transition-opacity duration-200 ease-in-out hover:opacity-90"
+              style={{
+                backgroundColor: 'var(--store-surface)',
+                borderColor: 'var(--store-border)',
+                color: 'var(--store-text)',
+              }}
+              aria-label={t.language.label}
+            >
+              <span>{t.language.label}</span>
+              <span
+                className="flex items-center gap-2 text-[11px] font-semibold tracking-[0.08em] uppercase"
+                style={{ color: 'var(--store-text-muted)' }}
+              >
+                <Globe className="h-3.5 w-3.5" />
+                {lang}
+              </span>
+            </button>
+
             {navItems.map(item => (
               <button
                 key={item.scrollId}
                 type="button"
                 onClick={() => scrollTo(item.scrollId)}
-                className="w-full rounded-xl px-3 py-2.5 text-start text-sm font-medium text-gray-800 transition-colors duration-200 ease-in-out hover:bg-gray-50"
+                className="w-full rounded-xl px-3 py-2.5 text-start text-sm font-medium transition-opacity duration-200 ease-in-out hover:opacity-90"
+                style={{
+                  backgroundColor: 'var(--store-surface)',
+                  color: 'var(--store-text)',
+                }}
               >
                 {item.label}
               </button>

@@ -8,10 +8,11 @@ import type {
   HeroStatItem,
   HeroTrustItem,
 } from '@/lib/template/types';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 // ─── File upload helper ───────────────────────────────────────────────────────
 
-async function uploadFile(file: File): Promise<string> {
+async function uploadFile(file: File, fallbackMessage: string): Promise<string> {
   const formData = new FormData();
   formData.append('image', file);
 
@@ -23,7 +24,7 @@ async function uploadFile(file: File): Promise<string> {
   const data = (await res.json()) as { url?: string; error?: string };
 
   if (!res.ok || !data.url) {
-    throw new Error(data.error ?? 'فشل رفع الملف');
+    throw new Error(data.error ?? fallbackMessage);
   }
 
   return data.url;
@@ -158,14 +159,18 @@ function mergeHero(value?: HeroSectionItem | null): HeroSectionItem {
 
 // ─── API calls — one per section ─────────────────────────────────────────────
 
-async function apiSaveCore(storeId: string, hero: HeroSectionItem): Promise<{ id: string }> {
+async function apiSaveCore(
+  storeId: string,
+  hero: HeroSectionItem,
+  fallbackMessage: string
+): Promise<{ id: string }> {
   const res = await fetch('/api/template/hero-section/core', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ storeId, ...hero }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error ?? 'فشل حفظ الإعدادات الأساسية');
+  if (!res.ok) throw new Error(data?.error ?? fallbackMessage);
   return data;
 }
 
@@ -174,7 +179,8 @@ async function apiSaveImages(
   fields: Pick<
     HeroSectionItem,
     'heroImage' | 'heroImageMobile' | 'backgroundImage' | 'backgroundImageMobile'
-  >
+  >,
+  fallbackMessage: string
 ): Promise<void> {
   const res = await fetch('/api/template/hero-section/images', {
     method: 'PATCH',
@@ -182,23 +188,28 @@ async function apiSaveImages(
     body: JSON.stringify({ storeId, ...fields }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error ?? 'فشل حفظ الصور');
+  if (!res.ok) throw new Error(data?.error ?? fallbackMessage);
 }
 
-async function apiSaveStats(storeId: string, stats: HeroStatItem[]): Promise<HeroStatItem[]> {
+async function apiSaveStats(
+  storeId: string,
+  stats: HeroStatItem[],
+  fallbackMessage: string
+): Promise<HeroStatItem[]> {
   const res = await fetch('/api/template/hero-section/stats', {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ storeId, stats }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error ?? 'فشل حفظ الإحصائيات');
+  if (!res.ok) throw new Error(data?.error ?? fallbackMessage);
   return data;
 }
 
 async function apiSaveFeatures(
   storeId: string,
-  features: HeroFeatureItem[]
+  features: HeroFeatureItem[],
+  fallbackMessage: string
 ): Promise<HeroFeatureItem[]> {
   const res = await fetch('/api/template/hero-section/features', {
     method: 'PUT',
@@ -206,13 +217,14 @@ async function apiSaveFeatures(
     body: JSON.stringify({ storeId, features }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error ?? 'فشل حفظ المميزات');
+  if (!res.ok) throw new Error(data?.error ?? fallbackMessage);
   return data;
 }
 
 async function apiSaveTrustItems(
   storeId: string,
-  trustItems: HeroTrustItem[]
+  trustItems: HeroTrustItem[],
+  fallbackMessage: string
 ): Promise<HeroTrustItem[]> {
   const res = await fetch('/api/template/hero-section/trust-items', {
     method: 'PUT',
@@ -220,7 +232,7 @@ async function apiSaveTrustItems(
     body: JSON.stringify({ storeId, trustItems }),
   });
   const data = await res.json();
-  if (!res.ok) throw new Error(data?.error ?? 'فشل حفظ عناصر الثقة');
+  if (!res.ok) throw new Error(data?.error ?? fallbackMessage);
   return data;
 }
 
@@ -232,6 +244,8 @@ interface UseHeroSectionEditorOptions {
 }
 
 export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEditorOptions) {
+  const { t, dir } = useLanguage();
+  const tt = t.templateEditor;
   const initialMerged = useMemo(() => mergeHero(initialHero), [initialHero]);
 
   const [hero, setHero] = useState<HeroSectionItem>(initialMerged);
@@ -452,19 +466,23 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
       errorMsg: string
     ) => {
       try {
-        const url = await uploadFile(file);
+        const url = await uploadFile(file, tt.validation.uploadFileFailed);
 
         // Lock into ref immediately so subsequent saves carry the new URL
         heroRef.current = { ...heroRef.current, [field]: url };
         setHero(heroRef.current);
 
         setIsSaving(true);
-        await apiSaveImages(storeId, {
-          heroImage: heroRef.current.heroImage ?? null,
-          heroImageMobile: heroRef.current.heroImageMobile ?? null,
-          backgroundImage: heroRef.current.backgroundImage ?? null,
-          backgroundImageMobile: heroRef.current.backgroundImageMobile ?? null,
-        });
+        await apiSaveImages(
+          storeId,
+          {
+            heroImage: heroRef.current.heroImage ?? null,
+            heroImageMobile: heroRef.current.heroImageMobile ?? null,
+            backgroundImage: heroRef.current.backgroundImage ?? null,
+            backgroundImageMobile: heroRef.current.backgroundImageMobile ?? null,
+          },
+          tt.validation.saveImagesFailed
+        );
 
         // Images are now clean in the DB
         setDirty(prev => {
@@ -480,13 +498,18 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
         setIsSaving(false);
       }
     },
-    [storeId]
+    [storeId, tt.validation.saveImagesFailed, tt.validation.uploadFileFailed]
   );
 
   const uploadHeroImage = useCallback(
     (file: File) =>
-      uploadAndPersistImage(file, 'heroImage', 'تم رفع صورة الهيرو', 'فشل رفع صورة الهيرو'),
-    [uploadAndPersistImage]
+      uploadAndPersistImage(
+        file,
+        'heroImage',
+        tt.messages.uploadHeroImageSuccess,
+        tt.validation.uploadHeroImageFailed
+      ),
+    [tt.messages.uploadHeroImageSuccess, tt.validation.uploadHeroImageFailed, uploadAndPersistImage]
   );
 
   const uploadHeroMobileImage = useCallback(
@@ -494,16 +517,29 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
       uploadAndPersistImage(
         file,
         'heroImageMobile',
-        'تم رفع صورة الهيرو للموبايل',
-        'فشل رفع صورة الموبايل'
+        tt.messages.uploadHeroMobileImageSuccess,
+        tt.validation.uploadHeroMobileImageFailed
       ),
-    [uploadAndPersistImage]
+    [
+      tt.messages.uploadHeroMobileImageSuccess,
+      tt.validation.uploadHeroMobileImageFailed,
+      uploadAndPersistImage,
+    ]
   );
 
   const uploadBackgroundImage = useCallback(
     (file: File) =>
-      uploadAndPersistImage(file, 'backgroundImage', 'تم رفع صورة الخلفية', 'فشل رفع صورة الخلفية'),
-    [uploadAndPersistImage]
+      uploadAndPersistImage(
+        file,
+        'backgroundImage',
+        tt.messages.uploadBackgroundImageSuccess,
+        tt.validation.uploadBackgroundImageFailed
+      ),
+    [
+      tt.messages.uploadBackgroundImageSuccess,
+      tt.validation.uploadBackgroundImageFailed,
+      uploadAndPersistImage,
+    ]
   );
 
   const uploadBackgroundMobileImage = useCallback(
@@ -511,10 +547,14 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
       uploadAndPersistImage(
         file,
         'backgroundImageMobile',
-        'تم رفع خلفية الموبايل',
-        'فشل رفع خلفية الموبايل'
+        tt.messages.uploadBackgroundMobileImageSuccess,
+        tt.validation.uploadBackgroundMobileImageFailed
       ),
-    [uploadAndPersistImage]
+    [
+      tt.messages.uploadBackgroundMobileImageSuccess,
+      tt.validation.uploadBackgroundMobileImageFailed,
+      uploadAndPersistImage,
+    ]
   );
 
   // ─── Manual save — only dirty sections ───────────────────────────────────
@@ -523,7 +563,7 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
     const currentDirty = dirtyRef.current;
 
     if (!Object.values(currentDirty).some(Boolean)) {
-      toast.info('لا توجد تغييرات للحفظ');
+      toast.info(tt.actions.noChangesToSave);
       return;
     }
 
@@ -536,61 +576,65 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
 
     if (currentDirty.core) {
       tasks.push(
-        apiSaveCore(storeId, currentHero)
+        apiSaveCore(storeId, currentHero, tt.validation.saveCoreFailed)
           .then(res => {
             updatedHero.id = res.id;
           })
           .catch(e => {
-            errors.push(e instanceof Error ? e.message : 'فشل حفظ الإعدادات الأساسية');
+            errors.push(e instanceof Error ? e.message : tt.validation.saveCoreFailed);
           })
       );
     }
 
     if (currentDirty.images) {
       tasks.push(
-        apiSaveImages(storeId, {
-          heroImage: currentHero.heroImage ?? null,
-          heroImageMobile: currentHero.heroImageMobile ?? null,
-          backgroundImage: currentHero.backgroundImage ?? null,
-          backgroundImageMobile: currentHero.backgroundImageMobile ?? null,
-        }).catch(e => {
-          errors.push(e instanceof Error ? e.message : 'فشل حفظ الصور');
+        apiSaveImages(
+          storeId,
+          {
+            heroImage: currentHero.heroImage ?? null,
+            heroImageMobile: currentHero.heroImageMobile ?? null,
+            backgroundImage: currentHero.backgroundImage ?? null,
+            backgroundImageMobile: currentHero.backgroundImageMobile ?? null,
+          },
+          tt.validation.saveImagesFailed
+        ).catch(e => {
+          errors.push(e instanceof Error ? e.message : tt.validation.saveImagesFailed);
         })
       );
     }
 
     if (currentDirty.stats) {
       tasks.push(
-        apiSaveStats(storeId, currentHero.stats)
+        apiSaveStats(storeId, currentHero.stats, tt.validation.saveStatsFailed)
           .then(saved => {
             updatedHero.stats = saved;
           })
           .catch(e => {
-            errors.push(e instanceof Error ? e.message : 'فشل حفظ الإحصائيات');
+            errors.push(e instanceof Error ? e.message : tt.validation.saveStatsFailed);
           })
       );
     }
 
     if (currentDirty.features) {
       tasks.push(
-        apiSaveFeatures(storeId, currentHero.features)
+        apiSaveFeatures(storeId, currentHero.features, tt.validation.saveFeaturesFailed)
           .then(saved => {
             updatedHero.features = saved;
           })
           .catch(e => {
-            errors.push(e instanceof Error ? e.message : 'فشل حفظ المميزات');
+            errors.push(e instanceof Error ? e.message : tt.validation.saveFeaturesFailed);
           })
       );
     }
 
     if (currentDirty.trustItems) {
       tasks.push(
-        apiSaveTrustItems(storeId, currentHero.trustItems)
+        apiSaveTrustItems(storeId, currentHero.trustItems, tt.validation.saveTrustItemsFailed)
           .then(saved => {
             updatedHero.trustItems = saved;
           })
           .catch(e => {
-            errors.push(e instanceof Error ? e.message : 'فشل حفظ عناصر الثقة');
+            errors.push(e instanceof Error ? e.message : tt.validation.saveTrustItemsFailed);
           })
       );
     }
@@ -604,12 +648,23 @@ export function useHeroSectionEditor({ initialHero, storeId }: UseHeroSectionEdi
 
     if (errors.length > 0) {
       // Keep only the sections that failed as dirty so the user can retry
-      toast.error(`حُفظ جزئي — فشل: ${errors.join('، ')}`);
+      toast.error(`${tt.actions.partialSaveFailed} ${errors.join(dir === 'rtl' ? '، ' : ', ')}`);
     } else {
       patchDirtyRef(CLEAN);
-      toast.success('تم الحفظ بنجاح');
+      toast.success(t.success);
     }
-  }, [storeId]);
+  }, [
+    dir,
+    storeId,
+    t.success,
+    tt.actions.noChangesToSave,
+    tt.actions.partialSaveFailed,
+    tt.validation.saveCoreFailed,
+    tt.validation.saveFeaturesFailed,
+    tt.validation.saveImagesFailed,
+    tt.validation.saveStatsFailed,
+    tt.validation.saveTrustItemsFailed,
+  ]);
 
   return {
     hero,

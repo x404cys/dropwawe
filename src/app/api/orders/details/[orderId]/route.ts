@@ -3,6 +3,69 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 
+const productSelect = {
+  id: true,
+  name: true,
+  image: true,
+  description: true,
+  category: true,
+  price: true,
+  discount: true,
+  isFromSupplier: true,
+} as const;
+
+const paymentOrderSelect = {
+  id: true,
+  cartId: true,
+  tranRef: true,
+  amount: true,
+  currency: true,
+  status: true,
+  respCode: true,
+  respMessage: true,
+  customerEmail: true,
+  createdAt: true,
+} as const;
+
+const couponSelect = {
+  id: true,
+  code: true,
+  type: true,
+  value: true,
+  scope: true,
+  maxDiscount: true,
+  expiresAt: true,
+  isActive: true,
+} as const;
+
+const storeSelect = {
+  id: true,
+  name: true,
+  subLink: true,
+  phone: true,
+  shippingPrice: true,
+  shippingType: true,
+  methodPayment: true,
+  description: true,
+} as const;
+
+const userSelect = {
+  id: true,
+  name: true,
+  email: true,
+  phone: true,
+  storeName: true,
+} as const;
+
+const supplierSelect = {
+  id: true,
+  name: true,
+  phone: true,
+  address: true,
+  paymentInfo: true,
+  methodPayment: true,
+} as const;
+
 export async function GET(req: Request, context: { params: Promise<{ orderId: string }> }) {
   try {
     const { orderId } = await context.params;
@@ -14,18 +77,67 @@ export async function GET(req: Request, context: { params: Promise<{ orderId: st
 
     const order = await prisma.order.findUnique({
       where: { id: orderId },
-      include: { items: { include: { product: true } } },
+      include: {
+        items: {
+          include: {
+            product: {
+              select: productSelect,
+            },
+          },
+        },
+        paymentOrder: {
+          select: paymentOrderSelect,
+        },
+        coupon: {
+          select: couponSelect,
+        },
+        store: {
+          select: storeSelect,
+        },
+        user: {
+          select: userSelect,
+        },
+      },
     });
 
-    if (order) return NextResponse.json(order);
+    if (order) {
+      return NextResponse.json({
+        ...order,
+        orderSource: 'ORDER' as const,
+      });
+    }
 
     if (session?.user.role === 'SUPPLIER') {
       const traderOrder = await prisma.orderFromTrader.findUnique({
         where: { id: orderId },
-        include: { items: { include: { product: true } } },
+        include: {
+          items: {
+            include: {
+              product: {
+                select: productSelect,
+              },
+            },
+          },
+          paymentOrder: {
+            select: paymentOrderSelect,
+          },
+          trader: {
+            select: userSelect,
+          },
+          supplier: {
+            select: supplierSelect,
+          },
+        },
       });
 
-      return NextResponse.json(traderOrder);
+      if (traderOrder) {
+        return NextResponse.json({
+          ...traderOrder,
+          orderSource: 'TRADER_ORDER' as const,
+        });
+      }
+
+      return NextResponse.json({ error: 'Order not found' }, { status: 404 });
     }
 
     return NextResponse.json({ error: 'Order not found' }, { status: 404 });

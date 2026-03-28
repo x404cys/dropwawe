@@ -2,16 +2,15 @@
 
 'use client';
 
-import { ChevronLeft, Heart, Package, ShoppingCart, Star } from 'lucide-react';
+import { ChevronLeft, Package } from 'lucide-react';
 import { useMemo } from 'react';
-import type { StoreSectionProps, StorefrontProduct } from '../../../_lib/types';
-import { useCart } from '../../../_context/CartContext';
+import type { StoreSectionProps } from '../../../_lib/types';
 import { useStorefront } from '../../../_hooks/useStorefront';
 import { getCategoryIcon } from '../../../_utils/icons';
-import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
 import DefaultThemeBannerCarousel from '../components/BannerCarousel';
 import DefaultThemeProductCard from '../components/ProductCard';
 import DefaultThemeSearchBar from '../components/SearchBar';
+import { getReadableTextColor } from '../themeSystem';
 
 export default function DefaultThemeStoreSection({
   products,
@@ -23,7 +22,6 @@ export default function DefaultThemeStoreSection({
   upStoreBanners = [],
   btwCatBanners = [],
 }: StoreSectionProps) {
-  const { addToCart, liked, setSelectedProduct, toggleLike } = useCart();
   const {
     activeCategory,
     setActiveCategory,
@@ -63,12 +61,16 @@ export default function DefaultThemeStoreSection({
     const sectionKeys = new Set(sectionCategories.map(section => section.category));
     return products.filter(product => !sectionKeys.has(product.category));
   }, [products, sectionCategories]);
+  const primaryTextColor = getReadableTextColor(colors.primary);
 
   return (
     <section id="store-section" className="py-10 sm:py-16">
       <div className="mx-auto max-w-5xl px-4 sm:px-6">
         {upStoreBanners.length > 0 ? (
-          <div className="mb-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+          <div
+            className="mb-8 overflow-hidden rounded-3xl border"
+            style={{ borderColor: 'var(--store-border)' }}
+          >
             <DefaultThemeBannerCarousel banners={upStoreBanners} colors={colors} />
           </div>
         ) : null}
@@ -83,7 +85,10 @@ export default function DefaultThemeStoreSection({
         </div>
 
         {centerBanners.length > 0 ? (
-          <div className="mb-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+          <div
+            className="mb-8 overflow-hidden rounded-3xl border"
+            style={{ borderColor: 'var(--store-border)' }}
+          >
             <DefaultThemeBannerCarousel banners={centerBanners} colors={colors} />
           </div>
         ) : null}
@@ -107,13 +112,17 @@ export default function DefaultThemeStoreSection({
                   className="flex min-w-[60px] flex-shrink-0 flex-col items-center gap-1.5 transition-all"
                 >
                   <div
-                    className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${
-                      isActive ? 'shadow-md' : 'border-gray-200 bg-white'
-                    }`}
+                    className={`flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border-2 transition-all ${''}`}
                     style={
                       isActive
-                        ? { borderColor: colors.primary, backgroundColor: `${colors.primary}15` }
-                        : undefined
+                        ? {
+                            borderColor: 'var(--store-primary)',
+                            backgroundColor: 'var(--store-primary-faint)',
+                          }
+                        : {
+                            borderColor: 'var(--store-border)',
+                            backgroundColor: 'var(--store-surface)',
+                          }
                     }
                   >
                     {iconItem?.image ? (
@@ -125,13 +134,15 @@ export default function DefaultThemeStoreSection({
                     ) : (
                       <Icon
                         className="h-6 w-6"
-                        style={{ color: isActive ? colors.primary : '#6b7280' }}
+                        style={{
+                          color: isActive ? 'var(--store-primary)' : 'var(--store-text-muted)',
+                        }}
                       />
                     )}
                   </div>
                   <span
-                    className={`text-[10px] font-semibold ${isActive ? '' : 'text-gray-500'}`}
-                    style={isActive ? { color: colors.primary } : undefined}
+                    className="text-[10px] font-semibold"
+                    style={{ color: isActive ? 'var(--store-primary)' : 'var(--store-text-muted)' }}
                   >
                     {category.label}
                   </span>
@@ -149,14 +160,21 @@ export default function DefaultThemeStoreSection({
                   type="button"
                   onClick={() => setActiveCategory(category.key)}
                   className={`flex-shrink-0 rounded-xl px-4 py-2 text-xs font-semibold transition-all duration-200 ease-in-out ${
-                    isActive
-                      ? 'text-white shadow-sm'
-                      : 'border border-gray-200 bg-white text-gray-500 hover:text-gray-900'
+                    isActive ? '' : 'border'
                   }`}
                   style={
                     isActive
-                      ? { backgroundColor: colors.primary, fontFamily: fonts.heading }
-                      : { fontFamily: fonts.heading }
+                      ? {
+                          backgroundColor: 'var(--store-primary)',
+                          color: primaryTextColor,
+                          fontFamily: fonts.heading,
+                        }
+                      : {
+                          backgroundColor: 'var(--store-surface)',
+                          borderColor: 'var(--store-border)',
+                          color: 'var(--store-text-muted)',
+                          fontFamily: fonts.heading,
+                        }
                   }
                 >
                   {category.label}
@@ -183,17 +201,26 @@ export default function DefaultThemeStoreSection({
                     <div className="flex items-center gap-2">
                       <div
                         className="flex h-8 w-8 items-center justify-center rounded-xl"
-                        style={{ backgroundColor: `${colors.primary}15` }}
+                        style={{ backgroundColor: 'var(--store-primary-faint)' }}
                       >
-                        <CategoryIcon className="h-4 w-4" style={{ color: colors.primary }} />
+                        <CategoryIcon
+                          className="h-4 w-4"
+                          style={{ color: 'var(--store-primary)' }}
+                        />
                       </div>
                       <h3
-                        className="text-sm font-bold text-gray-900"
-                        style={{ fontFamily: fonts.heading }}
+                        className="text-sm font-bold"
+                        style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
                       >
                         {section.category}
                       </h3>
-                      <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] text-gray-500">
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px]"
+                        style={{
+                          backgroundColor: 'var(--store-surface-strong)',
+                          color: 'var(--store-text-muted)',
+                        }}
+                      >
                         {productsInCategory.length}
                       </span>
                     </div>
@@ -218,7 +245,10 @@ export default function DefaultThemeStoreSection({
                     ))}
                   </div>
                   {index === 0 && btwCatBanners.length > 0 && (
-                    <div className="mt-8 overflow-hidden rounded-3xl border border-gray-200 shadow-sm">
+                    <div
+                      className="mt-8 overflow-hidden rounded-3xl border"
+                      style={{ borderColor: 'var(--store-border)' }}
+                    >
                       <DefaultThemeBannerCarousel banners={btwCatBanners} colors={colors} />
                     </div>
                   )}
@@ -229,8 +259,8 @@ export default function DefaultThemeStoreSection({
             {remainingProducts.length > 0 ? (
               <div>
                 <h3
-                  className="mb-3 text-sm font-bold text-gray-900"
-                  style={{ fontFamily: fonts.heading }}
+                  className="mb-3 text-sm font-bold"
+                  style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
                 >
                   منتجات أخرى
                 </h3>
@@ -262,8 +292,13 @@ export default function DefaultThemeStoreSection({
 
         {displayFiltered.length === 0 && !showSectionRows ? (
           <div className="py-16 text-center">
-            <Package className="mx-auto mb-3 h-12 w-12 text-gray-300" />
-            <p className="text-sm text-gray-500">لا توجد منتجات</p>
+            <Package
+              className="mx-auto mb-3 h-12 w-12"
+              style={{ color: 'var(--store-text-faint)' }}
+            />
+            <p className="text-sm" style={{ color: 'var(--store-text-muted)' }}>
+              لا توجد منتجات
+            </p>
           </div>
         ) : null}
       </div>

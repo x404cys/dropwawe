@@ -1,57 +1,86 @@
-// src/app/(page)/Dashboard/(page)/setting/store/template/page.tsx
-// Server Component — fetches the StoreTemplate and passes it to TemplateSection.
-// Mirrors the pattern of theme/page.tsx and social/page.tsx.
-// Note: this page uses 'use client' because it depends on useLanguage context
-// for the header title, following the same pattern as theme/page.tsx.
-
 'use client';
 
+import { useEffect, useMemo, useState } from 'react';
+import { DEFAULT_TEMPLATE_STATE } from '@/lib/template/defaults';
+import { toFormState } from '@/lib/template/transform';
+import type { TemplateFormState } from '@/lib/template/types';
 import { useStoreProvider } from '../../../../context/StoreContext';
-import { useEffect, useState } from 'react';
 import SettingsPageHeader from '../../_components/settings-page-header';
 import TemplateSection from '../(page)/template-section/template-section';
-import { toFormState } from '@/lib/template/transform';
-import { DEFAULT_TEMPLATE_STATE } from '@/lib/template/defaults';
-import type { TemplateFormState } from '@/lib/template/types';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 export default function TemplateSettingsPage() {
   const { currentStore } = useStoreProvider();
-  const [templateData, setTemplateData] = useState<TemplateFormState>(DEFAULT_TEMPLATE_STATE);
+  const { t, dir } = useLanguage();
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
 
+  const localizedDefaultTemplate = useMemo<TemplateFormState>(
+    () => ({
+      ...DEFAULT_TEMPLATE_STATE,
+      heroButtonText: t.templateEditor.defaults.heroPrimaryButton,
+      heroSecondaryButton: t.templateEditor.defaults.heroSecondaryButton,
+      ctaButton: t.templateEditor.defaults.ctaButton,
+      announcementBar: {
+        ...DEFAULT_TEMPLATE_STATE.announcementBar,
+        text: t.templateEditor.defaults.announcementBarText,
+      },
+    }),
+    [t]
+  );
+
+  const [templateData, setTemplateData] = useState<TemplateFormState>(localizedDefaultTemplate);
+
   useEffect(() => {
-    if (!currentStore?.id) return;
+    if (!currentStore?.id) {
+      setTemplateData(localizedDefaultTemplate);
+      setIsLoading(false);
+      return;
+    }
 
     const fetchTemplate = async () => {
       try {
         const res = await fetch(`/api/template?storeId=${encodeURIComponent(currentStore.id)}`);
-        if (!res.ok) return;
+        if (!res.ok) {
+          setTemplateData(localizedDefaultTemplate);
+          return;
+        }
+
         const data = (await res.json()) as {
           template: { store?: { products?: Array<{ category: string }> } };
         };
+
         setTemplateData(toFormState(data.template as Parameters<typeof toFormState>[0]));
         setCategories(
           Array.from(
-            new Set(data.template?.store?.products?.map((p: { category: string }) => p.category))
+            new Set(
+              data.template?.store?.products?.map(
+                (product: { category: string }) => product.category
+              )
+            )
           )
         );
       } catch {
+        setTemplateData(localizedDefaultTemplate);
       } finally {
         setIsLoading(false);
       }
     };
 
     void fetchTemplate();
-  }, [currentStore?.id]);
+  }, [currentStore?.id, localizedDefaultTemplate]);
 
   return (
-    <section dir="rtl" className="bg-background min-h-screen pb-28">
-      <SettingsPageHeader title="تخصيص القالب" subtitle="عدّل هوية ومحتوى وتصميم متجرك" />
-      <main className="mx-auto max-w-lg px-2  pt-4">
+    <section dir={dir} className="bg-background min-h-screen pb-28">
+      <SettingsPageHeader
+        title={t.templateEditor.page.title}
+        subtitle={t.templateEditor.page.subtitle}
+      />
+
+      <main className="mx-auto max-w-lg px-2 pt-4">
         {isLoading ? (
           <div className="text-muted-foreground flex items-center justify-center py-20 text-sm">
-            جارٍ التحميل...
+            {t.templateEditor.page.loading}
           </div>
         ) : currentStore ? (
           <TemplateSection
@@ -65,7 +94,7 @@ export default function TemplateSettingsPage() {
           />
         ) : (
           <div className="text-muted-foreground flex items-center justify-center py-20 text-sm">
-            لم يتم العثور على متجر
+            {t.templateEditor.page.storeNotFound}
           </div>
         )}
       </main>

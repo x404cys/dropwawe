@@ -3,23 +3,9 @@
 'use client';
 
 import { ExternalLink, PenTool } from 'lucide-react';
-import type { ServicesSectionProps, StorefrontWork } from '../../../_lib/types';
-import { getIconComponent } from '../../../_utils/icons';
-
-function flattenWorks(services: ServicesSectionProps['services']) {
-  return services
-    .filter(service => service.enabled !== false)
-    .flatMap(service =>
-      service.works.map(work => ({
-        ...work,
-        serviceTitle: service.title,
-      }))
-    )
-    .sort((a, b) => a.order - b.order) as Array<StorefrontWork & { serviceTitle: string }>;
-}
+import type { ServicesSectionProps } from '../../../_lib/types';
 export default function DefaultThemeServicesSection({
   services,
-  colors,
   fonts,
   showWorksSection,
 }: ServicesSectionProps) {
@@ -40,19 +26,19 @@ export default function DefaultThemeServicesSection({
             <section
               id={`service-${service.id}`}
               className="py-16 sm:py-20"
-              style={{ backgroundColor: `${colors.primary}06` }}
+              style={{ backgroundColor: 'var(--store-bg)' }}
             >
               <div className="mx-auto max-w-5xl px-4 sm:px-6">
                 <div className="mb-8 flex items-center gap-4">
                   <div>
                     <h2
                       className="text-xl font-bold sm:text-2xl"
-                      style={{ color: colors.text, fontFamily: fonts.heading }}
+                      style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
                     >
                       {service.title}
                     </h2>
                     {service.desc && (
-                      <p className="mt-1 text-sm" style={{ color: `${colors.text}88` }}>
+                      <p className="mt-1 text-sm" style={{ color: 'var(--store-text-muted)' }}>
                         {service.desc}
                       </p>
                     )}
@@ -71,13 +57,13 @@ export default function DefaultThemeServicesSection({
                       {service.worksTitle && (
                         <h3
                           className="text-lg font-bold sm:text-xl"
-                          style={{ color: colors.text, fontFamily: fonts.heading }}
+                          style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
                         >
                           {service.worksTitle}
                         </h3>
                       )}
                       {service.worksDesc && (
-                        <p className="mt-2 text-sm" style={{ color: `${colors.text}88` }}>
+                        <p className="mt-2 text-sm" style={{ color: 'var(--store-text-muted)' }}>
                           {service.worksDesc}
                         </p>
                       )}
@@ -97,9 +83,11 @@ export default function DefaultThemeServicesSection({
                           className="group block cursor-pointer"
                         >
                           <div
-                            className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-gray-200"
+                            className="relative aspect-[4/3] overflow-hidden rounded-2xl border"
                             style={{
-                              background: `linear-gradient(135deg, ${colors.primary}20, ${colors.accent}15)`,
+                              background:
+                                'linear-gradient(135deg, var(--store-primary-faint), var(--store-accent-soft))',
+                              borderColor: 'var(--store-border)',
                             }}
                           >
                             {work.image ? (
@@ -110,7 +98,10 @@ export default function DefaultThemeServicesSection({
                               />
                             ) : (
                               <div className="flex h-full items-center justify-center">
-                                <PenTool className="h-8 w-8 text-gray-400/40" />
+                                <PenTool
+                                  className="h-8 w-8 opacity-35"
+                                  style={{ color: 'var(--store-text-muted)' }}
+                                />
                               </div>
                             )}
                             <div className="absolute inset-0 flex items-center justify-center bg-black/0 opacity-0 transition-all duration-300 group-hover:bg-black/60 group-hover:opacity-100">
@@ -123,8 +114,15 @@ export default function DefaultThemeServicesSection({
                             </div>
                           </div>
                           <div className="mt-2.5 px-1">
-                            <h3 className="text-xs font-bold text-gray-900">{work.title}</h3>
-                            <p className="text-[10px] text-gray-500">{work.category}</p>
+                            <h3
+                              className="text-xs font-bold"
+                              style={{ color: 'var(--store-text)' }}
+                            >
+                              {work.title}
+                            </h3>
+                            <p className="text-[10px]" style={{ color: 'var(--store-text-muted)' }}>
+                              {work.category}
+                            </p>
                           </div>
                         </Wrapper>
                       );

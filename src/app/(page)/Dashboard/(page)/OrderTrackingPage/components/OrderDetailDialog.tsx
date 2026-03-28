@@ -1,10 +1,9 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Package, MapPin, Truck, Clock, Check, X, CreditCard, Banknote } from 'lucide-react';
+import { Package, MapPin, Truck, Clock, Check, X } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { Order } from '@/types/Products';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-import { CgMoreVertical } from 'react-icons/cg';
 import { useRouter } from 'next/navigation';
 
 export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | string;
@@ -16,38 +15,44 @@ interface OrderDetailDialogProps {
   onUpdateStatus?: (orderId: string, newStatus: OrderStatus) => void;
 }
 
-const STATUS_FLOW: {
-  status: OrderStatus;
-  label: string;
-  icon: typeof Check;
-  variant: 'default' | 'destructive' | 'outline';
-}[] = [
-  { status: 'CONFIRMED', label: 'تأكيد الطلب', icon: Check, variant: 'default' },
-
-  { status: 'CANCELLED', label: 'إلغاء الطلب', icon: X, variant: 'destructive' },
-];
-
 const OrderDetailDialog = ({
   order,
   open,
   onOpenChange,
   onUpdateStatus,
 }: OrderDetailDialogProps) => {
-  const { t, lang } = useLanguage();
+  const { t } = useLanguage();
   if (!order) return null;
   const router = useRouter();
-  const status = lang === 'ku' ? order.status : order.status;
 
   const itemsToDisplay = order.items || [];
+  const statusLabels: Record<string, string> = {
+    PENDING: t.orders.new,
+    CONFIRMED: t.orders.confirmed,
+    SHIPPED: t.orders.transit,
+    DELIVERED: t.orders.completed,
+    CANCELLED: t.orders.cancelled,
+  };
+  const statusLabel = statusLabels[order.status!] ?? order.status;
+
+  const statusFlow: {
+    status: OrderStatus;
+    label: string;
+    icon: typeof Check;
+    variant: 'default' | 'destructive' | 'outline';
+  }[] = [
+    { status: 'CONFIRMED', label: t.orders.confirmOrder, icon: Check, variant: 'default' },
+    { status: 'CANCELLED', label: t.orders.cancelOrder, icon: X, variant: 'destructive' },
+  ];
 
   const getAvailableActions = () => {
     switch (order.status) {
       case 'PENDING':
-        return STATUS_FLOW.filter(s => s.status === 'CONFIRMED' || s.status === 'CANCELLED');
+        return statusFlow.filter(s => s.status === 'CONFIRMED' || s.status === 'CANCELLED');
       case 'CONFIRMED':
-        return STATUS_FLOW.filter(s => s.status === 'SHIPPED' || s.status === 'CANCELLED');
+        return statusFlow.filter(s => s.status === 'SHIPPED' || s.status === 'CANCELLED');
       case 'SHIPPED':
-        return STATUS_FLOW.filter(s => s.status === 'CONFIRMED' || s.status === 'CANCELLED');
+        return statusFlow.filter(s => s.status === 'CONFIRMED' || s.status === 'CANCELLED');
       default:
         return [];
     }
@@ -66,7 +71,7 @@ const OrderDetailDialog = ({
 
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <span className={`''} rounded-full px-2 py-1 text-xs font-medium`}>{status}</span>
+            <span className={`''} rounded-full px-2 py-1 text-xs font-medium`}>{statusLabel}</span>
             <span className="text-muted-foreground flex items-center gap-1 text-xs">
               <Clock className="h-3 w-3" />
               {order.createdAt}
@@ -83,7 +88,7 @@ const OrderDetailDialog = ({
             </p>
             <p className="text-muted-foreground flex items-center gap-1 text-xs">
               <MapPin className="h-3 w-3" />
-              {order.location || (lang === 'ku' ? 'بەغدا، حەیی المنسوور' : 'بغداد، حي المنصور')}
+              {order.location || t.orders.defaultLocation}
             </p>
           </div>
 
@@ -98,7 +103,9 @@ const OrderDetailDialog = ({
                   <div key={i} className="flex items-center justify-between px-3 py-2">
                     <div>
                       <p className="text-foreground text-sm">{item.name}</p>
-                      <p className="text-muted-foreground text-[11px]">الكمية: {item.quantity}</p>
+                      <p className="text-muted-foreground text-[11px]">
+                        {t.orders.quantity}: {item.quantity}
+                      </p>
                       <img src={item.product?.image} alt="" className="h-12 w-12" />
                     </div>
                     {item.color && (
@@ -116,7 +123,9 @@ const OrderDetailDialog = ({
                   </div>
                 ))
               ) : (
-                <div className="text-muted-foreground p-4 text-center text-xs">لا توجد منتجات</div>
+                <div className="text-muted-foreground p-4 text-center text-xs">
+                  {t.orders.noProducts}
+                </div>
               )}
             </div>
           </div>
@@ -125,15 +134,15 @@ const OrderDetailDialog = ({
             <Truck className="h-3.5 w-3.5" />
             <span>
               {t.orders.deliveryStatus}:
-              {status === 'PENDING'
+              {order.status === 'PENDING'
                 ? t.orders.new
-                : status === 'CONFIRMED'
-                  ? t.orders.completed
-                  : status === 'SHIPPED'
-                    ? t.orders.deliveryStatus
-                    : status === 'DELIVERED'
+                : order.status === 'CONFIRMED'
+                  ? t.orders.confirmed
+                  : order.status === 'SHIPPED'
+                    ? t.orders.transit
+                    : order.status === 'DELIVERED'
                       ? t.orders.completed
-                      : status === 'CANCELLED'
+                      : order.status === 'CANCELLED'
                         ? t.orders.cancelled
                         : ''}
             </span>
@@ -161,7 +170,9 @@ const OrderDetailDialog = ({
                   }}
                 >
                   <Icon className="h-3.5 w-3.5" />
-                  {`${order.status === 'SHIPPED' && action.status === 'CONFIRMED' ? 'تاكيد اتمام التوصيل' : action.label}`}
+                  {order.status === 'SHIPPED' && action.status === 'CONFIRMED'
+                    ? t.orders.confirmDelivery
+                    : action.label}
                 </Button>
               );
             })}
@@ -172,7 +183,7 @@ const OrderDetailDialog = ({
             className="w-full flex-1 cursor-pointer gap-1.5 text-xs hover:bg-none"
             onClick={() => router.push(`/Dashboard/orderDetails/${order.id}`)}
           >
-            <span>تفاصيل اكثر</span>
+            <span>{t.orders.moreDetails}</span>
           </Button>
         </div>
       </DialogContent>

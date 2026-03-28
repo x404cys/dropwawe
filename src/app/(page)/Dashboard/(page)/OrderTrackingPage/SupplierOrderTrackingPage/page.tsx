@@ -93,23 +93,22 @@ export default function OrderSummaryPage() {
         const res = await fetch('/api/orders/get-supplier-orders');
         if (!res.ok) {
           const data = await res.json();
-          throw new Error(data.error || 'فشل في تحميل الطلبات');
+          throw new Error(data.error || t.orders.loadFailed);
         }
         const data = await res.json();
-        console.log(` ==== sass ====${data}`);
 
         setOrders(data);
         setFilteredOrders(data);
       } catch (err: unknown) {
         if (err instanceof Error) setError(err.message);
-        else setError('حدث خطأ غير معروف');
+        else setError(t.orders.unknownError);
       } finally {
         setLoading(false);
       }
     }
 
     fetchOrders();
-  }, [session?.user?.id]);
+  }, [session?.user?.id, t.orders.loadFailed, t.orders.unknownError]);
 
   useEffect(() => {
     let filtered = [...orders];
@@ -145,13 +144,13 @@ export default function OrderSummaryPage() {
   const translateStatus = (status: string) => {
     switch (status) {
       case 'PRE_ORDER':
-        return 'طلب مسبق';
+        return t.orders.preOrder;
       case 'CONFIRMED':
-        return 'تم التأكيد';
+        return t.orders.confirmed;
       case 'CANCELLED':
         return t.orders.cancelled;
       case 'TRANSIT':
-        return 'قيد الشحن';
+        return t.orders.transit;
       default:
         return status;
     }
@@ -178,23 +177,25 @@ export default function OrderSummaryPage() {
         <Loader />
       ) : orders.length === 0 ? (
         <section className="flex min-h-screen flex-col items-center justify-center gap-4 dark:bg-gray-900">
-          <ShoppingBag className="h-24 w-24 text-muted-foreground dark:text-muted-foreground" />
+          <ShoppingBag className="text-muted-foreground dark:text-muted-foreground h-24 w-24" />
 
-          <h1 className="text-xl font-semibold text-foreground dark:text-gray-200">{t.orders.noOrders}</h1>
+          <h1 className="text-foreground text-xl font-semibold dark:text-gray-200">
+            {t.orders.noOrders}
+          </h1>
 
-          <p className="max-w-xs text-center text-sm text-muted-foreground dark:text-muted-foreground">
-            حالياً لا يوجد أي طلبات
+          <p className="text-muted-foreground dark:text-muted-foreground max-w-xs text-center text-sm">
+            {t.orders.currentlyNoOrders}
           </p>
         </section>
       ) : (
         <>
           {loading ? (
-            <div className="fixed inset-0 z-[9999] flex flex-col items-center justify-center space-y-4 bg-card/70 backdrop-blur-sm">
+            <div className="bg-card/70 fixed inset-0 z-[9999] flex flex-col items-center justify-center space-y-4 backdrop-blur-sm">
               <Loader />
             </div>
           ) : (
             <>
-              <section className="w-full bg-card py-2 md:py-2 dark:bg-gray-900" dir="rtl">
+              <section className="bg-card w-full py-2 md:py-2 dark:bg-gray-900" dir="rtl">
                 <div className="max-w-full">
                   <div className="max-w-full">
                     <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center">
@@ -202,10 +203,10 @@ export default function OrderSummaryPage() {
                         <input
                           value={search}
                           onChange={e => setSearch(e.target.value)}
-                          placeholder="ابحث عن طلب (اسم – رقم – هاتف – موقع – منتج)"
+                          placeholder={t.orders.searchDetailedPlaceholder}
                           className="w-full rounded-md p-2 text-sm dark:bg-gray-700 dark:text-white"
                         />
-                        <Search size={20} className="absolute top-2 left-2 text-muted-foreground" />
+                        <Search size={20} className="text-muted-foreground absolute top-2 left-2" />
                       </div>
 
                       <select
@@ -213,10 +214,10 @@ export default function OrderSummaryPage() {
                         onChange={e => setStatusFilter(e.target.value)}
                         className="w-full rounded-md border p-2.5 text-sm md:max-w-xs dark:bg-gray-700"
                       >
-                        <option value="all">كل الطلبات</option>
-                        <option value="PRE_ORDER">طلب مسبق</option>
-                        <option value="TRANSIT">قيد الشحن</option>
-                        <option value="CONFIRMED">تم التأكيد</option>
+                        <option value="all">{t.orders.allOrders}</option>
+                        <option value="PRE_ORDER">{t.orders.preOrder}</option>
+                        <option value="TRANSIT">{t.orders.transit}</option>
+                        <option value="CONFIRMED">{t.orders.confirmed}</option>
                         <option value="CANCELLED">{t.orders.cancelled}</option>
                       </select>
 
@@ -227,36 +228,36 @@ export default function OrderSummaryPage() {
                       >
                         <option value="week">{t.stats.thisWeek}</option>
                         <option value="month">{t.stats.thisMonth}</option>
-                        <option value="3months">آخر 3 أشهر</option>
-                        <option value="6months">آخر 6 أشهر</option>
-                        <option value="year">هذه السنة</option>
+                        <option value="3months">{t.orders.lastThreeMonths}</option>
+                        <option value="6months">{t.orders.lastSixMonths}</option>
+                        <option value="year">{t.orders.thisYear}</option>
                       </select>
                     </div>
 
                     <div className="hidden overflow-auto rounded-lg shadow md:block">
-                      <table className="w-full divide-y divide-border text-sm dark:divide-gray-700">
+                      <table className="divide-border w-full divide-y text-sm dark:divide-gray-700">
                         <thead className="bg-muted dark:bg-gray-700">
                           <tr>
-                            <th className="px-4 py-3">رقم الطلب</th>
+                            <th className="px-4 py-3">{t.orders.orderNumber}</th>
                             <th className="px-4 py-3">{t.orders.date}</th>
                             <th className="px-4 py-3">{t.inventory.price}</th>
-                            <th className="px-4 py-3">الحالة</th>
-                            <th className="px-4 py-3">الزبون</th>
+                            <th className="px-4 py-3">{t.orders.statusLabel}</th>
+                            <th className="px-4 py-3">{t.orders.customer}</th>
                             <th className="px-4 py-3">{t.orders.phone}</th>
-                            <th className="px-4 py-3">الموقع</th>
-                            <th className="px-4 py-3">الإجراءات</th>
+                            <th className="px-4 py-3">{t.orders.location}</th>
+                            <th className="px-4 py-3">{t.orders.actions}</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-border dark:divide-gray-600">
+                        <tbody className="divide-border divide-y dark:divide-gray-600">
                           {filteredOrders.map(e => (
                             <tr key={e.id} className="hover:bg-muted dark:hover:bg-gray-600">
-                              <td className="px-4 py-3 font-medium text-foreground dark:text-white">
+                              <td className="text-foreground px-4 py-3 font-medium dark:text-white">
                                 {e.id.slice(0, 6)}
                               </td>
-                              <td className="px-4 py-3 text-muted-foreground dark:text-gray-300">
+                              <td className="text-muted-foreground px-4 py-3 dark:text-gray-300">
                                 {new Date(e.createdAt).toLocaleDateString()}
                               </td>
-                              <td className="px-4 py-3 text-muted-foreground dark:text-gray-300">
+                              <td className="text-muted-foreground px-4 py-3 dark:text-gray-300">
                                 ${e.price}
                               </td>
                               <td className="px-4 py-3">
@@ -275,12 +276,15 @@ export default function OrderSummaryPage() {
                                     onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
                                     className="cursor-pointer rounded bg-gray-900 p-1 text-xs text-white dark:text-blue-400"
                                   >
-                                    تفاصيل
+                                    {t.orders.details}
                                   </button>
                                   <button
                                     onClick={() => deletOrder(e.id)}
                                     className="cursor-pointer rounded bg-red-500 p-1 text-xs text-white dark:text-blue-400"
-                                  > {t.delete} </button>
+                                  >
+                                    {' '}
+                                    {t.delete}{' '}
+                                  </button>
                                 </div>
                               </td>
                             </tr>
@@ -293,39 +297,39 @@ export default function OrderSummaryPage() {
                       {filteredOrders.map(e => (
                         <div
                           key={e.id}
-                          className="rounded-lg border p-4 shadow-sm dark:border-gray-700 dark:bg-card"
+                          className="dark:bg-card rounded-lg border p-4 shadow-sm dark:border-gray-700"
                         >
-                          <div className="mb-2 text-sm font-semibold text-foreground dark:text-white">
-                            رقم الطلب: {e.id.slice(0, 6)}
+                          <div className="text-foreground mb-2 text-sm font-semibold dark:text-white">
+                            {t.orders.orderNumber}: {e.id.slice(0, 6)}
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            التاريخ: {new Date(e.createdAt).toLocaleDateString()}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.orders.date}: {new Date(e.createdAt).toLocaleDateString()}
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            السعر: ${e.total}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.inventory.price}: ${e.total}
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            الحالة:{' '}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.orders.statusLabel}:{' '}
                             <span
                               className={`inline-block rounded px-2 py-1 text-xs font-semibold ${getStatusStyle(e.status)}`}
                             >
                               {translateStatus(e.status)}
                             </span>
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            الزبون: {e.fullName}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.orders.customer}: {e.fullName}
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            الهاتف: {e.phone}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.orders.phone}: {e.phone}
                           </div>
-                          <div className="text-sm text-muted-foreground dark:text-gray-300">
-                            الموقع: {e.location}
+                          <div className="text-muted-foreground text-sm dark:text-gray-300">
+                            {t.orders.location}: {e.location}
                           </div>
                           <button
                             onClick={() => router.push(`/Dashboard/orderDetails/${e.id}`)}
-                            className="mt-2 inline-block w-full rounded-lg bg-background py-2 text-sm text-white hover:underline dark:text-blue-400"
+                            className="bg-background mt-2 inline-block w-full rounded-lg py-2 text-sm text-white hover:underline dark:text-blue-400"
                           >
-                            التفاصيل
+                            {t.orders.details}
                           </button>
                         </div>
                       ))}

@@ -48,7 +48,7 @@ export default function InviteRegisterPage() {
     if (!inviteCode) return;
     setSigningIn(true);
     await signIn('google', {
-      callbackUrl: `${callbackUrl}/Loading-data-invite/${inviteCode}`,
+      callbackUrl: `${callbackUrl}/Dashboard/Loading-data-invite/${inviteCode}`,
     });
     setSigningIn(false);
   };

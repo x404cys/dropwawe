@@ -12,7 +12,7 @@ import {
   ChevronLeft,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { OrderDetails } from '@/app/(page)/Dashboard/(page)/orderDetails/[orderId]/page';
+import { type OrderDetails } from '../../_types/order-details';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Button } from '@/components/ui/button';
 

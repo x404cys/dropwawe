@@ -1,24 +1,14 @@
 'use client';
-// src/components/template-editor/tabs/DesignTab.tsx
-// Design (Ø§Ù„ØªØµÙ…ÙŠÙ…) tab â€” color presets, custom colors, fonts, and live preview.
 
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { Check, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Switch } from '@/components/ui/switch';
 import { COLOR_PRESETS } from '@/lib/template/defaults';
 import type { CustomFontItem, TemplateFormState } from '@/lib/template/types';
 import ColorPicker from '../ui/ColorPicker';
 import FontPicker from '../ui/FontPicker';
-
-const BUILTIN_FONTS = [
-  { value: 'IBM Plex Sans Arabic', label: 'IBM Plex' },
-  { value: 'Cairo', label: 'القاهرة' },
-  { value: 'Tajawal', label: 'تجوال' },
-  { value: 'Almarai', label: 'المرعي' },
-  { value: 'Noto Sans Arabic', label: 'نوتو' },
-  { value: 'Rubik', label: 'روبيك' },
-];
 
 interface DesignTabProps {
   state: TemplateFormState;
@@ -28,6 +18,17 @@ interface DesignTabProps {
   onRemoveCustomFont: (id: string, name: string) => void;
 }
 
+const PRESET_KEYS = [
+  'lilac',
+  'dawn',
+  'coral',
+  'emerald',
+  'rocky',
+  'nile',
+  'cocoa',
+  'rose',
+] as const;
+
 export default function DesignTab({
   state,
   storeName,
@@ -35,40 +36,66 @@ export default function DesignTab({
   onAddCustomFont,
   onRemoveCustomFont,
 }: DesignTabProps) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
   const fontInputRef = useRef<HTMLInputElement>(null);
   const fontTarget = useRef<'heading' | 'body'>('heading');
 
+  const builtInFonts = useMemo(
+    () => [
+      { value: 'IBM Plex Sans Arabic', label: tt.design.builtinFonts.ibm },
+      { value: 'Cairo', label: tt.design.builtinFonts.cairo },
+      { value: 'Tajawal', label: tt.design.builtinFonts.tajawal },
+      { value: 'Almarai', label: tt.design.builtinFonts.almarai },
+      { value: 'Noto Sans Arabic', label: tt.design.builtinFonts.noto },
+      { value: 'Rubik', label: tt.design.builtinFonts.rubik },
+    ],
+    [tt.design.builtinFonts]
+  );
+
   const allFonts = [
-    ...BUILTIN_FONTS,
-    ...state.customFonts.map(f => ({ value: f.name, label: `${f.name}` })),
+    ...builtInFonts,
+    ...state.customFonts.map(font => ({ value: font.name, label: font.name })),
   ];
 
-  const handleFontUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const presetLabels = [
+    tt.design.presetNames.lilac,
+    tt.design.presetNames.dawn,
+    tt.design.presetNames.coral,
+    tt.design.presetNames.emerald,
+    tt.design.presetNames.rocky,
+    tt.design.presetNames.nile,
+    tt.design.presetNames.cocoa,
+    tt.design.presetNames.rose,
+  ];
+
+  const handleFontUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
-    const validExts = ['.ttf', '.otf', '.woff', '.woff2'];
-    const ext = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
-    if (!validExts.includes(ext)) {
-      toast.error('غير مسموح بهذه الخطوط الرجاء ان يكون الامتداد .ttf أو .otf أو .woff أو .woff2');
+    const validExtensions = ['.ttf', '.otf', '.woff', '.woff2'];
+    const extension = file.name.substring(file.name.lastIndexOf('.')).toLowerCase();
+
+    if (!validExtensions.includes(extension)) {
+      toast.error(tt.validation.invalidFontExtension);
       return;
     }
 
     if (file.size > 5 * 1024 * 1024) {
-      toast.error('حجم الملف كبير — الحد الأقصى 5MB');
+      toast.error(tt.validation.fileTooLarge5mb);
       return;
     }
 
     const fontName = file.name.replace(/\.[^.]+$/, '');
     const uploaded = await onAddCustomFont(fontName, file);
     if (!uploaded) {
-      e.target.value = '';
+      event.target.value = '';
       return;
     }
 
     onUpdate(fontTarget.current === 'heading' ? { headingFont: fontName } : { bodyFont: fontName });
-    toast.success(`تم إضافة الخط ${fontName} بنجاح`);
-    e.target.value = '';
+    toast.success(tt.design.customFontAdded.replace('{name}', fontName));
+    event.target.value = '';
   };
 
   const triggerFontUpload = (target: 'heading' | 'body') => {
@@ -93,16 +120,18 @@ export default function DesignTab({
   return (
     <div className="space-y-4">
       <div className="bg-card border-border rounded-2xl border p-4">
-        <p className="text-foreground mb-3 text-xs font-semibold">الألوان</p>
+        <p className="text-foreground mb-3 text-xs font-semibold">{tt.design.colors}</p>
+
         <div className="mb-4 grid grid-cols-4 gap-2">
-          {COLOR_PRESETS.map((preset, i) => {
-            const isSelected = !state.useCustomColors && state.selectedPreset === i;
+          {COLOR_PRESETS.map((preset, index) => {
+            const isSelected = !state.useCustomColors && state.selectedPreset === index;
+
             return (
               <button
-                key={i}
+                key={PRESET_KEYS[index]}
                 onClick={() =>
                   onUpdate({
-                    selectedPreset: i,
+                    selectedPreset: index,
                     useCustomColors: false,
                     colorPrimary: preset.primary,
                     colorAccent: preset.accent,
@@ -121,6 +150,7 @@ export default function DesignTab({
                     <Check className="text-primary-foreground h-2.5 w-2.5" />
                   </div>
                 )}
+
                 <div className="mb-1.5 flex justify-center gap-0.5">
                   <div
                     className="ring-border h-4 w-4 rounded-full ring-1"
@@ -131,48 +161,50 @@ export default function DesignTab({
                     style={{ backgroundColor: preset.accent }}
                   />
                 </div>
-                <p className="text-foreground text-[9px] font-semibold">{preset.name}</p>
+
+                <p className="text-foreground text-[9px] font-semibold">{presetLabels[index]}</p>
               </button>
             );
           })}
         </div>
 
         <div className="border-border/50 flex items-center justify-between border-t py-2">
-          <span className="text-muted-foreground text-xs">ألوان مخصصة</span>
+          <span className="text-muted-foreground text-xs">{tt.design.customColors}</span>
           <Switch
             checked={state.useCustomColors}
-            onCheckedChange={v => onUpdate({ useCustomColors: v })}
+            onCheckedChange={value => onUpdate({ useCustomColors: value })}
           />
         </div>
 
         {state.useCustomColors && (
           <div className="grid grid-cols-2 gap-2 pt-2">
             <ColorPicker
-              label="الرئيسي"
+              label={tt.design.primaryColor}
               value={state.colorPrimary}
-              onChange={v => onUpdate({ colorPrimary: v })}
+              onChange={value => onUpdate({ colorPrimary: value })}
             />
             <ColorPicker
-              label="الثانوي"
+              label={tt.design.secondaryColor}
               value={state.colorAccent}
-              onChange={v => onUpdate({ colorAccent: v })}
+              onChange={value => onUpdate({ colorAccent: value })}
             />
             <ColorPicker
-              label="الخلفية"
+              label={tt.design.backgroundColor}
               value={state.colorBg}
-              onChange={v => onUpdate({ colorBg: v })}
+              onChange={value => onUpdate({ colorBg: value })}
             />
             <ColorPicker
-              label="النصوص"
+              label={tt.design.textColor}
               value={state.colorText}
-              onChange={v => onUpdate({ colorText: v })}
+              onChange={value => onUpdate({ colorText: value })}
             />
           </div>
         )}
       </div>
 
       <div className="bg-card border-border rounded-2xl border p-4">
-        <p className="text-foreground mb-3 text-xs font-semibold">الخطوط</p>
+        <p className="text-foreground mb-3 text-xs font-semibold">{tt.design.fonts}</p>
+
         <input
           ref={fontInputRef}
           type="file"
@@ -194,6 +226,7 @@ export default function DesignTab({
                 >
                   {font.name}
                 </span>
+
                 <button
                   onClick={() => onRemoveCustomFont(font.id, font.name)}
                   className="text-muted-foreground hover:text-destructive"
@@ -207,17 +240,18 @@ export default function DesignTab({
 
         <div className="space-y-3">
           <FontPicker
-            label="خط العناوين"
+            label={tt.design.headingFont}
             value={state.headingFont}
             options={allFonts}
-            onChange={v => onUpdate({ headingFont: v })}
+            onChange={value => onUpdate({ headingFont: value })}
             onUploadClick={() => triggerFontUpload('heading')}
           />
+
           <FontPicker
-            label="خط النصوص"
+            label={tt.design.bodyFont}
             value={state.bodyFont}
             options={allFonts}
-            onChange={v => onUpdate({ bodyFont: v })}
+            onChange={value => onUpdate({ bodyFont: value })}
             onUploadClick={() => triggerFontUpload('body')}
           />
         </div>

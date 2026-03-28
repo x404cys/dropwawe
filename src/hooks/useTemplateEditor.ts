@@ -7,6 +7,7 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import type {
   TemplateFormState,
   ServiceItem,
@@ -19,11 +20,9 @@ import type {
 } from '@/lib/template/types';
 import { toPayload } from '@/lib/template/transform';
 
-import CheckCircle from 'lucide-react';
-
 // ── Upload helper (client → server route → uploadToServer on disk) ────────────
 
-async function uploadFile(file: File): Promise<string> {
+async function uploadFile(file: File, fallbackMessage: string): Promise<string> {
   const formData = new FormData();
   formData.append('image', file);
 
@@ -35,7 +34,7 @@ async function uploadFile(file: File): Promise<string> {
   const data = (await res.json()) as { url?: string; error?: string };
 
   if (!res.ok || !data.url) {
-    throw new Error(data.error ?? 'فشل رفع الملف');
+    throw new Error(data.error ?? fallbackMessage);
   }
 
   return data.url;
@@ -70,6 +69,8 @@ function nextOrder(arr: { order: number }[]): number {
 // ── Hook ─────────────────────────────────────────────────────────────────────
 
 export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOptions) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
   const [formState, setFormState] = useState<TemplateFormState>(initialData);
   const [savedState, setSavedState] = useState<TemplateFormState>(initialData);
   const [isSaving, setIsSaving] = useState(false);
@@ -95,20 +96,27 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       });
       const data: unknown = await res.json();
       if (!res.ok) {
-        const errMsg = (data as { error?: string })?.error ?? 'حدث خطأ في الحفظ';
+        const errMsg = (data as { error?: string })?.error ?? t.error;
         toast.error(errMsg);
         return;
       }
       setSavedState(formState);
-      toast.success('تم الحفظ بنجاح', {
-        description: 'تم تحديث البيانات بنجاح',
+      toast.success(t.success, {
+        description: tt.actions.saveSuccessDescription,
       });
     } catch {
-      toast.error('حدث خطأ في الاتصال، حاول مرة أخرى');
+      toast.error(tt.actions.connectionError);
     } finally {
       setIsSaving(false);
     }
-  }, [formState, storeId]);
+  }, [
+    formState,
+    storeId,
+    t.error,
+    t.success,
+    tt.actions.connectionError,
+    tt.actions.saveSuccessDescription,
+  ]);
 
   // ── Generic relation helpers ──────────────────────────────────────────────
 
@@ -120,7 +128,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     });
     const data: unknown = await res.json();
     if (!res.ok) {
-      const msg = (data as { error?: string })?.error ?? 'حدث خطأ';
+      const msg = (data as { error?: string })?.error ?? t.error;
       throw new Error(msg);
     }
     return data as T;
@@ -134,7 +142,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     });
     const data: unknown = await res.json();
     if (!res.ok) {
-      const msg = (data as { error?: string })?.error ?? 'حدث خطأ';
+      const msg = (data as { error?: string })?.error ?? t.error;
       throw new Error(msg);
     }
     return data as T;
@@ -148,7 +156,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
     });
     if (!res.ok) {
       const data: unknown = await res.json();
-      const msg = (data as { error?: string })?.error ?? 'حدث خطأ في الحذف';
+      const msg = (data as { error?: string })?.error ?? `${t.error} ${t.delete}`;
       throw new Error(msg);
     }
   }
@@ -217,7 +225,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.services, storeId]
+    [formState.services, storeId, tt.validation.maxWorksReached]
   );
 
   const removeService = useCallback(
@@ -240,7 +248,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       const service = formState.services.find(s => s.id === serviceId);
       if (!service) return;
       if ((service.works ?? []).length >= 6) {
-        toast.error('وصلت للحد الأقصى (٦ أعمال لكل خدمة)');
+        toast.error(tt.validation.maxWorksReached);
         return;
       }
 
@@ -497,7 +505,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         const workId = arg1;
         const file = arg2;
         try {
-          const imageUrl = await uploadFile(file);
+          const imageUrl = await uploadFile(file, tt.validation.uploadFileFailed);
           await updateWork(workId, {
             image: imageUrl,
             displayType: 'IMAGE',
@@ -534,7 +542,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
 
       // Upload and persist to server
       try {
-        const imageUrl = await uploadFile(file);
+        const imageUrl = await uploadFile(file, tt.validation.uploadFileFailed);
         await updateServiceWork(serviceId, workId, {
           image: imageUrl,
           displayType: 'IMAGE',
@@ -543,16 +551,16 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [updateWork, updateServiceWork]
+    [tt.validation.uploadFileFailed, updateWork, updateServiceWork]
   );
 
   // Testimonials
   const addTestimonial = useCallback(async () => {
     const optimistic: TestimonialItem = {
       id: `tmp-${Date.now()}`,
-      name: '\u0639\u0645\u064a\u0644 \u062c\u062f\u064a\u062f',
-      role: '\u0627\u0644\u0648\u0638\u064a\u0641\u0629',
-      text: '\u0631\u0623\u064a \u0627\u0644\u0639\u0645\u064a\u0644...',
+      name: tt.defaults.newTestimonialName,
+      role: tt.defaults.newTestimonialRole,
+      text: tt.defaults.newTestimonialText,
       rating: 5,
       order: nextOrder(formState.testimonials),
     };
@@ -575,7 +583,13 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       }));
       toast.error((err as Error).message);
     }
-  }, [formState.testimonials, storeId]);
+  }, [
+    formState.testimonials,
+    storeId,
+    tt.defaults.newTestimonialName,
+    tt.defaults.newTestimonialRole,
+    tt.defaults.newTestimonialText,
+  ]);
 
   const updateTestimonial = useCallback(
     async (id: string, fields: Partial<Omit<TestimonialItem, 'id'>>) => {
@@ -619,7 +633,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       };
       setFormState(prev => ({ ...prev, bannerImages: [...prev.bannerImages, optimistic] }));
       try {
-        const url = await uploadFile(file);
+        const url = await uploadFile(file, tt.validation.uploadFileFailed);
         const created = await apiPost<BannerItem>('/api/template/banners', {
           storeId,
           url,
@@ -640,7 +654,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         toast.error((err as Error).message);
       }
     },
-    [formState.bannerImages, storeId]
+    [formState.bannerImages, storeId, tt.validation.uploadFileFailed]
   );
 
   const removeBanner = useCallback(
@@ -866,7 +880,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
       const optimistic: CustomFontItem = { id: `tmp-${Date.now()}`, name, url: '' };
       setFormState(prev => ({ ...prev, customFonts: [...prev.customFonts, optimistic] }));
       try {
-        const url = await uploadFile(file);
+        const url = await uploadFile(file, tt.validation.uploadFileFailed);
         const created = await apiPost<CustomFontItem>('/api/template/fonts', {
           storeId,
           name,
@@ -888,7 +902,7 @@ export function useTemplateEditor({ initialData, storeId }: UseTemplateEditorOpt
         return false;
       }
     },
-    [formState.customFonts, storeId]
+    [formState.customFonts, storeId, tt.validation.uploadFileFailed]
   );
 
   const removeCustomFont = useCallback(

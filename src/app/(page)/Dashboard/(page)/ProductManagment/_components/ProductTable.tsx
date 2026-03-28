@@ -240,7 +240,7 @@ export default function ProductTable() {
                 bg: 'bg-purple-50',
               },
               {
-                label: 'إجمالي الأسعار',
+                label: t.inventory.totalProducts,
                 value: `${formatIQD(totalValue)} ${t.currency || 'د.ع'}`,
                 icon: BarChart3,
                 color: 'text-green-600',

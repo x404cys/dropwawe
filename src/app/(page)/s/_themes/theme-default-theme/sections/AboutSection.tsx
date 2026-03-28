@@ -11,12 +11,7 @@ import {
   isExternalContact,
 } from '../../../_utils/contacts';
 
-export default function DefaultThemeAboutSection({
-  template,
-  store,
-  colors,
-  fonts,
-}: AboutSectionProps) {
+export default function DefaultThemeAboutSection({ template, store, fonts }: AboutSectionProps) {
   const aboutText =
     template.aboutText?.trim() ||
     template.storeDescription?.trim() ||
@@ -36,18 +31,26 @@ export default function DefaultThemeAboutSection({
           <div className="mb-8 flex-1 sm:mb-0">
             <span
               className="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold"
-              style={{ color: colors.primary, backgroundColor: `${colors.primary}15` }}
+              style={{
+                color: 'var(--store-primary)',
+                backgroundColor: 'var(--store-primary-faint)',
+              }}
             >
               من نحن
             </span>
             <h2
-              className="mt-4 mb-3 text-xl font-bold text-gray-900 sm:text-2xl"
-              style={{ fontFamily: fonts.heading }}
+              className="mt-4 mb-3 text-xl font-bold sm:text-2xl"
+              style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
             >
               {template.tagline?.trim() || store.name || 'فريق شغوف بالإبداع'}
             </h2>
             {aboutText ? (
-              <p className="mb-4 text-xs leading-relaxed text-gray-600 sm:text-sm">{aboutText}</p>
+              <p
+                className="mb-4 text-xs leading-relaxed sm:text-sm"
+                style={{ color: 'var(--store-text-muted)' }}
+              >
+                {aboutText}
+              </p>
             ) : null}
             <div className="grid grid-cols-3 gap-3">
               {[
@@ -59,20 +62,38 @@ export default function DefaultThemeAboutSection({
               ].map(item => (
                 <div
                   key={item}
-                  className="rounded-xl border border-gray-200 bg-white p-3 text-center shadow-sm"
+                  className="rounded-xl border p-3 text-center"
+                  style={{
+                    backgroundColor: 'var(--store-surface)',
+                    borderColor: 'var(--store-border)',
+                  }}
                 >
-                  <Award className="mx-auto mb-1.5 h-4 w-4" style={{ color: colors.primary }} />
-                  <p className="text-[9px] font-bold text-gray-900 sm:text-[10px]">{item}</p>
+                  <Award
+                    className="mx-auto mb-1.5 h-4 w-4"
+                    style={{ color: 'var(--store-primary)' }}
+                  />
+                  <p
+                    className="text-[9px] font-bold sm:text-[10px]"
+                    style={{ color: 'var(--store-text)' }}
+                  >
+                    {item}
+                  </p>
                 </div>
               ))}
             </div>
           </div>
 
           <div className="flex-1">
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm sm:p-6">
+            <div
+              className="rounded-2xl border p-5 sm:p-6"
+              style={{
+                backgroundColor: 'var(--store-surface)',
+                borderColor: 'var(--store-border)',
+              }}
+            >
               <h3
-                className="mb-4 text-sm font-bold text-gray-900"
-                style={{ fontFamily: fonts.heading }}
+                className="mb-4 text-sm font-bold"
+                style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
               >
                 تواصل معنا
               </h3>
@@ -86,11 +107,13 @@ export default function DefaultThemeAboutSection({
                       <div key={item.id} className="flex items-center gap-3">
                         <div
                           className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
-                          style={{ backgroundColor: `${colors.primary}15` }}
+                          style={{ backgroundColor: 'var(--store-primary-faint)' }}
                         >
-                          <Icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
+                          <Icon className="h-3.5 w-3.5" style={{ color: 'var(--store-primary)' }} />
                         </div>
-                        <span className="text-xs text-gray-500">{item.value}</span>
+                        <span className="text-xs" style={{ color: 'var(--store-text-muted)' }}>
+                          {item.value}
+                        </span>
                       </div>
                     );
                   }
@@ -101,16 +124,17 @@ export default function DefaultThemeAboutSection({
                       href={href}
                       target={isExternalContact(item.type) ? '_blank' : undefined}
                       rel={isExternalContact(item.type) ? 'noopener noreferrer' : undefined}
-                      className="flex items-center gap-3 transition-colors duration-200 ease-in-out hover:text-gray-900"
+                      className="flex items-center gap-3 transition-opacity duration-200 ease-in-out hover:opacity-85"
                     >
                       <div
                         className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl"
-                        style={{ backgroundColor: `${colors.primary}15` }}
+                        style={{ backgroundColor: 'var(--store-primary-faint)' }}
                       >
-                        <Icon className="h-3.5 w-3.5" style={{ color: colors.primary }} />
+                        <Icon className="h-3.5 w-3.5" style={{ color: 'var(--store-primary)' }} />
                       </div>
                       <span
-                        className="text-xs text-gray-500"
+                        className="text-xs"
+                        style={{ color: 'var(--store-text-muted)' }}
                         dir={item.type === 'phone' || item.type === 'email' ? 'ltr' : undefined}
                       >
                         {item.value}

@@ -10,14 +10,14 @@ import type {
 } from './types';
 
 export const COLOR_PRESETS: ColorPreset[] = [
-  { name: 'ليلي',      primary: '#6366f1', accent: '#8b5cf6', bg: '#0f0f14', text: '#f4f4f5' },
-  { name: 'فجري',      primary: '#f59e0b', accent: '#ef4444', bg: '#fffbf5', text: '#1c1917' },
-  { name: 'مرجاني',   primary: '#ec4899', accent: '#8b5cf6', bg: '#fdf2f8', text: '#1e1b4b' },
-  { name: 'زمردي',    primary: '#10b981', accent: '#06b6d4', bg: '#f0fdf4', text: '#064e3b' },
-  { name: 'صخري',     primary: '#64748b', accent: '#94a3b8', bg: '#f8fafc', text: '#0f172a' },
-  { name: 'نيلي',     primary: '#3b82f6', accent: '#06b6d4', bg: '#eff6ff', text: '#1e3a5f' },
-  { name: 'شوكولا',   primary: '#92400e', accent: '#b45309', bg: '#fefce8', text: '#1c1917' },
-  { name: 'وردي',     primary: '#db2777', accent: '#9333ea', bg: '#fdf4ff', text: '#3b0764' },
+  { name: 'ليلي', primary: '#6366f1', accent: '#8b5cf6', bg: '#0f0f14', text: '#f4f4f5' },
+  { name: 'فجري', primary: '#f59e0b', accent: '#ef4444', bg: '#fffbf5', text: '#1c1917' },
+  { name: 'مرجاني', primary: '#ec4899', accent: '#8b5cf6', bg: '#fdf2f8', text: '#1e1b4b' },
+  { name: 'زمردي', primary: '#10b981', accent: '#06b6d4', bg: '#f0fdf4', text: '#064e3b' },
+  { name: 'صخري', primary: '#64748b', accent: '#94a3b8', bg: '#f8fafc', text: '#0f172a' },
+  { name: 'نيلي', primary: '#3b82f6', accent: '#06b6d4', bg: '#eff6ff', text: '#1e3a5f' },
+  { name: 'شوكولا', primary: '#D4AF37', accent: '#F0D060', bg: '#1A1A1A', text: '#FAFAFA' },
+  { name: 'وردي', primary: '#db2777', accent: '#9333ea', bg: '#fdf4ff', text: '#3b0764' },
 ];
 
 export const DEFAULT_ANNOUNCEMENT_BAR: AnnouncementBarConfig = {

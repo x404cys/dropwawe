@@ -1,28 +1,25 @@
 'use client';
-// src/components/template-editor/tabs/BrandTab.tsx
 
 import { useRef, useState } from 'react';
-import { Globe, PenTool, Quote, Sparkles, Trash2, Upload, Zap, Save } from 'lucide-react';
+import { Globe, PenTool, Quote, Trash2, Upload, Zap } from 'lucide-react';
+import { CgWebsite } from 'react-icons/cg';
+import { toast } from 'sonner';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Button } from '@/components/ui/button';
-import { toast } from 'sonner';
-
 import type {
   ServiceItem,
   TemplateFormState,
   TestimonialItem,
   WorkItem,
 } from '@/lib/template/types';
-
+import type { HeroSectionEditorController } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 import AboutSection from '../sections/AboutSection';
 import CtaSection from '../sections/CtaSection';
 import TestimonialsSection from '../sections/TestimonialsSection';
-import ContentBlock from '../ui/ContentBlock';
-import ServiceWithWorksSection from '../sections/WorksSection';
-import type { HeroSectionEditorController } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 import HeroButtonsTable, { type HeroButton } from '../sections/ButtonHeroSection';
-import { CgWebsite } from 'react-icons/cg';
+import ServiceWithWorksSection from '../sections/WorksSection';
+import ContentBlock from '../ui/ContentBlock';
 
 interface BrandTabProps {
   state: TemplateFormState;
@@ -50,27 +47,7 @@ interface BrandTabProps {
   isSavingBrandChanges: boolean;
 }
 
-const SECTION_IDS = ['hero', 'services', 'works', 'testimonials', 'cta', 'about', 'store'] as const;
-type SectionId = (typeof SECTION_IDS)[number];
-
-const DEFAULT_HERO_BUTTONS: HeroButton[] = [
-  {
-    id: 'btn-1',
-    label: 'الزر الرئيسي',
-    text: '',
-    actionType: 'none',
-    actionDetail: '',
-    order: 0,
-  },
-  {
-    id: 'btn-2',
-    label: 'الزر الثانوي',
-    text: '',
-    actionType: 'none',
-    actionDetail: '',
-    order: 1,
-  },
-];
+type SectionId = 'hero' | 'services' | 'works' | 'testimonials' | 'cta' | 'about' | 'store';
 
 export default function BrandTab({
   state,
@@ -93,13 +70,30 @@ export default function BrandTab({
   onAddTestimonial,
   onUpdateTestimonial,
   onRemoveTestimonial,
-  onSaveBrandChanges,
-  hasUnsavedBrandChanges,
-  isSavingBrandChanges,
 }: BrandTabProps) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
-
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  const defaultHeroButtons: HeroButton[] = [
+    {
+      id: 'btn-1',
+      label: tt.heroButtons.primary,
+      text: '',
+      actionType: 'none',
+      actionDetail: '',
+      order: 0,
+    },
+    {
+      id: 'btn-2',
+      label: tt.heroButtons.secondary,
+      text: '',
+      actionType: 'none',
+      actionDetail: '',
+      order: 1,
+    },
+  ];
 
   const toggleOpen = (key: string) => setOpenSections(prev => ({ ...prev, [key]: !prev[key] }));
 
@@ -111,17 +105,12 @@ export default function BrandTab({
       },
     });
 
-  const handleSaveBrand = async () => {
-    if (!hasUnsavedBrandChanges) return;
-    await onSaveBrandChanges();
-  };
-
-  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (!file) return;
 
     if (file.size > 2 * 1024 * 1024) {
-      toast.error('حجم الملف كبير — الحد الأقصى 2MB');
+      toast.error(tt.validation.fileTooLarge2mb);
       return;
     }
 
@@ -130,7 +119,7 @@ export default function BrandTab({
     const reader = new FileReader();
     reader.onloadend = () => onLogoChange(reader.result as string);
     reader.readAsDataURL(file);
-    e.target.value = '';
+    event.target.value = '';
   };
 
   return (
@@ -179,89 +168,78 @@ export default function BrandTab({
               className="bg-muted/50 border-border hover:border-primary/40 flex h-14 w-14 flex-col items-center justify-center gap-0.5 rounded-2xl border-2 border-dashed transition-all"
             >
               <Upload className="text-muted-foreground h-4 w-4" />
-              <span className="text-muted-foreground text-[8px]">شعار</span>
+              <span className="text-muted-foreground text-[8px]">{tt.brand.logo}</span>
             </button>
           )}
 
           <div className="flex-1 space-y-2">
             <Input
               value={storeName}
-              onChange={e => {
-                const value = e.target.value;
+              onChange={event => {
+                const value = event.target.value;
                 onStoreNameChange(value);
 
                 if (!heroEditor.hero.title || heroEditor.hero.title === storeName) {
-                  heroEditor.updateHero({
-                    title: value,
-                  });
+                  heroEditor.updateHero({ title: value });
                 }
               }}
               className="rounded-xl font-light"
-              placeholder="اسم المتجر"
+              placeholder={tt.brand.storeNamePlaceholder}
             />
 
             <Input
               value={state.tagline}
-              onChange={e => {
-                const value = e.target.value;
-
+              onChange={event => {
+                const value = event.target.value;
                 onUpdate({ tagline: value });
-
-                heroEditor.updateHero({
-                  overline: value,
-                });
+                heroEditor.updateHero({ overline: value });
               }}
               className="rounded-xl font-light"
-              placeholder="شعار نصي قصير"
+              placeholder={tt.brand.taglinePlaceholder}
             />
           </div>
         </div>
 
         <Textarea
           value={storeDescription}
-          onChange={e => {
-            const value = e.target.value;
-
+          onChange={event => {
+            const value = event.target.value;
             onStoreDescriptionChange(value);
             onUpdate({ storeDescription: value });
-
-            heroEditor.updateHero({
-              description: value,
-            });
+            heroEditor.updateHero({ description: value });
           }}
           rows={2}
           className="resize-none rounded-xl font-light"
-          placeholder="وصف المتجر"
+          placeholder={tt.brand.descriptionPlaceholder}
         />
       </div>
 
       <div className="space-y-2">
         <p className="text-muted-foreground px-1 text-xs font-semibold">
-          أقسام المتجر <span className="text-[10px] font-normal">(فعّل الأقسام التي تحتاجها)</span>
+          {tt.brand.sectionsTitle}{' '}
+          <span className="text-[10px] font-normal">({tt.brand.sectionsSubtitle})</span>
         </p>
 
         <ContentBlock
-          title="صفحة الهبوط"
+          title={tt.brand.hero}
           icon={<CgWebsite className="h-4 w-4" />}
           enabled={state.sectionsConfig.hero}
           onToggle={() => toggleSection('hero')}
-          open={openSections['hero'] ?? false}
+          open={openSections.hero ?? false}
           onOpenToggle={() => toggleOpen('hero')}
         >
-          <div className="space-y-4">
-            <HeroButtonsTable
-              buttons={state.heroButtons?.length ? state.heroButtons : DEFAULT_HERO_BUTTONS}
-              onChange={buttons => onUpdate({ heroButtons: buttons })}
-            />
-          </div>
+          <HeroButtonsTable
+            buttons={state.heroButtons?.length ? state.heroButtons : defaultHeroButtons}
+            onChange={buttons => onUpdate({ heroButtons: buttons })}
+          />
         </ContentBlock>
 
         <ContentBlock
-          title="الاقسام(عرض اعمالك , اوخدماتك او ماشابه)"
+          title={tt.brand.services}
           icon={<Zap className="h-4 w-4" />}
           enabled={state.sectionsConfig.services}
           onToggle={() => toggleSection('services')}
-          open={openSections['services'] ?? false}
+          open={openSections.services ?? false}
           onOpenToggle={() => toggleOpen('services')}
           count={state.services.length}
         >
@@ -278,11 +256,11 @@ export default function BrandTab({
         </ContentBlock>
 
         <ContentBlock
-          title="آراء العملاء"
+          title={tt.brand.testimonials}
           icon={<Quote className="h-4 w-4" />}
           enabled={state.sectionsConfig.testimonials}
           onToggle={() => toggleSection('testimonials')}
-          open={openSections['testimonials'] ?? false}
+          open={openSections.testimonials ?? false}
           onOpenToggle={() => toggleOpen('testimonials')}
           count={state.testimonials.length}
         >
@@ -295,11 +273,11 @@ export default function BrandTab({
         </ContentBlock>
 
         <ContentBlock
-          title="دعوة للإجراء"
+          title={tt.brand.cta}
           icon={<Zap className="h-4 w-4" />}
           enabled={state.sectionsConfig.cta}
           onToggle={() => toggleSection('cta')}
-          open={openSections['cta'] ?? false}
+          open={openSections.cta ?? false}
           onOpenToggle={() => toggleOpen('cta')}
         >
           <CtaSection
@@ -311,11 +289,11 @@ export default function BrandTab({
         </ContentBlock>
 
         <ContentBlock
-          title="من نحن"
+          title={tt.brand.about}
           icon={<Globe className="h-4 w-4" />}
           enabled={state.sectionsConfig.about}
           onToggle={() => toggleSection('about')}
-          open={openSections['about'] ?? false}
+          open={openSections.about ?? false}
           onOpenToggle={() => toggleOpen('about')}
         >
           <AboutSection
@@ -325,7 +303,7 @@ export default function BrandTab({
         </ContentBlock>
 
         <ContentBlock
-          title="المتجر (المنتجات)"
+          title={tt.brand.storeProducts}
           icon={<PenTool className="h-4 w-4" />}
           enabled={state.sectionsConfig.store}
           onToggle={() => toggleSection('store')}

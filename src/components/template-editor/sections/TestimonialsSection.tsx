@@ -1,12 +1,11 @@
 'use client';
-// src/components/template-editor/sections/TestimonialsSection.tsx
-// Renders customer testimonials list with rating stars.
 
-import { Trash2, Star } from 'lucide-react';
+import { Star, Trash2 } from 'lucide-react';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import AddButton from '../ui/AddButton';
 import type { TestimonialItem } from '@/lib/template/types';
+import AddButton from '../ui/AddButton';
 
 interface TestimonialsSectionProps {
   testimonials: TestimonialItem[];
@@ -21,47 +20,57 @@ export default function TestimonialsSection({
   onUpdate,
   onRemove,
 }: TestimonialsSectionProps) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
+
   return (
     <div className="space-y-2">
-      {testimonials.map(t => (
+      {testimonials.map(testimonial => (
         <div
-          key={t.id}
-          className="bg-background rounded-xl p-2.5 border border-border/50 space-y-1.5"
+          key={testimonial.id}
+          className="bg-background border-border/50 space-y-1.5 rounded-xl border p-2.5"
         >
           <div className="flex items-center gap-2">
-            <div className="flex gap-1.5 flex-1">
+            <div className="flex flex-1 gap-1.5">
               <Input
-                value={t.name}
-                onChange={e => onUpdate(t.id, { name: e.target.value })}
-                className="h-8   rounded-lg flex-1"
-                placeholder="الاسم"
+                value={testimonial.name}
+                onChange={event => onUpdate(testimonial.id, { name: event.target.value })}
+                className="h-8 flex-1 rounded-lg"
+                placeholder={t.orders.name}
               />
               <Input
-                value={t.role}
-                onChange={e => onUpdate(t.id, { role: e.target.value })}
-                className="h-8   rounded-lg flex-1"
-                placeholder="المنصب"
+                value={testimonial.role}
+                onChange={event => onUpdate(testimonial.id, { role: event.target.value })}
+                className="h-8 flex-1 rounded-lg"
+                placeholder={t.templateEditor.defaults.newTestimonialRole}
               />
             </div>
+
             <button
-              onClick={() => onRemove(t.id)}
+              onClick={() => onRemove(testimonial.id)}
               className="text-muted-foreground hover:text-destructive p-1"
             >
               <Trash2 className="h-3.5 w-3.5" />
             </button>
           </div>
+
           <Textarea
-            value={t.text}
-            onChange={e => onUpdate(t.id, { text: e.target.value })}
-            className="  min-h-[40px] rounded-lg resize-none"
-            placeholder="نص الرأي"
+            value={testimonial.text}
+            onChange={event => onUpdate(testimonial.id, { text: event.target.value })}
+            className="min-h-[40px] resize-none rounded-lg"
+            placeholder={tt.defaults.newTestimonialText}
           />
+
           <div className="flex items-center gap-0.5">
-            {[1, 2, 3, 4, 5].map(s => (
-              <button key={s} onClick={() => onUpdate(t.id, { rating: s })} className="p-0.5">
+            {[1, 2, 3, 4, 5].map(star => (
+              <button
+                key={star}
+                onClick={() => onUpdate(testimonial.id, { rating: star })}
+                className="p-0.5"
+              >
                 <Star
                   className={`h-3.5 w-3.5 ${
-                    s <= t.rating ? 'text-amber-400 fill-amber-400' : 'text-border'
+                    star <= testimonial.rating ? 'fill-amber-400 text-amber-400' : 'text-border'
                   }`}
                 />
               </button>
@@ -69,6 +78,7 @@ export default function TestimonialsSection({
           </div>
         </div>
       ))}
+
       <AddButton onClick={onAdd} />
     </div>
   );

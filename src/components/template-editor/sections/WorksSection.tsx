@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type ChangeEvent } from 'react';
+import { useState, type ChangeEvent, type ComponentType } from 'react';
 import * as LucideIcons from 'lucide-react';
 import {
   Trash2,
@@ -14,10 +14,11 @@ import {
   Shapes,
   X,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import AddButton from '../ui/AddButton';
+import { Input } from '@/components/ui/input';
 import { ServiceItem, WorkItem } from '@/lib/template/types';
+import AddButton from '../ui/AddButton';
 import IconPickerDialog from '../ui/IconPickerDialog';
 
 interface Props {
@@ -31,13 +32,13 @@ interface Props {
   onUploadWorkImage: (serviceId: string, workId: string, file: File) => void;
 }
 
-function getLucideIcon(iconName?: string) {
+function getLucideIcon(iconName?: string): ComponentType<{ className?: string }> | null {
   if (!iconName?.trim()) return null;
 
   const IconComponent = LucideIcons[iconName.trim() as keyof typeof LucideIcons];
   if (!IconComponent || typeof IconComponent !== 'function') return null;
 
-  return IconComponent as React.ComponentType<{ className?: string }>;
+  return IconComponent as ComponentType<{ className?: string }>;
 }
 
 export default function ServiceWithWorksSection({
@@ -50,6 +51,8 @@ export default function ServiceWithWorksSection({
   onRemoveWork,
   onUploadWorkImage,
 }: Props) {
+  const { t, dir } = useLanguage();
+  const tt = t.templateEditor;
   const MAX_WORKS = 6;
   const [expandedServices, setExpandedServices] = useState<string[]>([]);
   const [previewImage, setPreviewImage] = useState<{ src: string; title: string } | null>(null);
@@ -85,13 +88,13 @@ export default function ServiceWithWorksSection({
                     value={service.worksTitle}
                     onChange={e => onUpdateService(service.id, { worksTitle: e.target.value })}
                     className="h-8 rounded-lg font-medium"
-                    placeholder='عنوان الأعمال — مثال: "أعمالي في التصميم"'
+                    placeholder={tt.works.worksTitlePlaceholder}
                   />
                   <Input
                     value={service.worksDesc}
                     onChange={e => onUpdateService(service.id, { worksDesc: e.target.value })}
                     className="h-8 rounded-lg"
-                    placeholder="وصف مختصر للأعمال (اختياري)"
+                    placeholder={tt.works.worksDescriptionPlaceholder}
                   />
                 </div>
 
@@ -100,7 +103,7 @@ export default function ServiceWithWorksSection({
                     type="button"
                     onClick={() => onUpdateService(service.id, { enabled: !service.enabled })}
                     className="text-muted-foreground hover:text-foreground border-border/60 flex h-8 w-8 items-center justify-center rounded-lg border transition-colors"
-                    title={service.enabled ? 'إخفاء الخدمة' : 'إظهار الخدمة'}
+                    title={service.enabled ? tt.works.hideService : tt.works.showService}
                   >
                     {service.enabled ? (
                       <Eye className="h-3.5 w-3.5" />
@@ -113,7 +116,7 @@ export default function ServiceWithWorksSection({
                     type="button"
                     onClick={() => toggleExpand(service.id)}
                     className="text-muted-foreground hover:text-foreground border-border/60 flex h-8 w-8 items-center justify-center rounded-lg border transition-colors"
-                    title="أعمال هذه الخدمة"
+                    title={tt.works.serviceWorks}
                   >
                     {isExpanded ? (
                       <ChevronUp className="h-3.5 w-3.5" />
@@ -134,7 +137,7 @@ export default function ServiceWithWorksSection({
 
               {!service.enabled && (
                 <div className="bg-muted/30 border-border/30 border-t px-3 py-1.5">
-                  <p className="text-muted-foreground text-[10px]">مخفية — لن تظهر في المتجر</p>
+                  <p className="text-muted-foreground text-[10px]">{tt.works.hiddenFromStore}</p>
                 </div>
               )}
 
@@ -148,9 +151,9 @@ export default function ServiceWithWorksSection({
                             <ImagePlus className="h-5 w-5" />
                           </div>
 
-                          <p className="text-foreground text-sm font-medium">لا توجد أعمال بعد</p>
+                          <p className="text-foreground text-sm font-medium">{tt.works.noWorks}</p>
                           <p className="text-muted-foreground mt-1 text-xs">
-                            أضف عمل جديد حتى تظهر الصورة أو الأيقونة والبيانات هنا
+                            {tt.works.noWorksDescription}
                           </p>
 
                           <div className="mt-4 w-full max-w-[220px]">
@@ -162,7 +165,8 @@ export default function ServiceWithWorksSection({
 
                     {works.map(work => {
                       const fileInputId = `work-image-${work.id}`;
-                      const previewTitle = work.category?.trim() || work.title?.trim() || 'معاينة';
+                      const previewTitle =
+                        work.category?.trim() || work.title?.trim() || tt.works.imagePreviewTitle;
                       const showType = work.displayType ?? 'IMAGE';
                       const SelectedIcon = getLucideIcon(work.icon);
 
@@ -186,7 +190,7 @@ export default function ServiceWithWorksSection({
                               }`}
                             >
                               <ImageIcon className="h-4 w-4" />
-                              صورة
+                              {tt.works.image}
                             </button>
 
                             <button
@@ -203,7 +207,7 @@ export default function ServiceWithWorksSection({
                               }`}
                             >
                               <Shapes className="h-4 w-4" />
-                              أيقونة
+                              {tt.works.icon}
                             </button>
                           </div>
 
@@ -226,15 +230,15 @@ export default function ServiceWithWorksSection({
                                     <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 bg-gradient-to-t from-black/75 via-black/10 to-transparent px-3 py-3 text-white">
                                       <div className="min-w-0">
                                         <p className="truncate text-xs font-semibold">
-                                          {work.category || work.title || 'بدون عنوان'}
+                                          {work.category || work.title || tt.works.untitled}
                                         </p>
                                         <p className="truncate text-[10px] text-white/75">
-                                          {work.link || 'بدون رابط'}
+                                          {work.link || tt.works.noLink}
                                         </p>
                                       </div>
                                       <span className="inline-flex items-center gap-1 rounded-full bg-black/35 px-2 py-1 text-[10px] font-medium backdrop-blur-sm">
                                         <Eye className="h-3 w-3" />
-                                        بريفيو
+                                        {tt.works.preview}
                                       </span>
                                     </div>
                                   </button>
@@ -247,7 +251,7 @@ export default function ServiceWithWorksSection({
                                       <Upload className="h-4 w-4" />
                                     </div>
                                     <p className="text-muted-foreground text-[10px]">
-                                      اضغط لرفع صورة المشروع
+                                      {tt.works.uploadProjectImage}
                                     </p>
                                   </label>
                                 )}
@@ -267,7 +271,7 @@ export default function ServiceWithWorksSection({
                                   className="border-border bg-muted/30 text-foreground hover:border-primary/40 hover:text-primary flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-all"
                                 >
                                   <Upload className="h-3.5 w-3.5" />
-                                  {work.image ? 'تغيير الصورة' : 'رفع صورة'}
+                                  {work.image ? tt.works.changeImage : tt.works.uploadImage}
                                 </label>
 
                                 {work.image && (
@@ -280,7 +284,7 @@ export default function ServiceWithWorksSection({
                                       className="border-border bg-background text-foreground hover:border-primary/40 hover:text-primary inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-all"
                                     >
                                       <Eye className="h-3.5 w-3.5" />
-                                      بريفيو
+                                      {tt.works.preview}
                                     </button>
 
                                     <button
@@ -291,7 +295,7 @@ export default function ServiceWithWorksSection({
                                       className="border-border bg-background text-muted-foreground hover:text-destructive inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-all"
                                     >
                                       <X className="h-3.5 w-3.5" />
-                                      حذف الصورة
+                                      {tt.works.deleteImage}
                                     </button>
                                   </>
                                 )}
@@ -321,12 +325,12 @@ export default function ServiceWithWorksSection({
 
                                   <div className="min-w-0">
                                     <p className="text-foreground truncate text-xs font-semibold">
-                                      {work.icon?.trim() ? work.icon : 'اختر أيقونة للمشروع'}
+                                      {work.icon?.trim() ? work.icon : tt.works.chooseProjectIcon}
                                     </p>
                                     <p className="text-muted-foreground mt-1 text-[10px]">
                                       {work.icon?.trim()
-                                        ? 'الأيقونة المختارة ستظهر بدل الصورة'
-                                        : 'اضغط بالأسفل لاختيار أيقونة من Lucide'}
+                                        ? tt.works.selectedIconReplacesImage
+                                        : tt.works.pickLucideIcon}
                                     </p>
                                   </div>
                                 </div>
@@ -357,7 +361,7 @@ export default function ServiceWithWorksSection({
                                     className="border-border bg-background text-muted-foreground hover:text-destructive inline-flex items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-medium transition-all"
                                   >
                                     <X className="h-3.5 w-3.5" />
-                                    حذف الأيقونة
+                                    {tt.works.deleteIcon}
                                   </button>
                                 )}
 
@@ -379,7 +383,7 @@ export default function ServiceWithWorksSection({
                                 onUpdateWork(service.id, work.id, { title: e.target.value })
                               }
                               className="h-8 rounded-lg"
-                              placeholder="العنوان"
+                              placeholder={tt.works.titlePlaceholder}
                             />
                             <Input
                               value={work.category}
@@ -387,7 +391,7 @@ export default function ServiceWithWorksSection({
                                 onUpdateWork(service.id, work.id, { category: e.target.value })
                               }
                               className="h-8 rounded-lg"
-                              placeholder="التصنيف"
+                              placeholder={tt.works.categoryPlaceholder}
                             />
                             <Input
                               value={work.link}
@@ -395,7 +399,7 @@ export default function ServiceWithWorksSection({
                                 onUpdateWork(service.id, work.id, { link: e.target.value })
                               }
                               className="h-8 rounded-lg"
-                              placeholder="الرابط (اختياري)"
+                              placeholder={tt.works.linkPlaceholder}
                               dir="ltr"
                             />
                           </div>
@@ -409,7 +413,7 @@ export default function ServiceWithWorksSection({
 
                     {hasWorks && works.length >= MAX_WORKS && (
                       <p className="text-muted-foreground py-2 text-center text-[11px]">
-                        وصلت للحد الأقصى (6 أعمال لكل خدمة)
+                        {tt.validation.maxWorksReached}
                       </p>
                     )}
                   </div>
@@ -423,10 +427,10 @@ export default function ServiceWithWorksSection({
       </div>
 
       <Dialog open={Boolean(previewImage)} onOpenChange={open => !open && setPreviewImage(null)}>
-        <DialogContent dir="rtl" className="border-border/60 max-w-3xl overflow-hidden p-0">
+        <DialogContent dir={dir} className="border-border/60 max-w-3xl overflow-hidden p-0">
           <DialogHeader className="px-6 pt-6 pb-0">
             <DialogTitle className="text-base">
-              {previewImage?.title || 'معاينة الصورة'}
+              {previewImage?.title || tt.works.imagePreviewTitle}
             </DialogTitle>
           </DialogHeader>
 

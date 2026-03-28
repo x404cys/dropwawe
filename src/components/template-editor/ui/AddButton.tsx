@@ -1,22 +1,25 @@
 'use client';
-// src/components/template-editor/ui/AddButton.tsx
-// Dashed "add" button — reused in every list section.
 
 import { Plus } from 'lucide-react';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 interface AddButtonProps {
   onClick: () => void;
   label?: string;
 }
 
-export default function AddButton({ onClick, label = 'إضافة' }: AddButtonProps) {
+export default function AddButton({ onClick, label }: AddButtonProps) {
+  const { t } = useLanguage();
+
   return (
     <button
       onClick={onClick}
-      className="w-full flex items-center justify-center gap-1.5 py-2 rounded-xl border-2 border-dashed border-border text-muted-foreground hover:border-primary/30 hover:text-primary transition-all text-xs font-medium"
+      className="border-border text-muted-foreground hover:border-primary/30 hover:text-primary w-full rounded-xl border-2 border-dashed py-2 text-xs font-medium transition-all"
     >
-      <Plus className="h-3.5 w-3.5" />
-      {label}
+      <span className="flex items-center justify-center gap-1.5">
+        <Plus className="h-3.5 w-3.5" />
+        {label ?? t.add}
+      </span>
     </button>
   );
 }

@@ -1,21 +1,35 @@
 // Purpose: Color presets and getActiveColors utility for the storefront.
 // Resolves the active color palette from template DB fields or preset index.
 
+import {
+  COLOR_PRESETS as TEMPLATE_COLOR_PRESETS,
+  DEFAULT_TEMPLATE_STATE,
+} from '@/lib/template/defaults';
+
 import { ActiveColors, ColorConfig, StorefrontTemplate } from '../_lib/types';
 
-export const COLOR_PRESETS: ColorConfig[] = [
-  { primary: '#0EA5E9', accent: '#06B6D4', bg: '#FFFFFF', text: '#1a2332' },
-  { primary: '#8B5CF6', accent: '#A78BFA', bg: '#FFFFFF', text: '#1a1a2e' },
-  { primary: '#10B981', accent: '#34D399', bg: '#FFFFFF', text: '#1a2e1a' },
-  { primary: '#F97316', accent: '#FB923C', bg: '#FFFFFF', text: '#2e1a0c' },
-  { primary: '#EC4899', accent: '#F472B6', bg: '#FFFFFF', text: '#2e1a24' },
-  { primary: '#6366F1', accent: '#818CF8', bg: '#0F172A', text: '#F1F5F9' },
-  { primary: '#D4AF37', accent: '#F0D060', bg: '#1A1A1A', text: '#FAFAFA' },
-  { primary: '#E85D8E', accent: '#F9B4CC', bg: '#FFF8FB', text: '#4B3340' },
-];
+export const COLOR_PRESETS: ColorConfig[] = TEMPLATE_COLOR_PRESETS.map(
+  ({ primary, accent, bg, text }) => ({
+    primary,
+    accent,
+    bg,
+    text,
+  })
+);
+
+const DEFAULT_PRESET_INDEX = DEFAULT_TEMPLATE_STATE.selectedPreset;
+const FALLBACK_PRESET = COLOR_PRESETS[DEFAULT_PRESET_INDEX] ?? COLOR_PRESETS[0];
+
+function getPresetByIndex(selectedPreset: number | null | undefined): ColorConfig {
+  if (typeof selectedPreset !== 'number') {
+    return FALLBACK_PRESET;
+  }
+
+  return COLOR_PRESETS[selectedPreset] ?? FALLBACK_PRESET;
+}
 
 export function getActiveColors(template: StorefrontTemplate | null): ActiveColors {
-  if (!template) return COLOR_PRESETS[7];
+  if (!template) return FALLBACK_PRESET;
   if (
     template.useCustomColors &&
     template.colorPrimary &&
@@ -30,7 +44,7 @@ export function getActiveColors(template: StorefrontTemplate | null): ActiveColo
       text: template.colorText,
     };
   }
-  return COLOR_PRESETS[template.selectedPreset] ?? COLOR_PRESETS[7];
+  return getPresetByIndex(template.selectedPreset);
 }
 
 export const DEFAULT_TEMPLATE = {
@@ -49,7 +63,7 @@ export const DEFAULT_TEMPLATE = {
   whatsappNumber: null,
   headingFont: 'IBM Plex Sans Arabic',
   bodyFont: 'IBM Plex Sans Arabic',
-  selectedPreset: 7,
+  selectedPreset: DEFAULT_PRESET_INDEX,
   useCustomColors: false,
   colorPrimary: null,
   colorAccent: null,

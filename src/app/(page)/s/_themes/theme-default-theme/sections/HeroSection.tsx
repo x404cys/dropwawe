@@ -1,6 +1,7 @@
 'use client';
 
 import type { HeroSectionProps, StorefrontHeroButton } from '../../../_lib/types';
+import { getReadableAccentColor, getReadableTextColor } from '../themeSystem';
 
 type LegacyTemplateHeroButtons = HeroSectionProps['template'] & {
   heroButtons?: StorefrontHeroButton[];
@@ -87,6 +88,14 @@ export default function DefaultThemeHeroSection({
     store.description?.trim() ||
     '';
   const buttons = sortButtons(hero?.heroButtons);
+  const titleAccentColor = getReadableAccentColor(colors.primary, colors.bg, 'var(--store-text)');
+  const highlightColor = getReadableAccentColor(
+    colors.accent,
+    colors.bg,
+    'var(--store-primary)',
+    2.6
+  );
+  const primaryButtonTextColor = getReadableTextColor(colors.primary);
 
   if (!title && !highlightText && !subtitle && !description && buttons.length === 0) {
     return null;
@@ -97,26 +106,15 @@ export default function DefaultThemeHeroSection({
       id="hero-section"
       className="relative overflow-hidden"
       style={{
-        background: `linear-gradient(180deg, ${colors.bg}, #ffffff)`,
+        background: colors.bg,
       }}
     >
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute top-0 left-1/2 h-64 w-64 -translate-x-1/2 rounded-full blur-3xl"
-          style={{ backgroundColor: `${colors.accent}18` }}
-        />
-        <div
-          className="absolute top-12 right-8 h-40 w-40 rounded-full blur-3xl"
-          style={{ backgroundColor: `${colors.primary}12` }}
-        />
-      </div>
-
       <div className="relative mx-auto max-w-5xl px-4 py-16 sm:px-6 sm:py-24">
         <div className="mx-auto max-w-3xl text-center">
           {subtitle ? (
             <p
               className="mb-4 text-sm leading-relaxed font-medium tracking-[0.2em] uppercase sm:text-base"
-              style={{ color: `${colors.text}99`, fontFamily: fonts.body }}
+              style={{ color: 'var(--store-text-faint)', fontFamily: fonts.body }}
             >
               {subtitle?.split(' ').map((word, index) => (
                 <span key={index}>
@@ -128,13 +126,13 @@ export default function DefaultThemeHeroSection({
           {title || highlightText ? (
             <h1
               className="text-4xl leading-[0.95] font-black tracking-tight sm:text-6xl lg:text-7xl"
-              style={{ color: colors.text, fontFamily: fonts.heading }}
+              style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
             >
               {title?.split(' ').map((word, index) => (
                 <span key={index}>
                   <span
                     style={{
-                      color: index < 2 ? colors.primary : colors.text,
+                      color: index < 2 ? titleAccentColor : 'var(--store-text)',
                     }}
                   >
                     {word}
@@ -143,7 +141,7 @@ export default function DefaultThemeHeroSection({
                 </span>
               ))}
               {highlightText ? (
-                <span className="mt-2 block" style={{ color: colors.accent }}>
+                <span className="mt-2 block" style={{ color: highlightColor }}>
                   {highlightText}
                 </span>
               ) : null}
@@ -152,7 +150,7 @@ export default function DefaultThemeHeroSection({
           {description ? (
             <p
               className="mx-auto mt-6 max-w-2xl text-base leading-8 sm:text-xl"
-              style={{ color: `${colors.text}B3`, fontFamily: fonts.body }}
+              style={{ color: 'var(--store-text-muted)', fontFamily: fonts.body }}
             >
               {description}
             </p>
@@ -172,17 +170,20 @@ export default function DefaultThemeHeroSection({
                     target={openInNewTab ? '_blank' : undefined}
                     rel={openInNewTab ? 'noopener noreferrer' : undefined}
                     className={`inline-flex min-w-[160px] items-center justify-center rounded-xl px-6 py-3 text-sm font-semibold transition-transform duration-200 hover:-translate-y-0.5 sm:text-base ${
-                      index === 0 ? 'text-white shadow-lg' : 'border bg-white/80 backdrop-blur'
+                      index === 0 ? '' : 'border backdrop-blur'
                     }`}
                     style={
                       index === 0
                         ? {
-                            background: `linear-gradient(135deg, ${colors.primary})`,
+                            backgroundColor: 'var(--store-primary)',
+                            color: primaryButtonTextColor,
                             fontFamily: fonts.body,
                           }
                         : {
-                            borderColor: `${colors.text}1F`,
-                            color: colors.text,
+                            backgroundColor:
+                              'color-mix(in srgb, var(--store-surface) 92%, transparent)',
+                            borderColor: 'var(--store-border)',
+                            color: 'var(--store-text)',
                             fontFamily: fonts.body,
                           }
                     }

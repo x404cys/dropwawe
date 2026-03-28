@@ -24,13 +24,14 @@ import { useStoreProvider } from '../../../../context/StoreContext';
 import { ImageForMobile } from './_components/Image-Section/Image4Mobile';
 import { GallerySectionForMobile } from './_components/Image-Section/GallerySectionForMobile';
 import { CollapsibleSection } from './_components/CollapsibleSection';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 export default function ProductAddPage() {
   const { data: session } = useSession();
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
   const { currentStore } = useStoreProvider();
-
+  const { t } = useLanguage();
   const [expandedSections, setExpandedSections] = useState({
     sizes: false,
     colors: false,
@@ -383,8 +384,8 @@ export default function ProductAddPage() {
 
             <div className="mx-4">
               <CollapsibleSection
-                title="التفاصيل المتقدمة (اختياري)"
-                subtitle="مثل المقاسات، الألوان، الشحن،  "
+                title={t?.other?.optionsTilte || 'المتغيرات'}
+                subtitle={t?.other?.optionsSubtitle || 'مثل المقاسات، الألوان، الشحن'}
                 isExpanded={expandedSections.shipping}
                 onToggle={() => toggleSection('shipping')}
               >

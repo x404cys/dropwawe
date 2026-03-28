@@ -1,12 +1,12 @@
 'use client';
-// src/components/template-editor/TemplateEditor.tsx
-// Main template editor client component.
 
 import { useEffect, useState } from 'react';
 import { Eye, Package, Palette, Phone, RotateCcw, Save, Type } from 'lucide-react';
 import { toast } from 'sonner';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { useTemplateEditor } from '@/hooks/useTemplateEditor';
+import { useHeroSectionEditor } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
 import type {
   CategoryIconItem,
   ServiceItem,
@@ -14,8 +14,6 @@ import type {
   TestimonialItem,
   WorkItem,
 } from '@/lib/template/types';
-import { useHeroSectionEditor } from '@/app/(page)/Dashboard/(page)/setting/store/_hooks/useHeroSectionEditor';
-
 import BrandTab from './tabs/BrandTab';
 import ContactTab from './tabs/ContactTab';
 import DesignTab from './tabs/DesignTab';
@@ -23,13 +21,6 @@ import StorefrontTab from './tabs/StorefrontTab';
 import { createDefaultHero } from './utils/createDefaultHero';
 
 type TabId = 'brand' | 'storefront' | 'design' | 'contact';
-
-const TABS: { id: TabId; label: string; icon: React.ElementType }[] = [
-  { id: 'brand', label: 'الهوية', icon: Type },
-  { id: 'storefront', label: 'المتجر', icon: Package },
-  { id: 'design', label: 'التصميم', icon: Palette },
-  { id: 'contact', label: 'التواصل', icon: Phone },
-];
 
 interface TemplateEditorProps {
   initialData: TemplateFormState;
@@ -50,6 +41,7 @@ export default function TemplateEditor({
   categories,
   storefrontUrl,
 }: TemplateEditorProps) {
+  const { t, dir } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabId>('brand');
   const [logoImage, setLogoImage] = useState<string | null>(storeLogoImage);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -67,6 +59,14 @@ export default function TemplateEditor({
       createDefaultHero(storeNameDraft, storeDescriptionDraft, editor.formState),
     storeId,
   });
+
+  const tt = t.templateEditor;
+  const tabs: { id: TabId; label: string; icon: React.ElementType }[] = [
+    { id: 'brand', label: tt.tabs.brand, icon: Type },
+    { id: 'storefront', label: tt.tabs.storefront, icon: Package },
+    { id: 'design', label: tt.tabs.design, icon: Palette },
+    { id: 'contact', label: tt.tabs.contact, icon: Phone },
+  ];
 
   useEffect(() => {
     if (activeTab !== 'storefront') return;
@@ -97,14 +97,17 @@ export default function TemplateEditor({
   const uploadStoreLogo = async (file: File): Promise<string> => {
     const formData = new FormData();
     formData.append('image', file);
+
     const res = await fetch('/api/storev2/upload-image', {
       method: 'POST',
       body: formData,
     });
+
     const data = (await res.json()) as { url?: string; error?: string };
     if (!res.ok || !data.url) {
-      throw new Error(data.error ?? 'Failed to upload logo');
+      throw new Error(data.error ?? tt.validation.logoUploadFailed);
     }
+
     return data.url;
   };
 
@@ -113,16 +116,19 @@ export default function TemplateEditor({
 
     const normalizedName = storeNameDraft.trim();
     const normalizedDescription = storeDescriptionDraft.trim();
+
     if (!normalizedName) {
-      toast.error('اسم المتجر مطلوب');
+      toast.error(tt.validation.storeNameRequired);
       return false;
     }
+
     if (!normalizedDescription) {
-      toast.error('وصف المتجر مطلوب');
+      toast.error(tt.validation.storeDescriptionRequired);
       return false;
     }
 
     setIsSavingStoreBasics(true);
+
     try {
       const logoChanged = logoImage !== savedLogoImage;
       let imageToSave: string | null | undefined = undefined;
@@ -135,7 +141,7 @@ export default function TemplateEditor({
         } else if (logoImage && !logoImage.startsWith('data:')) {
           imageToSave = logoImage;
         } else {
-          toast.error('يرجى إعادة اختيار الشعار');
+          toast.error(tt.validation.reselectLogo);
           return false;
         }
       }
@@ -150,10 +156,11 @@ export default function TemplateEditor({
           ...(imageToSave !== undefined ? { image: imageToSave } : {}),
         }),
       });
+
       const data = (await res.json()) as { error?: string };
 
       if (!res.ok) {
-        toast.error(data.error ?? 'فشل حفظ بيانات المتجر');
+        toast.error(data.error ?? tt.validation.saveStoreFailed);
         return false;
       }
 
@@ -168,8 +175,8 @@ export default function TemplateEditor({
       setSavedStoreName(normalizedName);
       setSavedStoreDescription(normalizedDescription);
       return true;
-    } catch (err) {
-      toast.error((err as Error).message || 'حدث خطأ في حفظ بيانات المتجر');
+    } catch (error) {
+      toast.error((error as Error).message || tt.validation.saveStoreError);
       return false;
     } finally {
       setIsSavingStoreBasics(false);
@@ -192,7 +199,7 @@ export default function TemplateEditor({
     const storeSaved = await saveStoreBasics();
 
     if (!hadHeroChanges && !hadTemplateChanges && hadStoreChanges && storeSaved) {
-      toast.success(' تم الحفظ بنجاح');
+      toast.success(t.success);
     }
   };
 
@@ -204,18 +211,19 @@ export default function TemplateEditor({
   };
 
   const handleReset = () => {
-    if (window.confirm('هل تريد إعادة تعيين جميع الإعدادات للقيم المحفوظة؟')) {
+    if (window.confirm(tt.actions.resetConfirm)) {
       window.location.reload();
     }
   };
 
   return (
-    <div className="bg-background min-h-screen pb-36" dir="rtl">
+    <div className="bg-background min-h-screen pb-36" dir={dir}>
       <div className="bg-background/90 sticky top-0 z-20 -mx-4 px-4 pt-1 pb-3 backdrop-blur-xl">
         <div className="bg-muted/50 flex gap-1 rounded-2xl p-1">
-          {TABS.map(tab => {
+          {tabs.map(tab => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
+
             return (
               <button
                 key={tab.id}
@@ -315,7 +323,7 @@ export default function TemplateEditor({
             id="template-preview-btn"
           >
             <Eye className="h-3.5 w-3.5 md:h-4 md:w-4" />
-            معاينة
+            {tt.actions.preview}
           </Button>
 
           <Button
@@ -327,14 +335,14 @@ export default function TemplateEditor({
             id="template-save-btn"
           >
             <Save className="h-3.5 w-3.5 md:h-4 md:w-4" />
-            {isSavingChanges ? 'جارٍ الحفظ...' : 'حفظ'}
+            {isSavingChanges ? tt.actions.saving : t.save}
           </Button>
 
           <Button
             onClick={handleReset}
             variant="ghost"
             className="text-muted-foreground hover:text-destructive h-9 w-9 rounded-lg p-0 md:h-11 md:w-11 md:rounded-xl"
-            title="إعادة تعيين"
+            title={tt.actions.reset}
             id="template-reset-btn"
           >
             <RotateCcw className="h-3.5 w-3.5 md:h-4 md:w-4" />

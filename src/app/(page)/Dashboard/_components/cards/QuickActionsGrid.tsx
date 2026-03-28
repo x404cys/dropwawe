@@ -13,14 +13,14 @@ export default function QuickActionsGrid() {
   const actions = [
     {
       path: '/Dashboard/ProductManagment/add-product',
-      label: 'إضافة منتج',
+      label: t.inventory.addProduct || 'إضافة منتج',
       icon: Plus,
-      iconColor: 'text-cyan-500', // Matches the cyan/primary tint in image
+      iconColor: 'text-cyan-500',
       bgColor: 'bg-cyan-500/10',
     },
     {
       path: '/Dashboard/stats',
-      label: 'التحليلات',
+      label: t.more.stats || 'الإحصائيات',
       icon: BarChart,
       iconColor: 'text-foreground',
       bgColor: 'bg-muted',
@@ -34,13 +34,12 @@ export default function QuickActionsGrid() {
     },
     {
       path: '/Dashboard/ProductManagment',
-      label: 'المنتجات',
+      label: t.inventory.products || 'كل المنتجات',
       icon: Package,
       iconColor: 'text-muted-foreground',
       bgColor: 'bg-muted',
     },
   ];
- 
 
   return (
     <div className="grid grid-cols-4 gap-2 md:gap-3">

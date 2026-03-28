@@ -1,6 +1,4 @@
 'use client';
-// src/components/template-editor/tabs/ContactTab.tsx
-// Contact tab - manages contact items (add/remove/toggle visibility).
 
 import { useMemo, useState, type ElementType } from 'react';
 import {
@@ -15,9 +13,9 @@ import {
   Send,
   Trash2,
 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
+import { Input } from '@/components/ui/input';
 import {
   Select,
   SelectContent,
@@ -25,6 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
 import type { ContactItem, ContactType, TemplateFormState } from '@/lib/template/types';
 
 interface ContactTabProps {
@@ -32,58 +31,107 @@ interface ContactTabProps {
   onUpdate: (partial: Partial<TemplateFormState>) => void;
 }
 
-const CONTACT_OPTIONS: Array<{
-  type: ContactType;
-  label: string;
-  placeholder: string;
-  icon: ElementType;
-  allowLabel?: boolean;
-}> = [
-  { type: 'email', label: 'البريد الإلكتروني', placeholder: 'hello@example.com', icon: Mail },
-  { type: 'whatsapp', label: 'واتساب', placeholder: '+964xxxxxxxxxx', icon: MessageCircle },
-  { type: 'phone', label: 'رقم الهاتف', placeholder: '+964xxxxxxxxxx', icon: Phone },
-  { type: 'website', label: 'الموقع الإلكتروني', placeholder: 'www.example.com', icon: Globe },
-  { type: 'instagram', label: 'انستغرام', placeholder: 'instagram.com/username', icon: Instagram },
-  { type: 'facebook', label: 'فيسبوك', placeholder: 'facebook.com/username', icon: Facebook },
-  { type: 'telegram', label: 'تلغرام', placeholder: 't.me/username', icon: Send },
-  {
-    type: 'custom',
-    label: 'رابط مخصص',
-    placeholder: 'https://example.com',
-    icon: Link2,
-    allowLabel: true,
-  },
-];
-
-const CONTACT_LABELS = CONTACT_OPTIONS.reduce<Record<ContactType, string>>((acc, option) => {
-  acc[option.type] = option.label;
-  return acc;
-}, {} as Record<ContactType, string>);
-
-const CONTACT_PLACEHOLDERS = CONTACT_OPTIONS.reduce<Record<ContactType, string>>(
-  (acc, option) => {
-    acc[option.type] = option.placeholder;
-    return acc;
-  },
-  {} as Record<ContactType, string>
-);
-
-const CONTACT_ICONS = CONTACT_OPTIONS.reduce<Record<ContactType, ElementType>>(
-  (acc, option) => {
-    acc[option.type] = option.icon;
-    return acc;
-  },
-  {} as Record<ContactType, ElementType>
-);
-
 export default function ContactTab({ state, onUpdate }: ContactTabProps) {
+  const { t } = useLanguage();
+  const tt = t.templateEditor;
   const [newType, setNewType] = useState<ContactType>('email');
 
-  const items = state.contactItems ?? [];
-  const existingTypes = useMemo(
-    () => new Set(items.map(item => item.type)),
-    [items]
+  const contactOptions: Array<{
+    type: ContactType;
+    label: string;
+    placeholder: string;
+    icon: ElementType;
+    allowLabel?: boolean;
+  }> = [
+    {
+      type: 'email',
+      label: tt.contact.types.email,
+      placeholder: 'hello@example.com',
+      icon: Mail,
+    },
+    {
+      type: 'whatsapp',
+      label: tt.contact.types.whatsapp,
+      placeholder: '+964xxxxxxxxxx',
+      icon: MessageCircle,
+    },
+    {
+      type: 'phone',
+      label: tt.contact.types.phone,
+      placeholder: '+964xxxxxxxxxx',
+      icon: Phone,
+    },
+    {
+      type: 'website',
+      label: tt.contact.types.website,
+      placeholder: 'www.example.com',
+      icon: Globe,
+    },
+    {
+      type: 'instagram',
+      label: tt.contact.types.instagram,
+      placeholder: 'instagram.com/username',
+      icon: Instagram,
+    },
+    {
+      type: 'facebook',
+      label: tt.contact.types.facebook,
+      placeholder: 'facebook.com/username',
+      icon: Facebook,
+    },
+    {
+      type: 'telegram',
+      label: tt.contact.types.telegram,
+      placeholder: 't.me/username',
+      icon: Send,
+    },
+    {
+      type: 'custom',
+      label: tt.contact.customLink,
+      placeholder: 'https://example.com',
+      icon: Link2,
+      allowLabel: true,
+    },
+  ];
+
+  const contactLabels = useMemo(
+    () =>
+      contactOptions.reduce<Record<ContactType, string>>(
+        (acc, option) => {
+          acc[option.type] = option.label;
+          return acc;
+        },
+        {} as Record<ContactType, string>
+      ),
+    [contactOptions]
   );
+
+  const contactPlaceholders = useMemo(
+    () =>
+      contactOptions.reduce<Record<ContactType, string>>(
+        (acc, option) => {
+          acc[option.type] = option.placeholder;
+          return acc;
+        },
+        {} as Record<ContactType, string>
+      ),
+    [contactOptions]
+  );
+
+  const contactIcons = useMemo(
+    () =>
+      contactOptions.reduce<Record<ContactType, ElementType>>(
+        (acc, option) => {
+          acc[option.type] = option.icon;
+          return acc;
+        },
+        {} as Record<ContactType, ElementType>
+      ),
+    [contactOptions]
+  );
+
+  const items = state.contactItems ?? [];
+  const existingTypes = useMemo(() => new Set(items.map(item => item.type)), [items]);
 
   const updateItems = (nextItems: ContactItem[]) => {
     const email = nextItems.find(item => item.type === 'email')?.value ?? '';
@@ -100,15 +148,15 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
 
   const addContact = () => {
     if (newType !== 'custom' && existingTypes.has(newType)) return;
-    const id = `contact-${Date.now()}`;
-    const label = CONTACT_LABELS[newType] ?? 'رابط';
+
     const newItem: ContactItem = {
-      id,
+      id: `contact-${Date.now()}`,
       type: newType,
-      label,
+      label: contactLabels[newType] ?? tt.contact.linkLabel,
       value: '',
       enabled: true,
     };
+
     updateItems([...items, newItem]);
   };
 
@@ -117,22 +165,21 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
   };
 
   const updateContact = (id: string, patch: Partial<ContactItem>) => {
-    updateItems(
-      items.map(item => (item.id === id ? { ...item, ...patch } : item))
-    );
+    updateItems(items.map(item => (item.id === id ? { ...item, ...patch } : item)));
   };
 
   return (
-    <div className="bg-card border border-border rounded-2xl p-4">
-      <div className="flex items-center justify-between mb-3">
-        <p className="text-xs font-semibold text-foreground">معلومات التواصل</p>
+    <div className="bg-card border-border rounded-2xl border p-4">
+      <div className="mb-3 flex items-center justify-between">
+        <p className="text-foreground text-xs font-semibold">{tt.contact.title}</p>
+
         <div className="flex items-center gap-2">
           <Select value={newType} onValueChange={value => setNewType(value as ContactType)}>
             <SelectTrigger className="h-8 w-36 text-xs">
-              <SelectValue placeholder="اختر نوع" />
+              <SelectValue placeholder={tt.contact.selectType} />
             </SelectTrigger>
             <SelectContent>
-              {CONTACT_OPTIONS.map(option => (
+              {contactOptions.map(option => (
                 <SelectItem
                   key={option.type}
                   value={option.type}
@@ -143,6 +190,7 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
               ))}
             </SelectContent>
           </Select>
+
           <Button
             type="button"
             size="sm"
@@ -151,40 +199,43 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
             disabled={newType !== 'custom' && existingTypes.has(newType)}
           >
             <Plus className="h-3.5 w-3.5" />
-            إضافة
+            {t.add}
           </Button>
         </div>
       </div>
 
       <div className="space-y-2">
         {items.length === 0 && (
-          <p className="text-[11px] text-muted-foreground">ماكو روابط تواصل بعد.</p>
+          <p className="text-muted-foreground text-[11px]">{tt.contact.empty}</p>
         )}
 
         {items.map(item => {
-          const Icon = CONTACT_ICONS[item.type] ?? Link2;
-          const placeholder = CONTACT_PLACEHOLDERS[item.type] ?? 'https://';
+          const Icon = contactIcons[item.type] ?? Link2;
+          const placeholder = contactPlaceholders[item.type] ?? 'https://';
+          const visibleLabel =
+            item.type === 'custom' ? item.label || tt.contact.linkLabel : contactLabels[item.type];
+
           return (
-            <div key={item.id} className="flex items-center gap-3 bg-muted/20 rounded-xl p-3">
-              <div className="w-8 h-8 rounded-lg bg-background border border-border flex items-center justify-center">
-                <Icon className="h-3.5 w-3.5 text-muted-foreground" />
+            <div key={item.id} className="bg-muted/20 flex items-center gap-3 rounded-xl p-3">
+              <div className="bg-background border-border flex h-8 w-8 items-center justify-center rounded-lg border">
+                <Icon className="text-muted-foreground h-3.5 w-3.5" />
               </div>
 
               <div className="flex-1">
-                <div className="flex items-center justify-between mb-1">
-                  <p className="text-[10px] text-muted-foreground">
-                    {item.label || CONTACT_LABELS[item.type]}
-                  </p>
+                <div className="mb-1 flex items-center justify-between">
+                  <p className="text-muted-foreground text-[10px]">{visibleLabel}</p>
+
                   <div className="flex items-center gap-2">
                     <Switch
                       checked={item.enabled}
                       onCheckedChange={checked => updateContact(item.id, { enabled: checked })}
                     />
+
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                      className="text-muted-foreground hover:text-destructive h-6 w-6"
                       onClick={() => removeContact(item.id)}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
@@ -195,18 +246,18 @@ export default function ContactTab({ state, onUpdate }: ContactTabProps) {
                 {item.type === 'custom' && (
                   <Input
                     value={item.label}
-                    onChange={e => updateContact(item.id, { label: e.target.value })}
-                    placeholder="عنوان الرابط"
-                    className="h-7 mb-2 font-light border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                    onChange={event => updateContact(item.id, { label: event.target.value })}
+                    placeholder={tt.contact.customLabelPlaceholder}
+                    className="mb-2 h-7 rounded-none border-0 bg-transparent p-0 font-light focus-visible:ring-0 focus-visible:ring-offset-0"
                   />
                 )}
 
                 <Input
                   value={item.value}
-                  onChange={e => updateContact(item.id, { value: e.target.value })}
+                  onChange={event => updateContact(item.id, { value: event.target.value })}
                   placeholder={placeholder}
                   dir="ltr"
-                  className="h-7 font-light border-0 bg-transparent p-0 focus-visible:ring-0 focus-visible:ring-offset-0 rounded-none"
+                  className="h-7 rounded-none border-0 bg-transparent p-0 font-light focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
             </div>

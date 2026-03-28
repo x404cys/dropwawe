@@ -1,8 +1,9 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, type ComponentType } from 'react';
 import * as LucideIcons from 'lucide-react';
 import { Search, X, Check, Shapes, Sparkles } from 'lucide-react';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 
-type IconComponent = React.ComponentType<{ className?: string }>;
+type IconComponent = ComponentType<{ className?: string }>;
 
 interface IconPickerDialogProps {
   value?: string;
@@ -91,10 +92,15 @@ function scoreIcon(name: string, query: string) {
 }
 
 export default function IconPickerDialog({ value, onChange, onClear }: IconPickerDialogProps) {
+  const { t, dir } = useLanguage();
+  const tt = t.templateEditor;
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
 
   const selectedIcon = useMemo(() => getIconByName(value), [value]);
+  const textAlignClass = dir === 'rtl' ? 'text-right' : 'text-left';
+  const searchIconClass = dir === 'rtl' ? 'right-3' : 'left-3';
+  const clearButtonClass = dir === 'rtl' ? 'left-2.5' : 'right-2.5';
 
   const popularIcons = useMemo(() => {
     return POPULAR_ICON_NAMES.map(name => getIconByName(name)).filter(Boolean) as {
@@ -141,35 +147,37 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                 <Shapes className="text-muted-foreground h-4 w-4" />
               )}
             </div>
-            <div className="min-w-0 text-right">
+            <div className={`min-w-0 ${textAlignClass}`}>
               <p className="text-foreground truncate text-xs font-medium">
-                {selectedIcon?.name || 'اختيار أيقونة'}
+                {selectedIcon?.name || tt.actions.chooseIcon}
               </p>
-              <p className="text-muted-foreground text-[10px]">Lucide Icons</p>
+              <p className="text-muted-foreground text-[10px]">{tt.ui.iconLibrary}</p>
             </div>
           </div>
-          <span className="text-muted-foreground text-[11px]">اختيار</span>
+          <span className="text-muted-foreground text-[11px]">{tt.actions.select}</span>
         </button>
       </DialogTrigger>
 
       <DialogContent
-        dir="rtl"
+        dir={dir}
         className="border-border/60 flex flex-col overflow-hidden rounded-2xl p-0"
         style={{ width: 'min(95vw, 860px)', height: 'min(88vh, 700px)', maxWidth: '100%' }}
       >
         <DialogHeader className="border-border/50 shrink-0 border-b px-5 pt-4 pb-3">
-          <DialogTitle className="text-sm sm:text-base">اختيار أيقونة</DialogTitle>
+          <DialogTitle className="text-sm sm:text-base">{tt.actions.chooseIcon}</DialogTitle>
         </DialogHeader>
 
         <div className="border-border/40 shrink-0 space-y-3 border-b px-5 pt-4 pb-3">
           <div className="flex gap-2">
             <div className="relative flex-1">
-              <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
+              <Search
+                className={`text-muted-foreground absolute top-1/2 h-4 w-4 -translate-y-1/2 ${searchIconClass}`}
+              />
               <Input
                 value={search}
                 onChange={e => setSearch(e.target.value)}
-                placeholder="ابحث... مثال: monitor أو shopping"
-                className="h-9 pr-9 pl-3"
+                placeholder={tt.ui.searchIconsPlaceholder}
+                className={`h-9 ${dir === 'rtl' ? 'pr-9 pl-3' : 'pr-3 pl-9'}`}
                 dir="ltr"
                 autoFocus
               />
@@ -177,7 +185,7 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                 <button
                   type="button"
                   onClick={() => setSearch('')}
-                  className="text-muted-foreground hover:text-foreground absolute top-1/2 left-2.5 -translate-y-1/2 transition-colors"
+                  className={`text-muted-foreground hover:text-foreground absolute top-1/2 -translate-y-1/2 transition-colors ${clearButtonClass}`}
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -194,17 +202,16 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
                 className="border-border bg-background text-muted-foreground hover:text-destructive hover:border-destructive/40 inline-flex h-9 shrink-0 items-center gap-1.5 rounded-xl border px-3 text-xs transition-all"
               >
                 <X className="h-3.5 w-3.5" />
-                حذف
+                {tt.actions.clearIcon}
               </button>
             )}
           </div>
 
-          {/* Suggestion chips (only when not searching) */}
           {!isSearching && (
             <div className="flex flex-wrap items-center gap-2">
               <span className="text-muted-foreground flex shrink-0 items-center gap-1 text-[11px] font-semibold">
                 <Sparkles className="text-primary h-3.5 w-3.5" />
-                مقترحة:
+                {tt.ui.suggested}
               </span>
               {SEARCH_SUGGESTIONS.map(s => (
                 <button
@@ -219,7 +226,6 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
             </div>
           )}
 
-          {/* Selected icon badge */}
           {selectedIcon && (
             <div className="bg-primary/5 border-primary/20 flex items-center gap-2.5 rounded-xl border px-3 py-2">
               <div className="bg-background border-border/60 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg border">
@@ -227,16 +233,15 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
               </div>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-semibold">{selectedIcon.name}</p>
-                <p className="text-muted-foreground text-[10px]">الأيقونة المختارة حاليًا</p>
+                <p className="text-muted-foreground text-[10px]">{tt.ui.selectedIcon}</p>
               </div>
               <Check className="text-primary h-4 w-4 shrink-0" />
             </div>
           )}
 
-          {/* Popular icons row (only when not searching) */}
           {!isSearching && popularIcons.length > 0 && (
             <div className="space-y-2">
-              <p className="text-muted-foreground text-[11px] font-semibold">الأكثر استخدامًا</p>
+              <p className="text-muted-foreground text-[11px] font-semibold">{tt.ui.mostUsed}</p>
               <div className="grid grid-cols-6 gap-1.5 sm:grid-cols-9 md:grid-cols-12">
                 {popularIcons.map(icon => {
                   const Icon = icon.component;
@@ -272,16 +277,13 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
           )}
         </div>
 
-        {/* ── SCROLLABLE: Icon grid ── */}
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
           {filteredIcons.length === 0 ? (
             <div className="flex h-full min-h-[160px] flex-col items-center justify-center gap-3 text-center">
               <Shapes className="text-muted-foreground/40 h-10 w-10" />
               <div>
-                <p className="text-foreground text-sm font-medium">لا توجد نتائج مطابقة</p>
-                <p className="text-muted-foreground mt-1 text-xs">
-                  جرّب كلمات مثل: Monitor, ShoppingBag, Briefcase
-                </p>
+                <p className="text-foreground text-sm font-medium">{tt.ui.noMatchingIcons}</p>
+                <p className="text-muted-foreground mt-1 text-xs">{tt.ui.tryKeywords}</p>
               </div>
               {suggestedIcons.length > 0 && (
                 <div className="mt-1 flex flex-wrap justify-center gap-1.5">
@@ -302,8 +304,8 @@ export default function IconPickerDialog({ value, onChange, onClear }: IconPicke
             <>
               <p className="text-muted-foreground mb-3 text-[11px] font-medium">
                 {isSearching
-                  ? `${filteredIcons.length} نتيجة`
-                  : `جميع الأيقونات · عرض أول ${filteredIcons.length}`}
+                  ? tt.ui.resultsCount.replace('{count}', String(filteredIcons.length))
+                  : tt.ui.allIconsCount.replace('{count}', String(filteredIcons.length))}
               </p>
               <div className="grid grid-cols-4 gap-1.5 sm:grid-cols-5 md:grid-cols-7 lg:grid-cols-8 xl:grid-cols-9">
                 {filteredIcons.map(icon => {

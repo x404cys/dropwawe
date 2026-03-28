@@ -1,7 +1,6 @@
 'use client';
-// src/components/template-editor/sections/AboutSection.tsx
-// "من نحن" about text area.
 
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Textarea } from '@/components/ui/textarea';
 
 interface AboutSectionProps {
@@ -10,13 +9,15 @@ interface AboutSectionProps {
 }
 
 export default function AboutSection({ aboutText, onChange }: AboutSectionProps) {
+  const { t } = useLanguage();
+
   return (
     <Textarea
       value={aboutText}
-      onChange={e => onChange(e.target.value)}
+      onChange={event => onChange(event.target.value)}
       rows={3}
-      className=" rounded-xl resize-none"
-      placeholder="نبذة تعريفية"
+      className="resize-none rounded-xl"
+      placeholder={t.templateEditor.about.placeholder}
     />
   );
 }

@@ -7,7 +7,7 @@ import { en } from '@/translations/en';
 
 export type Lang = 'ar' | 'ku' | 'en';
 
-const translations = { ar, ku, en } as const;
+const translations: Record<Lang, typeof ar> = { ar, ku, en };
 
 const LANG_LABELS: Record<Lang, string> = {
   ar: 'العربية',

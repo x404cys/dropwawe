@@ -1,73 +1,57 @@
 'use client';
-import { useLanguage } from '../../../../../context/LanguageContext';
 
 import { useEffect, useState } from 'react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+import { useParams, useRouter } from 'next/navigation';
 import { MapPin, Phone, Search, User } from 'lucide-react';
+import { toast } from 'sonner';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Separator } from '@/components/ui/separator';
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { useLanguage } from '../../../../../context/LanguageContext';
 
-import { useParams, useRouter } from 'next/navigation';
-import { Separator } from '@/components/ui/separator';
-import { toast } from 'sonner';
-
-type Product = { name?: string; image?: string };
-type OrderItem = {
-  id: string;
-  quantity: number;
-  price: number;
-  product?: Product;
-  size: string;
-  color: string;
-};
-
-export type OrderDetails = {
+type OrderDetails = {
   id: string;
   fullName: string;
   location: string;
   phone: string;
-  createdAt: string;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  total: number;
-  items: OrderItem[];
 };
 
-interface City {
+type City = {
   id: string;
   city_name: string;
-}
+};
 
-interface Region {
+type Region = {
   id: string;
   region_name: string;
-}
+};
 
 export default function LocationPage() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const params = useParams();
-  const orderId = params?.orderId as string;
   const router = useRouter();
-  const [order, setOrder] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
+  const orderId = params?.orderId as string;
 
+  const [order, setOrder] = useState<OrderDetails | null>(null);
   const [cities, setCities] = useState<City[]>([]);
   const [regions, setRegions] = useState<Region[]>([]);
   const [filteredRegions, setFilteredRegions] = useState<Region[]>([]);
-
   const [selectedCity, setSelectedCity] = useState('');
   const [selectedRegion, setSelectedRegion] = useState('');
-
   const [regionSearch, setRegionSearch] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
-
   const [loadingCities, setLoadingCities] = useState(false);
   const [loadingRegions, setLoadingRegions] = useState(false);
+
+  const searchIconPosition = dir === 'rtl' ? 'right-3' : 'left-3';
+  const searchInputPadding = dir === 'rtl' ? 'pr-10' : 'pl-10';
 
   useEffect(() => {
     if (!orderId) return;
@@ -75,17 +59,17 @@ export default function LocationPage() {
     const fetchOrder = async () => {
       try {
         const res = await fetch(`/api/orders/details/${orderId}`, { credentials: 'include' });
-        const data = await res.json();
+        if (!res.ok) throw new Error();
+
+        const data: OrderDetails = await res.json();
         setOrder(data);
       } catch {
-        console.error('فشل في جلب بيانات الطلب');
-      } finally {
-        setLoading(false);
+        console.error(t.orders.loadFailed);
       }
     };
 
-    fetchOrder();
-  }, [orderId]);
+    void fetchOrder();
+  }, [orderId, t.orders.loadFailed]);
 
   useEffect(() => {
     const fetchCities = async () => {
@@ -93,39 +77,44 @@ export default function LocationPage() {
 
       try {
         const res = await fetch('/api/delivery/al-waseet/citys');
-        const data = await res.json();
-        setCities(data.data);
-      } catch (err) {
-        console.error(err);
-      }
+        if (!res.ok) throw new Error();
 
-      setLoadingCities(false);
+        const data = await res.json();
+        setCities(data.data ?? []);
+      } catch (error) {
+        console.error(error);
+        toast.error(t.orders.loadCitiesFailed);
+      } finally {
+        setLoadingCities(false);
+      }
     };
 
-    fetchCities();
-  }, []);
+    void fetchCities();
+  }, [t.orders.loadCitiesFailed]);
 
   const handleCitySelect = async (cityId: string) => {
     setSelectedCity(cityId);
     setSelectedRegion('');
     setRegionSearch('');
     setShowDropdown(false);
-
-    setLoadingRegions(true);
     setRegions([]);
     setFilteredRegions([]);
+    setLoadingRegions(true);
 
     try {
       const res = await fetch(`/api/delivery/al-waseet/regions?city_id=${cityId}`);
+      if (!res.ok) throw new Error();
+
       const data = await res.json();
-
-      setRegions(data.data);
-      setFilteredRegions(data.data);
-    } catch (err) {
-      console.error(err);
+      const nextRegions: Region[] = data.data ?? [];
+      setRegions(nextRegions);
+      setFilteredRegions(nextRegions);
+    } catch (error) {
+      console.error(error);
+      toast.error(t.orders.loadRegionsFailed);
+    } finally {
+      setLoadingRegions(false);
     }
-
-    setLoadingRegions(false);
   };
 
   useEffect(() => {
@@ -134,15 +123,15 @@ export default function LocationPage() {
       return;
     }
 
-    const list = regions.filter(item =>
-      item.region_name.toLowerCase().includes(regionSearch.toLowerCase())
+    const normalizedSearch = regionSearch.toLowerCase();
+    setFilteredRegions(
+      regions.filter(region => region.region_name.toLowerCase().includes(normalizedSearch))
     );
-
-    setFilteredRegions(list);
   }, [regionSearch, regions]);
-  const handleAcceptToDeliverWithWaseet = async (orderId: string) => {
+
+  const handleAcceptToDeliverWithWaseet = async () => {
     if (!selectedCity || !selectedRegion) {
-      toast.error('يرجى اختيار المدينة والمنطقة أولاً');
+      toast.error(t.orders.chooseCityAndRegionFirst);
       return;
     }
 
@@ -156,31 +145,32 @@ export default function LocationPage() {
         }),
       });
 
-      if (res.ok) {
-        toast.success('تم معالجة الطلب، راجع تطبيق الوسيط');
-        router.back();
-      } else {
-        const errorData = await res.json();
-        toast.error(errorData.error || 'حدث خطأ غير متوقع');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => null);
+        toast.error(errorData?.error || t.orders.unknownError);
+        return;
       }
-    } catch (err) {
-      console.error(err);
-      toast.error('حدث خطأ في الاتصال بالخادم');
+
+      toast.success(t.orders.deliverySubmittedToAlwaseet);
+      router.back();
+    } catch (error) {
+      console.error(error);
+      toast.error(t.orders.deliveryConnectionError);
     }
   };
 
   return (
-    <div dir="rtl" className="mx-auto max-w-xl space-y-8 p-6">
-      <div className="rounded-xl border bg-card">
-        <div className="border-b bg-muted px-6 py-4">
-          <h2 className="text-lg font-semibold">معلومات العميل</h2>
+    <div dir={dir} className="mx-auto max-w-xl space-y-8 p-6">
+      <div className="bg-card rounded-xl border">
+        <div className="bg-muted border-b px-6 py-4">
+          <h2 className="text-lg font-semibold">{t.orders.customerInfo}</h2>
         </div>
 
         <div className="space-y-4 p-6">
           <div className="flex items-start gap-3">
             <User className="mt-0.5 h-5 w-5 text-neutral-500" />
             <div className="flex-1">
-              <p className="text-xs text-neutral-500">{t.profile.name}</p>
+              <p className="text-xs text-neutral-500">{t.orders.name}</p>
               <p className="mt-1 font-medium">{order?.fullName}</p>
             </div>
           </div>
@@ -190,7 +180,7 @@ export default function LocationPage() {
           <div className="flex items-start gap-3">
             <Phone className="mt-0.5 h-5 w-5 text-neutral-500" />
             <div className="flex-1">
-              <p className="text-xs text-neutral-500">{t.profile.phone}</p>
+              <p className="text-xs text-neutral-500">{t.orders.phone}</p>
               <p className="mt-1 font-medium" dir="ltr">
                 {order?.phone}
               </p>
@@ -202,7 +192,7 @@ export default function LocationPage() {
           <div className="flex items-start gap-3">
             <MapPin className="mt-0.5 h-5 w-5 text-neutral-500" />
             <div className="flex-1">
-              <p className="text-xs text-neutral-500">عنوان التوصيل</p>
+              <p className="text-xs text-neutral-500">{t.orders.deliveryAddress}</p>
               <p className="mt-1 leading-relaxed font-medium">{order?.location}</p>
             </div>
           </div>
@@ -210,16 +200,16 @@ export default function LocationPage() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">المدينة</p>
+        <p className="text-sm font-medium">{t.orders.city}</p>
 
         <Select onValueChange={handleCitySelect}>
           <SelectTrigger className="w-full border bg-neutral-100">
-            <SelectValue placeholder={loadingCities ? 'جارِ تحميل المدن...' : 'اختر المدينة'} />
+            <SelectValue placeholder={loadingCities ? t.orders.cityLoading : t.orders.selectCity} />
           </SelectTrigger>
 
           <SelectContent>
             {loadingCities ? (
-              <div className="p-3 text-neutral-500">جارِ التحميل...</div>
+              <div className="p-3 text-neutral-500">{t.loading}</div>
             ) : (
               cities.map(city => (
                 <SelectItem key={city.id} value={city.id}>
@@ -232,25 +222,25 @@ export default function LocationPage() {
       </div>
 
       <div className="space-y-2">
-        <p className="text-sm font-medium">المنطقة</p>
+        <p className="text-sm font-medium">{t.orders.region}</p>
 
         <div className="relative">
-          <Search className="absolute top-3 right-3 h-4 w-4 text-neutral-500" />
+          <Search className={`absolute top-3 h-4 w-4 text-neutral-500 ${searchIconPosition}`} />
 
           <Input
-            placeholder="ابحث عن المنطقة..."
-            disabled={!selectedCity}
+            placeholder={t.orders.searchRegionPlaceholder}
+            disabled={!selectedCity || loadingRegions}
             value={regionSearch}
-            onChange={e => {
-              setRegionSearch(e.target.value);
+            onChange={event => {
+              setRegionSearch(event.target.value);
               setShowDropdown(true);
             }}
             onFocus={() => setShowDropdown(true)}
-            className="bg-neutral-100 pr-10"
+            className={`bg-neutral-100 ${searchInputPadding}`}
           />
 
           {showDropdown && regionSearch && filteredRegions.length > 0 && (
-            <div className="absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border bg-card shadow-xl">
+            <div className="bg-card absolute z-50 mt-1 max-h-60 w-full overflow-auto rounded-md border shadow-xl">
               {filteredRegions.map(region => (
                 <div
                   key={region.id}
@@ -267,31 +257,44 @@ export default function LocationPage() {
             </div>
           )}
 
-          {showDropdown && regionSearch && filteredRegions.length === 0 && (
-            <div className="absolute z-50 mt-1 w-full bg-card p-3 text-sm text-neutral-500"> {t.noResults} </div>
+          {showDropdown && regionSearch && filteredRegions.length === 0 && !loadingRegions && (
+            <div className="bg-card absolute z-50 mt-1 w-full p-3 text-sm text-neutral-500">
+              {t.noResults}
+            </div>
           )}
         </div>
 
-        <Select onValueChange={v => setSelectedRegion(v)} disabled={!selectedCity}>
+        <Select
+          onValueChange={value => {
+            setSelectedRegion(value);
+            const selected = regions.find(region => region.id === value);
+            if (selected) setRegionSearch(selected.region_name);
+          }}
+          disabled={!selectedCity || loadingRegions}
+        >
           <SelectTrigger className="border bg-neutral-100">
-            <SelectValue placeholder="اختر المنطقة" />
+            <SelectValue placeholder={t.orders.selectRegion} />
           </SelectTrigger>
           <SelectContent>
-            {filteredRegions.map(region => (
-              <SelectItem key={region.id} value={region.id}>
-                {region.region_name}
-              </SelectItem>
-            ))}
+            {loadingRegions ? (
+              <div className="p-3 text-neutral-500">{t.loading}</div>
+            ) : (
+              filteredRegions.map(region => (
+                <SelectItem key={region.id} value={region.id}>
+                  {region.region_name}
+                </SelectItem>
+              ))
+            )}
           </SelectContent>
         </Select>
       </div>
 
       <Button
-        disabled={!selectedCity || !selectedRegion}
-        onClick={() => handleAcceptToDeliverWithWaseet(orderId)}
+        disabled={!selectedCity || !selectedRegion || loadingRegions}
+        onClick={handleAcceptToDeliverWithWaseet}
         className="w-full bg-neutral-900 text-white hover:bg-neutral-800"
       >
-        تأكيد الاختيار
+        {t.orders.confirmSelection}
       </Button>
     </div>
   );

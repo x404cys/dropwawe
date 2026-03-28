@@ -6,7 +6,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { BannerCarouselProps } from '../../../_lib/types';
 
-export default function DefaultThemeBannerCarousel({ banners, colors }: BannerCarouselProps) {
+export default function DefaultThemeBannerCarousel({ banners }: BannerCarouselProps) {
   const [currentBanner, setCurrentBanner] = useState(0);
 
   useEffect(() => {
@@ -36,18 +36,28 @@ export default function DefaultThemeBannerCarousel({ banners, colors }: BannerCa
           <button
             type="button"
             onClick={() => setCurrentBanner(prev => (prev - 1 + banners.length) % banners.length)}
-            className="absolute start-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-white/85 shadow-sm transition-all duration-200 ease-in-out hover:bg-white"
+            className="absolute start-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border text-white transition-colors duration-200 ease-in-out hover:bg-white/15"
+            style={{
+              borderColor: 'rgba(255,255,255,0.28)',
+              backgroundColor: 'rgba(10,10,10,0.24)',
+              backdropFilter: 'blur(10px)',
+            }}
             aria-label="السابق"
           >
-            <ChevronRight className="h-4 w-4 text-gray-700" />
+            <ChevronRight className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setCurrentBanner(prev => (prev + 1) % banners.length)}
-            className="absolute end-3 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full border border-white/40 bg-white/85 shadow-sm transition-all duration-200 ease-in-out hover:bg-white"
+            className="absolute end-3 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-full border text-white transition-colors duration-200 ease-in-out hover:bg-white/15"
+            style={{
+              borderColor: 'rgba(255,255,255,0.28)',
+              backgroundColor: 'rgba(10,10,10,0.24)',
+              backdropFilter: 'blur(10px)',
+            }}
             aria-label="التالي"
           >
-            <ChevronLeft className="h-4 w-4 text-gray-700" />
+            <ChevronLeft className="h-4 w-4" />
           </button>
           <div className="absolute start-1/2 bottom-3 flex -translate-x-1/2 items-center gap-1.5">
             {banners.map((_, index) => (
@@ -56,9 +66,12 @@ export default function DefaultThemeBannerCarousel({ banners, colors }: BannerCa
                 type="button"
                 onClick={() => setCurrentBanner(index)}
                 className={`h-2 rounded-full transition-all duration-200 ease-in-out ${
-                  index === currentBanner ? 'w-6' : 'w-2 bg-white/50'
+                  index === currentBanner ? 'w-6' : 'w-2'
                 }`}
-                style={index === currentBanner ? { backgroundColor: colors.primary } : undefined}
+                style={{
+                  backgroundColor:
+                    index === currentBanner ? 'var(--store-primary)' : 'rgba(255,255,255,0.45)',
+                }}
                 aria-label={`banner-${index + 1}`}
               />
             ))}

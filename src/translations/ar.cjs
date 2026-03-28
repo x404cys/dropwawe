@@ -284,4 +284,9 @@ module.exports = {
     topProducts: 'المنتجات الأكثر مبيعاً',
     salesChart: 'مخطط المبيعات',
   },
+  other: {
+    comingSoon: 'قريباً',
+    optionsTilte: 'المتغيرات',
+    optionsSubtitle: 'حدد المتغيرات لمنتجك مثل المقاسات، الألوان، الشحن،  ',
+  },
 };

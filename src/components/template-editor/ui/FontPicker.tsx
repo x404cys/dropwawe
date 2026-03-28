@@ -1,9 +1,7 @@
 'use client';
-// src/components/template-editor/ui/FontPicker.tsx
-// Grid-based font selector. Displays built-in + custom fonts.
-// Shows an "upload" button alongside each pick group.
 
 import { Upload } from 'lucide-react';
+import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 
 interface FontOption {
   value: string;
@@ -25,30 +23,31 @@ export default function FontPicker({
   onChange,
   onUploadClick,
 }: FontPickerProps) {
+  const { t } = useLanguage();
+
   return (
     <div>
-      <div className="flex items-center justify-between mb-1.5">
-        <p className="text-[10px] text-muted-foreground">{label}</p>
+      <div className="mb-1.5 flex items-center justify-between">
+        <p className="text-muted-foreground text-[10px]">{label}</p>
         <button
           onClick={onUploadClick}
-          className="flex items-center gap-1 text-[10px] font-medium text-primary hover:underline"
+          className="text-primary flex items-center gap-1 text-[10px] font-medium hover:underline"
         >
-          <Upload className="h-3 w-3" /> رفع خط
+          <Upload className="h-3 w-3" />
+          {t.templateEditor.actions.uploadFont}
         </button>
       </div>
+
       <div className="grid grid-cols-3 gap-1.5">
         {options.map(font => (
           <button
             key={font.value}
             onClick={() => onChange(font.value)}
-            className={`p-2 rounded-xl border-2 transition-all text-center ${
+            className={`rounded-xl border-2 p-2 text-center transition-all ${
               value === font.value ? 'border-primary bg-primary/5' : 'border-border'
             }`}
           >
-            <p
-              className="text-xs font-bold truncate"
-              style={{ fontFamily: font.value }}
-            >
+            <p className="truncate text-xs font-bold" style={{ fontFamily: font.value }}>
               {font.label}
             </p>
           </button>

@@ -1,13 +1,12 @@
 'use client';
-import { useLanguage } from '../../../context/LanguageContext';
 
-import { type JSX, use, useEffect, useState } from 'react';
+import { useLanguage } from '../../../context/LanguageContext';
+import { type JSX, type ReactNode, useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { GrDeliver } from 'react-icons/gr';
-
 import {
   CheckCircle,
   Clock,
@@ -19,7 +18,13 @@ import {
   Truck,
   MapPin,
   User,
+  ChevronLeft,
   ChevronRight,
+  Mail,
+  CreditCard,
+  Store as StoreIcon,
+  TicketPercent,
+  Hash,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -32,70 +37,110 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
-import { Product } from '@/types/Products';
 import { useSession } from 'next-auth/react';
 import useSWR from 'swr';
 import axios from 'axios';
 import { SubscriptionResponse } from '@/types/users/User';
+import {
+  type CouponDetails,
+  type OrderDetails,
+  type OrderStatus,
+} from '../../../_types/order-details';
 
-type OrderItem = {
-  id: string;
-  quantity: number;
-  price: number;
-  product?: Product;
-  size: string;
-  color: string;
-};
-export type OrderDetails = {
-  id: string;
-  fullName: string;
-  location: string;
-  phone: string;
-  createdAt: string;
-  status: 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
-  total: number;
-  items: OrderItem[];
-  prodcuts: Product[];
-};
+function InfoCard({
+  title,
+  icon,
+  children,
+}: {
+  title: string;
+  icon?: ReactNode;
+  children: ReactNode;
+}) {
+  return (
+    <div className="bg-card rounded-xl border">
+      <div className="bg-muted/50 border-b px-6 py-4">
+        <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
+          {icon}
+          {title}
+        </h2>
+      </div>
+      <div className="space-y-4 p-6">{children}</div>
+    </div>
+  );
+}
+
+function DetailRow({
+  label,
+  value,
+  valueDir,
+  strong,
+}: {
+  label: string;
+  value?: ReactNode;
+  valueDir?: 'rtl' | 'ltr' | 'auto';
+  strong?: boolean;
+}) {
+  if (value === null || value === undefined || value === '') return null;
+
+  return (
+    <div className="flex items-start justify-between gap-4 text-sm">
+      <span className="text-muted-foreground">{label}</span>
+      <div
+        dir={valueDir}
+        className={`text-foreground max-w-[65%] text-end break-words ${
+          strong ? 'font-semibold' : 'font-medium'
+        }`}
+      >
+        {value}
+      </div>
+    </div>
+  );
+}
 
 export default function OrderDetailsPage() {
-  const { t } = useLanguage();
+  const { t, lang, dir } = useLanguage();
   const params = useParams();
-  const orderId = params?.orderId as string;
-  const [order, setOrder] = useState<OrderDetails | null>(null);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const session = useSession();
+  const orderId = params?.orderId as string;
+
+  const [order, setOrder] = useState<OrderDetails | null>(null);
+  const [loading, setLoading] = useState(true);
   const [openAccept, setOpenAccept] = useState(false);
   const [openCancel, setOpenCancel] = useState(false);
-  const [cityId, setCityId] = useState('');
-  const [regionId, setRegionId] = useState('');
+
+  const locale = lang === 'en' ? 'en-US' : 'ar-IQ';
+  const BreadcrumbIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
+  const hasSupplierProducts = !!order?.items.some(item => item.product?.isFromSupplier);
+  const confirmActionLabel =
+    order?.status === 'SHIPPED' ? t.orders.confirmDelivery : t.orders.confirmOrder;
+
   const statusConfig: Record<
-    OrderDetails['status'],
+    OrderStatus,
     { color: string; bgColor: string; label: string; icon: JSX.Element }
   > = {
     PENDING: {
       color: 'text-amber-700',
       bgColor: 'bg-amber-50 border-amber-200',
-      label: 'قيد المعالجة',
+      label: t.orders.processing,
       icon: <Clock className="h-4 w-4" />,
     },
     CONFIRMED: {
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50 border-emerald-200',
-      label: 'مؤكد',
+      label: t.orders.confirmed,
       icon: <CheckCircle className="h-4 w-4" />,
     },
     SHIPPED: {
       color: 'text-blue-700',
       bgColor: 'bg-blue-50 border-blue-200',
-      label: 'تم الشحن',
+      label: t.orders.transit,
       icon: <Truck className="h-4 w-4" />,
     },
     DELIVERED: {
       color: 'text-green-700',
       bgColor: 'bg-green-50 border-green-200',
-      label: 'تم التسليم',
+      label: t.orders.completed,
       icon: <Package className="h-4 w-4" />,
     },
     CANCELLED: {
@@ -105,25 +150,96 @@ export default function OrderDetailsPage() {
       icon: <XCircle className="h-4 w-4" />,
     },
   };
-  const fetcher = (url: string) => axios.get(url, { timeout: 10000 }).then(res => res.data);
 
-  const { data, isLoading } = useSWR<SubscriptionResponse>(
+  const fetchSubscription = (url: string) =>
+    axios.get(url, { timeout: 10000 }).then(res => res.data);
+
+  const { data: subscriptionData } = useSWR<SubscriptionResponse>(
     '/api/plans/subscriptions/check',
-    fetcher,
+    fetchSubscription,
     {
       revalidateOnFocus: true,
       refreshInterval: 5000,
       revalidateOnMount: true,
     }
   );
+
+  const formatAmount = (amount?: number | null, currency = t.currency) =>
+    amount === null || amount === undefined ? '-' : `${amount.toLocaleString(locale)} ${currency}`;
+
+  const formatDateTime = (value?: string | null) =>
+    value
+      ? new Date(value).toLocaleDateString(locale, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+      : '-';
+
+  const formatPaymentMethod = (value?: string | null) => {
+    if (!value) return null;
+    const normalized = value.trim().toUpperCase();
+
+    if (
+      normalized.includes('COD') ||
+      normalized.includes('CASH') ||
+      normalized.includes('DELIVERY')
+    ) {
+      return t.orders.cashOnDelivery;
+    }
+
+    if (
+      normalized.includes('ONLINE') ||
+      normalized.includes('CARD') ||
+      normalized.includes('PAY') ||
+      normalized.includes('ELECTRONIC')
+    ) {
+      return t.orders.electronicPayment;
+    }
+
+    return value;
+  };
+
+  const formatCouponType = (type?: CouponDetails['type']) => {
+    if (!type) return null;
+
+    switch (type) {
+      case 'PERCENTAGE':
+        return t.coupons.percentage;
+      case 'FIXED':
+        return t.coupons.fixedAmount;
+      case 'FREE_SHIPPING':
+        return t.coupons.freeShipping;
+      default:
+        return type;
+    }
+  };
+
+  const formatCouponScope = (scope?: CouponDetails['scope']) => {
+    if (!scope) return null;
+
+    switch (scope) {
+      case 'GLOBAL':
+        return t.all;
+      case 'STORE':
+        return t.coupons.store;
+      case 'PRODUCT':
+        return t.inventory.product;
+      default:
+        return scope;
+    }
+  };
+
   const handleDelete = async () => {
     try {
       const res = await fetch(`/api/orders/option/${orderId}`, { method: 'PATCH' });
       if (!res.ok) throw new Error();
-      toast.success('تم إلغاء الطلب بنجاح');
+      toast.success(t.orders.cancelSuccess);
       router.back();
     } catch {
-      toast.error('حدث خطأ أثناء إلغاء الطلب');
+      toast.error(t.orders.cancelError);
     }
   };
 
@@ -131,15 +247,16 @@ export default function OrderDetailsPage() {
     try {
       const res = await fetch(`/api/orders/option/update/${orderId}`, { method: 'PATCH' });
       if (!res.ok) throw new Error();
-      toast.success('تم تأكيد الطلب بنجاح');
+      toast.success(t.orders.confirmSuccess);
       router.back();
     } catch {
-      toast.error('حدث خطأ أثناء التأكيد');
+      toast.error(t.orders.confirmError);
     }
   };
 
   useEffect(() => {
     if (!orderId) return;
+
     const fetchOrder = async () => {
       try {
         const res = await fetch(`/api/orders/details/${orderId}`, { credentials: 'include' });
@@ -147,13 +264,14 @@ export default function OrderDetailsPage() {
         const data: OrderDetails = await res.json();
         setOrder(data);
       } catch {
-        console.error('فشل في جلب بيانات الطلب');
+        console.error(t.orders.loadFailed);
       } finally {
         setLoading(false);
       }
     };
-    fetchOrder();
-  }, [orderId]);
+
+    void fetchOrder();
+  }, [orderId, t.orders.loadFailed]);
 
   if (loading) {
     return (
@@ -164,7 +282,7 @@ export default function OrderDetailsPage() {
             <Skeleton className="h-96 w-full" />
           </div>
           <div>
-            <Skeleton className="h-64 w-full" />
+            <Skeleton className="h-[640px] w-full" />
           </div>
         </div>
       </div>
@@ -176,46 +294,66 @@ export default function OrderDetailsPage() {
       <div className="flex min-h-[60vh] items-center justify-center p-6">
         <div className="text-center">
           <XCircle className="mx-auto h-12 w-12 text-red-500" />
-          <h2 className="text-foreground mt-4 text-xl font-semibold">لم يتم العثور على الطلب</h2>
-          <p className="text-muted-foreground mt-2 text-sm">الطلب المطلوب غير موجود أو تم حذفه</p>
+          <h2 className="text-foreground mt-4 text-xl font-semibold">
+            {t.orders.orderNotFoundTitle}
+          </h2>
+          <p className="text-muted-foreground mt-2 text-sm">{t.orders.orderNotFoundDescription}</p>
         </div>
       </div>
     );
   }
 
   const status = statusConfig[order.status];
+  const canConfirm =
+    order.status !== 'CONFIRMED' &&
+    (session.data?.user.role === 'SUPPLIER' || !hasSupplierProducts);
+  const customerEmail = order.email ?? order.paymentOrder?.customerEmail ?? order.user?.email;
+  const paymentMethodLabel =
+    formatPaymentMethod(order.paymentMethod) ?? formatPaymentMethod(order.store?.methodPayment);
+  const shippingAmount = order.store?.shippingPrice ?? null;
+  const discountAmount = order.discount && order.discount > 0 ? order.discount : null;
+  const finalTotal =
+    order.finalTotal && order.finalTotal > 0
+      ? order.finalTotal
+      : order.total - (order.discount ?? 0) > 0
+        ? order.total - (order.discount ?? 0)
+        : order.total;
+  const storeLink = order.store?.subLink ? `https://${order.store.subLink}.matager.store` : null;
+  const itemCount = order.items.length;
 
   return (
     <>
-      <div dir="rtl" className="mb-12 min-h-screen px-2 py-8 md:px-8">
-        <div className="mx-auto max-w-5xl">
+      <div dir={dir} className="mb-12 min-h-screen px-2 py-8 md:px-8">
+        <div className="mx-auto max-w-6xl">
           <div className="text-muted-foreground mb-6 flex items-center gap-2 text-sm">
             <span className="hover:text-foreground cursor-pointer">{t.orders.title}</span>
-            <ChevronRight className="h-4 w-4" />
+            <BreadcrumbIcon className="h-4 w-4" />
             <span className="text-foreground">{t.orders.orderDetails}</span>
           </div>
 
-          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
             <div className="space-y-4">
-              <h1 className="text-foreground text-3xl font-bold tracking-tight">
-                الطلب #{order.id.slice(0, 8).toUpperCase()}
-              </h1>
-              <p className="text-muted-foreground mt-1 flex items-center gap-2 text-sm">
-                <Calendar className="h-4 w-4" />
-                {new Date(order.createdAt).toLocaleDateString('ar-IQ', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric',
-                  hour: '2-digit',
-                  minute: '2-digit',
-                })}
-              </p>
-              {session.data?.user.role !== 'SUPPLIER' &&
-                order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier && (
-                  <Badge className="border border-blue-500 bg-blue-50 px-4 py-2 font-medium text-blue-500">
-                    يحتوي على منتجات من مورد , بأنتظار تأكيد المورد
+              <div className="space-y-2">
+                <h1 className="text-foreground text-3xl font-bold tracking-tight">
+                  {t.orders.order} #{order.id.slice(0, 8).toUpperCase()}
+                </h1>
+                {order.orderSource === 'TRADER_ORDER' && order.orderId && (
+                  <Badge variant="outline" className="w-fit px-3 py-1 text-xs font-medium">
+                    {t.orders.originalOrder}: #{order.orderId.slice(0, 8).toUpperCase()}
                   </Badge>
                 )}
+              </div>
+
+              <p className="text-muted-foreground mt-1 flex items-center gap-2 text-sm">
+                <Calendar className="h-4 w-4" />
+                {formatDateTime(order.createdAt)}
+              </p>
+
+              {session.data?.user.role !== 'SUPPLIER' && hasSupplierProducts && (
+                <Badge className="border border-blue-500 bg-blue-50 px-4 py-2 font-medium text-blue-500">
+                  {t.orders.supplierProductsPending}
+                </Badge>
+              )}
             </div>
 
             <Badge
@@ -228,88 +366,128 @@ export default function OrderDetailsPage() {
 
           <div className="grid gap-6 lg:grid-cols-3">
             <div className="space-y-6 lg:col-span-2">
-              <div className="bg-card rounded-xl border">
-                <div className="bg-muted/50 border-b px-6 py-4">
-                  <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
-                    <ShoppingBag className="h-5 w-5" />
-                    المنتجات ({order.items.length})
-                  </h2>
-                </div>
+              <InfoCard
+                title={`${t.orders.products} (${itemCount})`}
+                icon={<ShoppingBag className="h-5 w-5" />}
+              >
                 <div className="divide-y">
-                  {order.items.map(item => (
-                    <div key={item.id} className="hover:bg-muted/30 flex gap-4 p-6 transition">
-                      <div className="bg-muted relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border">
-                        {item.product?.image ? (
-                          <Image
-                            src={item.product.image || '/placeholder.svg'}
-                            alt={item.product.name || t.inventory.product}
-                            fill
-                            className="object-cover"
-                            sizes="96px"
-                          />
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center">
-                            <Package className="text-muted-foreground h-8 w-8" />
+                  {order.items.length === 0 ? (
+                    <p className="text-muted-foreground py-4 text-sm">{t.orders.noProducts}</p>
+                  ) : (
+                    order.items.map(item => (
+                      <div key={item.id} className="hover:bg-muted/20 space-y-4 py-6 transition">
+                        <div className="flex gap-4">
+                          <div className="bg-muted relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg border">
+                            {item.product?.image ? (
+                              <Image
+                                src={item.product.image}
+                                alt={item.product.name || t.inventory.product}
+                                fill
+                                className="object-cover"
+                                sizes="96px"
+                              />
+                            ) : (
+                              <div className="flex h-full w-full items-center justify-center">
+                                <Package className="text-muted-foreground h-8 w-8" />
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
 
-                      <div className="flex flex-1 flex-col justify-between">
-                        <div>
-                          <h3 className="text-foreground font-semibold">
-                            {item.product?.name || t.inventory.product}
-                          </h3>
-                          <div className="text-muted-foreground mt-2 flex flex-wrap gap-3 text-sm">
-                            {item.size && (
-                              <span className="bg-muted rounded-md px-2 py-1">
-                                الحجم: {item.size}
-                              </span>
-                            )}
-                            {item.color && (
-                              <span className="bg-muted flex items-center gap-1.5 rounded-md px-2 py-1">
-                                اللون:
-                                <span
-                                  className="inline-block h-4 w-4 rounded-full border"
-                                  style={{ backgroundColor: item.color }}
-                                />
-                              </span>
-                            )}
-                            <span className="bg-muted rounded-md px-2 py-1">
-                              الكمية: {item.quantity}
-                            </span>
+                          <div className="flex flex-1 flex-col justify-between">
+                            <div className="space-y-2">
+                              <div>
+                                <h3 className="text-foreground font-semibold">
+                                  {item.product?.name || t.inventory.product}
+                                </h3>
+                                {item.product?.description && (
+                                  <p className="text-muted-foreground mt-1 text-sm leading-relaxed">
+                                    {item.product.description}
+                                  </p>
+                                )}
+                              </div>
+
+                              <div className="text-muted-foreground flex flex-wrap gap-3 text-sm">
+                                {item.product?.category && (
+                                  <span className="bg-muted rounded-md px-2 py-1">
+                                    {t.inventory.category}: {item.product.category}
+                                  </span>
+                                )}
+                                {item.size && (
+                                  <span className="bg-muted rounded-md px-2 py-1">
+                                    {t.orders.size}: {item.size}
+                                  </span>
+                                )}
+                                {item.color && (
+                                  <span className="bg-muted flex items-center gap-1.5 rounded-md px-2 py-1">
+                                    {t.orders.color}:
+                                    <span
+                                      className="inline-block h-4 w-4 rounded-full border"
+                                      style={{ backgroundColor: item.color }}
+                                    />
+                                    <span dir="ltr">{item.color}</span>
+                                  </span>
+                                )}
+                                <span className="bg-muted rounded-md px-2 py-1">
+                                  {t.orders.quantity}: {item.quantity}
+                                </span>
+                              </div>
+                            </div>
+
+                            <div className="mt-4 grid gap-3 md:grid-cols-2">
+                              <DetailRow
+                                label={t.inventory.price}
+                                value={formatAmount(item.price)}
+                              />
+                              <DetailRow
+                                label={t.orders.total}
+                                value={formatAmount(item.price * item.quantity)}
+                                strong
+                              />
+                              <DetailRow
+                                label={t.inventory.wholesalePrice}
+                                value={
+                                  item.wholesalePrice !== null && item.wholesalePrice !== undefined
+                                    ? formatAmount(item.wholesalePrice)
+                                    : null
+                                }
+                              />
+                              <DetailRow
+                                label={t.orders.traderProfit}
+                                value={
+                                  item.traderProfit !== null && item.traderProfit !== undefined
+                                    ? formatAmount(item.traderProfit)
+                                    : null
+                                }
+                              />
+                              <DetailRow
+                                label={t.orders.supplierProfit}
+                                value={
+                                  item.supplierProfit !== null && item.supplierProfit !== undefined
+                                    ? formatAmount(item.supplierProfit)
+                                    : null
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="text-foreground mt-2 text-lg font-semibold">
-                          {(item.price * item.quantity).toLocaleString()} د.ع
-                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
-              </div>
+              </InfoCard>
 
               <div className="flex flex-wrap-reverse gap-3">
-                {!order.items.find(p => p.product?.isFromSupplier)?.product?.isFromSupplier &&
-                  order.status !== 'CONFIRMED' && (
-                    <Button
-                      size="lg"
-                      className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
-                      onClick={() => setOpenAccept(true)}
-                    >
-                      <CheckCircle className="ml-2 h-5 w-5" />
-                      {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
-                    </Button>
-                  )}
-                {session.data?.user.role === 'SUPPLIER' && order.status !== 'CONFIRMED' && (
+                {canConfirm && (
                   <Button
                     size="lg"
                     className="bg-foreground text-background hover:bg-foreground/90 flex-1 cursor-pointer"
                     onClick={() => setOpenAccept(true)}
                   >
                     <CheckCircle className="ml-2 h-5 w-5" />
-                    {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
+                    {confirmActionLabel}
                   </Button>
                 )}
+
                 <Button
                   size="lg"
                   variant="destructive"
@@ -317,71 +495,177 @@ export default function OrderDetailsPage() {
                   onClick={() => setOpenCancel(true)}
                 >
                   <XCircle className="ml-2 h-5 w-5" />
-                  إلغاء الطلب
+                  {t.orders.cancelOrder}
                 </Button>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-card rounded-xl border">
-                <div className="bg-muted/50 border-b px-6 py-4">
-                  <h2 className="text-foreground text-lg font-semibold">ملخص الطلب</h2>
-                </div>
-                <div className="space-y-4 p-6">
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">المجموع الفرعي</span>
-                    <span className="text-foreground font-medium">
-                      {order.total.toLocaleString()} د.ع
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">الشحن</span>
-                    <span className="text-foreground font-medium">-</span>
-                  </div>
-                  <Separator />
-                  <div className="flex items-center justify-between">
-                    <span className="text-foreground text-base font-semibold">الإجمالي</span>
-                    <span className="text-foreground text-2xl font-bold">
-                      {order.total.toLocaleString()} د.ع
-                    </span>
-                  </div>
-                </div>
-              </div>
+              <InfoCard title={t.orders.summary} icon={<Hash className="h-5 w-5" />}>
+                <DetailRow label={t.orders.subtotal} value={formatAmount(order.total)} />
+                <DetailRow
+                  label={t.orders.discountAmount}
+                  value={discountAmount ? formatAmount(discountAmount) : null}
+                />
+                <DetailRow
+                  label={t.orders.shipping}
+                  value={shippingAmount !== null ? formatAmount(shippingAmount) : '-'}
+                />
+                <Separator />
+                <DetailRow label={t.orders.finalTotal} value={formatAmount(finalTotal)} strong />
+              </InfoCard>
 
-              <div className="bg-card rounded-xl border">
-                <div className="bg-muted/50 border-b px-6 py-4">
-                  <h2 className="text-foreground text-lg font-semibold">معلومات العميل</h2>
-                </div>
-                <div className="space-y-4 p-6">
-                  <div className="flex items-start gap-3">
-                    <User className="text-muted-foreground mt-0.5 h-5 w-5" />
-                    <div className="flex-1">
-                      <p className="text-muted-foreground text-xs">{t.profile.name}</p>
-                      <p className="text-foreground mt-1 font-medium">{order.fullName}</p>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <Phone className="text-muted-foreground mt-0.5 h-5 w-5" />
-                    <div className="flex-1">
-                      <p className="text-muted-foreground text-xs">{t.profile.phone}</p>
-                      <p className="text-foreground mt-1 font-medium" dir="ltr">
-                        {order.phone}
-                      </p>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="flex items-start gap-3">
-                    <MapPin className="text-muted-foreground mt-0.5 h-5 w-5" />
-                    <div className="flex-1">
-                      <p className="text-muted-foreground text-xs">عنوان التوصيل</p>
-                      <p className="text-foreground mt-1 leading-relaxed font-medium">
-                        {order.location}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <InfoCard title={t.orders.customerInfo} icon={<User className="h-5 w-5" />}>
+                <DetailRow label={t.orders.name} value={order.fullName || '-'} />
+                <DetailRow label={t.profile.email} value={customerEmail} valueDir="ltr" />
+                <DetailRow label={t.orders.phone} value={order.phone || '-'} valueDir="ltr" />
+                <DetailRow label={t.orders.deliveryAddress} value={order.location || '-'} />
+              </InfoCard>
+
+              {(order.paymentOrder || paymentMethodLabel) && (
+                <InfoCard title={t.orders.paymentDetails} icon={<CreditCard className="h-5 w-5" />}>
+                  <DetailRow label={t.orders.paymentMethod} value={paymentMethodLabel} />
+                  <DetailRow
+                    label={t.orders.statusLabel}
+                    value={order.paymentOrder?.status || order.status}
+                    valueDir="ltr"
+                  />
+                  <DetailRow
+                    label={t.orders.amount}
+                    value={
+                      order.paymentOrder
+                        ? formatAmount(order.paymentOrder.amount, order.paymentOrder.currency)
+                        : null
+                    }
+                  />
+                  <DetailRow
+                    label={t.orders.paymentReference}
+                    value={order.paymentOrder?.tranRef}
+                    valueDir="ltr"
+                  />
+                  <DetailRow
+                    label={t.orders.cartId}
+                    value={order.paymentOrder?.cartId}
+                    valueDir="ltr"
+                  />
+                  <DetailRow
+                    label={t.orders.responseCode}
+                    value={order.paymentOrder?.respCode}
+                    valueDir="ltr"
+                  />
+                  <DetailRow
+                    label={t.orders.responseMessage}
+                    value={order.paymentOrder?.respMessage}
+                  />
+                  <DetailRow
+                    label={t.orders.date}
+                    value={order.paymentOrder ? formatDateTime(order.paymentOrder.createdAt) : null}
+                  />
+                </InfoCard>
+              )}
+
+              {order.coupon && (
+                <InfoCard title={t.coupons.title} icon={<TicketPercent className="h-5 w-5" />}>
+                  <DetailRow
+                    label={t.coupons.couponCode}
+                    value={order.coupon.code}
+                    valueDir="ltr"
+                  />
+                  <DetailRow
+                    label={t.coupons.discountType}
+                    value={formatCouponType(order.coupon.type)}
+                  />
+                  <DetailRow
+                    label={t.coupons.discountValue}
+                    value={
+                      order.coupon.type === 'PERCENTAGE'
+                        ? `${order.coupon.value}%`
+                        : order.coupon.type === 'FREE_SHIPPING'
+                          ? t.coupons.freeShipping
+                          : formatAmount(order.coupon.value)
+                    }
+                  />
+                  <DetailRow
+                    label={t.coupons.couponScope}
+                    value={formatCouponScope(order.coupon.scope)}
+                  />
+                  <DetailRow
+                    label={t.coupons.maxDiscount}
+                    value={
+                      order.coupon.maxDiscount !== null && order.coupon.maxDiscount !== undefined
+                        ? formatAmount(order.coupon.maxDiscount)
+                        : null
+                    }
+                  />
+                  <DetailRow
+                    label={t.orders.statusLabel}
+                    value={order.coupon.isActive ? t.home.active : t.coupons.inactive}
+                  />
+                  <DetailRow
+                    label={t.plans.endDate}
+                    value={order.coupon.expiresAt ? formatDateTime(order.coupon.expiresAt) : null}
+                  />
+                </InfoCard>
+              )}
+
+              {order.store && (
+                <InfoCard title={t.profile.storeInfo} icon={<StoreIcon className="h-5 w-5" />}>
+                  <DetailRow label={t.profile.storeName} value={order.store.name} />
+                  <DetailRow
+                    label={t.profile.domain}
+                    value={
+                      storeLink ? (
+                        <a
+                          href={storeLink}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-primary underline underline-offset-2"
+                        >
+                          {storeLink}
+                        </a>
+                      ) : null
+                    }
+                    valueDir="ltr"
+                  />
+                  <DetailRow label={t.orders.phone} value={order.store.phone} valueDir="ltr" />
+                  <DetailRow
+                    label={t.orders.shipping}
+                    value={
+                      order.store.shippingPrice !== null && order.store.shippingPrice !== undefined
+                        ? formatAmount(order.store.shippingPrice)
+                        : null
+                    }
+                  />
+                  <DetailRow label={t.orders.shippingType} value={order.store.shippingType} />
+                  <DetailRow
+                    label={t.orders.paymentMethod}
+                    value={formatPaymentMethod(order.store.methodPayment)}
+                  />
+                  <DetailRow label={t.profile.storeDesc} value={order.store.description} />
+                </InfoCard>
+              )}
+
+              {order.trader && (
+                <InfoCard title={t.orders.traderInfo} icon={<User className="h-5 w-5" />}>
+                  <DetailRow label={t.orders.name} value={order.trader.name} />
+                  <DetailRow label={t.profile.email} value={order.trader.email} valueDir="ltr" />
+                  <DetailRow label={t.orders.phone} value={order.trader.phone} valueDir="ltr" />
+                  <DetailRow label={t.orders.originalOrder} value={order.orderId} valueDir="ltr" />
+                </InfoCard>
+              )}
+
+              {order.supplier && (
+                <InfoCard title={t.orders.supplierInfo} icon={<Truck className="h-5 w-5" />}>
+                  <DetailRow label={t.orders.name} value={order.supplier.name} />
+                  <DetailRow label={t.orders.phone} value={order.supplier.phone} valueDir="ltr" />
+                  <DetailRow label={t.orders.deliveryAddress} value={order.supplier.address} />
+                  <DetailRow
+                    label={t.orders.paymentMethod}
+                    value={formatPaymentMethod(order.supplier.methodPayment)}
+                  />
+                  <DetailRow label={t.orders.notes} value={order.supplier.paymentInfo} />
+                </InfoCard>
+              )}
             </div>
           </div>
         </div>
@@ -390,112 +674,88 @@ export default function OrderDetailsPage() {
       {order.status !== 'CONFIRMED' && (
         <>
           <Dialog open={openAccept} onOpenChange={setOpenAccept}>
-            <DialogContent dir="rtl" className="max-w-md">
+            <DialogContent dir={dir} className="max-w-md">
               <DialogHeader className="text-right">
-                <DialogTitle className="text-2xl font-bold">
-                  {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}
-                </DialogTitle>
+                <DialogTitle className="text-2xl font-bold">{confirmActionLabel}</DialogTitle>
                 <DialogDescription className="text-base">
-                  يرجى التأكد من تفاصيل الطلب قبل المتابعة. سيتم إشعار العميل بالتأكيد.
+                  {t.orders.confirmDialogDescription}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="bg-muted/50 my-4 space-y-4 rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">رقم الطلب</span>
-                  <span className="font-mono text-sm font-semibold">
-                    #{order.id.slice(0, 8).toUpperCase()}
-                  </span>
-                </div>
+                <DetailRow
+                  label={t.orders.orderNumber}
+                  value={`#${order.id.slice(0, 8).toUpperCase()}`}
+                  valueDir="ltr"
+                />
                 <Separator />
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
-                  <span className="font-semibold">{order.fullName}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">عدد المنتجات</span>
-                  <span className="font-semibold">{order.items.length}</span>
-                </div>
+                <DetailRow label={t.orders.customer} value={order.fullName || '-'} />
+                <DetailRow label={t.orders.productsCount} value={String(order.items.length)} />
                 <Separator />
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-semibold">المبلغ الإجمالي</span>
-                  <span className="text-foreground text-xl font-bold">
-                    {order.total.toLocaleString()} د.ع
-                  </span>
-                </div>
+                <DetailRow label={t.orders.totalAmount} value={formatAmount(finalTotal)} strong />
               </div>
 
               <DialogFooter className="flex flex-col flex-wrap gap-4">
                 <Button
-                  variant={'outline'}
+                  variant="outline"
                   onClick={handleAccept}
                   className="flex-1 cursor-pointer border border-black"
                 >
                   <CheckCircle className="ml-2 h-4 w-4 text-green-500" />
-                  {order.status === 'SHIPPED' ? 'تاكيد اتمام التوصيل' : 'تأكيد الطلب'}{' '}
+                  {confirmActionLabel}
                 </Button>
-                {data?.subscription?.type === 'trader-basic' || order.status === 'SHIPPED' ? (
-                  <></>
-                ) : (
+
+                {subscriptionData?.subscription?.type === 'trader-basic' ||
+                order.status === 'SHIPPED' ? null : (
                   <Button
-                    variant={'ghost'}
+                    variant="ghost"
                     onClick={() => router.push(`/Dashboard/orderDetails/al-waseet/${orderId}`)}
                     className="flex-1 border border-black"
                   >
                     <GrDeliver className="ml-2 h-4 w-4 text-green-500" />
-                    التوصيل مع الوسيط
+                    {t.orders.deliveryWithAlwaseet}
                   </Button>
                 )}
+
                 <Button
                   variant="destructive"
                   onClick={() => setOpenAccept(false)}
                   className="flex-1"
                 >
-                  {' '}
-                  {t.cancel}{' '}
+                  {t.cancel}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
 
           <Dialog open={openCancel} onOpenChange={setOpenCancel}>
-            <DialogContent dir="rtl" className="max-w-md">
+            <DialogContent dir={dir} className="max-w-md">
               <DialogHeader className="text-right">
                 <DialogTitle className="text-destructive text-2xl font-bold">
-                  إلغاء الطلب
+                  {t.orders.cancelOrder}
                 </DialogTitle>
                 <DialogDescription className="text-base">
-                  هل أنت متأكد من إلغاء هذا الطلب؟ لا يمكن التراجع عن هذا الإجراء.
+                  {t.orders.cancelDialogDescription}
                 </DialogDescription>
               </DialogHeader>
 
               <div className="border-destructive/20 bg-destructive/5 my-4 space-y-3 rounded-lg border p-4">
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">رقم الطلب</span>
-                  <span className="font-mono text-sm font-semibold">
-                    #{order.id.slice(0, 8).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">{t.orders.customer}</span>
-                  <span className="font-semibold">{order.fullName}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">المبلغ</span>
-                  <span className="text-destructive font-bold">
-                    {order.total.toLocaleString()} د.ع
-                  </span>
-                </div>
+                <DetailRow
+                  label={t.orders.orderNumber}
+                  value={`#${order.id.slice(0, 8).toUpperCase()}`}
+                  valueDir="ltr"
+                />
+                <DetailRow label={t.orders.customer} value={order.fullName || '-'} />
+                <DetailRow label={t.orders.amount} value={formatAmount(finalTotal)} strong />
               </div>
 
               <DialogFooter className="gap-4">
                 <Button variant="outline" onClick={() => setOpenCancel(false)} className="flex-1">
-                  {' '}
-                  {t.back}{' '}
+                  {t.back}
                 </Button>
                 <Button variant="destructive" onClick={handleDelete} className="flex-1">
                   <XCircle className="ml-2 h-4 w-4" />
-                  نعم، إلغاء الطلب
+                  {t.orders.yesCancelOrder}
                 </Button>
               </DialogFooter>
             </DialogContent>
