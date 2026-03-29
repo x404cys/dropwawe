@@ -1,4 +1,5 @@
 import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import type { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { useLanguage } from '../../../context/LanguageContext';
 
 interface OrdersChartProps {
@@ -7,6 +8,14 @@ interface OrdersChartProps {
 
 export function OrdersChart({ data }: OrdersChartProps) {
   const { t } = useLanguage();
+
+  const formatOrdersTooltip = (value: ValueType | undefined) => {
+    const normalizedValue = Array.isArray(value) ? value[0] : value;
+    const orderCount =
+      typeof normalizedValue === 'number' ? normalizedValue : Number(normalizedValue) || 0;
+
+    return [`${orderCount} ${t.stats.ordersUnit}`, t.stats.ordersChart] as const;
+  };
 
   if (!data || data.length === 0) return null;
 
@@ -25,10 +34,7 @@ export function OrdersChart({ data }: OrdersChartProps) {
                 border: '1px solid hsl(200,20%,90%)',
                 backgroundColor: 'hsl(var(--card))',
               }}
-              formatter={(value: number | string | undefined) => [
-                `${typeof value === 'number' ? value : Number(value) || 0} ${t.stats.ordersUnit}`,
-                t.stats.ordersChart,
-              ]}
+              formatter={formatOrdersTooltip}
             />
             <Bar dataKey="value" fill="hsl(191, 80%, 42%)" radius={[6, 6, 0, 0]} />
           </BarChart>

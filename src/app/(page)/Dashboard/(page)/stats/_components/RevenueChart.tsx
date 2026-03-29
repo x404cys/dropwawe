@@ -1,5 +1,6 @@
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import type { ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { useLanguage } from '../../../context/LanguageContext';
 
 interface RevenueChartProps {
@@ -8,6 +9,14 @@ interface RevenueChartProps {
 
 export function RevenueChart({ data }: RevenueChartProps) {
   const { t } = useLanguage();
+
+  const formatRevenueTooltip = (value: ValueType | undefined) => {
+    const normalizedValue = Array.isArray(value) ? value[0] : value;
+    const revenueValue =
+      typeof normalizedValue === 'number' ? normalizedValue : Number(normalizedValue) || 0;
+
+    return [`${formatIQD(revenueValue)} ${t.currency}`, t.stats.revenue] as const;
+  };
 
   if (!data || data.length === 0) return null;
 
@@ -32,10 +41,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 border: '1px solid hsl(200,20%,90%)',
                 backgroundColor: 'hsl(var(--card))',
               }}
-              formatter={(value: number | string | undefined) => {
-                const normalizedValue = typeof value === 'number' ? value : Number(value) || 0;
-                return [`${formatIQD(normalizedValue)} ${t.currency}`, t.stats.revenue];
-              }}
+              formatter={formatRevenueTooltip}
             />
             <Area
               type="monotone"
