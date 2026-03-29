@@ -2,15 +2,15 @@
 
 import { useState } from 'react';
 import { Plus, Save } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
-import PixelSection from '../(page)/pixel-section/pixel-section';
-import { useStoreSettings } from '../_hooks/useStoreSettings';
+import { Button } from '@/components/ui/button';
 import { useLanguage } from '../../../../context/LanguageContext';
 import SettingsPageHeader from '../../_components/settings-page-header';
+import PixelSection from '../(page)/pixel-section/pixel-section';
+import { useStoreSettings } from '../_hooks/useStoreSettings';
 
 export default function PixelSettingsPage() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const [showForm, setShowForm] = useState(false);
   const {
     facebookPixel,
@@ -28,7 +28,7 @@ export default function PixelSettingsPage() {
   const handleSave = async () => {
     const result = await save();
     if (result.ok) {
-      toast.success(t.profile?.savedDesc || 'تم حفظ التغييرات');
+      toast.success(t.profile.savedDesc);
     } else {
       toast.error(result.message);
     }
@@ -43,7 +43,7 @@ export default function PixelSettingsPage() {
         className="bg-background text-foreground hover:bg-muted h-8 gap-1.5 text-xs"
       >
         <Plus className="h-3.5 w-3.5" />
-        إضافة بيكسل
+        {t.store.addPixel}
       </Button>
       <Button
         size="sm"
@@ -52,20 +52,20 @@ export default function PixelSettingsPage() {
         className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
       >
         <Save className="h-3.5 w-3.5" />
-        {loading ? t.loading || 'جارٍ الحفظ...' : t.save || 'حفظ'}
+        {loading ? t.loading : t.save}
       </Button>
     </div>
   );
 
   const activeCount = [facebookPixel, googlePixel, tiktokPixel, snapPixel]
     .filter(Boolean)
-    .filter(p => p!.trim().length > 0).length;
+    .filter(pixel => pixel!.trim().length > 0).length;
 
   return (
-    <section dir="rtl" className="bg-background min-h-screen pb-28">
+    <section dir={dir} className="bg-background min-h-screen pb-28">
       <SettingsPageHeader
-        title={t.store?.pixelTracking || 'البيكسل والتتبع الإعلاني'}
-        subtitle={`${activeCount} بيكسل مفعل`}
+        title={t.store.pixelTracking}
+        subtitle={`${activeCount} ${t.store.activePixels}`}
         action={headerAction}
       />
 

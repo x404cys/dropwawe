@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { FaFacebook, FaInstagram, FaTelegram } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../../context/LanguageContext';
 
 type SupplierCardProps = {
   supplier: Supplier;
@@ -23,35 +24,38 @@ const isValidUrl = (url: string | null | undefined) => {
 };
 
 export default function SupplierCard({ supplier, totalProducts, store }: SupplierCardProps) {
+  const { t, dir, lang } = useLanguage();
+  const pageT = t.dashboardPages.supplierList.card;
   const categories = supplier.user?.Product?.map(p => p.category).filter(Boolean) ?? [];
 
   const uniqueCategories = Array.from(new Set(categories));
 
   const router = useRouter();
+  const locale = lang === 'en' ? 'en-US' : 'ar-IQ';
 
   return (
     <motion.div
-      dir="rtl"
+      dir={dir}
       whileHover={{ scale: 1.02 }}
       transition={{ duration: 0.25 }}
-      className="group relative mx-auto flex w-full max-w-[380px] flex-col overflow-hidden rounded-2xl border border-border bg-card"
+      className="group border-border bg-card relative mx-auto flex w-full max-w-[380px] flex-col overflow-hidden rounded-2xl border"
     >
-      <div className="relative h-40 w-full bg-muted">
+      <div className="bg-muted relative h-40 w-full">
         {isValidUrl(supplier?.Header) ? (
           <Image src={supplier.Header!} alt="Supplier Banner" fill className="object-cover" />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-muted-foreground">
-            لا توجد صورة
+          <div className="text-muted-foreground flex h-full w-full items-center justify-center">
+            {pageT.noImage}
           </div>
         )}
 
         <div className="absolute right-0 bottom-0 translate-x-[-10%] translate-y-[50%]">
-          <div className="relative h-18 w-18 overflow-hidden rounded-full border-2 border-white bg-card shadow-md">
+          <div className="bg-card relative h-18 w-18 overflow-hidden rounded-full border-2 border-white shadow-md">
             {isValidUrl(supplier?.image) ? (
               <Image src={supplier.image!} alt="Supplier Logo" fill className="object-fill" />
             ) : (
-              <div className="flex h-full w-full items-center justify-center text-lg font-bold text-muted-foreground">
-                {supplier.user?.name?.charAt(0) ?? 'م'}
+              <div className="text-muted-foreground flex h-full w-full items-center justify-center text-lg font-bold">
+                {supplier.user?.name?.charAt(0) ?? pageT.nameFallback.charAt(0)}
               </div>
             )}
           </div>
@@ -60,9 +64,11 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
 
       <div className="mt-10 flex flex-1 flex-col justify-between px-5 pb-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg font-semibold text-foreground">{supplier?.name ?? 'اسم المورد'}</h2>
-          <p className="line-clamp-2 text-sm text-muted-foreground">
-            {supplier.description ?? 'لا يوجد وصف حالياً'}
+          <h2 className="text-foreground text-lg font-semibold">
+            {supplier?.name ?? pageT.nameFallback}
+          </h2>
+          <p className="text-muted-foreground line-clamp-2 text-sm">
+            {supplier.description ?? pageT.noDescription}
           </p>
         </div>
 
@@ -71,27 +77,27 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
             {uniqueCategories.map((cat, i) => (
               <span
                 key={i}
-                className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
+                className="border-border bg-muted text-foreground rounded-full border px-3 py-1 text-xs"
               >
                 {cat}
               </span>
             ))}
 
             {uniqueCategories.length > 4 && (
-              <span className="rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground">
-                +{uniqueCategories.length - 4} أخرى
+              <span className="bg-muted text-muted-foreground rounded-full px-3 py-1 text-xs">
+                {pageT.otherCategories.replace('{count}', String(uniqueCategories.length - 4))}
               </span>
             )}
           </div>
         )}
 
-        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-muted-foreground">
-          <div className="rounded-full border border-border bg-muted px-3 py-1">
-            📦 {totalProducts ?? 0} منتج
+        <div className="text-muted-foreground mt-4 flex flex-wrap items-center gap-3 text-xs">
+          <div className="border-border bg-muted rounded-full border px-3 py-1">
+            📦 {pageT.productsCount.replace('{count}', (totalProducts ?? 0).toLocaleString(locale))}
           </div>
         </div>
 
-        <div className="mt-4 flex items-center gap-3 text-muted-foreground">
+        <div className="text-muted-foreground mt-4 flex items-center gap-3">
           {supplier.facebookLink && (
             <a href={supplier.facebookLink} target="_blank" rel="noopener noreferrer">
               <FaFacebook className="h-5 w-5 transition hover:text-blue-600" />
@@ -118,13 +124,15 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
               return methods.map((method: string, index: number) => (
                 <span
                   key={index}
-                  className="rounded-full border border-border bg-muted px-3 py-1 text-xs text-foreground"
+                  className="border-border bg-muted text-foreground rounded-full border px-3 py-1 text-xs"
                 >
                   {method}
                 </span>
               ));
             } catch {
-              return <span className="text-sm text-muted-foreground">لا توجد طرق دفع</span>;
+              return (
+                <span className="text-muted-foreground text-sm">{pageT.noPaymentMethods}</span>
+              );
             }
           })()}
         </div>
@@ -132,9 +140,9 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
         <div className="mt-5 flex justify-between">
           <button
             onClick={() => router.push(`/Dashboard/supplier/supplier-overview/${store}`)}
-            className="rounded-lg border border-border px-4 py-1.5 text-sm font-medium text-foreground transition hover:bg-muted"
+            className="border-border text-foreground hover:bg-muted rounded-lg border px-4 py-1.5 text-sm font-medium transition"
           >
-            عرض المنتجات
+            {pageT.viewProducts}
           </button>
 
           <a
@@ -142,8 +150,8 @@ export default function SupplierCard({ supplier, totalProducts, store }: Supplie
             target="_blank"
             rel="noopener noreferrer"
           >
-            <button className="rounded-lg bg-card px-4 py-1.5 text-sm font-medium text-white transition hover:bg-orange-600">
-              تواصل الآن
+            <button className="bg-card rounded-lg px-4 py-1.5 text-sm font-medium text-white transition hover:bg-orange-600">
+              {pageT.contactNow}
             </button>
           </a>
         </div>

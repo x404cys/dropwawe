@@ -41,7 +41,8 @@ type ServerErrorResponse = {
 };
 
 export default function StoreSetupPage() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
+  const pageT = t.dashboardPages.supplierStoreSetup;
   const { data: session } = useSession();
 
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function StoreSetupPage() {
 
   const handleSubmit = async () => {
     if (!storeSlug || !storeName || !description || !shippingPrice || !phone) {
-      toast.error('يرجى ملء جميع الحقول المطلوبة');
+      toast.error(pageT.requiredFieldsError);
       return;
     }
 
@@ -109,15 +110,15 @@ export default function StoreSetupPage() {
         } else if (data.field) {
           setFieldErrors({ [data.field]: data.error });
         } else {
-          toast.error(data.error || 'حدث خطأ في الحفظ');
+          toast.error(data.error || pageT.saveError);
         }
         return;
       }
-      toast.success('تم الحفظ بنجاح ✨');
+      toast.success(pageT.saveSuccess);
       router.back();
       router.replace('/Dashboard');
     } catch (err) {
-      toast.error('حدث خطأ في الحفظ');
+      toast.error(pageT.saveError);
     } finally {
       setLoading(false);
     }
@@ -165,24 +166,22 @@ export default function StoreSetupPage() {
   };
 
   return (
-    <div dir="rtl" className="mx-auto mb-20 max-w-2xl space-y-10 py-10">
+    <div dir={dir} className="mx-auto mb-20 max-w-2xl space-y-10 py-10">
       <div>
-        <h1 className="flex items-center gap-2 text-2xl font-bold text-foreground">
+        <h1 className="text-foreground flex items-center gap-2 text-2xl font-bold">
           <div className=" ">
             <Image
               src={'/IMG_3549.PNG'}
               alt="Image"
               width={50}
               height={20}
-              className="rounded-lg border bg-muted"
+              className="bg-muted rounded-lg border"
             />
           </div>
-          انشاء المتجر
+          {pageT.title}
         </h1>
-        <p className="text-sm font-medium">
-          انضم كمورّد الآن في دقائق، وابدأ بعرض منتجاتك للتجار والمتاجر بسهولة 😎
-        </p>
-        <p className="text-xs text-muted-foreground">وسّع شبكة عملائك وزد مبيعاتك دون عناء 🚀</p>
+        <p className="text-sm font-medium">{pageT.subtitle}</p>
+        <p className="text-muted-foreground text-xs">{pageT.caption}</p>
       </div>
 
       {/* <div className="absolute top-15 left-1.5 -z-50 md:left-25">
@@ -195,19 +194,15 @@ export default function StoreSetupPage() {
         fieldErrors.subLink ||
         fieldErrors.facebookLink ||
         fieldErrors.instaLink ||
-        fieldErrors.telegram) && (
-        <div className="text-xs text-red-500">
-          لديك أخطاء في احد الحقول او كلهم راجع التي عليها نقطة حمراء
-        </div>
-      )}
+        fieldErrors.telegram) && <div className="text-xs text-red-500">{pageT.errorsHint}</div>}
       <div className="w-full">
         <div className="w-full">
           <div className="relative z-10 flex justify-around">
             {[
-              { id: 'basic', label: 'الاساسية', icon: <PiStorefront /> },
-              { id: 'shipping', label: 'التوصيل', icon: <LiaShippingFastSolid /> },
-              { id: 'social', label: 'الروابط', icon: <IoShareSocialOutline /> },
-              { id: 'payment', label: 'الدفع', icon: <MdOutlinePayments /> },
+              { id: 'basic', label: pageT.basicStep, icon: <PiStorefront /> },
+              { id: 'shipping', label: pageT.shippingStep, icon: <LiaShippingFastSolid /> },
+              { id: 'social', label: pageT.socialStep, icon: <IoShareSocialOutline /> },
+              { id: 'payment', label: pageT.paymentStep, icon: <MdOutlinePayments /> },
             ].map(step => {
               const hasError =
                 (step.id === 'basic' &&
@@ -242,7 +237,7 @@ export default function StoreSetupPage() {
             })}
           </div>
 
-          <div className="relative mt-1 h-1 rounded-full bg-muted">
+          <div className="bg-muted relative mt-1 h-1 rounded-full">
             <div
               className="absolute top-0 right-0 h-1 rounded-full bg-black transition-all duration-300"
               style={{
@@ -264,8 +259,9 @@ export default function StoreSetupPage() {
         {activeSection === 'basic' && (
           <>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">
-                رابط المتجر <span className="text-xs text-muted-foreground">{storeSlug}.matager.store</span>
+              <label className="text-foreground text-sm font-medium">
+                {pageT.storeLink}{' '}
+                <span className="text-muted-foreground text-xs">{storeSlug}.matager.store</span>
               </label>
               <div className="relative">
                 <Input
@@ -279,32 +275,34 @@ export default function StoreSetupPage() {
                   placeholder="store1.matager.store"
                 />
 
-                <Link className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Link className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               </div>
               {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t.profile.storeName}</label>
+              <label className="text-foreground text-sm font-medium">{t.profile.storeName}</label>
               <div className="relative">
                 <Input
                   value={storeName}
                   onChange={e => setStoreName(e.target.value)}
                   placeholder={t.profile.storeName}
                 />
-                <Store className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Store className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               </div>
               {fieldErrors.name && <p className="mt-1 text-xs text-red-500">{fieldErrors.name}</p>}
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t.inventory.description}</label>
+              <label className="text-foreground text-sm font-medium">
+                {t.inventory.description}
+              </label>
               <div className="relative">
                 <Textarea
                   value={description}
                   onChange={e => setDescription(e.target.value)}
-                  placeholder="صف متجرك للعملاء..."
+                  placeholder={pageT.descriptionPlaceholder}
                 />
-                <FileText className="absolute top-3 left-3 h-5 w-5 text-muted-foreground" />
+                <FileText className="text-muted-foreground absolute top-3 left-3 h-5 w-5" />
               </div>
               {fieldErrors.description && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.description}</p>
@@ -312,13 +310,13 @@ export default function StoreSetupPage() {
             </div>
 
             <label htmlFor="">
-              <span>اختر صورة او شعار للمتجر</span>
+              <span>{pageT.logoLabel}</span>
               <span className="text-red-500">*</span>
             </label>
             <div className="flex w-full items-center justify-center">
               <label
                 htmlFor="store-logo"
-                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-muted transition hover:bg-muted dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-card"
+                className="bg-muted hover:bg-muted dark:hover:bg-card relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
               >
                 {imagePreview ? (
                   <>
@@ -335,13 +333,13 @@ export default function StoreSetupPage() {
                       }}
                       className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-1 text-xs text-white hover:bg-black/80"
                     >
-                      إزالة
+                      {pageT.removeImage}
                     </button>
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <svg
-                      className="mb-4 h-8 w-8 text-muted-foreground dark:text-muted-foreground"
+                      className="text-muted-foreground dark:text-muted-foreground mb-4 h-8 w-8"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -355,10 +353,13 @@ export default function StoreSetupPage() {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
-                      <span className="font-semibold">انقر للتحميل</span> أو اسحب الصورة هنا
+                    <p className="text-muted-foreground dark:text-muted-foreground mb-2 text-sm">
+                      <span className="font-semibold">{pageT.uploadHintPrimary}</span>{' '}
+                      {pageT.uploadHintSecondary}
                     </p>
-                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">PNG, JPG, أو GIF</p>
+                    <p className="text-muted-foreground dark:text-muted-foreground text-xs">
+                      {pageT.uploadFormats}
+                    </p>
                   </div>
                 )}
 
@@ -379,13 +380,13 @@ export default function StoreSetupPage() {
             </div>
 
             <label htmlFor="">
-              <span>اختر هيدر او خلفية للمتجر</span>
+              <span>{pageT.headerLabel}</span>
               <span className="text-red-500">*</span>
             </label>
             <div className="flex w-full items-center justify-center">
               <label
                 htmlFor="store-header"
-                className="relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 bg-muted transition hover:bg-muted dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600 dark:hover:bg-card"
+                className="bg-muted hover:bg-muted dark:hover:bg-card relative flex h-64 w-full cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition dark:border-gray-600 dark:bg-gray-700 dark:hover:border-gray-500 dark:hover:bg-gray-600"
               >
                 {headerPreview ? (
                   <>
@@ -402,13 +403,13 @@ export default function StoreSetupPage() {
                       }}
                       className="absolute top-2 right-2 rounded-full bg-black/60 px-2 py-1 text-xs text-white hover:bg-black/80"
                     >
-                      إزالة
+                      {pageT.removeImage}
                     </button>
                   </>
                 ) : (
                   <div className="flex flex-col items-center justify-center pt-5 pb-6 text-center">
                     <svg
-                      className="mb-4 h-8 w-8 text-muted-foreground dark:text-muted-foreground"
+                      className="text-muted-foreground dark:text-muted-foreground mb-4 h-8 w-8"
                       aria-hidden="true"
                       xmlns="http://www.w3.org/2000/svg"
                       fill="none"
@@ -422,10 +423,13 @@ export default function StoreSetupPage() {
                         d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
                       />
                     </svg>
-                    <p className="mb-2 text-sm text-muted-foreground dark:text-muted-foreground">
-                      <span className="font-semibold">انقر للتحميل</span> أو اسحب الصورة هنا
+                    <p className="text-muted-foreground dark:text-muted-foreground mb-2 text-sm">
+                      <span className="font-semibold">{pageT.uploadHintPrimary}</span>{' '}
+                      {pageT.uploadHintSecondary}
                     </p>
-                    <p className="text-xs text-muted-foreground dark:text-muted-foreground">PNG, JPG, أو GIF</p>
+                    <p className="text-muted-foreground dark:text-muted-foreground text-xs">
+                      {pageT.uploadFormats}
+                    </p>
                   </div>
                 )}
 
@@ -447,7 +451,7 @@ export default function StoreSetupPage() {
 
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
+                className="bg-muted text-foreground dark:bg-card flex items-center rounded-lg border border-gray-300 p-4 text-sm dark:border-gray-600 dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -462,10 +466,10 @@ export default function StoreSetupPage() {
                 <span className="sr-only">Info</span>
                 <div>
                   <span className="text-sm font-medium">
-                    في حال تغييرك لرابط المتجر لاحقا , سيتم حذف الزيارات لديك والبدء بزيارات جديدة
+                    {t.store?.domainChangeWarning}
                     <br />
-                    <span className="text-xs text-muted-foreground">
-                      اذا ردت ان تبقى الزيارات راسل الدعم
+                    <span className="text-muted-foreground text-xs">
+                      {t.store?.domainChangeSubwarning}
                     </span>
                   </span>
                 </div>
@@ -477,14 +481,14 @@ export default function StoreSetupPage() {
         {activeSection === 'shipping' && (
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">{t.profile.phone}</label>
+              <label className="text-foreground text-sm font-medium">{t.profile.phone}</label>
               <div className="relative">
                 <Input
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   placeholder="0770xxxxxxx"
                 />
-                <Phone className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Phone className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               </div>
               {fieldErrors.phone && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.phone}</p>
@@ -492,14 +496,16 @@ export default function StoreSetupPage() {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">سعر التوصيل</label>
+              <label className="text-foreground text-sm font-medium">
+                {pageT.shippingPriceLabel}
+              </label>
               <div className="relative">
                 <Input
                   value={shippingPrice}
                   onChange={e => setShippingPrice(e.target.value)}
-                  placeholder="5000 د.ع"
+                  placeholder={pageT.shippingPlaceholder}
                 />
-                <Truck className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                <Truck className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
               </div>
               {fieldErrors.shippingPrice && (
                 <p className="mt-1 text-xs text-red-500">{fieldErrors.shippingPrice}</p>
@@ -507,7 +513,7 @@ export default function StoreSetupPage() {
             </div>
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
+                className="bg-muted text-foreground dark:bg-card flex items-center rounded-lg border border-gray-300 p-4 text-sm dark:border-gray-600 dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -521,7 +527,7 @@ export default function StoreSetupPage() {
                 </svg>
                 <span className="sr-only">Info</span>
                 <div>
-                  <span className="text-sm font-medium">سعر التوصيل سيكون لكل المنتجات</span>
+                  <span className="text-sm font-medium">{pageT.shippingPriceInfo}</span>
                 </div>
               </div>
             </div>
@@ -537,7 +543,7 @@ export default function StoreSetupPage() {
                 setValue: setFacebook,
                 icon: Facebook,
                 field: 'facebookLink',
-                placeholder: 'رابط الفيسبوك',
+                placeholder: pageT.facebookPlaceholder,
               },
               {
                 label: 'Instagram',
@@ -545,7 +551,7 @@ export default function StoreSetupPage() {
                 setValue: setInstagram,
                 icon: Instagram,
                 field: 'instaLink',
-                placeholder: 'رابط الانستغرام',
+                placeholder: pageT.instagramPlaceholder,
               },
               {
                 label: 'Telegram',
@@ -553,18 +559,18 @@ export default function StoreSetupPage() {
                 setValue: setTelegram,
                 icon: Send,
                 field: 'telegram',
-                placeholder: 'رابط التليجرام',
+                placeholder: pageT.telegramPlaceholder,
               },
             ].map(({ label, value, setValue, icon: Icon, field, placeholder }) => (
               <div key={field} className="space-y-2">
-                <label className="text-sm font-medium text-foreground">{label}</label>
+                <label className="text-foreground text-sm font-medium">{label}</label>
                 <div className="relative">
                   <Input
                     value={value}
                     onChange={e => setValue(e.target.value)}
                     placeholder={placeholder}
                   />
-                  <Icon className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-muted-foreground" />
+                  <Icon className="text-muted-foreground absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2" />
                 </div>
                 {fieldErrors[field] && (
                   <p className="mt-1 text-xs text-red-500">{fieldErrors[field]}</p>
@@ -577,13 +583,11 @@ export default function StoreSetupPage() {
         {activeSection === 'payment' && (
           <div className="flex flex-col justify-center space-y-8">
             <p className="text-foreground">
-              {selectedMethods.length > 0
-                ? selectedMethods.join(' - ')
-                : 'لم يتم اختيار أي طريقة بعد'}
+              {selectedMethods.length > 0 ? selectedMethods.join(' - ') : pageT.noPaymentMethods}
             </p>
             <div>
               <div
-                className="flex items-center rounded-lg border border-gray-300 bg-muted p-4 text-sm text-foreground dark:border-gray-600 dark:bg-card dark:text-gray-300"
+                className="bg-muted text-foreground dark:bg-card flex items-center rounded-lg border border-gray-300 p-4 text-sm dark:border-gray-600 dark:text-gray-300"
                 role="alert"
               >
                 <svg
@@ -597,9 +601,7 @@ export default function StoreSetupPage() {
                 </svg>
                 <span className="sr-only">Info</span>
                 <div>
-                  <span className="text-sm font-medium">
-                    اختيار طرق الدفع للعملاء ليتم التفاهم أيضًا حول آلية توصيل الأموال لهم والأرباح
-                  </span>
+                  <span className="text-sm font-medium">{pageT.paymentHint}</span>
                 </div>
               </div>
             </div>
@@ -671,7 +673,7 @@ export default function StoreSetupPage() {
       </div>
       <div className="mt-6 flex justify-between">
         <button
-          className="rounded-lg bg-muted px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
+          className="bg-muted rounded-lg px-6 py-2 text-black transition hover:bg-gray-400 disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => {
             const steps = ['basic', 'shipping', 'social', 'payment'];
             const currentIndex = steps.indexOf(activeSection);
@@ -682,11 +684,11 @@ export default function StoreSetupPage() {
           }}
           disabled={activeSection === 'basic'}
         >
-          السابق
+          {pageT.previous}
         </button>
 
         <button
-          className="rounded-lg bg-black px-6 py-2 text-white transition hover:bg-card disabled:cursor-not-allowed disabled:opacity-50"
+          className="hover:bg-card rounded-lg bg-black px-6 py-2 text-white transition disabled:cursor-not-allowed disabled:opacity-50"
           onClick={() => {
             const steps = ['basic', 'shipping', 'social', 'payment'];
             const currentIndex = steps.indexOf(activeSection);
@@ -697,7 +699,7 @@ export default function StoreSetupPage() {
           }}
           disabled={activeSection === 'payment'}
         >
-          التالي
+          {pageT.next}
         </button>
       </div>
       {activeSection === 'payment' && (
@@ -708,12 +710,12 @@ export default function StoreSetupPage() {
             className="flex h-12 w-full items-center gap-2 rounded-3xl md:hidden"
           >
             <FaRegWindowRestore className="h-4 w-4" />
-            {loading ? 'جارٍ الانشاء...' : 'انشاء المتجر'}
+            {loading ? pageT.creating : pageT.createStore}
           </Button>
           <div className="hidden justify-end md:flex">
             <Button disabled={loading} onClick={handleSubmit} className="flex items-center gap-2">
               <FaRegWindowRestore className="h-4 w-4" />
-              {loading ? 'جارٍ الانشاء...' : 'انشاء المتجر'}
+              {loading ? pageT.creating : pageT.createStore}
             </Button>
           </div>
         </div>
@@ -721,4 +723,3 @@ export default function StoreSetupPage() {
     </div>
   );
 }
-

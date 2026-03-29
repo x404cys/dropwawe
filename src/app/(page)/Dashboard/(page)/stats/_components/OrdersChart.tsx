@@ -1,4 +1,4 @@
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip } from 'recharts';
+import { Bar, BarChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
 import { useLanguage } from '../../../context/LanguageContext';
 
 interface OrdersChartProps {
@@ -12,7 +12,7 @@ export function OrdersChart({ data }: OrdersChartProps) {
 
   return (
     <div className="bg-card border-border rounded-xl border p-4">
-      <h3 className="text-foreground mb-4 text-sm font-semibold">{t.orders?.title || 'الطلبات'}</h3>
+      <h3 className="text-foreground mb-4 text-sm font-semibold">{t.stats.ordersChart}</h3>
       <div className="h-40">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
@@ -25,9 +25,9 @@ export function OrdersChart({ data }: OrdersChartProps) {
                 border: '1px solid hsl(200,20%,90%)',
                 backgroundColor: 'hsl(var(--card))',
               }}
-              formatter={(v: any) => [
-                `${typeof v === 'number' ? v : Number(v) || 0} طلب`,
-                'الطلبات',
+              formatter={(value: number | string | undefined) => [
+                `${typeof value === 'number' ? value : Number(value) || 0} ${t.stats.ordersUnit}`,
+                t.stats.ordersChart,
               ]}
             />
             <Bar dataKey="value" fill="hsl(191, 80%, 42%)" radius={[6, 6, 0, 0]} />

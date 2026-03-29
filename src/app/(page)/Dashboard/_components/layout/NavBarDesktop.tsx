@@ -1,19 +1,26 @@
 'use client';
-import { useLanguage } from '../../context/LanguageContext';
+
+import SignOutGoogle from '@/app/_components/Login/SignOutGoogle';
 import { useSession } from 'next-auth/react';
 import Image from 'next/image';
-import { useState, useRef, useEffect } from 'react';
-import { MdOutlineNotificationsNone } from 'react-icons/md';
-import { Sun, Moon, ChevronDown, LogOut, User } from 'lucide-react';
-import SignOutGoogle from '@/app/_components/Login/SignOutGoogle';
 import Link from 'next/link';
-import { useNotifications } from '../../hooks/useNotifications';
-import { useTheme } from '../../context/ThemeContext';
-import { AnimatePresence, motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ChevronDown, Moon, Sun, User } from 'lucide-react';
+import { MdOutlineNotificationsNone } from 'react-icons/md';
+import { useNotifications } from '../../hooks/useNotifications';
+import { useLanguage } from '../../context/LanguageContext';
+import { useTheme } from '../../context/ThemeContext';
+
+const LOCALE_MAP = {
+  ar: 'ar-IQ',
+  ku: 'ckb-IQ',
+  en: 'en-US',
+} as const;
 
 export default function NavBarForDesktop() {
-  const { t } = useLanguage();
+  const { t, lang, dir } = useLanguage();
   const { data: session } = useSession();
   const [openUserMenu, setOpenUserMenu] = useState(false);
   const [openNotifications, setOpenNotifications] = useState(false);
@@ -22,6 +29,9 @@ export default function NavBarForDesktop() {
   const router = useRouter();
   const { notifications, unreadCount, markAsRead } = useNotifications(session?.user?.id);
 
+  const locale = LOCALE_MAP[lang];
+  const textAlignClass = dir === 'rtl' ? 'text-right' : 'text-left';
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -29,6 +39,7 @@ export default function NavBarForDesktop() {
         setOpenNotifications(false);
       }
     };
+
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
@@ -47,10 +58,8 @@ export default function NavBarForDesktop() {
       ref={dropdownRef}
       className="border-border/60 bg-card z-50 hidden w-full items-center justify-between border-b px-5 py-2.5 transition-colors duration-200 md:flex"
     >
-      {/* Right side: actions */}
       <div className="flex items-center gap-2">
-        {/* User avatar + dropdown */}
-        <div dir="rtl" className="relative">
+        <div dir={dir} className="relative">
           <button
             onClick={() => {
               setOpenUserMenu(!openUserMenu);
@@ -77,13 +86,16 @@ export default function NavBarForDesktop() {
               <span className="border-card absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 bg-emerald-500" />
             </div>
             <ChevronDown
-              className={`text-muted-foreground h-3.5 w-3.5 transition-transform duration-200 ${openUserMenu ? 'rotate-180' : ''}`}
+              className={`text-muted-foreground h-3.5 w-3.5 transition-transform duration-200 ${
+                openUserMenu ? 'rotate-180' : ''
+              }`}
             />
           </button>
 
           <AnimatePresence>
             {openUserMenu && (
               <motion.div
+                dir={dir}
                 variants={dropdownVariants}
                 initial="hidden"
                 animate="visible"
@@ -109,7 +121,9 @@ export default function NavBarForDesktop() {
                 </div>
 
                 <div className="space-y-0.5 p-2">
-                  <button className="text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-right text-sm transition-colors">
+                  <button
+                    className={`text-foreground hover:bg-muted flex w-full items-center gap-2.5 rounded-xl px-3 py-2 text-sm transition-colors ${textAlignClass}`}
+                  >
                     <User className="text-muted-foreground h-4 w-4" />
                     {t.nav.profile}
                   </button>
@@ -122,7 +136,6 @@ export default function NavBarForDesktop() {
           </AnimatePresence>
         </div>
 
-        {/* Notifications */}
         <div className="relative">
           <button
             onClick={() => {
@@ -142,7 +155,7 @@ export default function NavBarForDesktop() {
           <AnimatePresence>
             {openNotifications && (
               <motion.div
-                dir="rtl"
+                dir={dir}
                 variants={dropdownVariants}
                 initial="hidden"
                 animate="visible"
@@ -155,56 +168,57 @@ export default function NavBarForDesktop() {
                   </span>
                   {unreadCount > 0 && (
                     <span className="rounded-full bg-red-500/10 px-2 py-0.5 text-[10px] font-bold text-red-500">
-                      {unreadCount} جديد
+                      {unreadCount} {t.orders.new}
                     </span>
                   )}
                 </div>
 
-                {!notifications || notifications.length === 0 ? (
+                {notifications.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-2 py-10">
                     <MdOutlineNotificationsNone className="text-muted-foreground/40 text-3xl" />
-                    <p className="text-muted-foreground text-sm">لا توجد إشعارات</p>
+                    <p className="text-muted-foreground text-sm">{t.profile.noNotifications}</p>
                   </div>
                 ) : (
                   <ul className="divide-border/50 max-h-72 divide-y overflow-y-auto">
-                    {notifications.map(n => (
+                    {notifications.map(notification => (
                       <Link
-                        key={n.id}
-                        href={`/Dashboard/orderDetails/${n.orderId}`}
+                        key={notification.id}
+                        href={`/Dashboard/orderDetails/${notification.orderId}`}
                         onClick={() => {
-                          markAsRead(n.id);
+                          markAsRead(notification.id);
                           setOpenNotifications(false);
                         }}
                         className="hover:bg-muted/50 flex items-center gap-3 px-4 py-3 transition-colors"
                       >
                         <div
                           className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-sm font-bold ${
-                            !n.isRead
+                            !notification.isRead
                               ? 'bg-primary/10 text-primary'
                               : 'bg-muted text-muted-foreground'
                           }`}
                         >
-                          {n.type ?? 'إ'}
+                          {notification.type ?? t.home.notifications.charAt(0)}
                         </div>
                         <div className="min-w-0 flex-1">
                           <p className="text-foreground max-w-[30ch] text-sm leading-snug font-medium break-words whitespace-pre-wrap">
-                            {n.message}
+                            {notification.message}
                           </p>
                           <time className="text-muted-foreground text-[11px]">
-                            {new Date(n.createdAt).toLocaleDateString('ar-IQ', {
+                            {new Date(notification.createdAt).toLocaleDateString(locale, {
                               year: 'numeric',
                               month: 'short',
                               day: 'numeric',
                             })}
                           </time>
                         </div>
-                        {!n.isRead && (
+                        {!notification.isRead && (
                           <span className="bg-primary h-2 w-2 flex-shrink-0 rounded-full" />
                         )}
                       </Link>
                     ))}
                   </ul>
                 )}
+
                 <div className="border-border/50 mt-1 flex items-center justify-center border-t px-4 py-3">
                   <button
                     onClick={() => {
@@ -213,7 +227,7 @@ export default function NavBarForDesktop() {
                     }}
                     className="text-foreground bg-primary w-full cursor-pointer rounded-lg px-4 py-2 text-xs"
                   >
-                    عرض جميع الإشعارات
+                    {t.profile.viewAllNotifications}
                   </button>
                 </div>
               </motion.div>
@@ -221,17 +235,15 @@ export default function NavBarForDesktop() {
           </AnimatePresence>
         </div>
 
-        {/* Theme toggle */}
         <button
           onClick={toggleTheme}
-          title={theme === 'dark' ? 'الوضع الفاتح' : 'الوضع الداكن'}
+          title={theme === 'dark' ? t.profile.lightMode : t.profile.darkMode}
           className="border-border/60 bg-background text-muted-foreground hover:bg-muted hover:text-foreground flex h-9 w-9 items-center justify-center rounded-xl border transition-colors"
         >
           {theme === 'dark' ? <Sun size={15} /> : <Moon size={15} />}
         </button>
       </div>
 
-      {/* Left side: page breadcrumb placeholder */}
       <div />
     </div>
   );

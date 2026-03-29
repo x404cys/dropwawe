@@ -1,6 +1,6 @@
 import { BarChart3, Users } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
- 
+
 interface MainTabsProps {
   mainTab: 'stats' | 'customers';
   setMainTab: (tab: 'stats' | 'customers') => void;
@@ -18,7 +18,7 @@ export function MainTabs({ mainTab, setMainTab }: MainTabsProps) {
         }`}
       >
         <BarChart3 className="h-3.5 w-3.5" />
-        {t.stats?.title || 'الإحصائيات'}
+        {t.stats.title}
       </button>
       <button
         onClick={() => setMainTab('customers')}
@@ -27,7 +27,7 @@ export function MainTabs({ mainTab, setMainTab }: MainTabsProps) {
         }`}
       >
         <Users className="h-3.5 w-3.5" />
-        {t.customers?.title || 'العملاء'}
+        {t.customers.title}
       </button>
     </div>
   );

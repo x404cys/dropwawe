@@ -1,6 +1,6 @@
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from 'recharts';
-import { useLanguage } from '../../../context/../context/LanguageContext';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts';
+import { useLanguage } from '../../../context/LanguageContext';
 
 interface RevenueChartProps {
   data: { day: string; value: number }[];
@@ -13,9 +13,7 @@ export function RevenueChart({ data }: RevenueChartProps) {
 
   return (
     <div className="bg-card border-border rounded-xl border p-4">
-      <h3 className="text-foreground mb-4 text-sm font-semibold">
-        {t.stats?.revenue || 'الإيرادات'}
-      </h3>
+      <h3 className="text-foreground mb-4 text-sm font-semibold">{t.stats.revenue}</h3>
       <div className="h-48">
         <ResponsiveContainer width="100%" height="100%">
           <AreaChart data={data}>
@@ -34,9 +32,9 @@ export function RevenueChart({ data }: RevenueChartProps) {
                 border: '1px solid hsl(200,20%,90%)',
                 backgroundColor: 'hsl(var(--card))',
               }}
-              formatter={(value: any) => {
-                const v = typeof value === 'number' ? value : Number(value) || 0;
-                return [`${formatIQD(v)} ${t.currency}`, t.stats?.revenue || 'الإيرادات'];
+              formatter={(value: number | string | undefined) => {
+                const normalizedValue = typeof value === 'number' ? value : Number(value) || 0;
+                return [`${formatIQD(normalizedValue)} ${t.currency}`, t.stats.revenue];
               }}
             />
             <Area

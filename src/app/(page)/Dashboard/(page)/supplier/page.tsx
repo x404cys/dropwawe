@@ -3,39 +3,42 @@
 import React from 'react';
 import axios from 'axios';
 import useSWR from 'swr';
- import { Supplier } from '@/types/Supplier/SupplierType';
+import { Supplier } from '@/types/Supplier/SupplierType';
 import { PiShippingContainerLight } from 'react-icons/pi';
 import SupplierCard from '../../_components/products/supplier/SupplierCard';
+import { useLanguage } from '../../context/LanguageContext';
 
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function SupplierPage() {
+  const { t, dir } = useLanguage();
+  const pageT = t.dashboardPages.supplierList;
   const { data, isLoading, error } = useSWR('/api/supplier/all', fetcher);
 
   if (isLoading)
     return (
-      <p className="py-10 text-center text-lg font-medium text-muted-foreground">جاري تحميل الموردين...</p>
+      <p className="text-muted-foreground py-10 text-center text-lg font-medium">{pageT.loading}</p>
     );
 
   if (error)
     return (
       <p className="text-center text-lg font-semibold text-red-500">
-        حدث خطأ أثناء تحميل البيانات {error.message}  
+        {pageT.loadError} {error.message}
       </p>
     );
 
   if (!data || data.length === 0)
-    return <div className="py-20 text-center text-lg text-muted-foreground"> لا يوجد موردين بعد</div>;
+    return <div className="text-muted-foreground py-20 text-center text-lg">{pageT.empty}</div>;
 
   return (
     <section className="w-full">
       <div className="mx-auto w-full">
         <header
-          dir="rtl"
-          className="mb-8 flex flex-col items-center justify-between gap-2 border-b border-border pt-12 pb-3"
+          dir={dir}
+          className="border-border mb-8 flex flex-col items-center justify-between gap-2 border-b pt-12 pb-3"
         >
-          <div className="flex text-xs items-center gap-1 bg-sky-100 border border-sky-200 rounded-4xl px-4 py-1">
-            <span>تصفح الموردين</span>
+          <div className="flex items-center gap-1 rounded-4xl border border-sky-200 bg-sky-100 px-4 py-1 text-xs">
+            <span>{pageT.browseSuppliers}</span>
             <PiShippingContainerLight size={18} />
           </div>
         </header>
@@ -60,4 +63,3 @@ export default function SupplierPage() {
     </section>
   );
 }
-

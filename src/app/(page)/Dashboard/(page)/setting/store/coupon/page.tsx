@@ -8,6 +8,7 @@ import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useStoreProvider } from '../../../../context/StoreContext';
 import SettingsPageHeader from '../../_components/settings-page-header';
+import { useLanguage } from '../../../../context/LanguageContext';
 
 interface Coupon {
   id: string;
@@ -22,6 +23,8 @@ interface Coupon {
 }
 
 export default function CouponSettingsPage() {
+  const { t, dir, lang } = useLanguage();
+  const pageT = t.dashboardPages.coupons;
   const { currentStore } = useStoreProvider();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
   const [search, setSearch] = useState('');
@@ -52,7 +55,7 @@ export default function CouponSettingsPage() {
       else setCoupons([]);
     } catch (e) {
       console.error(e);
-      toast.error('حدث خطأ أثناء تحميل الكوبونات');
+      toast.error(pageT.loadError);
     } finally {
       setIsFetching(false);
     }
@@ -66,10 +69,10 @@ export default function CouponSettingsPage() {
     const res = await fetch(`/api/coupons/toggle/${id}`, { method: 'POST' });
     setCoupons(prev => prev.map(c => (c.id === id ? { ...c, isActive: !c.isActive } : c)));
     if (res.ok) {
-      toast.success('تم تحديث حالة الكوبون');
+      toast.success(pageT.statusUpdated);
       fetchCoupons();
     }
-    if (!res.ok) toast.error('فشل في تحديث حالة الكوبون');
+    if (!res.ok) toast.error(pageT.statusUpdateFailed);
   };
 
   const deleteCoupon = async (id: string) => {
@@ -78,21 +81,21 @@ export default function CouponSettingsPage() {
     try {
       const res = await fetch(`/api/coupons/delete-coupon/${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error();
-      toast.success('تم حذف الكوبون بنجاح');
+      toast.success(t.coupons.deleteSuccess);
     } catch {
-      toast.error('فشل في حذف الكوبون');
+      toast.error(t.coupons.deleteError);
       setCoupons(original);
     }
   };
 
   const copyCode = (code: string) => {
     navigator.clipboard.writeText(code);
-    toast.success('تم نسخ الكود');
+    toast.success(pageT.codeCopied);
   };
 
   const addCoupon = async () => {
     if (!newCoupon.code || !newCoupon.value || !newCoupon.expiresAt) {
-      toast.error('يرجى تعبئة الحقول المطلوبة (الكود، القيمة، تاريخ الانتهاء)');
+      toast.error(pageT.requiredFields);
       return;
     }
 
@@ -115,9 +118,9 @@ export default function CouponSettingsPage() {
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message || 'حدث خطأ عند إنشاء الكوبون');
+      if (!res.ok) throw new Error(data.message || t.coupons.createError);
 
-      toast.success('تم إنشاء الكوبون بنجاح');
+      toast.success(t.coupons.createSuccess);
       fetchCoupons();
       setNewCoupon({
         code: '',
@@ -129,7 +132,7 @@ export default function CouponSettingsPage() {
       });
       setShowForm(false);
     } catch (err: any) {
-      toast.error(err.message || 'حدث خطأ عند إنشاء الكوبون');
+      toast.error(err.message || t.coupons.createError);
     } finally {
       setLoading(false);
     }
@@ -142,35 +145,43 @@ export default function CouponSettingsPage() {
       className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
     >
       <Plus className="h-3.5 w-3.5" />
-      إنشاء كود
+      {pageT.createCode}
     </Button>
   );
 
   return (
-    <div dir="rtl" className="bg-background min-h-screen pb-28">
+    <div dir={dir} className="bg-background min-h-screen pb-28">
       <SettingsPageHeader
-        title="أكواد الخصم"
-        subtitle={isFetching ? 'جاري التحميل...' : `${coupons.length} كود مضاف`}
+        title={t.store?.coupons || 'أكواد الخصم'}
+        subtitle={
+          isFetching
+            ? t.loading
+            : `${coupons.length.toLocaleString(lang === 'en' ? 'en-US' : 'ar-IQ')} ${t.coupons.addedCount}`
+        }
         action={headerActions}
       />
 
       <main className="mx-auto max-w-xl space-y-4 px-4 pt-4">
         {showForm && (
           <div className="bg-card border-border animate-in slide-in-from-top-2 space-y-4 rounded-xl border p-4 shadow-sm">
-            <h3 className="text-foreground text-sm font-semibold">كود خصم جديد</h3>
+            <h3 className="text-foreground text-sm font-semibold">{t.coupons.newCoupon}</h3>
             <div className="grid grid-cols-2 gap-3">
               <div className="col-span-2">
-                <label className="text-muted-foreground mb-1 block text-xs">الكود</label>
+                <label className="text-muted-foreground mb-1 block text-xs">
+                  {t.coupons.couponCode}
+                </label>
                 <Input
                   value={newCoupon.code}
                   onChange={e => setNewCoupon({ ...newCoupon, code: e.target.value.toUpperCase() })}
-                  placeholder="مثال: WELCOME10"
+                  placeholder={t.coupons.couponCodePlaceholder}
                   className="h-10 text-sm uppercase"
                   dir="ltr"
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
-                <label className="text-muted-foreground mb-1 block text-xs">النوع</label>
+                <label className="text-muted-foreground mb-1 block text-xs">
+                  {t.coupons.discountType}
+                </label>
                 <div className="flex gap-2">
                   <button
                     onClick={() => setNewCoupon({ ...newCoupon, type: 'PERCENTAGE' })}
@@ -180,7 +191,7 @@ export default function CouponSettingsPage() {
                         : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
-                    <Percent className="h-3.5 w-3.5" /> نسبة
+                    <Percent className="h-3.5 w-3.5" /> {pageT.typePercentage}
                   </button>
                   <button
                     onClick={() => setNewCoupon({ ...newCoupon, type: 'FIXED' })}
@@ -190,13 +201,13 @@ export default function CouponSettingsPage() {
                         : 'bg-card text-foreground border-border hover:border-primary/50'
                     }`}
                   >
-                    <Hash className="h-3.5 w-3.5" /> مبلغ ثابت
+                    <Hash className="h-3.5 w-3.5" /> {pageT.typeFixed}
                   </button>
                 </div>
               </div>
               <div className="col-span-2 sm:col-span-1">
                 <label className="text-muted-foreground mb-1 block text-xs">
-                  القيمة {newCoupon.type === 'PERCENTAGE' ? '(%)' : '(د.ع)'}
+                  {newCoupon.type === 'PERCENTAGE' ? pageT.valuePercentage : pageT.valueFixed}
                 </label>
                 <Input
                   type="number"
@@ -207,28 +218,32 @@ export default function CouponSettingsPage() {
               </div>
               <div>
                 <label className="text-muted-foreground mb-1 block text-xs">
-                  حد أدنى للطلب (د.ع)
+                  {pageT.minOrderCurrency}
                 </label>
                 <Input
                   type="number"
                   value={newCoupon.minOrder}
                   onChange={e => setNewCoupon({ ...newCoupon, minOrder: e.target.value })}
-                  placeholder="إختياري"
+                  placeholder={t.optional}
                   className="h-10 text-sm"
                 />
               </div>
               <div>
-                <label className="text-muted-foreground mb-1 block text-xs">عدد الاستخدامات</label>
+                <label className="text-muted-foreground mb-1 block text-xs">
+                  {pageT.maxUsageLabel}
+                </label>
                 <Input
                   type="number"
                   value={newCoupon.maxUsage}
                   onChange={e => setNewCoupon({ ...newCoupon, maxUsage: e.target.value })}
-                  placeholder="إختياري"
+                  placeholder={t.optional}
                   className="h-10 text-sm"
                 />
               </div>
               <div className="col-span-2">
-                <label className="text-muted-foreground mb-1 block text-xs">تاريخ الانتهاء</label>
+                <label className="text-muted-foreground mb-1 block text-xs">
+                  {pageT.expiresAt}
+                </label>
                 <Input
                   type="date"
                   value={newCoupon.expiresAt}
@@ -244,10 +259,10 @@ export default function CouponSettingsPage() {
                 size="sm"
                 className="bg-primary hover:bg-primary/90 flex-1"
               >
-                {loading ? 'جاري الإنشاء...' : 'إنشاء'}
+                {loading ? pageT.creating : pageT.createAction}
               </Button>
               <Button onClick={() => setShowForm(false)} variant="outline" size="sm">
-                إلغاء
+                {t.cancel}
               </Button>
             </div>
           </div>
@@ -258,7 +273,7 @@ export default function CouponSettingsPage() {
           <Input
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="ابحث عن كود..."
+            placeholder={pageT.searchPlaceholder}
             className="bg-card border-border h-10 pr-10 text-sm"
           />
         </div>
@@ -267,12 +282,12 @@ export default function CouponSettingsPage() {
           {isFetching ? (
             <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
               <Ticket className="mb-3 h-10 w-10 animate-pulse opacity-20" />
-              <p className="animate-pulse text-sm font-medium">جاري التحميل...</p>
+              <p className="animate-pulse text-sm font-medium">{t.loading}</p>
             </div>
           ) : filtered.length === 0 ? (
             <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
               <Ticket className="mb-3 h-10 w-10 opacity-20" />
-              <p className="text-sm font-medium">لا توجد أكواد</p>
+              <p className="text-sm font-medium">{pageT.empty}</p>
             </div>
           ) : (
             filtered.map(coupon => {
@@ -304,17 +319,17 @@ export default function CouponSettingsPage() {
                           <button
                             onClick={() => copyCode(coupon.code)}
                             className="text-muted-foreground hover:text-primary p-1 transition-colors"
-                            title="نسخ الكود"
+                            title={pageT.copyCode}
                           >
                             <Copy className="h-3.5 w-3.5" />
                           </button>
                         </div>
                         <span className="text-muted-foreground mt-0.5 block text-[11px]">
                           {coupon.type === 'PERCENTAGE'
-                            ? `${coupon.value}% خصم`
-                            : `${Number(coupon.value).toLocaleString('ar-IQ')} د.ع خصم`}
+                            ? `${coupon.value}${t.coupons.percentageDiscount}`
+                            : `${Number(coupon.value).toLocaleString(lang === 'en' ? 'en-US' : 'ar-IQ')} ${t.currency} ${t.coupons.fixedDiscount}`}
                           {coupon.minOrder
-                            ? ` • حد أدنى ${Number(coupon.minOrder).toLocaleString('ar-IQ')}`
+                            ? ` • ${t.coupons.minOrder} ${Number(coupon.minOrder).toLocaleString(lang === 'en' ? 'en-US' : 'ar-IQ')}`
                             : ''}
                         </span>
                       </div>
@@ -327,14 +342,19 @@ export default function CouponSettingsPage() {
                   <div className="border-border mt-4 flex items-center justify-between border-t pt-3">
                     <div className="text-muted-foreground flex items-center gap-3 text-[11px]">
                       <span>
-                        استخدام {used}/{coupon.maxUsage ? maxUses : '∞'}
+                        {pageT.usage} {used}/{coupon.maxUsage ? maxUses : pageT.unlimited}
                       </span>
-                      <span>ينتهي {new Date(coupon.expiresAt).toLocaleDateString()}</span>
+                      <span>
+                        {pageT.expiresOn}{' '}
+                        {new Date(coupon.expiresAt).toLocaleDateString(
+                          lang === 'en' ? 'en-US' : 'ar-IQ'
+                        )}
+                      </span>
                     </div>
                     <button
                       onClick={() => deleteCoupon(coupon.id)}
                       className="text-muted-foreground hover:text-destructive p-1 transition-colors"
-                      title="حذف الكوبون"
+                      title={t.coupons.deleteCoupon}
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </button>

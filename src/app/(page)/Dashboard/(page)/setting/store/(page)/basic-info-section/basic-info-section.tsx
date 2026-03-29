@@ -62,6 +62,7 @@ export default function BasicInfoSection({
   onImageRemove,
 }: BasicInfoSectionProps) {
   const { t } = useLanguage();
+  const pageT = t.dashboardPages.storeBasic;
 
   return (
     <div className="space-y-5">
@@ -69,7 +70,7 @@ export default function BasicInfoSection({
       <div className="flex flex-col gap-3 pb-2">
         <label className="text-muted-foreground flex items-center gap-1.5 text-[11px] font-medium tracking-wide uppercase">
           <Camera className="h-3 w-3" />
-          {(t.profile as any)?.storeLogo || 'شعار المتجر'}
+          {pageT.storeLogo}
         </label>
         <div className="flex items-center gap-5">
           <div className="border-border bg-muted/50 relative h-20 w-20 flex-shrink-0 overflow-hidden rounded-2xl border">
@@ -80,7 +81,7 @@ export default function BasicInfoSection({
                   type="button"
                   onClick={onImageRemove}
                   className="absolute top-1 right-1 rounded-full bg-black/50 p-1.5 text-white transition hover:bg-black/70"
-                  aria-label="Remove image"
+                  aria-label={pageT.removeImage}
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -101,7 +102,7 @@ export default function BasicInfoSection({
                 onChange={onImageChange}
               />
             </label>
-            <p className="text-muted-foreground text-[10px]">JPG, PNG أو WEBP. الحد الأقصى 2MB.</p>
+            <p className="text-muted-foreground text-[10px]">{pageT.logoFormatsHint}</p>
           </div>
         </div>
       </div>
@@ -109,12 +110,10 @@ export default function BasicInfoSection({
       <FieldBlock
         label={t.profile?.domain || 'رابط المتجر'}
         icon={Link}
-        hint={
-          storeSlug ? `سيكون: ${storeSlug}.matager.store` : 'حروف وأرقام إنجليزية فقط بدون مسافات'
-        }
+        hint={storeSlug ? pageT.slugHintPrefix.replace('{slug}', storeSlug) : pageT.slugHintEmpty}
         error={fieldErrors.subLink}
       >
-        <div dir='rtl' className="relative">
+        <div dir="rtl" className="relative">
           <div className="text-muted-foreground bg-muted/60 border-border pointer-events-none absolute inset-y-0 right-0 flex h-full items-center rounded-l-lg rounded-r-none border-r px-3 pr-3 text-[11px]">
             .matager.store
           </div>
@@ -134,7 +133,7 @@ export default function BasicInfoSection({
       <FieldBlock
         label={t.profile?.storeName || 'اسم المتجر'}
         icon={Store}
-        hint="يظهر هذا الاسم في صفحة متجرك وللعملاء"
+        hint={pageT.storeNameHint}
         error={fieldErrors.name}
       >
         <div className="relative">

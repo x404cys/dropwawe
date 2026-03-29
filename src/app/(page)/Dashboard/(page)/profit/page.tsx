@@ -1,19 +1,13 @@
-﻿'use client';
+'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
-import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import {
-  TrendingUp,
-  Clock,
-  WalletIcon,
-  Nfc,
-  ArrowDownToLine,
-} from 'lucide-react';
+import { ArrowDownToLine, Clock, Nfc, TrendingUp, WalletIcon } from 'lucide-react';
 import { MdPayments } from 'react-icons/md';
 import { useStoreProvider } from '../../context/StoreContext';
 import { useRouter } from 'next/navigation';
+import { useLanguage } from '../../context/LanguageContext';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -26,8 +20,9 @@ interface ProfitData {
 }
 
 export default function ProfitPage() {
-  const { data: session } = useSession();
   const { currentStore } = useStoreProvider();
+  const { t, dir } = useLanguage();
+  const pageT = t.dashboardPages.profitOverview;
   const router = useRouter();
   const storeId = currentStore?.id;
 
@@ -39,6 +34,7 @@ export default function ProfitPage() {
 
   useEffect(() => {
     if (!storeId) return;
+
     const fetchData = async () => {
       setLoading(true);
       try {
@@ -46,13 +42,14 @@ export default function ProfitPage() {
         setData(res.data);
       } catch (err) {
         console.error(err);
-        setError('فشل تحميل البيانات');
+        setError(pageT.loadError);
       } finally {
         setLoading(false);
       }
     };
+
     fetchData();
-  }, [storeId]);
+  }, [pageT.loadError, storeId]);
 
   const handleWithdraw = async () => {
     if (!storeId) return;
@@ -61,34 +58,48 @@ export default function ProfitPage() {
     try {
       const res = await axios.post('/api/dashboard/profit/withdraw-trader');
       if (res.data) {
-        setData((prev: any) =>
-          prev ? { ...prev, totalProfit: res.data.totalProfit, remaining: res.data.remaining, withdrawn: res.data.withdrawn } : prev
+        setData(prev =>
+          prev
+            ? {
+                ...prev,
+                totalProfit: res.data.totalProfit,
+              }
+            : prev
         );
       }
+      router.push('/Dashboard/profit/payment-order');
     } catch (err) {
       console.error(err);
-      setError('Failed to withdraw');
+      setError(pageT.withdrawError);
     } finally {
       setLoading(false);
     }
   };
 
   const formatCurrency = (num: number) =>
-    new Intl.NumberFormat('en-IQ', { style: 'currency', currency: 'IQD', minimumFractionDigits: 0 }).format(num);
+    new Intl.NumberFormat('en-IQ', {
+      style: 'currency',
+      currency: 'IQD',
+      minimumFractionDigits: 0,
+    }).format(num);
 
   const dailyFiltered = useMemo(() => {
     if (!data) return [];
-    return selectedMonth ? data.daily.filter(d => d.day.startsWith(selectedMonth)) : data.daily;
+    return selectedMonth
+      ? data.daily.filter(item => item.day.startsWith(selectedMonth))
+      : data.daily;
   }, [data, selectedMonth]);
 
   const weeklyFiltered = useMemo(() => {
     if (!data) return [];
-    return selectedWeek ? data.weekly.filter(w => w.week === selectedWeek) : data.weekly;
+    return selectedWeek ? data.weekly.filter(item => item.week === selectedWeek) : data.weekly;
   }, [data, selectedWeek]);
 
   const monthlyFiltered = useMemo(() => data?.monthly ?? [], [data]);
 
-  if (!data) return <p className="mt-6 text-center text-muted-foreground">لا توجد بيانات</p>;
+  if (!data && !loading) {
+    return <p className="text-muted-foreground mt-6 text-center">{pageT.noData}</p>;
+  }
 
   const commonChartOptions = {
     chart: { toolbar: { show: false }, zoom: { enabled: false }, foreColor: '#888' },
@@ -100,7 +111,7 @@ export default function ProfitPage() {
   const weeklyOptions = {
     ...commonChartOptions,
     chart: { ...commonChartOptions.chart, type: 'area' as const },
-    xaxis: { categories: weeklyFiltered.map(w => w.week) },
+    xaxis: { categories: weeklyFiltered.map(item => item.week) },
     stroke: { curve: 'smooth' as const, width: 2.5 },
     colors: ['hsl(var(--primary))'],
     fill: { type: 'gradient', gradient: { opacityFrom: 0.45, opacityTo: 0.05 } },
@@ -108,140 +119,153 @@ export default function ProfitPage() {
 
   const monthlyOptions = {
     ...commonChartOptions,
-    labels: monthlyFiltered.map(m => m.month),
+    labels: monthlyFiltered.map(item => item.month),
     legend: { position: 'bottom' as const },
     colors: ['hsl(var(--primary))', '#38bdf8', '#7dd3fc', '#a5f3fc', '#e0f2fe'],
   };
 
+  if (loading && !data) {
+    return <p className="text-muted-foreground mt-6 text-center">{t.loading}</p>;
+  }
+
   return (
-    <section className="min-h-screen bg-background px-4 py-6 md:px-8">
-      <div dir="rtl" className="mx-auto max-w-7xl space-y-5">
-
-        {/* Page Title */}
+    <section className="bg-background min-h-screen px-4 py-6 md:px-8">
+      <div dir={dir} className="mx-auto max-w-7xl space-y-5">
         <div>
-          <h1 className="text-xl font-bold text-foreground">الأرباح والعائدات</h1>
-          <p className="text-sm text-muted-foreground">تتبع أرباحك وعائداتك المالية</p>
+          <h1 className="text-foreground text-xl font-bold">{pageT.title}</h1>
+          <p className="text-muted-foreground text-sm">{pageT.subtitle}</p>
         </div>
 
-        {/* Summary Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          {/* Card: Payment Gateway Revenue */}
-          <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="border-border bg-card flex items-center justify-between rounded-2xl border p-5 shadow-sm">
             <div>
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+              <div className="text-muted-foreground mb-1 flex items-center gap-2">
                 <MdPayments className="h-4 w-4" />
-                <span className="text-xs font-medium">عائد بوابة الدفع</span>
+                <span className="text-xs font-medium">{pageT.gatewayRevenue}</span>
               </div>
-              <p className="text-2xl font-bold text-foreground">{formatCurrency(data.orderPayment)}</p>
+              <p className="text-foreground text-2xl font-bold">
+                {formatCurrency(data?.orderPayment ?? 0)}
+              </p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <Nfc className="h-6 w-6 text-primary" />
+            <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-xl">
+              <Nfc className="text-primary h-6 w-6" />
             </div>
           </div>
 
-          {/* Card: Total Revenue */}
-          <div className="flex items-center justify-between rounded-2xl border border-border bg-card p-5 shadow-sm">
+          <div className="border-border bg-card flex items-center justify-between rounded-2xl border p-5 shadow-sm">
             <div>
-              <div className="flex items-center gap-2 text-muted-foreground mb-1">
+              <div className="text-muted-foreground mb-1 flex items-center gap-2">
                 <TrendingUp className="h-4 w-4" />
-                <span className="text-xs font-medium">العائد الكلي</span>
+                <span className="text-xs font-medium">{pageT.totalRevenue}</span>
               </div>
-              <p className="text-2xl font-bold text-foreground">{formatCurrency(data.totalProfit)}</p>
+              <p className="text-foreground text-2xl font-bold">
+                {formatCurrency(data?.totalProfit ?? 0)}
+              </p>
             </div>
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-              <WalletIcon className="h-6 w-6 text-primary" />
+            <div className="bg-primary/10 flex h-12 w-12 items-center justify-center rounded-xl">
+              <WalletIcon className="text-primary h-6 w-6" />
             </div>
           </div>
         </div>
 
-        {/* Withdraw Banner */}
-        <div className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
+        <div className="border-border bg-card flex flex-col gap-3 rounded-2xl border p-5 shadow-sm sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-muted">
-              <ArrowDownToLine className="h-5 w-5 text-muted-foreground" />
+            <div className="bg-muted flex h-10 w-10 items-center justify-center rounded-full">
+              <ArrowDownToLine className="text-muted-foreground h-5 w-5" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-foreground">سحب الأرباح</h3>
-              <p className="text-xs text-muted-foreground">اعلام المنصة بسحب ارباحك</p>
+              <h3 className="text-foreground text-sm font-semibold">{pageT.withdrawTitle}</h3>
+              <p className="text-muted-foreground text-xs">{pageT.withdrawSubtitle}</p>
             </div>
           </div>
           {error && <p className="text-sm text-red-500">{error}</p>}
           <button
-            onClick={() => { handleWithdraw(); router.push('/Dashboard/profit/payment-order'); }}
-            className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+            onClick={handleWithdraw}
+            className="bg-primary inline-flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-sm font-semibold text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            سحب الارباح
+            {pageT.withdrawButton}
           </button>
         </div>
 
-        {/* Filters */}
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">اختر الأسبوع</label>
+            <label className="text-foreground text-sm font-medium">{pageT.selectWeek}</label>
             <select
-              className="h-10 rounded-xl border border-border bg-card px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              onChange={e => setSelectedWeek(e.target.value || null)}
+              className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 h-10 rounded-xl border px-3 text-sm focus:ring-2 focus:outline-none"
+              onChange={event => setSelectedWeek(event.target.value || null)}
               value={selectedWeek || ''}
             >
-              <option value="">كل الأسابيع</option>
-              {data.weekly.map(w => <option key={w.week} value={w.week}>{w.week}</option>)}
+              <option value="">{pageT.allWeeks}</option>
+              {data?.weekly.map(item => (
+                <option key={item.week} value={item.week}>
+                  {item.week}
+                </option>
+              ))}
             </select>
           </div>
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-foreground">اختر الشهر</label>
+            <label className="text-foreground text-sm font-medium">{pageT.selectMonth}</label>
             <select
-              className="h-10 rounded-xl border border-border bg-card px-3 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
-              onChange={e => setSelectedMonth(e.target.value || null)}
+              className="border-border bg-card text-foreground focus:border-primary focus:ring-primary/20 h-10 rounded-xl border px-3 text-sm focus:ring-2 focus:outline-none"
+              onChange={event => setSelectedMonth(event.target.value || null)}
               value={selectedMonth || ''}
             >
-              <option value="">كل الشهور</option>
-              {data.monthly.map(m => <option key={m.month} value={m.month}>{m.month}</option>)}
+              <option value="">{pageT.allMonths}</option>
+              {data?.monthly.map(item => (
+                <option key={item.month} value={item.month}>
+                  {item.month}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
-        {/* Weekly Chart */}
-        <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-          <h2 className="mb-4 text-base font-semibold text-foreground">العائد الأسبوعي</h2>
+        <div className="border-border bg-card rounded-2xl border p-5 shadow-sm">
+          <h2 className="text-foreground mb-4 text-base font-semibold">{pageT.weeklyRevenue}</h2>
           <ApexCharts
             type="area"
-            series={[{ name: 'الأرباح', data: weeklyFiltered.map(w => w.profit) }]}
+            series={[{ name: pageT.seriesName, data: weeklyFiltered.map(item => item.profit) }]}
             options={weeklyOptions}
             height={300}
           />
         </div>
 
-        {/* Monthly + Daily */}
         <div className="grid gap-5 md:grid-cols-2">
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-            <h2 className="mb-4 text-base font-semibold text-foreground">العائد الشهري</h2>
+          <div className="border-border bg-card rounded-2xl border p-5 shadow-sm">
+            <h2 className="text-foreground mb-4 text-base font-semibold">{pageT.monthlyRevenue}</h2>
             <ApexCharts
               type="pie"
-              series={monthlyFiltered.map(m => m.profit)}
+              series={monthlyFiltered.map(item => item.profit)}
               options={monthlyOptions}
               height={300}
             />
           </div>
 
-          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
-            <h2 className="mb-4 flex items-center gap-2 text-base font-semibold text-foreground">
-              <Clock className="h-4 w-4" /> العائد اليومي
+          <div className="border-border bg-card rounded-2xl border p-5 shadow-sm">
+            <h2 className="text-foreground mb-4 flex items-center gap-2 text-base font-semibold">
+              <Clock className="h-4 w-4" /> {pageT.dailyRevenue}
             </h2>
-            <div className="max-h-[300px] overflow-y-auto space-y-0.5">
+            <div className="max-h-[300px] space-y-0.5 overflow-y-auto">
               {dailyFiltered.length ? (
-                dailyFiltered.map(d => (
-                  <div key={d.day} className="flex justify-between border-b border-border/50 py-2.5 text-sm">
-                    <span className="text-muted-foreground">{d.day}</span>
-                    <span className="font-semibold text-primary">{formatCurrency(d.profit)}</span>
+                dailyFiltered.map(item => (
+                  <div
+                    key={item.day}
+                    className="border-border/50 flex justify-between border-b py-2.5 text-sm"
+                  >
+                    <span className="text-muted-foreground">{item.day}</span>
+                    <span className="text-primary font-semibold">
+                      {formatCurrency(item.profit)}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="py-8 text-center text-sm text-muted-foreground">لا توجد بيانات يومية</p>
+                <p className="text-muted-foreground py-8 text-center text-sm">
+                  {pageT.noDailyData}
+                </p>
               )}
             </div>
           </div>
         </div>
-
       </div>
     </section>
   );

@@ -1,11 +1,10 @@
 'use client';
-import { useLanguage } from '../../../context/LanguageContext';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import { useSession } from 'next-auth/react';
 import dynamic from 'next/dynamic';
-import { TrendingUp, Wallet, ArrowDownToLine } from 'lucide-react';
+import { ArrowDownToLine, TrendingUp, Wallet } from 'lucide-react';
 import Loader from '@/components/Loader';
 import { Button } from '@/components/ui/button';
 import {
@@ -17,6 +16,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
+import { useLanguage } from '../../../context/LanguageContext';
 
 const ApexCharts = dynamic(() => import('react-apexcharts'), { ssr: false });
 
@@ -29,15 +29,15 @@ interface ProfitData {
   monthly: { month: string; profit: number }[];
 }
 
-export default function ProfitPage() {
-  const { t } = useLanguage();
+export default function ProfitDropshipperPage() {
+  const { t, dir } = useLanguage();
+  const pageT = t.dashboardPages.profitDropshipper;
   const { data: session } = useSession();
   const userId = session?.user.id;
 
   const [data, setData] = useState<ProfitData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
   const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
   const [selectedWeek, setSelectedWeek] = useState<string | null>(null);
 
@@ -47,26 +47,28 @@ export default function ProfitPage() {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`/api/dashboard/profit/profit-dropshipper`);
+        const res = await axios.get('/api/dashboard/profit/profit-dropshipper');
         setData(res.data);
       } catch (err) {
         console.error(err);
-        setError('فشل تحميل البيانات / Failed to load data');
+        setError(pageT.loadError);
       } finally {
         setLoading(false);
       }
     };
 
     fetchData();
-  }, [userId]);
+  }, [pageT.loadError, userId]);
+
   const handleWithdraw = async () => {
     if (!userId) return;
     setLoading(true);
     setError(null);
+
     try {
       const res = await axios.post('/api/dashboard/profit/profit-dropshipper/withdraw');
       if (res.data) {
-        setData((prev: any) =>
+        setData(prev =>
           prev
             ? {
                 ...prev,
@@ -79,38 +81,43 @@ export default function ProfitPage() {
       }
     } catch (err) {
       console.error(err);
-      setError('فشل سحب الأرباح / Failed to withdraw');
+      setError(pageT.withdrawError);
     } finally {
       setLoading(false);
     }
   };
-  const formatCurrency = (num: number) =>
+
+  const formatCurrency = (value: number) =>
     new Intl.NumberFormat('en-IQ', {
       style: 'currency',
       currency: 'IQD',
       minimumFractionDigits: 0,
-    }).format(num);
+    }).format(value);
 
   const dailyFiltered = useMemo(() => {
     if (!data) return [];
-    return selectedMonth ? data.daily.filter(d => d.day.startsWith(selectedMonth)) : data.daily;
+    return selectedMonth
+      ? data.daily.filter(item => item.day.startsWith(selectedMonth))
+      : data.daily;
   }, [data, selectedMonth]);
 
   const weeklyFiltered = useMemo(() => {
     if (!data) return [];
-    return selectedWeek ? data.weekly.filter(w => w.week === selectedWeek) : data.weekly;
+    return selectedWeek ? data.weekly.filter(item => item.week === selectedWeek) : data.weekly;
   }, [data, selectedWeek]);
 
   const monthlyFiltered = useMemo(() => data?.monthly ?? [], [data]);
 
-  if (loading)
+  if (loading && !data) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-neutral-50">
         <Loader />
       </div>
     );
+  }
+
   if (error) return <p className="mt-6 text-center text-red-600">{error}</p>;
-  if (!data) return <p className="mt-6 text-center text-neutral-600">No data available</p>;
+  if (!data) return <p className="mt-6 text-center text-neutral-600">{pageT.noData}</p>;
 
   const commonChartOptions = {
     chart: { toolbar: { show: false }, zoom: { enabled: false }, foreColor: '#525252' },
@@ -122,16 +129,18 @@ export default function ProfitPage() {
 
   const monthlyOptions = {
     ...commonChartOptions,
-    labels: monthlyFiltered.map(m => m.month),
+    labels: monthlyFiltered.map(item => item.month),
     legend: { position: 'bottom' as const, fontSize: '13px' },
     colors: ['#00bcff', '#00bcff', '#a3a3a3', '#d4d4d4', '#3b82f6'],
   };
-  const monthlySeries = monthlyFiltered.map(m => m.profit);
 
   const weeklyOptions = {
     ...commonChartOptions,
     chart: { ...commonChartOptions.chart, type: 'line' as const },
-    xaxis: { categories: weeklyFiltered.map(w => w.week), labels: { style: { fontSize: '12px' } } },
+    xaxis: {
+      categories: weeklyFiltered.map(item => item.week),
+      labels: { style: { fontSize: '12px' } },
+    },
     stroke: { curve: 'smooth' as const, width: 3 },
     markers: { size: 5 },
     colors: ['#00bcff'],
@@ -146,142 +155,145 @@ export default function ProfitPage() {
       },
     },
   };
-  const weeklySeries = [{ name: 'Profit', data: weeklyFiltered.map(w => w.profit) }];
 
   return (
     <section className="min-h-screen px-4 py-8 md:px-8">
-      <div dir="rtl" className="mx-auto max-w-7xl space-y-6">
+      <div dir={dir} className="mx-auto max-w-7xl space-y-6">
         <div className="grid gap-4 md:grid-cols-3">
-          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
+          <div className="bg-card flex flex-col gap-2 rounded-xl border border-neutral-200 p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <TrendingUp className="h-5 w-5" />
-              <span className="text-sm font-medium">الربح الكلي </span>
+              <span className="text-sm font-medium">{pageT.totalProfit}</span>
             </div>
             <p className="text-3xl font-bold text-neutral-900">
               {formatCurrency(data.totalProfit)}
             </p>
           </div>
 
-          <div className="flex flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
+          <div className="bg-card flex flex-col gap-2 rounded-xl border border-neutral-200 p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <Wallet className="h-5 w-5" />
-              <span className="text-sm font-medium">المتبقي</span>
+              <span className="text-sm font-medium">{pageT.remaining}</span>
             </div>
             <p className="text-3xl font-bold">{formatCurrency(data.remaining)}</p>
           </div>
 
-          <div className="flex w-full flex-col gap-2 rounded-xl border border-neutral-200 bg-card p-6">
+          <div className="bg-card flex w-full flex-col gap-2 rounded-xl border border-neutral-200 p-6">
             <div className="flex items-center gap-2 text-neutral-600">
               <ArrowDownToLine className="h-5 w-5" />
-              <span className="text-sm font-medium">المسحوب</span>
+              <span className="text-sm font-medium">{pageT.withdrawn}</span>
             </div>
             <p className="text-3xl font-bold">{formatCurrency(data.withdrawn)}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-3 rounded-xl border border-neutral-200 bg-card p-6 sm:flex-row sm:items-center sm:justify-between">
+
+        <div className="bg-card flex flex-col gap-3 rounded-xl border border-neutral-200 p-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-neutral-100">
               <ArrowDownToLine className="h-5 w-5 text-neutral-600" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-neutral-900">سحب الأرباح</h3>
-              <p className="text-xs text-neutral-500">اعلام المنصة بسحب ارباحك</p>
+              <h3 className="text-sm font-semibold text-neutral-900">{pageT.withdrawTitle}</h3>
+              <p className="text-xs text-neutral-500">{pageT.withdrawSubtitle}</p>
             </div>
           </div>
           {error && <p className="text-sm text-red-600">{error}</p>}
           <Dialog>
-            <DialogTrigger dir="rtl" asChild>
+            <DialogTrigger dir={dir} asChild>
               <Button size="lg" className="mr-auto w-full cursor-pointer bg-sky-600 md:w-40">
-                سحب الأرباح
+                {pageT.withdrawButton}
               </Button>
             </DialogTrigger>
-            <DialogContent dir="rtl" className="sm:max-w-[400px]">
+            <DialogContent dir={dir} className="sm:max-w-[400px]">
               <DialogHeader>
-                <DialogTitle>تأكيد السحب</DialogTitle>
-                <DialogDescription>
-                  هل أنت متأكد أنك تريد سحب الأرباح؟ سيتم تحديث الرصيد المتبقي والمسحوب بعد العملية.
-                </DialogDescription>
+                <DialogTitle>{pageT.confirmWithdrawTitle}</DialogTitle>
+                <DialogDescription>{pageT.confirmWithdrawDescription}</DialogDescription>
               </DialogHeader>
               {error && <p className="mt-2 text-red-500">{error}</p>}
               <DialogFooter className="flex justify-end gap-2">
-                <Button variant="outline" onClick={() => setError(null)}> {t.cancel} </Button>
+                <Button variant="outline" onClick={() => setError(null)}>
+                  {t.cancel}
+                </Button>
                 <Button onClick={handleWithdraw} disabled={loading}>
-                  {loading ? 'Processing...' : 'تأكيد السحب '}
+                  {loading ? pageT.processing : pageT.confirmWithdraw}
                 </Button>
               </DialogFooter>
             </DialogContent>
           </Dialog>
         </div>
+
         <div className="grid gap-4 md:grid-cols-2">
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-neutral-700">
-              اختر الأسبوع | Select Week
-            </label>
+            <label className="text-sm font-medium text-neutral-700">{pageT.selectWeek}</label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
-              onChange={e => setSelectedWeek(e.target.value || null)}
+              className="bg-card h-11 rounded-lg border border-neutral-200 px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
+              onChange={event => setSelectedWeek(event.target.value || null)}
               value={selectedWeek || ''}
             >
-              <option value="">كل الأسابيع | All Weeks</option>
-              {data.weekly.map(w => (
-                <option key={w.week} value={w.week}>
-                  {w.week}
+              <option value="">{pageT.allWeeks}</option>
+              {data.weekly.map(item => (
+                <option key={item.week} value={item.week}>
+                  {item.week}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="flex flex-col gap-2">
-            <label className="text-sm font-medium text-neutral-700">
-              اختر الشهر | Select Month
-            </label>
+            <label className="text-sm font-medium text-neutral-700">{pageT.selectMonth}</label>
             <select
-              className="h-11 rounded-lg border border-neutral-200 bg-card px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
-              onChange={e => setSelectedMonth(e.target.value || null)}
+              className="bg-card h-11 rounded-lg border border-neutral-200 px-4 text-sm text-neutral-900 transition-colors hover:border-neutral-300 focus:border-neutral-900 focus:ring-2 focus:ring-neutral-900/10 focus:outline-none"
+              onChange={event => setSelectedMonth(event.target.value || null)}
               value={selectedMonth || ''}
             >
-              <option value="">كل الشهور | All Months</option>
-              {data.monthly.map(m => (
-                <option key={m.month} value={m.month}>
-                  {m.month}
+              <option value="">{pageT.allMonths}</option>
+              {data.monthly.map(item => (
+                <option key={item.month} value={item.month}>
+                  {item.month}
                 </option>
               ))}
             </select>
           </div>
         </div>
 
-        <div className="rounded-xl border border-neutral-200 bg-card p-6">
-          <h2 className="mb-6 text-lg font-semibold text-neutral-900">
-            العائد الأسبوعي | Weekly Profit
-          </h2>
-          <ApexCharts type="area" series={weeklySeries} options={weeklyOptions} height={320} />
+        <div className="bg-card rounded-xl border border-neutral-200 p-6">
+          <h2 className="mb-6 text-lg font-semibold text-neutral-900">{pageT.weeklyProfit}</h2>
+          <ApexCharts
+            type="area"
+            series={[{ name: pageT.seriesName, data: weeklyFiltered.map(item => item.profit) }]}
+            options={weeklyOptions}
+            height={320}
+          />
         </div>
 
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-xl border border-neutral-200 bg-card p-6">
-            <h2 className="mb-6 text-lg font-semibold text-neutral-900">
-              العائد الشهري | Monthly Profit
-            </h2>
-            <ApexCharts type="pie" series={monthlySeries} options={monthlyOptions} height={320} />
+          <div className="bg-card rounded-xl border border-neutral-200 p-6">
+            <h2 className="mb-6 text-lg font-semibold text-neutral-900">{pageT.monthlyProfit}</h2>
+            <ApexCharts
+              type="pie"
+              series={monthlyFiltered.map(item => item.profit)}
+              options={monthlyOptions}
+              height={320}
+            />
           </div>
 
-          <div className="rounded-xl border border-neutral-200 bg-card p-6">
-            <h2 className="mb-6 text-lg font-semibold text-neutral-900">
-              العائد اليومي | Daily Profit
-            </h2>
+          <div className="bg-card rounded-xl border border-neutral-200 p-6">
+            <h2 className="mb-6 text-lg font-semibold text-neutral-900">{pageT.dailyProfit}</h2>
             <div className="max-h-[320px] space-y-1 overflow-y-auto">
               {dailyFiltered.length ? (
-                dailyFiltered.map(d => (
+                dailyFiltered.map(item => (
                   <div
-                    key={d.day}
+                    key={item.day}
                     className="flex items-center justify-between border-b border-neutral-100 py-3 text-sm last:border-0"
                   >
-                    <span className="font-medium text-neutral-700">{d.day}</span>
-                    <span className="font-semibold text-sky-900">{formatCurrency(d.profit)}</span>
+                    <span className="font-medium text-neutral-700">{item.day}</span>
+                    <span className="font-semibold text-sky-900">
+                      {formatCurrency(item.profit)}
+                    </span>
                   </div>
                 ))
               ) : (
-                <p className="py-8 text-center text-sm text-neutral-500">No daily data</p>
+                <p className="py-8 text-center text-sm text-neutral-500">{pageT.noDailyData}</p>
               )}
             </div>
           </div>

@@ -11,7 +11,8 @@ import Loader from '@/components/Loader';
 const fetcher = (url: string) => axios.get(url).then(res => res.data);
 
 export default function ProductsPage() {
-  const { t } = useLanguage();
+  const { t, dir, lang } = useLanguage();
+  const pageT = t.dashboardPages.productsDropwave;
   const { data, isLoading, error } = useSWR<Product[]>('/api/dropwave/get/products/get', fetcher);
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('');
@@ -39,7 +40,7 @@ export default function ProductsPage() {
   if (error)
     return (
       <div className="flex min-h-screen items-center justify-center">
-        <p className="text-muted-foreground text-sm">حدث خطأ أثناء تحميل البيانات</p>
+        <p className="text-muted-foreground text-sm">{pageT.loadError}</p>
       </div>
     );
 
@@ -56,20 +57,22 @@ export default function ProductsPage() {
   return (
     <section className="min-h-screen w-full py-8">
       <div className="">
-        <header dir="rtl" className="mb-16">
+        <header dir={dir} className="mb-16">
           <div className="mb-8 text-center">
             <h1 className="mb-3 text-3xl font-semibold tracking-tight text-balance">
-              تصفح المنتجات
+              {pageT.title}
             </h1>
             <div className="flex justify-center gap-2">
-              <p className="text-muted-foreground">{data?.length || 0} منتج متاح</p>
+              <p className="text-muted-foreground">
+                {(data?.length || 0).toLocaleString(lang === 'en' ? 'en-US' : 'ar-IQ')}{' '}
+                {pageT.availableProducts}
+              </p>
               <Boxes className="text-green-400" />
             </div>
           </div>
 
           <div className="bg-muted/40 text-muted-foreground mx-auto mb-9 max-w-3xl rounded-2xl p-6 text-center text-sm leading-relaxed">
-            هذه المنتجات نوفرها لك مباشرة من قبل المنصة، وما عليك سوى إضافتها إلى موقعك وتحديد الربح
-            الذي ترغب به. نحن نتكفل بالخزن، النقل، وتسليم أرباحك تلقائيًا.
+            {pageT.description}
           </div>
 
           <div className="relative mx-auto mb-8 max-w-2xl">
@@ -98,7 +101,7 @@ export default function ProductsPage() {
                     : 'bg-muted/60 text-foreground hover:bg-muted'
                 }`}
               >
-                كل الأصناف
+                {pageT.allCategories}
               </button>
 
               {categories.map(cat => (
@@ -119,7 +122,7 @@ export default function ProductsPage() {
         </header>
 
         <div
-          dir="rtl"
+          dir={dir}
           className="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
         >
           {(filteredProducts.length > 0 ? filteredProducts : data).map(product => (

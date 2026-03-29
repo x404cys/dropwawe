@@ -7,18 +7,19 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ mainTab, customersCount }: PageHeaderProps) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const locale = lang === 'en' ? 'en-US' : lang === 'ku' ? 'ckb-IQ' : 'ar-IQ';
 
   return (
     <div className="flex items-center justify-between px-1 pt-1">
       <div>
         <h1 className="text-foreground text-xl font-bold">
-          {mainTab === 'stats' ? t.stats?.title || 'الإحصائيات' : t.customers?.title || 'العملاء'}
+          {mainTab === 'stats' ? t.stats.title : t.customers.title}
         </h1>
         <p className="text-muted-foreground mt-0.5 text-xs">
           {mainTab === 'stats'
-            ? t.more?.statsDesc || 'تقارير المبيعات والأداء'
-            : `${customersCount} ${t.customers?.customer || 'عميل'}`}
+            ? t.stats.subtitle
+            : `${customersCount.toLocaleString(locale)} ${t.customers.customer}`}
         </p>
       </div>
       <div className="bg-primary/10 flex h-10 w-10 items-center justify-center rounded-xl">

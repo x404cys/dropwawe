@@ -27,11 +27,13 @@ function InfoRow({
   label,
   value,
   hint,
+  emptyText,
 }: {
   icon: LucideIcon;
   label: string;
   value: string;
   hint?: string;
+  emptyText: string;
 }) {
   return (
     <div>
@@ -39,7 +41,7 @@ function InfoRow({
         <Icon className="h-3 w-3" /> {label}
       </label>
       <p className="bg-muted text-foreground min-h-[40px] rounded-lg px-3 py-2.5 text-sm">
-        {value || <span className="text-muted-foreground">غير متوفر</span>}
+        {value || <span className="text-muted-foreground">{emptyText}</span>}
       </p>
       {hint && <p className="text-muted-foreground mt-1 text-[11px]">{hint}</p>}
     </div>
@@ -48,6 +50,7 @@ function InfoRow({
 
 export default function ShippingSettingsPage() {
   const { t, dir, lang } = useLanguage();
+  const pageT = t.dashboardPages.storeShipping;
   const [editing, setEditing] = useState(false);
   const {
     phone,
@@ -65,7 +68,6 @@ export default function ShippingSettingsPage() {
   const shippingFeeText = hasShippingFee
     ? `${shippingAmount.toLocaleString(lang === 'en' ? 'en-US' : 'ar-IQ')} ${t.currency || 'د.ع'}`
     : '';
-  const isProfileComplete = Boolean(phone && hasShippingFee);
 
   const handleSave = async () => {
     const result = await save();
@@ -108,11 +110,9 @@ export default function ShippingSettingsPage() {
         {/* Info alert */}
         <Alert className="border border-sky-200 bg-sky-50/80 text-sky-900 dark:border-sky-800 dark:bg-sky-950/30 dark:text-sky-200">
           <Info className="mt-0.5 h-4 w-4" />
-          <AlertTitle>{editing ? 'نصيحة قبل الحفظ' : 'معلومة مهمة'}</AlertTitle>
+          <AlertTitle>{editing ? pageT.saveAdviceTitle : pageT.infoTitle}</AlertTitle>
           <AlertDescription>
-            {editing
-              ? 'تأكد من كتابة رقم هاتف صحيح وسعر شحن واضح لتقليل الأسئلة من العملاء بعد الطلب.'
-              : 'هذه المعلومات تظهر للعميل عند الشراء، وكلما كانت واضحة زادت ثقة العميل بسرعة الطلب.'}
+            {editing ? pageT.saveAdviceDescription : pageT.infoDescription}
           </AlertDescription>
         </Alert>
 
@@ -135,12 +135,12 @@ export default function ShippingSettingsPage() {
             <SettingsSectionCard>
               <div className="mb-3 flex items-center gap-2">
                 <ShieldCheck className="h-4 w-4 text-emerald-600" />
-                <h3 className="text-foreground text-sm font-semibold">إرشادات سريعة</h3>
+                <h3 className="text-foreground text-sm font-semibold">{pageT.quickTipsTitle}</h3>
               </div>
               <div className="text-muted-foreground space-y-2 text-xs">
-                <p>استخدم رقم هاتف نشط مع واتساب لتسهيل التواصل عند التوصيل.</p>
-                <p>ضع رسوم الشحن الفعلية لتجنب إلغاء الطلبات بعد التأكيد.</p>
-                <p>يمكنك تعديل هذه المعلومات في أي وقت وسيتم تحديثها فورًا.</p>
+                <p>{pageT.tipPhone}</p>
+                <p>{pageT.tipFee}</p>
+                <p>{pageT.tipUpdate}</p>
               </div>
             </SettingsSectionCard>
           </div>
@@ -151,26 +151,25 @@ export default function ShippingSettingsPage() {
                 icon={Phone}
                 label={t.profile?.phone || 'رقم الهاتف'}
                 value={phone}
-                hint="يستخدمه العميل أو المندوب للتواصل قبل التسليم."
+                hint={pageT.phoneHint}
+                emptyText={pageT.notAvailable}
               />
               <InfoRow
                 icon={CircleDollarSign}
                 label={t.more?.delivery || 'رسوم التوصيل'}
                 value={shippingFeeText}
-                hint={`العملة: ${t.currency || 'د.ع'}`}
+                hint={pageT.priceHint.replace('{currency}', t.currency || 'د.ع')}
+                emptyText={pageT.notAvailable}
               />
             </div>
 
             <SettingsSectionCard>
               <div className="mb-2 flex items-center gap-2">
                 <Truck className="text-muted-foreground h-4 w-4" />
-                <h3 className="text-foreground text-sm font-semibold">
-                  كيف تظهر هذه المعلومات للعميل؟
-                </h3>
+                <h3 className="text-foreground text-sm font-semibold">{pageT.customerViewTitle}</h3>
               </div>
               <p className="text-muted-foreground text-xs leading-6">
-                تظهر رسوم التوصيل في صفحة إتمام الطلب، بينما يظهر رقم الهاتف كوسيلة دعم وتنسيق عند
-                الحاجة. وجود بيانات دقيقة يقلل التأخير ويرفع رضا العميل.
+                {pageT.customerViewDescription}
               </p>
             </SettingsSectionCard>
           </div>

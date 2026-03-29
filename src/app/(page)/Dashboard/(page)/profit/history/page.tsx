@@ -3,8 +3,9 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useStoreProvider } from '../../../context/StoreContext';
+import { useLanguage } from '../../../context/LanguageContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { FaMoneyBillWave, FaClock, FaCheckCircle, FaTimesCircle } from 'react-icons/fa';
+import { FaMoneyBillWave, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { MdOutlineReceiptLong } from 'react-icons/md';
 
 interface LedgerEntry {
@@ -27,6 +28,8 @@ interface Balance {
 
 export default function ProfitHistoryPage() {
   const { currentStore } = useStoreProvider();
+  const { t, dir, lang } = useLanguage();
+  const pageT = t.dashboardPages.profitHistory;
   const storeId = currentStore?.id;
 
   const [history, setHistory] = useState<LedgerEntry[]>([]);
@@ -45,14 +48,14 @@ export default function ProfitHistoryPage() {
         setBalance(res.data.balance);
       } catch (err) {
         console.error(err);
-        setError('فشل تحميل سجل المعاملات المالية');
+        setError(pageT.loadError);
       } finally {
         setLoading(false);
       }
     };
 
     fetchHistory();
-  }, [storeId]);
+  }, [pageT.loadError, storeId]);
 
   const formatCurrency = (num: number) =>
     new Intl.NumberFormat('en-IQ', {
@@ -64,45 +67,47 @@ export default function ProfitHistoryPage() {
   const getLedgerTypeLabel = (type: string) => {
     switch (type) {
       case 'PAYMENT_RECEIVED':
-        return { label: 'دفعة مستلمة', color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+        return { label: pageT.paymentReceived, color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
       case 'ORDER_PROFIT':
-        return { label: 'أرباح طلب', color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+        return { label: pageT.orderProfit, color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
       case 'PLATFORM_FEE':
-        return { label: 'رسوم المنصة', color: 'text-red-500', bg: 'bg-red-500/10' };
+        return { label: pageT.platformFee, color: 'text-red-500', bg: 'bg-red-500/10' };
       case 'WITHDRAW_REQUEST':
-        return { label: 'طلب سحب', color: 'text-orange-500', bg: 'bg-orange-500/10' };
+        return { label: pageT.withdrawRequest, color: 'text-orange-500', bg: 'bg-orange-500/10' };
       case 'WITHDRAW_APPROVED':
-        return { label: 'سحب مكتمل', color: 'text-emerald-500', bg: 'bg-emerald-500/10' };
+        return {
+          label: pageT.withdrawApproved,
+          color: 'text-emerald-500',
+          bg: 'bg-emerald-500/10',
+        };
       case 'REFUND':
-        return { label: 'استرجاع', color: 'text-red-500', bg: 'bg-red-500/10' };
+        return { label: pageT.refund, color: 'text-red-500', bg: 'bg-red-500/10' };
       default:
-        return { label: type, color: 'text-gray-500', bg: 'bg-gray-500/10' };
+        return { label: pageT.unknownType, color: 'text-gray-500', bg: 'bg-gray-500/10' };
     }
   };
 
   if (!storeId) {
-    return <div className="text-muted-foreground p-8 text-center">جاري تحميل المتجر...</div>;
+    return <div className="text-muted-foreground p-8 text-center">{pageT.loadingStore}</div>;
   }
 
   return (
-    <section className="mx-auto max-w-6xl p-4 md:p-6" dir="rtl">
-      {/* Header */}
+    <section className="mx-auto max-w-6xl p-4 md:p-6" dir={dir}>
       <div className="mb-8 flex items-center gap-3">
         <div className="bg-primary/10 flex size-12 items-center justify-center rounded-xl">
           <MdOutlineReceiptLong className="text-primary size-6" />
         </div>
         <div>
-          <h1 className="text-2xl font-semibold">سجل المعاملات المالية</h1>
-          <p className="text-muted-foreground text-sm">متابعة كافة حركات الرصيد والسحوبات</p>
+          <h1 className="text-2xl font-semibold">{pageT.title}</h1>
+          <p className="text-muted-foreground text-sm">{pageT.subtitle}</p>
         </div>
       </div>
 
-      {/* Balance Cards */}
       <div className="mb-6 grid gap-4 md:grid-cols-2">
         <Card className="border-emerald-500/20 bg-emerald-500/5">
           <CardContent className="flex items-center justify-between p-6">
             <div>
-              <p className="text-sm font-medium text-emerald-600/80">الرصيد المتاح للسحب</p>
+              <p className="text-sm font-medium text-emerald-600/80">{pageT.availableBalance}</p>
               <p className="mt-1 text-3xl font-bold text-emerald-600">
                 {formatCurrency(balance.available)}
               </p>
@@ -116,7 +121,7 @@ export default function ProfitHistoryPage() {
         <Card className="border-orange-500/20 bg-orange-500/5">
           <CardContent className="flex items-center justify-between p-6">
             <div>
-              <p className="text-sm font-medium text-orange-600/80">الرصيد المعلق</p>
+              <p className="text-sm font-medium text-orange-600/80">{pageT.pendingBalance}</p>
               <p className="mt-1 text-3xl font-bold text-orange-600">
                 {formatCurrency(balance.pending)}
               </p>
@@ -128,10 +133,9 @@ export default function ProfitHistoryPage() {
         </Card>
       </div>
 
-      {/* History List */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">سجل الحركات</CardTitle>
+          <CardTitle className="text-lg">{pageT.movementsTitle}</CardTitle>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -141,9 +145,7 @@ export default function ProfitHistoryPage() {
           ) : error ? (
             <div className="py-10 text-center text-red-500">{error}</div>
           ) : history.length === 0 ? (
-            <div className="text-muted-foreground py-10 text-center">
-              لا توجد معاملات مالية حتى الآن.
-            </div>
+            <div className="text-muted-foreground py-10 text-center">{pageT.noTransactions}</div>
           ) : (
             <div className="space-y-4">
               {history.map(entry => {
@@ -171,18 +173,20 @@ export default function ProfitHistoryPage() {
                           <span
                             className={`rounded-full px-2 py-0.5 text-xs ${typeInfo.bg} ${typeInfo.color}`}
                           >
-                            {entry.type === 'REFUND' ? 'استرجاع' : entry.type}
+                            {typeInfo.label}
                           </span>
                         </div>
                         <p className="text-muted-foreground mt-1 text-xs">
-                          {new Date(entry.createdAt).toLocaleString('ar-IQ')}
+                          {new Date(entry.createdAt).toLocaleString(
+                            lang === 'en' ? 'en-US' : 'ar-IQ'
+                          )}
                         </p>
                         {entry.note && (
                           <p className="text-muted-foreground mt-0.5 text-xs">{entry.note}</p>
                         )}
                         {entry.order && (
                           <p className="text-muted-foreground mt-0.5 text-xs">
-                            رقم الطلب: {entry.order.id.slice(-6)}
+                            {pageT.orderNumber}: {entry.order.id.slice(-6)}
                           </p>
                         )}
                       </div>
@@ -190,14 +194,16 @@ export default function ProfitHistoryPage() {
 
                     <div className="text-left">
                       <p
-                        className={`text-right text-lg font-bold sm:text-left ${isPositive ? 'text-emerald-500' : 'text-foreground'}`}
+                        className={`text-right text-lg font-bold sm:text-left ${
+                          isPositive ? 'text-emerald-500' : 'text-foreground'
+                        }`}
                       >
                         {isPositive ? '+' : '-'}
                         {formatCurrency(entry.amount)}
                       </p>
                       {entry.balanceAfter !== null && (
                         <p className="text-muted-foreground mt-1 text-right text-xs sm:text-left">
-                          الرصيد بعد الحركة: {formatCurrency(entry.balanceAfter)}
+                          {pageT.balanceAfter}: {formatCurrency(entry.balanceAfter)}
                         </p>
                       )}
                     </div>

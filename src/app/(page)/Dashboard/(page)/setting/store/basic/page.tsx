@@ -38,7 +38,8 @@ function ReadonlyRow({
 }
 
 export default function BasicSettingsPage() {
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
+  const pageT = t.dashboardPages.storeBasic;
   const [editing, setEditing] = useState(false);
   const {
     storeSlug,
@@ -68,7 +69,7 @@ export default function BasicSettingsPage() {
     const file = e.target.files?.[0];
     if (file) {
       if (file.size > 2 * 1024 * 1024) {
-        toast.error('حجم الصورة يجب أن يكون أقل من 2 ميجابايت');
+        toast.error(pageT.imageTooLarge);
         return;
       }
       setImageFile(file);
@@ -120,7 +121,7 @@ export default function BasicSettingsPage() {
   );
 
   return (
-    <section dir="rtl" className="min-h-screen pb-28">
+    <section dir={dir} className="min-h-screen pb-28">
       <SettingsPageHeader
         title={t.store?.generalSettings || 'الإعدادات العامة'}
         action={headerAction}
@@ -192,10 +193,10 @@ export default function BasicSettingsPage() {
                     </div>
                     <div>
                       <h3 className="text-foreground text-lg font-bold">
-                        {storeName || 'متجر جديد'}
+                        {storeName || pageT.storeNameFallback}
                       </h3>
                       <p className="text-muted-foreground mt-0.5 text-sm" dir="ltr">
-                        {storeSlug ? `${storeSlug}.matager.store` : 'لم يتم التحديد'}
+                        {storeSlug ? `${storeSlug}.matager.store` : pageT.slugNotSet}
                       </p>
                     </div>
                   </div>
@@ -219,7 +220,7 @@ export default function BasicSettingsPage() {
 
                 {/* Quick edit hint */}
                 <p className="text-muted-foreground py-2 text-center text-xs">
-                  اضغط زر <strong>تعديل</strong> لتغيير بيانات المتجر
+                  {pageT.quickEditHint}
                 </p>
               </motion.div>
             )}

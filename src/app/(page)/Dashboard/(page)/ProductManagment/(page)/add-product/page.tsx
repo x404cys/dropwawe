@@ -31,7 +31,7 @@ export default function ProductAddPage() {
   const { data } = useDashboardData(session?.user?.id);
   const router = useRouter();
   const { currentStore } = useStoreProvider();
-  const { t } = useLanguage();
+  const { t, dir } = useLanguage();
   const [expandedSections, setExpandedSections] = useState({
     sizes: false,
     colors: false,
@@ -98,7 +98,7 @@ export default function ProductAddPage() {
 
     const remaining = 3 - galleryFiles.length;
     if (remaining <= 0) {
-      toast.error('يمكنك رفع 3 صور إضافية فقط');
+      toast.error(t.inventory.max3Images);
       return;
     }
 
@@ -119,26 +119,26 @@ export default function ProductAddPage() {
     const file = e.target.files?.[0];
 
     if (!file) {
-      toast.warning('لم يتم اختيار أي صورة');
+      toast.warning(t.inventory.noImageSelected);
       return;
     }
 
     if (file.size === 0) {
-      toast.warning('الملف تالف أو فارغ');
+      toast.warning(t.inventory.corruptFile);
       e.target.value = '';
       return;
     }
 
     const MAX_UPLOAD_MB = 15;
     if (file.size > MAX_UPLOAD_MB * 1024 * 1024) {
-      toast.warning(`حجم الصورة كبير جداً. الحد الأقصى ${MAX_UPLOAD_MB}MB`);
+      toast.warning(t.inventory.imageTooLarge.replace('{max}', String(MAX_UPLOAD_MB)));
       e.target.value = '';
       return;
     }
 
     const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
     if (!allowedTypes.includes(file.type)) {
-      toast.warning('صيغة الصورة غير مدعومة (JPG / PNG / WEBP فقط)');
+      toast.warning(t.inventory.unsupportedFormat);
       e.target.value = '';
       return;
     }
@@ -165,7 +165,7 @@ export default function ProductAddPage() {
       }));
     } catch (err) {
       console.error('Compression error:', err);
-      toast.warning('فشل تجهيز الصورة');
+      toast.warning(t.inventory.compressionFailed);
     } finally {
       setIsCompressing(false);
     }
@@ -211,7 +211,7 @@ export default function ProductAddPage() {
       !newProduct.description?.trim() ||
       !newProduct.category?.trim()
     ) {
-      toast.error('يرجى ملء جميع الحقول المطلوبة');
+      toast.error(t.inventory.fillRequiredFields);
       return;
     }
 
@@ -300,7 +300,7 @@ export default function ProductAddPage() {
         throw new Error('FAILED');
       }
 
-      toast.success('تم إضافة المنتج بنجاح');
+      toast.success(t.inventory.addSuccess);
       router.push('/Dashboard/ProductManagment');
       setNewProduct({
         name: '',
@@ -322,14 +322,14 @@ export default function ProductAddPage() {
       setColors([]);
     } catch (error) {
       console.error(error);
-      toast.error('فشل في إضافة المنتج');
+      toast.error(t.inventory.addFailed);
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-background text-foreground mb-20 min-h-screen pt-3" dir="rtl">
+    <div className="bg-background text-foreground mb-20 min-h-screen pt-3" dir={dir}>
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-2 lg:grid-cols-3">
           <div className="lg:col-span-2">

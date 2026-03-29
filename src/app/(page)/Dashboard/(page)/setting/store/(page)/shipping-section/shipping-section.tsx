@@ -31,19 +31,19 @@ function FieldCard({
   children: ReactNode;
 }) {
   return (
-    <div className="rounded-xl border border-border bg-card p-4 space-y-3">
+    <div className="border-border bg-card space-y-3 rounded-xl border p-4">
       <div className="flex items-center gap-3">
         <div className={`flex h-9 w-9 items-center justify-center rounded-xl ${iconBg}`}>
           <Icon className={`h-4 w-4 ${iconColor}`} />
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">{title}</p>
-          <p className="text-[11px] text-muted-foreground">{subtitle}</p>
+          <p className="text-foreground text-sm font-semibold">{title}</p>
+          <p className="text-muted-foreground text-[11px]">{subtitle}</p>
         </div>
       </div>
       {children}
       {error && (
-        <p className="text-[11px] text-destructive flex items-center gap-1">
+        <p className="text-destructive flex items-center gap-1 text-[11px]">
           <AlertCircle className="h-3 w-3" />
           {error}
         </p>
@@ -60,25 +60,22 @@ export default function ShippingSection({
   onShippingPriceChange,
 }: ShippingSectionProps) {
   const { t } = useLanguage();
+  const pageT = t.dashboardPages.storeShipping;
 
-  const tips = [
-    'استخدم رقم هاتف نشط مع واتساب لتسريع التواصل',
-    'حدد رسوم الشحن الفعلية لتجنب إلغاء الطلبات',
-    'يمكنك تعديل هذه البيانات في أي وقت',
-  ];
+  const tips = [pageT.tipPhone, pageT.tipFee, pageT.tipUpdate];
 
   return (
     <div className="space-y-4">
       {/* Summary header */}
-      <div className="flex items-center gap-3 rounded-xl bg-primary/5 border border-primary/15 p-3">
-        <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary/10 flex-shrink-0">
-          <Truck className="h-4 w-4 text-primary" />
+      <div className="bg-primary/5 border-primary/15 flex items-center gap-3 rounded-xl border p-3">
+        <div className="bg-primary/10 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl">
+          <Truck className="text-primary h-4 w-4" />
         </div>
         <div>
-          <p className="text-sm font-semibold text-foreground">
+          <p className="text-foreground text-sm font-semibold">
             {t.store?.selfDelivery || 'التوصيل الذاتي'}
           </p>
-          <p className="text-[11px] text-muted-foreground">
+          <p className="text-muted-foreground text-[11px]">
             {t.store?.deliveryIntegrationDesc || 'أدخل بيانات الشحن لتظهر للعميل عند الطلب'}
           </p>
         </div>
@@ -90,7 +87,7 @@ export default function ShippingSection({
         iconBg="bg-sky-500/10"
         iconColor="text-sky-500"
         title={t.profile?.phone || 'رقم الهاتف'}
-        subtitle="يتواصل عبره العميل أو المندوب قبل التسليم"
+        subtitle={pageT.phoneSubtitle}
         error={fieldErrors.phone}
       >
         <Input
@@ -108,18 +105,18 @@ export default function ShippingSection({
         iconBg="bg-emerald-500/10"
         iconColor="text-emerald-500"
         title={t.more?.delivery || 'رسوم التوصيل'}
-        subtitle="السعر النهائي الذي يظهر للعميل في صفحة الطلب"
+        subtitle={pageT.priceSubtitle}
         error={fieldErrors.shippingPrice}
       >
         <div className="relative">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-[11px] text-muted-foreground pointer-events-none">
+          <span className="text-muted-foreground pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[11px]">
             {t.currency || 'د.ع'}
           </span>
           <Input
             value={shippingPrice}
             onChange={e => onShippingPriceChange(e.target.value)}
             placeholder="5000"
-            className="h-10 text-sm pl-10"
+            className="h-10 pl-10 text-sm"
             type="number"
             inputMode="numeric"
           />
@@ -127,12 +124,12 @@ export default function ShippingSection({
       </FieldCard>
 
       {/* Tips */}
-      <div className="rounded-xl border border-border bg-muted/40 p-4 space-y-2">
-        <p className="text-xs font-semibold text-foreground">نصائح سريعة</p>
+      <div className="border-border bg-muted/40 space-y-2 rounded-xl border p-4">
+        <p className="text-foreground text-xs font-semibold">{pageT.quickTipsTitle}</p>
         {tips.map(tip => (
           <div key={tip} className="flex items-start gap-2">
-            <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 flex-shrink-0 mt-0.5" />
-            <p className="text-[11px] text-muted-foreground leading-relaxed">{tip}</p>
+            <CheckCircle2 className="mt-0.5 h-3.5 w-3.5 flex-shrink-0 text-emerald-500" />
+            <p className="text-muted-foreground text-[11px] leading-relaxed">{tip}</p>
           </div>
         ))}
       </div>

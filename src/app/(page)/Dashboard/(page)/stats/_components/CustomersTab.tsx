@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { Users, Crown, TrendingUp, Search, ShoppingCart } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Crown, Search, ShoppingCart, TrendingUp, Users } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { Customer } from '../types';
 
@@ -8,13 +8,17 @@ interface CustomersTabProps {
 }
 
 export function CustomersTab({ customers }: CustomersTabProps) {
-  const { t } = useLanguage();
+  const { lang, t } = useLanguage();
+  const locale = lang === 'en' ? 'en-US' : lang === 'ku' ? 'ckb-IQ' : 'ar-IQ';
   const [customerSearch, setCustomerSearch] = useState('');
 
   const filteredCustomers = useMemo(
     () =>
       customers.filter(
-        c => !customerSearch || c.name.includes(customerSearch) || c.phone.includes(customerSearch)
+        customer =>
+          !customerSearch ||
+          customer.name.includes(customerSearch) ||
+          customer.phone.includes(customerSearch)
       ),
     [customers, customerSearch]
   );
@@ -22,22 +26,24 @@ export function CustomersTab({ customers }: CustomersTabProps) {
   const topBuyer =
     customers.length > 0 ? customers.reduce((a, b) => (a.total > b.total ? a : b)) : null;
 
-  const totalCustomerSpent = customers.reduce((s, c) => s + c.total, 0);
+  const totalCustomerSpent = customers.reduce((sum, customer) => sum + customer.total, 0);
 
   return (
     <>
       <div className="grid grid-cols-3 gap-2">
         <div className="bg-card border-border rounded-lg border p-3 text-center">
           <Users className="text-primary mx-auto mb-1 h-4 w-4" />
-          <span className="text-foreground block text-lg font-bold">{customers.length}</span>
-          <span className="text-muted-foreground text-[10px]">{t.customers?.title}</span>
+          <span className="text-foreground block text-lg font-bold">
+            {customers.length.toLocaleString(locale)}
+          </span>
+          <span className="text-muted-foreground text-[10px]">{t.customers.title}</span>
         </div>
         <div className="bg-card border-border rounded-lg border p-3 text-center">
           <Crown className="mx-auto mb-1 h-4 w-4 text-yellow-500" />
           <span className="text-foreground block truncate text-xs font-bold">
             {topBuyer?.name ?? '-'}
           </span>
-          <span className="text-muted-foreground text-[10px]">{t.customers?.topBuyer}</span>
+          <span className="text-muted-foreground text-[10px]">{t.customers.topBuyer}</span>
         </div>
         <div className="bg-card border-border rounded-lg border p-3 text-center">
           <TrendingUp className="mx-auto mb-1 h-4 w-4 text-green-500" />
@@ -46,7 +52,7 @@ export function CustomersTab({ customers }: CustomersTabProps) {
               ? `${(totalCustomerSpent / 1_000_000).toFixed(1)}M`
               : `${(totalCustomerSpent / 1_000).toFixed(0)}K`}
           </span>
-          <span className="text-muted-foreground text-[10px]">{t.customers?.totalSpent}</span>
+          <span className="text-muted-foreground text-[10px]">{t.customers.totalSpent}</span>
         </div>
       </div>
 
@@ -54,9 +60,9 @@ export function CustomersTab({ customers }: CustomersTabProps) {
         <Search className="text-muted-foreground absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2" />
         <input
           value={customerSearch}
-          onChange={e => setCustomerSearch(e.target.value)}
-          placeholder={t.customers?.searchPlaceholder || 'ابحث عن عميل...'}
-          className="border-border bg-card text-foreground font-light placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-xl border px-4 py-2.5 pr-10 text-sm focus:ring-2 focus:outline-none"
+          onChange={event => setCustomerSearch(event.target.value)}
+          placeholder={t.customers.searchPlaceholder}
+          className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:ring-primary/30 w-full rounded-xl border px-4 py-2.5 pr-10 text-sm font-light focus:ring-2 focus:outline-none"
         />
       </div>
 
@@ -64,11 +70,11 @@ export function CustomersTab({ customers }: CustomersTabProps) {
         {filteredCustomers.length === 0 ? (
           <div className="text-muted-foreground flex flex-col items-center justify-center py-16">
             <Users className="mb-3 h-12 w-12 opacity-30" />
-            <p className="text-sm font-medium">{t.customers?.noCustomers || 'لا يوجد عملاء'}</p>
+            <p className="text-sm font-medium">{t.customers.noCustomers}</p>
           </div>
         ) : (
-          filteredCustomers.map((customer, idx) => (
-            <div key={idx} className="flex items-center gap-3 px-4 py-3">
+          filteredCustomers.map((customer, index) => (
+            <div key={index} className="flex items-center gap-3 px-4 py-3">
               <div className="bg-primary/10 flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full">
                 <span className="text-primary text-sm font-bold">{customer.name.charAt(0)}</span>
               </div>
@@ -78,13 +84,13 @@ export function CustomersTab({ customers }: CustomersTabProps) {
                   <span className="text-muted-foreground text-[11px]">{customer.phone}</span>
                   <span className="text-muted-foreground flex items-center gap-0.5 text-[11px]">
                     <ShoppingCart className="h-2.5 w-2.5" />
-                    {customer.orders} {t.orders?.order}
+                    {customer.orders.toLocaleString(locale)} {t.orders.order}
                   </span>
                 </div>
               </div>
               <div className="text-left">
                 <span className="text-foreground block text-sm font-bold">
-                  {customer.total.toLocaleString('ar-IQ')}
+                  {customer.total.toLocaleString(locale)}
                 </span>
                 <span className="text-muted-foreground text-[10px]">{t.currency}</span>
               </div>

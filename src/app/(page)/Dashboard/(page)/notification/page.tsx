@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { useSession } from 'next-auth/react';
 import { Bell, CheckCheck, Inbox, Clock3, CircleDot, ChevronLeft } from 'lucide-react';
-
+import { useLanguage } from '../../context/LanguageContext';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { useNotifications } from '../../hooks';
@@ -11,9 +11,17 @@ import type { Notification as AppNotification } from '../../types';
 
 type FilterType = 'all' | 'unread' | 'read';
 
+const LOCALE_MAP = {
+  ar: 'ar-IQ',
+  ku: 'ckb-IQ',
+  en: 'en-US',
+} as const;
+
 export default function NotificationsPage() {
   const { data: session, status } = useSession();
+  const { t, dir, lang } = useLanguage();
   const userId = session?.user?.id;
+  const locale = LOCALE_MAP[lang];
 
   const { notifications, unreadCount, isLoading, error, markAsRead, markAllAsRead } =
     useNotifications(userId);
@@ -23,9 +31,9 @@ export default function NotificationsPage() {
   const filteredNotifications = useMemo(() => {
     switch (filter) {
       case 'unread':
-        return notifications.filter(n => !n.isRead);
+        return notifications.filter(notification => !notification.isRead);
       case 'read':
-        return notifications.filter(n => n.isRead);
+        return notifications.filter(notification => notification.isRead);
       default:
         return notifications;
     }
@@ -47,7 +55,9 @@ export default function NotificationsPage() {
   }, [filteredNotifications]);
 
   const todayCount = useMemo(() => {
-    return notifications.filter(n => getNotificationGroup(n.createdAt) === 'today').length;
+    return notifications.filter(
+      notification => getNotificationGroup(notification.createdAt) === 'today'
+    ).length;
   }, [notifications]);
 
   const readCount = notifications.length - unreadCount;
@@ -57,7 +67,7 @@ export default function NotificationsPage() {
   }
 
   return (
-    <div dir="rtl" className="bg-background min-h-screen px-2">
+    <div dir={dir} className="bg-background min-h-screen px-2">
       <div className="mx-auto w-full max-w-6xl space-y-6 py-6 md:px-6">
         <section className="-sm overflow-hidden rounded-md border bg-gradient-to-br p-5 md:p-6">
           <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
@@ -72,26 +82,29 @@ export default function NotificationsPage() {
                 disabled={unreadCount === 0}
               >
                 <CheckCheck className="me-2 h-4 w-4" />
-                جعل الكل مقروء
+                {t.notificationsPage.markAllAsRead}
               </Button>
             </div>
           </div>
 
           <div className="mt-6 grid grid-cols-1 gap-3 md:grid-cols-3">
             <StatsCard
-              title="إجمالي الإشعارات"
+              title={t.notificationsPage.totalNotifications}
               value={notifications.length}
+              locale={locale}
               icon={<Bell className="h-5 w-5" />}
             />
             <StatsCard
-              title="غير المقروءة"
+              title={t.notificationsPage.unreadNotifications}
               value={unreadCount}
+              locale={locale}
               highlight
               icon={<CircleDot className="h-5 w-5" />}
             />
             <StatsCard
-              title="إشعارات اليوم"
+              title={t.notificationsPage.todayNotifications}
               value={todayCount}
+              locale={locale}
               icon={<Clock3 className="h-5 w-5" />}
             />
           </div>
@@ -101,24 +114,25 @@ export default function NotificationsPage() {
           <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
             <div className="flex flex-wrap items-center gap-2">
               <FilterTab
-                label={`الكل (${notifications.length})`}
+                label={`${t.notificationsPage.all} (${notifications.length.toLocaleString(locale)})`}
                 active={filter === 'all'}
                 onClick={() => setFilter('all')}
               />
               <FilterTab
-                label={`غير المقروءة (${unreadCount})`}
+                label={`${t.notificationsPage.unread} (${unreadCount.toLocaleString(locale)})`}
                 active={filter === 'unread'}
                 onClick={() => setFilter('unread')}
               />
               <FilterTab
-                label={`المقروءة (${readCount})`}
+                label={`${t.notificationsPage.read} (${readCount.toLocaleString(locale)})`}
                 active={filter === 'read'}
                 onClick={() => setFilter('read')}
               />
             </div>
 
             <div className="text-muted-foreground px-2 text-sm">
-              {filteredNotifications.length} إشعار ضمن هذا التصنيف
+              {filteredNotifications.length.toLocaleString(locale)}{' '}
+              {t.notificationsPage.inThisFilter}
             </div>
           </div>
         </section>
@@ -127,32 +141,41 @@ export default function NotificationsPage() {
           <NotificationsListSkeleton />
         ) : error ? (
           <div className="border-destructive/20 bg-destructive/5 text-destructive -sm rounded-[24px] border p-6 text-sm">
-            حدث خطأ أثناء تحميل الإشعارات
+            {t.notificationsPage.loadError}
           </div>
         ) : filteredNotifications.length === 0 ? (
-          <EmptyState />
+          <EmptyState
+            title={t.notificationsPage.emptyTitle}
+            description={t.notificationsPage.emptyDescription}
+          />
         ) : (
           <div className="space-y-6">
             {groupedNotifications.today.length > 0 && (
               <NotificationSection
-                title="اليوم"
+                title={t.notificationsPage.today}
                 items={groupedNotifications.today}
+                locale={locale}
+                label={t.notificationsPage.notificationCountLabel}
                 onMarkAsRead={markAsRead}
               />
             )}
 
             {groupedNotifications.yesterday.length > 0 && (
               <NotificationSection
-                title="أمس"
+                title={t.notificationsPage.yesterday}
                 items={groupedNotifications.yesterday}
+                locale={locale}
+                label={t.notificationsPage.notificationCountLabel}
                 onMarkAsRead={markAsRead}
               />
             )}
 
             {groupedNotifications.older.length > 0 && (
               <NotificationSection
-                title="الأقدم"
+                title={t.notificationsPage.older}
                 items={groupedNotifications.older}
+                locale={locale}
+                label={t.notificationsPage.notificationCountLabel}
                 onMarkAsRead={markAsRead}
               />
             )}
@@ -167,11 +190,13 @@ function StatsCard({
   title,
   value,
   icon,
+  locale,
   highlight = false,
 }: {
   title: string;
   value: number;
   icon: React.ReactNode;
+  locale: string;
   highlight?: boolean;
 }) {
   return (
@@ -184,7 +209,7 @@ function StatsCard({
       <div className="flex items-start justify-between gap-3">
         <div>
           <p className="text-muted-foreground text-sm">{title}</p>
-          <p className="mt-2 text-2xl font-bold">{value}</p>
+          <p className="mt-2 text-2xl font-bold">{value.toLocaleString(locale)}</p>
         </div>
 
         <div
@@ -226,10 +251,14 @@ function FilterTab({
 function NotificationSection({
   title,
   items,
+  locale,
+  label,
   onMarkAsRead,
 }: {
   title: string;
   items: AppNotification[];
+  locale: string;
+  label: string;
   onMarkAsRead: (id: string) => void;
 }) {
   return (
@@ -240,7 +269,9 @@ function NotificationSection({
           <h2 className="text-lg font-semibold">{title}</h2>
         </div>
 
-        <span className="text-muted-foreground text-sm">{items.length} إشعار</span>
+        <span className="text-muted-foreground text-sm">
+          {items.length.toLocaleString(locale)} {label}
+        </span>
       </div>
 
       <div className="space-y-3">
@@ -248,6 +279,7 @@ function NotificationSection({
           <NotificationCard
             key={notification.id}
             notification={notification}
+            locale={locale}
             onMarkAsRead={onMarkAsRead}
           />
         ))}
@@ -258,10 +290,13 @@ function NotificationSection({
 
 interface NotificationCardProps {
   notification: AppNotification;
+  locale: string;
   onMarkAsRead: (id: string) => void;
 }
 
-function NotificationCard({ notification, onMarkAsRead }: NotificationCardProps) {
+function NotificationCard({ notification, locale, onMarkAsRead }: NotificationCardProps) {
+  const { t, dir } = useLanguage();
+
   return (
     <div
       className={cn(
@@ -291,24 +326,26 @@ function NotificationCard({ notification, onMarkAsRead }: NotificationCardProps)
           <div className="min-w-0 flex-1 space-y-2">
             <div className="flex flex-wrap items-center gap-2">
               <h3 className="text-foreground text-base font-semibold">
-                {getNotificationTitle(notification)}
+                {getNotificationTitle(notification, t.notificationsPage.newNotificationTitle)}
               </h3>
 
               {!notification.isRead && (
                 <span className="bg-primary/10 text-primary rounded-full px-2.5 py-1 text-[11px] font-semibold">
-                  جديد
+                  {t.orders.new}
                 </span>
               )}
             </div>
 
             <p className="text-muted-foreground text-sm leading-7">
-              {notification.message || 'لا يوجد نص لهذا الإشعار'}
+              {notification.message || t.notificationsPage.noNotificationText}
             </p>
 
             <div className="text-muted-foreground flex flex-wrap items-center gap-2 text-xs">
-              <span>{formatRelativeDate(notification.createdAt)}</span>
-              <span>•</span>
-              <span>{formatAbsoluteDate(notification.createdAt)}</span>
+              <span>
+                {formatRelativeDate(notification.createdAt, locale, t.notificationsPage.now)}
+              </span>
+              <span>|</span>
+              <span>{formatAbsoluteDate(notification.createdAt, locale)}</span>
             </div>
           </div>
         </div>
@@ -321,12 +358,12 @@ function NotificationCard({ notification, onMarkAsRead }: NotificationCardProps)
               onClick={() => onMarkAsRead(notification.id)}
             >
               <CheckCheck className="me-2 h-4 w-4" />
-              تعليم كمقروء
+              {t.notificationsPage.markAsRead}
             </Button>
           ) : (
             <div className="text-muted-foreground flex items-center gap-1 rounded-xl border px-3 py-2 text-xs">
-              تمّت القراءة
-              <ChevronLeft className="h-3.5 w-3.5" />
+              {t.notificationsPage.readStatus}
+              <ChevronLeft className={`h-3.5 w-3.5 ${dir === 'ltr' ? 'rotate-180' : ''}`} />
             </div>
           )}
         </div>
@@ -335,17 +372,15 @@ function NotificationCard({ notification, onMarkAsRead }: NotificationCardProps)
   );
 }
 
-function EmptyState() {
+function EmptyState({ title, description }: { title: string; description: string }) {
   return (
     <div className="bg-card -sm flex min-h-[360px] flex-col items-center justify-center rounded-[28px] border p-8 text-center">
       <div className="bg-muted mb-4 flex h-20 w-20 items-center justify-center rounded-full">
         <Inbox className="text-muted-foreground h-9 w-9" />
       </div>
 
-      <h2 className="text-xl font-semibold">لا توجد إشعارات</h2>
-      <p className="text-muted-foreground mt-2 max-w-md text-sm leading-7">
-        لا يوجد أي إشعار ضمن التصنيف الحالي، وستظهر هنا التنبيهات الجديدة فور وصولها
-      </p>
+      <h2 className="text-xl font-semibold">{title}</h2>
+      <p className="text-muted-foreground mt-2 max-w-md text-sm leading-7">{description}</p>
     </div>
   );
 }
@@ -369,8 +404,8 @@ function NotificationsPageSkeleton() {
             </div>
 
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="rounded-[22px] border p-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="rounded-[22px] border p-4">
                   <div className="flex items-start justify-between">
                     <div className="space-y-3">
                       <div className="bg-muted h-4 w-24 rounded" />
@@ -385,8 +420,8 @@ function NotificationsPageSkeleton() {
 
           <div className="rounded-[24px] border p-3">
             <div className="flex gap-2">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <div key={i} className="bg-muted h-10 w-28 rounded-xl" />
+              {Array.from({ length: 3 }).map((_, index) => (
+                <div key={index} className="bg-muted h-10 w-28 rounded-xl" />
               ))}
             </div>
           </div>
@@ -406,8 +441,8 @@ function NotificationsListSkeleton() {
             <div className="bg-muted h-4 w-16 rounded" />
           </div>
 
-          {Array.from({ length: 3 }).map((__, i) => (
-            <div key={i} className="bg-card -sm animate-pulse rounded-[24px] border p-5">
+          {Array.from({ length: 3 }).map((__, index) => (
+            <div key={index} className="bg-card -sm animate-pulse rounded-[24px] border p-5">
               <div className="flex items-start justify-between gap-4">
                 <div className="flex flex-1 items-start gap-4">
                   <div className="bg-muted h-11 w-11 rounded-xl" />
@@ -428,7 +463,7 @@ function NotificationsListSkeleton() {
   );
 }
 
-function getNotificationTitle(notification: AppNotification) {
+function getNotificationTitle(notification: AppNotification, fallbackTitle: string) {
   if (
     'title' in notification &&
     typeof notification.title === 'string' &&
@@ -437,7 +472,7 @@ function getNotificationTitle(notification: AppNotification) {
     return notification.title;
   }
 
-  return 'إشعار جديد';
+  return fallbackTitle;
 }
 
 function getNotificationGroup(dateValue: string | Date) {
@@ -453,7 +488,7 @@ function getNotificationGroup(dateValue: string | Date) {
   return 'older';
 }
 
-function formatRelativeDate(dateString: string | Date) {
+function formatRelativeDate(dateString: string | Date, locale: string, nowLabel: string) {
   const date = new Date(dateString);
   const now = new Date();
   const diff = now.getTime() - date.getTime();
@@ -461,21 +496,22 @@ function formatRelativeDate(dateString: string | Date) {
   const minute = 60 * 1000;
   const hour = 60 * minute;
   const day = 24 * hour;
+  const formatter = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
 
-  if (diff < minute) return 'الآن';
-  if (diff < hour) return `قبل ${Math.floor(diff / minute)} دقيقة`;
-  if (diff < day) return `قبل ${Math.floor(diff / hour)} ساعة`;
-  if (diff < day * 7) return `قبل ${Math.floor(diff / day)} يوم`;
+  if (diff < minute) return nowLabel;
+  if (diff < hour) return formatter.format(-Math.floor(diff / minute), 'minute');
+  if (diff < day) return formatter.format(-Math.floor(diff / hour), 'hour');
+  if (diff < day * 7) return formatter.format(-Math.floor(diff / day), 'day');
 
-  return new Intl.DateTimeFormat('ar-IQ', {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   }).format(date);
 }
 
-function formatAbsoluteDate(dateString: string | Date) {
-  return new Intl.DateTimeFormat('ar-IQ', {
+function formatAbsoluteDate(dateString: string | Date, locale: string) {
+  return new Intl.DateTimeFormat(locale, {
     year: 'numeric',
     month: 'long',
     day: 'numeric',

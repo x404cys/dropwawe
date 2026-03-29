@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { BarChart3, MapPin, Smartphone, Eye, Globe, Monitor, Tablet } from 'lucide-react';
-import { PieChart, Pie, Cell, Tooltip } from 'recharts';
-import { GovernorateData, DeviceData, DeviceBrand, TrafficSource } from '../types';
+import { useState, type ElementType } from 'react';
+import { BarChart3, Eye, Globe, MapPin, Monitor, Smartphone, Tablet } from 'lucide-react';
+import { Cell, Pie, PieChart, Tooltip } from 'recharts';
+import { useLanguage } from '../../../context/LanguageContext';
+import { DeviceBrand, DeviceData, GovernorateData, TrafficSource } from '../types';
 
 interface AdvancedAnalyticsProps {
   orderCount: number;
@@ -12,7 +13,7 @@ interface AdvancedAnalyticsProps {
   trafficSources: TrafficSource[];
 }
 
-const DEVICE_ICON_MAP: Record<string, React.ElementType> = {
+const DEVICE_ICON_MAP: Record<string, ElementType> = {
   Smartphone,
   Monitor,
   Tablet,
@@ -26,27 +27,31 @@ export function AdvancedAnalytics({
   deviceBrands,
   trafficSources,
 }: AdvancedAnalyticsProps) {
+  const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'governorate' | 'device' | 'pages' | 'sources'>(
     'governorate'
   );
 
+  const locale = lang === 'en' ? 'en-US' : lang === 'ku' ? 'ckb-IQ' : 'ar-IQ';
+
   const analyticsTabs = [
-    { id: 'governorate' as const, label: 'المحافظات', icon: MapPin },
-    { id: 'device' as const, label: 'الأجهزة', icon: Smartphone },
-    { id: 'pages' as const, label: 'الزيارات', icon: Eye },
-    { id: 'sources' as const, label: 'المصادر', icon: Globe },
+    { id: 'governorate' as const, label: t.stats.governorates, icon: MapPin },
+    { id: 'device' as const, label: t.stats.devices, icon: Smartphone },
+    { id: 'pages' as const, label: t.stats.visits, icon: Eye },
+    { id: 'sources' as const, label: t.stats.sources, icon: Globe },
   ];
-  const chartDeviceData = deviceData.map(d => ({
-    name: d.name,
-    value: d.value,
-    color: d.color,
+
+  const chartDeviceData = deviceData.map(device => ({
+    name: device.name,
+    value: device.value,
+    color: device.color,
   }));
 
   return (
     <div className="pt-2">
       <div className="mb-4 flex items-center gap-2">
         <BarChart3 className="text-primary h-5 w-5" />
-        <h2 className="text-foreground text-base font-bold">تحليلات متقدمة</h2>
+        <h2 className="text-foreground text-base font-bold">{t.stats.advancedAnalytics}</h2>
       </div>
 
       <div className="flex gap-1.5 overflow-x-auto pb-3">
@@ -71,44 +76,58 @@ export function AdvancedAnalytics({
           <div className="border-border border-b p-4 pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-foreground text-sm font-semibold">الطلبات حسب المحافظة</h3>
-                <p className="text-muted-foreground mt-0.5 text-[11px]">توزيع الطلبات الجغرافي</p>
+                <h3 className="text-foreground text-sm font-semibold">
+                  {t.stats.ordersByGovernorate}
+                </h3>
+                <p className="text-muted-foreground mt-0.5 text-[11px]">
+                  {t.stats.geographicDistribution}
+                </p>
               </div>
               <div className="bg-primary/10 rounded-lg px-2.5 py-1">
-                <span className="text-primary text-[11px] font-bold">{orderCount} طلب</span>
+                <span className="text-primary text-[11px] font-bold">
+                  {orderCount.toLocaleString(locale)} {t.stats.ordersUnit}
+                </span>
               </div>
             </div>
           </div>
           <div className="space-y-2.5 p-4">
             {governorateData.length === 0 ? (
-              <p className="text-muted-foreground py-4 text-center text-xs">لا توجد طلبات بعد</p>
+              <p className="text-muted-foreground py-4 text-center text-xs">
+                {t.stats.noOrdersYet}
+              </p>
             ) : (
-              governorateData.map((gov, i) => (
-                <div key={gov.name}>
+              governorateData.map((governorate, index) => (
+                <div key={governorate.name}>
                   <div className="mb-1 flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <span
                         className={`flex h-5 w-5 items-center justify-center rounded-md text-[10px] font-bold ${
-                          i === 0 ? 'bg-primary/10 text-primary' : 'bg-muted text-muted-foreground'
+                          index === 0
+                            ? 'bg-primary/10 text-primary'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
-                        {i + 1}
+                        {index + 1}
                       </span>
-                      <span className="text-foreground text-xs font-medium">{gov.name}</span>
+                      <span className="text-foreground text-xs font-medium">
+                        {governorate.name}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="text-muted-foreground text-[11px]">{gov.orders} طلب</span>
+                      <span className="text-muted-foreground text-[11px]">
+                        {governorate.orders.toLocaleString(locale)} {t.stats.ordersUnit}
+                      </span>
                       <span className="text-foreground w-8 text-left text-[11px] font-bold">
-                        {gov.percentage}%
+                        {governorate.percentage}%
                       </span>
                     </div>
                   </div>
                   <div className="bg-muted h-1.5 overflow-hidden rounded-full">
                     <div
                       className={`h-full rounded-full transition-all duration-700 ${
-                        i === 0 ? 'bg-primary' : i === 1 ? 'bg-primary/70' : 'bg-primary/40'
+                        index === 0 ? 'bg-primary' : index === 1 ? 'bg-primary/70' : 'bg-primary/40'
                       }`}
-                      style={{ width: `${gov.percentage}%` }}
+                      style={{ width: `${governorate.percentage}%` }}
                     />
                   </div>
                 </div>
@@ -121,9 +140,9 @@ export function AdvancedAnalytics({
       {activeTab === 'device' && (
         <div className="bg-card border-border overflow-hidden rounded-2xl border">
           <div className="border-border border-b p-4 pb-3">
-            <h3 className="text-foreground text-sm font-semibold">نوع الأجهزة</h3>
+            <h3 className="text-foreground text-sm font-semibold">{t.stats.deviceTypes}</h3>
             <p className="text-muted-foreground mt-0.5 text-[11px]">
-              الأجهزة المستخدمة لتصفح المتجر
+              {t.stats.deviceUsageSubtitle}
             </p>
           </div>
           <div className="p-4">
@@ -140,13 +159,16 @@ export function AdvancedAnalytics({
                     dataKey="value"
                     strokeWidth={0}
                   >
-                    {chartDeviceData.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                    {chartDeviceData.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(v: any, n: any) => [`${v}%`, n ?? '']}
+                    formatter={(value: number | string | undefined, name: string | undefined) => [
+                      `${typeof value === 'number' ? value : Number(value) || 0}%`,
+                      name ?? '',
+                    ]}
                   />
                 </PieChart>
                 {deviceData[0] && (
@@ -160,12 +182,14 @@ export function AdvancedAnalytics({
                 )}
               </div>
             </div>
+
             {deviceData.length === 0 ? (
-              <p className="text-muted-foreground py-2 text-center text-xs">لا توجد بيانات بعد</p>
+              <p className="text-muted-foreground py-2 text-center text-xs">{t.stats.noDataYet}</p>
             ) : (
               <div className="space-y-3">
                 {deviceData.map(device => {
                   const Icon = DEVICE_ICON_MAP[device.icon] ?? Smartphone;
+
                   return (
                     <div
                       key={device.name}
@@ -194,10 +218,11 @@ export function AdvancedAnalytics({
                 })}
               </div>
             )}
+
             {deviceBrands.length > 0 && (
               <div className="border-border mt-5 border-t pt-4">
                 <h4 className="text-foreground mb-3 text-xs font-semibold">
-                  الأنظمة والعلامات التجارية
+                  {t.stats.systemsAndBrands}
                 </h4>
                 <div className="space-y-2.5">
                   {deviceBrands.map(brand => (
@@ -228,12 +253,14 @@ export function AdvancedAnalytics({
           <div className="border-border border-b p-4 pb-3">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-foreground text-sm font-semibold">زيارات المتجر</h3>
-                <p className="text-muted-foreground mt-0.5 text-[11px]">إجمالي زيارات متجرك</p>
+                <h3 className="text-foreground text-sm font-semibold">{t.stats.storeVisits}</h3>
+                <p className="text-muted-foreground mt-0.5 text-[11px]">
+                  {t.stats.totalStoreVisits}
+                </p>
               </div>
               <div className="rounded-lg bg-green-500/10 px-2.5 py-1">
                 <span className="text-[11px] font-bold text-green-600">
-                  {visitCount.toLocaleString('ar-IQ')} زيارة
+                  {visitCount.toLocaleString(locale)} {t.stats.visitsUnit}
                 </span>
               </div>
             </div>
@@ -241,11 +268,12 @@ export function AdvancedAnalytics({
           <div className="flex flex-col items-center justify-center gap-2 p-6">
             <Eye className="text-primary h-10 w-10 opacity-70" />
             <p className="text-foreground text-2xl font-extrabold">
-              {visitCount.toLocaleString('ar-IQ')}
+              {visitCount.toLocaleString(locale)}
             </p>
-            <p className="text-muted-foreground text-xs">إجمالي الزيارات</p>
+            <p className="text-muted-foreground text-xs">{t.stats.totalVisits}</p>
             <p className="text-muted-foreground mt-1 text-[11px]">
-              {Math.round(visitCount * 0.75).toLocaleString('ar-IQ')} زائر فريد تقريباً
+              {Math.round(visitCount * 0.75).toLocaleString(locale)}{' '}
+              {t.stats.approximateUniqueVisitors}
             </p>
           </div>
         </div>
@@ -254,20 +282,20 @@ export function AdvancedAnalytics({
       {activeTab === 'sources' && (
         <div className="bg-card border-border overflow-hidden rounded-2xl border">
           <div className="border-border border-b p-4 pb-3">
-            <h3 className="text-foreground text-sm font-semibold">مصادر الزيارات</h3>
-            <p className="text-muted-foreground mt-0.5 text-[11px]">من أين يأتي زبائنك</p>
+            <h3 className="text-foreground text-sm font-semibold">{t.stats.trafficSources}</h3>
+            <p className="text-muted-foreground mt-0.5 text-[11px]">{t.stats.customerSources}</p>
           </div>
           {trafficSources.length === 0 ? (
-            <p className="text-muted-foreground py-8 text-center text-xs">لا توجد بيانات بعد</p>
+            <p className="text-muted-foreground py-8 text-center text-xs">{t.stats.noDataYet}</p>
           ) : (
             <>
               <div className="flex items-center justify-center py-4">
                 <PieChart width={200} height={200}>
                   <Pie
-                    data={trafficSources.map(s => ({
-                      name: s.name,
-                      value: s.value,
-                      color: s.color,
+                    data={trafficSources.map(source => ({
+                      name: source.name,
+                      value: source.value,
+                      color: source.color,
                     }))}
                     cx={100}
                     cy={100}
@@ -277,15 +305,15 @@ export function AdvancedAnalytics({
                     dataKey="value"
                     strokeWidth={0}
                   >
-                    {trafficSources.map((entry, i) => (
-                      <Cell key={i} fill={entry.color} />
+                    {trafficSources.map((entry, index) => (
+                      <Cell key={index} fill={entry.color} />
                     ))}
                   </Pie>
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(v: any, n: any) => [
-                      `${typeof v === 'number' ? v : Number(v) || 0}%`,
-                      n ?? '',
+                    formatter={(value: number | string | undefined, name: string | undefined) => [
+                      `${typeof value === 'number' ? value : Number(value) || 0}%`,
+                      name ?? '',
                     ]}
                   />
                 </PieChart>

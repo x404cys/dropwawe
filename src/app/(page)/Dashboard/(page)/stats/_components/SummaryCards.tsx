@@ -1,4 +1,4 @@
-import { DollarSign, ShoppingCart, Users, Package, TrendingUp, TrendingDown } from 'lucide-react';
+import { DollarSign, Package, ShoppingCart, TrendingDown, TrendingUp, Users } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 
 interface SummaryCardsProps {
@@ -18,7 +18,7 @@ export function SummaryCards({
 
   const summaryStats = [
     {
-      label: t.stats?.revenue || 'الإيرادات',
+      label: t.stats.revenue,
       value:
         availableBalance >= 1_000_000
           ? `${(availableBalance / 1_000_000).toFixed(1)}M`
@@ -31,21 +31,21 @@ export function SummaryCards({
       color: 'text-primary',
     },
     {
-      label: t.stats?.totalOrders || 'الطلبات',
+      label: t.stats.totalOrders,
       value: `${orderCount}`,
       change: 8.3,
       icon: ShoppingCart,
       color: 'text-blue-500',
     },
     {
-      label: t.stats?.totalCustomers || 'العملاء',
+      label: t.stats.totalCustomers,
       value: `${customersCount}`,
       change: 15.2,
       icon: Users,
       color: 'text-green-500',
     },
     {
-      label: t.stats?.totalProducts || 'المنتجات',
+      label: t.stats.totalProducts,
       value: `${productCount}`,
       change: -3.1,
       icon: Package,
