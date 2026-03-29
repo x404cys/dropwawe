@@ -1,6 +1,7 @@
 import { useState, type ElementType } from 'react';
 import { BarChart3, Eye, Globe, MapPin, Monitor, Smartphone, Tablet } from 'lucide-react';
 import { Cell, Pie, PieChart, Tooltip } from 'recharts';
+import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
 import { useLanguage } from '../../../context/LanguageContext';
 import { DeviceBrand, DeviceData, GovernorateData, TrafficSource } from '../types';
 
@@ -17,6 +18,14 @@ const DEVICE_ICON_MAP: Record<string, ElementType> = {
   Smartphone,
   Monitor,
   Tablet,
+};
+
+const formatTooltipPercentage = (value: ValueType | undefined, name: NameType | undefined) => {
+  const normalizedValue = Array.isArray(value) ? value[0] : value;
+  const percentage =
+    typeof normalizedValue === 'number' ? normalizedValue : Number(normalizedValue) || 0;
+
+  return [`${percentage}%`, typeof name === 'string' ? name : ''] as const;
 };
 
 export function AdvancedAnalytics({
@@ -165,10 +174,7 @@ export function AdvancedAnalytics({
                   </Pie>
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(value: number | string | undefined, name: string | undefined) => [
-                      `${typeof value === 'number' ? value : Number(value) || 0}%`,
-                      name ?? '',
-                    ]}
+                    formatter={formatTooltipPercentage}
                   />
                 </PieChart>
                 {deviceData[0] && (
@@ -311,10 +317,7 @@ export function AdvancedAnalytics({
                   </Pie>
                   <Tooltip
                     contentStyle={{ fontSize: 11, borderRadius: 8 }}
-                    formatter={(value: number | string | undefined, name: string | undefined) => [
-                      `${typeof value === 'number' ? value : Number(value) || 0}%`,
-                      name ?? '',
-                    ]}
+                    formatter={formatTooltipPercentage}
                   />
                 </PieChart>
               </div>
