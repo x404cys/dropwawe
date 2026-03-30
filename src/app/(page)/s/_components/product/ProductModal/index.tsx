@@ -66,7 +66,7 @@ export default function ProductModal({ product, colors, headingStyle }: ProductM
   };
 
   return (
-    <div dir="rtl" className="fixed inset-0 z-50 overflow-y-auto">
+    <div dir="rtl" className="fixed inset-0 z-50 h-screen overflow-y-auto">
       <ProductModalHeader title={product.name} backgroundColor={colors.bg} onClose={handleClose} />
 
       <div style={{ background: colors.bg }} className="mx-auto max-w-6xl px-4 py-8 md:px-6">
