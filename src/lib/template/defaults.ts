@@ -10,14 +10,62 @@ import type {
 } from './types';
 
 export const COLOR_PRESETS: ColorPreset[] = [
-  { name: 'ليلي', primary: '#6366f1', accent: '#8b5cf6', bg: '#0f0f14', text: '#f4f4f5' },
-  { name: 'فجري', primary: '#f59e0b', accent: '#ef4444', bg: '#fffbf5', text: '#1c1917' },
-  { name: 'مرجاني', primary: '#ec4899', accent: '#8b5cf6', bg: '#fdf2f8', text: '#1e1b4b' },
-  { name: 'زمردي', primary: '#10b981', accent: '#06b6d4', bg: '#f0fdf4', text: '#064e3b' },
-  { name: 'صخري', primary: '#64748b', accent: '#94a3b8', bg: '#f8fafc', text: '#0f172a' },
-  { name: 'نيلي', primary: '#3b82f6', accent: '#06b6d4', bg: '#eff6ff', text: '#1e3a5f' },
-  { name: 'شوكولا', primary: '#D4AF37', accent: '#F0D060', bg: '#1A1A1A', text: '#FAFAFA' },
-  { name: 'وردي', primary: '#db2777', accent: '#9333ea', bg: '#fdf4ff', text: '#3b0764' },
+  {
+    name: 'سماوي',
+    primary: '#0EA5E9',
+    accent: '#06B6D4',
+    bg: '#FFFFFF',
+    text: '#1a2332',
+  },
+  {
+    name: 'بنفسجي',
+    primary: '#8B5CF6',
+    accent: '#A78BFA',
+    bg: '#FFFFFF',
+    text: '#1a1a2e',
+  },
+  {
+    name: 'زمردي',
+    primary: '#10B981',
+    accent: '#34D399',
+    bg: '#FFFFFF',
+    text: '#1a2e1a',
+  },
+  {
+    name: 'برتقالي',
+    primary: '#F97316',
+    accent: '#FB923C',
+    bg: '#FFFFFF',
+    text: '#2e1a0c',
+  },
+  {
+    name: 'مرجاني',
+    primary: '#EC4899',
+    accent: '#F472B6',
+    bg: '#FFFFFF',
+    text: '#2e1a24',
+  },
+  {
+    name: 'ليلي',
+    primary: '#6366F1',
+    accent: '#818CF8',
+    bg: '#0F172A',
+    text: '#F1F5F9',
+  },
+  {
+    name: 'ذهبي',
+    primary: '#D4AF37',
+    accent: '#F0D060',
+    bg: '#1A1A1A',
+    text: '#FAFAFA',
+  },
+  {
+    name: 'أحمر',
+    primary: '#EF4444',
+    accent: '#F87171',
+    bg: '#FFFFFF',
+    text: '#1a1a1a',
+  },
 ];
 
 export const DEFAULT_ANNOUNCEMENT_BAR: AnnouncementBarConfig = {
