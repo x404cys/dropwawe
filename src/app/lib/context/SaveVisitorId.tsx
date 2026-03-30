@@ -1,45 +1,14 @@
 'use client';
-import { v4 as uuidv4 } from 'uuid';
 import { useEffect } from 'react';
+import { trackVisitorVisit } from './visitorTracking';
 
 export function useTrackVisitor(path: string) {
   useEffect(() => {
-    let visitorId = localStorage.getItem('visitorId');
-
-    if (!visitorId) {
-      visitorId = uuidv4();
-      localStorage.setItem('visitorId', visitorId);
-    }
-
-    fetch('/api/visit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        visitorId,
-        path,
-        referrer: document.referrer || null,
-      }),
+    void trackVisitorVisit({
+      path,
+      dedupeKey: `page:${path}:${window.location.pathname}`,
     });
   }, [path]);
 }
 
-export function useTrackVisitor4landing(path: string) {
-  useEffect(() => {
-    let visitorId = localStorage.getItem('visitorId');
-
-    if (!visitorId) {
-      visitorId = uuidv4();
-      localStorage.setItem('visitorId', visitorId);
-    }
-
-    fetch('/api/visit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        visitorId,
-        path,
-        referrer: document.referrer || null,
-      }),
-    });
-  }, [path]);
-}
+export const useTrackVisitor4landing = useTrackVisitor;

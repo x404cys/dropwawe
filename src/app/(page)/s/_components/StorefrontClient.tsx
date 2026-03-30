@@ -4,6 +4,7 @@ import type { ReactNode } from 'react';
 
 import { ActiveColors, SectionsConfig, StorefrontStore } from '../_lib/types';
 import { CartProvider, useCart } from '../_context/CartContext';
+import { useTrackStoreVisit } from '../_hooks/useTrackStoreVisit';
 import CheckoutDrawer from './checkout/CheckoutDrawer';
 import FloatingCart from './floating/FloatingCart';
 import ProductModal from './product/ProductModal';
@@ -14,7 +15,6 @@ interface StorefrontClientProps {
   headingStyle: React.CSSProperties;
   sections: SectionsConfig;
   children: ReactNode;
-  
 }
 
 function StorefrontInner({
@@ -25,6 +25,7 @@ function StorefrontInner({
   children,
 }: StorefrontClientProps) {
   const { selectedProduct } = useCart();
+  useTrackStoreVisit(store.subLink);
 
   return (
     <>
@@ -34,7 +35,11 @@ function StorefrontInner({
         <ProductModal product={selectedProduct} colors={colors} headingStyle={headingStyle} />
       )}
 
-      <CheckoutDrawer storeId={store.id} primaryColor={colors.primary} shippingPrice={store.shippingPrice} />
+      <CheckoutDrawer
+        storeId={store.id}
+        primaryColor={colors.primary}
+        shippingPrice={store.shippingPrice}
+      />
       {sections.store && <FloatingCart primaryColor={colors.primary} />}
     </>
   );
