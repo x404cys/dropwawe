@@ -101,8 +101,9 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     }
 
     setCart([{ product, qty: 1 }]);
+    setCoupon(COUPON_IDLE);
     setCheckoutStep('cart');
-    setShowCart(true);
+    setShowCart(false);
     setSelectedProduct(null);
   };
 
@@ -122,7 +123,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         .filter(c => c.qty > 0)
     );
   };
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+    setCoupon(COUPON_IDLE);
+    setSelectedProduct(null);
+    setShowCart(false);
+    setCheckoutStep('cart');
+  };
 
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
   const cartTotal = cart.reduce((s, c) => s + getDiscountedPrice(c.product) * c.qty, 0);

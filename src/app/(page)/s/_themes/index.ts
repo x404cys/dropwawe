@@ -1,7 +1,7 @@
 ﻿import defaultTheme from './theme-default-theme';
 import themeclothesno1 from './theme-clothes-no1';
 import defaultTheme2 from './theme-default-theme-2';
- import type { ThemeConfig } from './types';
+import type { ThemeConfig } from './types';
 
 export const themes: ThemeConfig[] = [];
 

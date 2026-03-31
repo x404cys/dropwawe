@@ -1,3 +1,5 @@
+import type { VisitEntityType, VisitPageType } from '@/lib/visitor-tracking';
+
 export interface OrderItemData {
   quantity: number;
   product: { name: string } | null;
@@ -75,6 +77,20 @@ export interface TrafficSource {
   emoji: string;
 }
 
+export interface VisitLocationStat {
+  pageType: VisitPageType;
+  visits: number;
+  percentage: number;
+}
+
+export interface VisitEntityStat {
+  entityType: VisitEntityType;
+  entityId: string;
+  entityName: string;
+  visits: number;
+  percentage: number;
+}
+
 export interface DashboardStats {
   totalRevenue: number;
   availableBalance: number;
@@ -83,6 +99,7 @@ export interface DashboardStats {
   pendingCount: number;
   productCount: number;
   visitCount: number;
+  uniqueVisitorCount: number;
   customers: CustomerStat[];
   topProducts: ProductStat[];
   revenueChart: RevenueDataPoint[];
@@ -91,5 +108,7 @@ export interface DashboardStats {
   deviceData: DeviceData[];
   deviceBrands: DeviceBrand[];
   trafficSources: TrafficSource[];
+  visitLocations: VisitLocationStat[];
+  visitEntities: VisitEntityStat[];
   chartData: ChartDataPoint[];
 }

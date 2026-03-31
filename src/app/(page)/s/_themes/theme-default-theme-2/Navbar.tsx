@@ -1,16 +1,13 @@
 'use client';
 
 import { Menu, Search, ShoppingBag, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState } from 'react';
 
 import type { NavbarProps } from '../../_lib/types';
 import { useCart } from '../../_context/CartContext';
-import {
-  borderStyle,
-  mutedTextStyle,
-  pageStyle,
-  storefrontContainerClass,
-} from './themeSystem';
+import { buildStorefrontCheckoutPath } from '../../_utils/routes';
+import { borderStyle, mutedTextStyle, pageStyle, storefrontContainerClass } from './themeSystem';
 
 const sectionNavMap = {
   hero: { scrollId: 'hero-section', label: 'الرئيسية' },
@@ -25,14 +22,11 @@ const sectionNavMap = {
 const iconButtonClass =
   'flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200';
 
-export default function DefaultThemeNavbar({
-  store,
-  template,
-  sections,
-}: NavbarProps) {
+export default function DefaultThemeNavbar({ store, template, sections }: NavbarProps) {
+  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
-  const { cartCount, setCheckoutStep, setShowCart } = useCart();
+  const { cartCount } = useCart();
 
   const navItems = useMemo(
     () =>
@@ -55,8 +49,7 @@ export default function DefaultThemeNavbar({
   };
 
   const openCart = () => {
-    setCheckoutStep('cart');
-    setShowCart(true);
+    router.push(buildStorefrontCheckoutPath());
   };
 
   return (
@@ -126,7 +119,7 @@ export default function DefaultThemeNavbar({
             ))}
           </nav>
 
-          <div className="flex items-center justify-self-end gap-2">
+          <div className="flex items-center gap-2 justify-self-end">
             {sections.store ? (
               <button
                 type="button"

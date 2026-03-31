@@ -1,4 +1,5 @@
 import { prisma } from '@/app/lib/db';
+import { getVisitorSchemaSupport } from '../utils/visitor-schema-support';
 import { OrderData, VisitorData } from '../types/dashboard.types';
 
 export async function getRevenueAggregation(storeId: string) {
@@ -136,4 +137,87 @@ export async function getVisitorDemographicsAgg(storeSubLink: string | undefined
   });
 
   return { data: visitors, total: visitors.length };
+}
+
+export async function getVisitorLocationStatsAgg(storeSubLink: string | undefined | null) {
+  if (!storeSubLink) {
+    return {
+      total: 0,
+      uniqueVisitors: 0,
+      pageGroups: [],
+      entityGroups: [],
+    };
+  }
+
+  const [support, total, uniqueVisitorRows] = await Promise.all([
+    getVisitorSchemaSupport(),
+    prisma.visitor.count({
+      where: { storeName: storeSubLink },
+    }),
+    prisma.$queryRaw<Array<{ count: number | bigint }>>`
+      SELECT COUNT(DISTINCT "visitorId")::int AS count
+      FROM "Visitor"
+      WHERE "storeName" = ${storeSubLink}
+    `,
+  ]);
+
+  if (!support.enhancedColumns) {
+    return {
+      total,
+      uniqueVisitors: Number(uniqueVisitorRows[0]?.count ?? 0),
+      pageGroups: [],
+      entityGroups: [],
+    };
+  }
+
+  const [pageRows, entityRows] = await Promise.all([
+    prisma.$queryRaw<Array<{ pageType: string | null; count: number | bigint }>>`
+      SELECT "pageType", COUNT(*)::int AS count
+      FROM "Visitor"
+      WHERE "storeName" = ${storeSubLink}
+      GROUP BY "pageType"
+      ORDER BY COUNT(*) DESC
+      LIMIT 8
+    `,
+    prisma.$queryRaw<
+      Array<{
+        entityType: string | null;
+        entityId: string | null;
+        entityName: string | null;
+        count: number | bigint;
+      }>
+    >`
+      SELECT
+        "entityType",
+        "entityId",
+        COALESCE(MAX("entityName"), MAX("entityId")) AS "entityName",
+        COUNT(*)::int AS count
+      FROM "Visitor"
+      WHERE "storeName" = ${storeSubLink}
+        AND "entityId" IS NOT NULL
+        AND "entityType" IN ('PRODUCT', 'ORDER')
+      GROUP BY "entityType", "entityId"
+      ORDER BY COUNT(*) DESC
+      LIMIT 8
+    `,
+  ]);
+
+  const pageGroups = pageRows.map(row => ({
+    pageType: row.pageType,
+    _count: { id: Number(row.count) },
+  }));
+
+  const entityGroups = entityRows.map(row => ({
+    entityType: row.entityType,
+    entityId: row.entityId,
+    entityName: row.entityName,
+    _count: { id: Number(row.count) },
+  }));
+
+  return {
+    total,
+    uniqueVisitors: Number(uniqueVisitorRows[0]?.count ?? 0),
+    pageGroups,
+    entityGroups,
+  };
 }

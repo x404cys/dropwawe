@@ -13,11 +13,7 @@ import {
   storefrontTitleClass,
 } from '../themeSystem';
 
-export default function DefaultThemeAboutSection({
-  template,
-  store,
-  fonts,
-}: AboutSectionProps) {
+export default function DefaultThemeAboutSection({ template, store, fonts }: AboutSectionProps) {
   const aboutText =
     template.aboutText?.trim() ||
     template.storeDescription?.trim() ||
@@ -31,7 +27,9 @@ export default function DefaultThemeAboutSection({
 
   return (
     <section id="about-section" className={storefrontSectionCompactClass}>
-      <div className={`${storefrontContainerClass} grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-16`}>
+      <div
+        className={`${storefrontContainerClass} grid gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,0.85fr)] lg:gap-16`}
+      >
         <div className="space-y-6">
           <span
             className="inline-flex rounded-full px-3 py-1 text-[11px] font-semibold tracking-[0.12em] uppercase"
@@ -67,10 +65,16 @@ export default function DefaultThemeAboutSection({
             }}
           >
             <div className="mb-6 space-y-2">
-              <p className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: 'var(--store-text-faint)' }}>
+              <p
+                className="text-[11px] font-medium tracking-[0.16em] uppercase"
+                style={{ color: 'var(--store-text-faint)' }}
+              >
                 Contact
               </p>
-              <h3 className="text-xl font-bold tracking-[-0.02em]" style={{ fontFamily: fonts.heading }}>
+              <h3
+                className="text-xl font-bold tracking-[-0.02em]"
+                style={{ fontFamily: fonts.heading }}
+              >
                 قنوات التواصل
               </h3>
             </div>

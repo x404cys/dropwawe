@@ -1,13 +1,4 @@
-import {
-  Facebook,
-  Globe,
-  Instagram,
-  Link2,
-  Mail,
-  MessageCircle,
-  Phone,
-  Send,
-} from 'lucide-react';
+import { Facebook, Globe, Instagram, Link2, Mail, MessageCircle, Phone, Send } from 'lucide-react';
 import type { ElementType } from 'react';
 import type {
   StorefrontContactItem,
@@ -50,7 +41,8 @@ const EXTERNAL_TYPES = new Set<StorefrontContactType>([
 function normalizeUrl(value: string) {
   const trimmed = value.trim();
   if (!trimmed) return '';
-  if (/^(https?:)?\/\//i.test(trimmed)) return trimmed.startsWith('http') ? trimmed : `https:${trimmed}`;
+  if (/^(https?:)?\/\//i.test(trimmed))
+    return trimmed.startsWith('http') ? trimmed : `https:${trimmed}`;
   return `https://${trimmed}`;
 }
 
@@ -87,11 +79,9 @@ export function getContactHref(item: StorefrontContactItem): string | null {
 
 function normalizeContactItem(raw: StorefrontContactItem, index: number): StorefrontContactItem {
   const type: StorefrontContactType =
-    raw.type && Object.prototype.hasOwnProperty.call(TYPE_LABELS, raw.type)
-      ? raw.type
-      : 'custom';
+    raw.type && Object.prototype.hasOwnProperty.call(TYPE_LABELS, raw.type) ? raw.type : 'custom';
   const label =
-    typeof raw.label === 'string' && raw.label.trim() ? raw.label : TYPE_LABELS[type] ?? 'رابط';
+    typeof raw.label === 'string' && raw.label.trim() ? raw.label : (TYPE_LABELS[type] ?? 'رابط');
   const value = typeof raw.value === 'string' ? raw.value : '';
   const enabled = typeof raw.enabled === 'boolean' ? raw.enabled : value.trim().length > 0;
   const id = typeof raw.id === 'string' && raw.id ? raw.id : `${type}-${index}`;

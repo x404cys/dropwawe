@@ -2,6 +2,7 @@
 
 import { Upload } from 'lucide-react';
 import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
+import { resolveTemplateFontFamily } from '@/lib/template/font-family';
 
 interface FontOption {
   value: string;
@@ -47,7 +48,10 @@ export default function FontPicker({
               value === font.value ? 'border-primary bg-primary/5' : 'border-border'
             }`}
           >
-            <p className="truncate text-xs font-bold" style={{ fontFamily: font.value }}>
+            <p
+              className="truncate text-xs font-bold"
+              style={{ fontFamily: resolveTemplateFontFamily(font.value) }}
+            >
               {font.label}
             </p>
           </button>

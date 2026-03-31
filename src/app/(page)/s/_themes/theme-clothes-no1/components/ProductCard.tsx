@@ -4,13 +4,14 @@
 
 import Image from 'next/image';
 import { Package } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import type { ProductCardProps } from '../../../_lib/types';
-import { useCart } from '../../../_context/CartContext';
 import { getDiscountedPrice } from '../../../_utils/price';
+import { buildStorefrontProductPath } from '../../../_utils/routes';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function TechFuturisticProductCard({ product, colors, fonts }: ProductCardProps) {
-  const { setSelectedProduct } = useCart();
+  const router = useRouter();
   const primaryImage = product.images?.[0]?.url || product.image || null;
   const finalPrice = getDiscountedPrice(product);
   const compareAtPrice =
@@ -32,7 +33,7 @@ export default function TechFuturisticProductCard({ product, colors, fonts }: Pr
     >
       <button
         type="button"
-        onClick={() => setSelectedProduct(product)}
+        onClick={() => router.push(buildStorefrontProductPath(product.id))}
         className="flex h-full w-full flex-col text-start transition-all duration-150 ease-out focus:outline-none"
         style={{
           border: `0.5px solid ${colors.text + '0f'}`,

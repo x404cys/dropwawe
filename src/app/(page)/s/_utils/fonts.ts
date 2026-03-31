@@ -1,9 +1,11 @@
-// Purpose: Font style builders â€” converts template font fields into
+// Purpose: Font style builders convert template font fields into
 // React.CSSProperties objects for spread into style props.
 
+import { DEFAULT_TEMPLATE_FONT, resolveTemplateFontFamily } from '@/lib/template/font-family';
 import { StorefrontFonts, StorefrontTemplate } from '../_lib/types';
 
-const DEFAULT_FONT = 'IBM Plex Sans Arabic';
+export const DEFAULT_FONT = DEFAULT_TEMPLATE_FONT;
+export const resolveStorefrontFontFamily = resolveTemplateFontFamily;
 
 export interface FontStyles {
   headingStyle: React.CSSProperties;
@@ -14,8 +16,8 @@ export function resolveStorefrontFonts(template: StorefrontTemplate | null): Sto
   const rawHeading = template?.headingFont?.trim();
   const rawBody = template?.bodyFont?.trim();
 
-  const heading = rawHeading || DEFAULT_FONT;
-  const body = rawBody || DEFAULT_FONT;
+  const heading = resolveStorefrontFontFamily(rawHeading);
+  const body = resolveStorefrontFontFamily(rawBody);
 
   return { heading, body };
 }

@@ -1,54 +1,66 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
+import { usePathname } from 'next/navigation';
 
-import { ActiveColors, SectionsConfig, StorefrontStore } from '../_lib/types';
-import { CartProvider, useCart } from '../_context/CartContext';
-import { useTrackStoreVisit } from '../_hooks/useTrackStoreVisit';
-import CheckoutDrawer from './checkout/CheckoutDrawer';
+import { trackVisitorVisit } from '@/app/lib/context/visitorTracking';
+import type { VisitEntityType, VisitPageType } from '@/lib/visitor-tracking';
+import { SectionsConfig, StorefrontStore } from '../_lib/types';
 import FloatingCart from './floating/FloatingCart';
-import ProductModal from './product/ProductModal';
 
 interface StorefrontClientProps {
   store: StorefrontStore;
-  colors: ActiveColors;
-  headingStyle: React.CSSProperties;
-  sections: SectionsConfig;
+  primaryColor?: string;
+  sections?: SectionsConfig;
+  showFloatingCart?: boolean;
+  visit: {
+    pageType: VisitPageType;
+    entityType: VisitEntityType;
+    entityId?: string | null;
+    entityName?: string | null;
+    dedupeKey: string;
+  };
   children: ReactNode;
 }
 
-function StorefrontInner({
+export default function StorefrontClient({
   store,
-  colors,
-  headingStyle,
+  primaryColor,
   sections,
+  showFloatingCart = true,
+  visit,
   children,
 }: StorefrontClientProps) {
-  const { selectedProduct } = useCart();
-  useTrackStoreVisit(store.subLink);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    if (!store.subLink) return;
+
+    void trackVisitorVisit({
+      storeName: store.subLink,
+      path: pathname,
+      pageType: visit.pageType,
+      entityType: visit.entityType,
+      entityId: visit.entityId ?? null,
+      entityName: visit.entityName ?? null,
+      dedupeKey: visit.dedupeKey,
+    });
+  }, [
+    pathname,
+    store.subLink,
+    visit.dedupeKey,
+    visit.entityId,
+    visit.entityName,
+    visit.entityType,
+    visit.pageType,
+  ]);
 
   return (
     <>
       {children}
-
-      {selectedProduct && (
-        <ProductModal product={selectedProduct} colors={colors} headingStyle={headingStyle} />
-      )}
-
-      <CheckoutDrawer
-        storeId={store.id}
-        primaryColor={colors.primary}
-        shippingPrice={store.shippingPrice}
-      />
-      {sections.store && <FloatingCart primaryColor={colors.primary} />}
+      {showFloatingCart && sections?.store && primaryColor ? (
+        <FloatingCart primaryColor={primaryColor} />
+      ) : null}
     </>
-  );
-}
-
-export default function StorefrontClient(props: StorefrontClientProps) {
-  return (
-    <CartProvider>
-      <StorefrontInner {...props} />
-    </CartProvider>
   );
 }

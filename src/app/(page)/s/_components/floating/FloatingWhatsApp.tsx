@@ -16,7 +16,7 @@ interface FloatingWhatsAppProps {
 export default function FloatingWhatsApp({ template, store }: FloatingWhatsAppProps) {
   const { t } = useLanguage();
   const whatsappItem = buildContactItems(template, store).find(
-    (item) => item.type === 'whatsapp' && item.enabled && item.value.trim().length > 0
+    item => item.type === 'whatsapp' && item.enabled && item.value.trim().length > 0
   );
   if (!whatsappItem) return null;
 
@@ -27,7 +27,7 @@ export default function FloatingWhatsApp({ template, store }: FloatingWhatsAppPr
       href={`https://wa.me/${number}`}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-6 left-4 w-12 h-12 rounded-full flex items-center justify-center shadow-lg z-30 bg-[#25D366] hover:scale-105 transition-transform"
+      className="fixed bottom-6 left-4 z-30 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] shadow-lg transition-transform hover:scale-105"
       aria-label={t.floating.whatsappAria}
     >
       <MessageCircle className="h-6 w-6 text-white" />

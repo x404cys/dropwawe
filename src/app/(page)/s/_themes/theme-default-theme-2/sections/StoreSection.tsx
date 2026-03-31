@@ -19,7 +19,10 @@ function renderBanner(banners: string[], key: string) {
 
   return (
     <div key={key} className="overflow-hidden rounded-xl">
-      <DefaultThemeBannerCarousel banners={banners} colors={{ primary: '', accent: '', bg: '', text: '' }} />
+      <DefaultThemeBannerCarousel
+        banners={banners}
+        colors={{ primary: '', accent: '', bg: '', text: '' }}
+      />
     </div>
   );
 }
@@ -85,7 +88,10 @@ export default function DefaultThemeStoreSection({
       <div className={storefrontContainerClass}>
         {upStoreBanners.length > 0 ? (
           <div className="mb-10 overflow-hidden rounded-xl">
-            <DefaultThemeBannerCarousel banners={upStoreBanners} colors={{ primary: '', accent: '', bg: '', text: '' }} />
+            <DefaultThemeBannerCarousel
+              banners={upStoreBanners}
+              colors={{ primary: '', accent: '', bg: '', text: '' }}
+            />
           </div>
         ) : null}
 
@@ -171,7 +177,10 @@ export default function DefaultThemeStoreSection({
 
         {centerBanners.length > 0 ? (
           <div className="mb-12 overflow-hidden rounded-xl">
-            <DefaultThemeBannerCarousel banners={centerBanners} colors={{ primary: '', accent: '', bg: '', text: '' }} />
+            <DefaultThemeBannerCarousel
+              banners={centerBanners}
+              colors={{ primary: '', accent: '', bg: '', text: '' }}
+            />
           </div>
         ) : null}
 
@@ -185,7 +194,10 @@ export default function DefaultThemeStoreSection({
                 <div key={section.id} className="space-y-8">
                   <div className="flex flex-wrap items-end justify-between gap-4">
                     <div className="space-y-2">
-                      <p className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: 'var(--store-text-faint)' }}>
+                      <p
+                        className="text-[11px] font-medium tracking-[0.16em] uppercase"
+                        style={{ color: 'var(--store-text-faint)' }}
+                      >
                         Collection
                       </p>
                       <h3
@@ -232,7 +244,10 @@ export default function DefaultThemeStoreSection({
             {remainingProducts.length > 0 ? (
               <div className="space-y-8">
                 <div className="space-y-2">
-                  <p className="text-[11px] font-medium tracking-[0.16em] uppercase" style={{ color: 'var(--store-text-faint)' }}>
+                  <p
+                    className="text-[11px] font-medium tracking-[0.16em] uppercase"
+                    style={{ color: 'var(--store-text-faint)' }}
+                  >
                     More
                   </p>
                   <h3

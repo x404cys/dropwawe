@@ -1,5 +1,7 @@
 'use client';
 
+import { trackVisitorVisit } from '@/app/lib/context/visitorTracking';
+import { formatTrackedOrderName } from '@/lib/visitor-tracking';
 import {
   Check,
   CreditCard,
@@ -11,7 +13,7 @@ import {
   Tag,
   X,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useCart } from '../../_context/CartContext';
 import { useLanguage } from '../../_context/LanguageContext';
 import { getCartItemKey } from '../../_utils/cart';
@@ -19,12 +21,16 @@ import { getDiscountedPrice } from '../../_utils/price';
 
 interface CheckoutDrawerProps {
   storeId: string;
+  storeSlug?: string | null;
+  storeName?: string | null;
   primaryColor: string;
   shippingPrice?: number;
 }
 
 export default function CheckoutDrawer({
   storeId,
+  storeSlug,
+  storeName,
   primaryColor,
   shippingPrice,
 }: CheckoutDrawerProps) {
@@ -42,10 +48,11 @@ export default function CheckoutDrawer({
     setCustomerInfo,
     paymentMethod,
     setPaymentMethod,
-   } = useCart();
+  } = useCart();
   const { t, locale } = useLanguage();
 
   const [couponCode, setCouponCode] = useState('');
+  const [completedOrderId, setCompletedOrderId] = useState<string | null>(null);
   const [couponState, setCouponState] = useState<{
     status: 'idle' | 'loading' | 'valid' | 'error';
     message?: string;
@@ -104,6 +111,21 @@ export default function CheckoutDrawer({
       : 0;
   const grandTotal = Math.max(0, cartTotal - orderDiscount + effectiveShipping);
 
+  useEffect(() => {
+    if (!showCart || checkoutStep !== 'success' || !storeSlug || !completedOrderId) {
+      return;
+    }
+
+    void trackVisitorVisit({
+      storeName: storeSlug,
+      pageType: 'ORDER_SUCCESS',
+      entityType: 'ORDER',
+      entityId: completedOrderId,
+      entityName: formatTrackedOrderName(completedOrderId),
+      dedupeKey: `order-success:${storeSlug}:${completedOrderId}`,
+    });
+  }, [checkoutStep, completedOrderId, showCart, storeSlug]);
+
   if (!showCart) return null;
 
   const isInfoValid =
@@ -144,8 +166,28 @@ export default function CheckoutDrawer({
         return;
       }
 
+      const orderId =
+        typeof data?.order?.id === 'string'
+          ? data.order.id
+          : typeof data?.orderId === 'string'
+            ? data.orderId
+            : null;
+
       if (paymentMethod !== 'cod') {
         if (data.redirect_url) {
+          if (storeSlug) {
+            await trackVisitorVisit({
+              storeName: storeSlug,
+              pageType: 'PAYMENT_REDIRECT',
+              entityType: orderId ? 'ORDER' : 'STORE',
+              entityId: orderId ?? storeId,
+              entityName: orderId ? formatTrackedOrderName(orderId) : (storeName ?? storeSlug),
+              dedupeKey: orderId
+                ? `payment-redirect:${storeSlug}:${orderId}`
+                : `payment-redirect:${storeSlug}`,
+            });
+          }
+
           window.location.href = data.redirect_url;
           return;
         }
@@ -153,8 +195,10 @@ export default function CheckoutDrawer({
         return;
       }
 
+      setCompletedOrderId(orderId);
       setCheckoutStep('success');
       setTimeout(() => {
+        setCompletedOrderId(null);
         clearCart();
         setShowCart(false);
         setCheckoutStep('cart');
@@ -167,6 +211,7 @@ export default function CheckoutDrawer({
   };
 
   const closeDrawer = () => {
+    setCompletedOrderId(null);
     setShowCart(false);
     setCheckoutStep('cart');
   };

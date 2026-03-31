@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import { Package } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { ActiveColors, StorefrontProduct } from '../../_lib/types';
 import { getDiscountedPrice } from '../../_utils/price';
-import { useCart } from '../../_context/CartContext';
+import { buildStorefrontProductPath } from '../../_utils/routes';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 interface ProductCardProps {
@@ -13,7 +14,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, colors }: ProductCardProps) {
-  const { setSelectedProduct } = useCart();
+  const router = useRouter();
 
   const finalPrice = getDiscountedPrice(product);
   const primaryImage = product.images?.[0]?.url || product.image || null;
@@ -27,7 +28,7 @@ export default function ProductCard({ product, colors }: ProductCardProps) {
     >
       <button
         type="button"
-        onClick={() => setSelectedProduct(product)}
+        onClick={() => router.push(buildStorefrontProductPath(product.id))}
         className="block w-full text-right"
       >
         <div className="relative aspect-[3/4] overflow-hidden bg-white/[0.02]">

@@ -68,7 +68,10 @@ export default function DefaultThemeServicesSection({
                         </h3>
                       ) : null}
                       {service.worksDesc ? (
-                        <p className="text-sm leading-7" style={{ color: 'var(--store-text-muted)' }}>
+                        <p
+                          className="text-sm leading-7"
+                          style={{ color: 'var(--store-text-muted)' }}
+                        >
                           {service.worksDesc}
                         </p>
                       ) : null}
@@ -99,7 +102,10 @@ export default function DefaultThemeServicesSection({
                                   className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                                 />
                               ) : (
-                                <div className="flex h-full items-center justify-center" style={{ color: 'var(--store-text-faint)' }}>
+                                <div
+                                  className="flex h-full items-center justify-center"
+                                  style={{ color: 'var(--store-text-faint)' }}
+                                >
                                   <PenTool className="h-8 w-8" />
                                 </div>
                               )}
@@ -121,7 +127,10 @@ export default function DefaultThemeServicesSection({
                             </div>
 
                             <div className="space-y-1">
-                              <h3 className="text-base font-bold tracking-[-0.02em]" style={{ fontFamily: fonts.heading }}>
+                              <h3
+                                className="text-base font-bold tracking-[-0.02em]"
+                                style={{ fontFamily: fonts.heading }}
+                              >
                                 {work.title}
                               </h3>
                               {work.category ? (

@@ -1,23 +1,71 @@
 import { useState, type ElementType } from 'react';
-import { BarChart3, Eye, Globe, MapPin, Monitor, Smartphone, Tablet } from 'lucide-react';
+import {
+  ArrowUpRight,
+  BarChart3,
+  CheckCircle2,
+  Eye,
+  Globe,
+  House,
+  MapPin,
+  Monitor,
+  Package,
+  ShoppingCart,
+  Smartphone,
+  Tablet,
+} from 'lucide-react';
 import { Cell, Pie, PieChart, Tooltip } from 'recharts';
 import type { NameType, ValueType } from 'recharts/types/component/DefaultTooltipContent';
+import type { VisitEntityType, VisitPageType } from '@/lib/visitor-tracking';
 import { useLanguage } from '../../../context/LanguageContext';
-import { DeviceBrand, DeviceData, GovernorateData, TrafficSource } from '../types';
+import {
+  DeviceBrand,
+  DeviceData,
+  GovernorateData,
+  TrafficSource,
+  VisitEntityData,
+  VisitLocationData,
+} from '../types';
 
 interface AdvancedAnalyticsProps {
   orderCount: number;
   visitCount: number;
+  uniqueVisitorCount: number;
   governorateData: GovernorateData[];
   deviceData: DeviceData[];
   deviceBrands: DeviceBrand[];
   trafficSources: TrafficSource[];
+  visitLocations: VisitLocationData[];
+  visitEntities: VisitEntityData[];
 }
 
 const DEVICE_ICON_MAP: Record<string, ElementType> = {
   Smartphone,
   Monitor,
   Tablet,
+};
+
+const VISIT_PAGE_ICON_MAP: Record<VisitPageType, ElementType> = {
+  LANDING: ArrowUpRight,
+  STORE_HOME: House,
+  PRODUCT: Package,
+  CHECKOUT: ShoppingCart,
+  ORDER_SUCCESS: CheckCircle2,
+  PAYMENT_REDIRECT: ArrowUpRight,
+};
+
+const VISIT_PAGE_COLOR_MAP: Record<VisitPageType, string> = {
+  LANDING: 'hsl(270,70%,60%)',
+  STORE_HOME: 'hsl(191,80%,42%)',
+  PRODUCT: 'hsl(214,89%,52%)',
+  CHECKOUT: 'hsl(32,95%,55%)',
+  ORDER_SUCCESS: 'hsl(142,70%,42%)',
+  PAYMENT_REDIRECT: 'hsl(340,82%,52%)',
+};
+
+const ENTITY_ICON_MAP: Record<VisitEntityType, ElementType> = {
+  STORE: House,
+  PRODUCT: Package,
+  ORDER: ShoppingCart,
 };
 
 const formatTooltipPercentage = (value: ValueType | undefined, name: NameType | undefined) => {
@@ -31,10 +79,13 @@ const formatTooltipPercentage = (value: ValueType | undefined, name: NameType | 
 export function AdvancedAnalytics({
   orderCount,
   visitCount,
+  uniqueVisitorCount,
   governorateData,
   deviceData,
   deviceBrands,
   trafficSources,
+  visitLocations,
+  visitEntities,
 }: AdvancedAnalyticsProps) {
   const { lang, t } = useLanguage();
   const [activeTab, setActiveTab] = useState<'governorate' | 'device' | 'pages' | 'sources'>(
@@ -55,6 +106,21 @@ export function AdvancedAnalytics({
     value: device.value,
     color: device.color,
   }));
+
+  const visitPageLabels: Record<VisitPageType, string> = {
+    LANDING: t.stats.visitPlaces.landing,
+    STORE_HOME: t.stats.visitPlaces.storeHome,
+    PRODUCT: t.stats.visitPlaces.product,
+    CHECKOUT: t.stats.visitPlaces.checkout,
+    ORDER_SUCCESS: t.stats.visitPlaces.orderSuccess,
+    PAYMENT_REDIRECT: t.stats.visitPlaces.paymentRedirect,
+  };
+
+  const visitEntityLabels: Record<VisitEntityType, string> = {
+    STORE: t.stats.visitEntities.store,
+    PRODUCT: t.stats.visitEntities.product,
+    ORDER: t.stats.visitEntities.order,
+  };
 
   return (
     <div className="pt-2">
@@ -257,31 +323,170 @@ export function AdvancedAnalytics({
       {activeTab === 'pages' && (
         <div className="bg-card border-border overflow-hidden rounded-2xl border">
           <div className="border-border border-b p-4 pb-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
                 <h3 className="text-foreground text-sm font-semibold">{t.stats.storeVisits}</h3>
                 <p className="text-muted-foreground mt-0.5 text-[11px]">
                   {t.stats.totalStoreVisits}
                 </p>
               </div>
-              <div className="rounded-lg bg-green-500/10 px-2.5 py-1">
-                <span className="text-[11px] font-bold text-green-600">
-                  {visitCount.toLocaleString(locale)} {t.stats.visitsUnit}
-                </span>
+              <div className="flex items-center gap-2">
+                <div className="rounded-lg bg-green-500/10 px-2.5 py-1">
+                  <span className="text-[11px] font-bold text-green-600">
+                    {visitCount.toLocaleString(locale)} {t.stats.visitsUnit}
+                  </span>
+                </div>
+                <div className="bg-primary/10 rounded-lg px-2.5 py-1">
+                  <span className="text-primary text-[11px] font-bold">
+                    {uniqueVisitorCount.toLocaleString(locale)} {t.stats.uniqueVisitors}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex flex-col items-center justify-center gap-2 p-6">
-            <Eye className="text-primary h-10 w-10 opacity-70" />
-            <p className="text-foreground text-2xl font-extrabold">
-              {visitCount.toLocaleString(locale)}
-            </p>
-            <p className="text-muted-foreground text-xs">{t.stats.totalVisits}</p>
-            <p className="text-muted-foreground mt-1 text-[11px]">
-              {Math.round(visitCount * 0.75).toLocaleString(locale)}{' '}
-              {t.stats.approximateUniqueVisitors}
-            </p>
-          </div>
+
+          {visitLocations.length === 0 && visitEntities.length === 0 ? (
+            <div className="flex flex-col items-center justify-center gap-2 p-6">
+              <Eye className="text-primary h-10 w-10 opacity-70" />
+              <p className="text-foreground text-2xl font-extrabold">
+                {visitCount.toLocaleString(locale)}
+              </p>
+              <p className="text-muted-foreground text-xs">{t.stats.totalVisits}</p>
+              <p className="text-muted-foreground mt-1 text-[11px]">{t.stats.noVisitDataYet}</p>
+            </div>
+          ) : (
+            <div className="grid gap-4 p-4 lg:grid-cols-2">
+              <div className="bg-muted/20 rounded-2xl p-4">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="text-foreground text-sm font-semibold">
+                      {t.stats.topVisitedLocations}
+                    </h4>
+                    <p className="text-muted-foreground mt-0.5 text-[11px]">
+                      {t.stats.visitLocationsSubtitle}
+                    </p>
+                  </div>
+                  <Eye className="text-primary h-4 w-4" />
+                </div>
+
+                <div className="space-y-3">
+                  {visitLocations.map(location => {
+                    const Icon = VISIT_PAGE_ICON_MAP[location.pageType] ?? Eye;
+                    const accentColor =
+                      VISIT_PAGE_COLOR_MAP[location.pageType] ?? 'hsl(191,80%,42%)';
+
+                    return (
+                      <div
+                        key={location.pageType}
+                        className="bg-card border-border rounded-xl border p-3"
+                      >
+                        <div className="mb-2 flex items-center justify-between gap-3">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div
+                              className="flex h-9 w-9 items-center justify-center rounded-xl"
+                              style={{ backgroundColor: `${accentColor}15` }}
+                            >
+                              <Icon className="h-4 w-4" style={{ color: accentColor }} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="text-foreground text-xs font-semibold">
+                                {visitPageLabels[location.pageType]}
+                              </p>
+                              <p className="text-muted-foreground text-[11px]">
+                                {location.percentage}% {t.stats.locationShare}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="text-left">
+                            <p className="text-foreground text-sm font-bold">
+                              {location.visits.toLocaleString(locale)}
+                            </p>
+                            <p className="text-muted-foreground text-[11px]">
+                              {t.stats.visitsUnit}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="bg-muted h-1.5 overflow-hidden rounded-full">
+                          <div
+                            className="h-full rounded-full"
+                            style={{
+                              width: `${Math.max(location.percentage, 4)}%`,
+                              backgroundColor: accentColor,
+                            }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="bg-muted/20 rounded-2xl p-4">
+                <div className="mb-4 flex items-start justify-between gap-3">
+                  <div>
+                    <h4 className="text-foreground text-sm font-semibold">
+                      {t.stats.topVisitedItems}
+                    </h4>
+                    <p className="text-muted-foreground mt-0.5 text-[11px]">
+                      {t.stats.visitEntitiesSubtitle}
+                    </p>
+                  </div>
+                  <Package className="text-primary h-4 w-4" />
+                </div>
+
+                {visitEntities.length === 0 ? (
+                  <p className="text-muted-foreground py-6 text-center text-xs">
+                    {t.stats.noVisitDataYet}
+                  </p>
+                ) : (
+                  <div className="space-y-3">
+                    {visitEntities.map(entity => {
+                      const Icon = ENTITY_ICON_MAP[entity.entityType] ?? Package;
+
+                      return (
+                        <div
+                          key={`${entity.entityType}:${entity.entityId}`}
+                          className="bg-card border-border rounded-xl border p-3"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <div className="flex min-w-0 items-start gap-3">
+                              <div className="bg-primary/10 flex h-9 w-9 items-center justify-center rounded-xl">
+                                <Icon className="text-primary h-4 w-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <p className="text-foreground line-clamp-2 text-xs font-semibold">
+                                  {entity.entityName}
+                                </p>
+                                <div className="mt-1 flex flex-wrap items-center gap-2">
+                                  <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-[10px] font-medium">
+                                    {visitEntityLabels[entity.entityType]}
+                                  </span>
+                                  <span className="text-muted-foreground text-[11px]">
+                                    {entity.percentage}% {t.stats.locationShare}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="text-left">
+                              <p className="text-foreground text-sm font-bold">
+                                {entity.visits.toLocaleString(locale)}
+                              </p>
+                              <p className="text-muted-foreground text-[11px]">
+                                {t.stats.visitsUnit}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       )}
 

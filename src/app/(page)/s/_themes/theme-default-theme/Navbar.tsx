@@ -3,10 +3,12 @@
 'use client';
 
 import { Globe, Menu, Search, ShoppingCart, Sparkles, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useMemo, useState } from 'react';
 import type { NavbarProps } from '../../_lib/types';
 import { useCart } from '../../_context/CartContext';
 import { STORE_LANG_OPTIONS, useLanguage } from '../../_context/LanguageContext';
+import { buildStorefrontCheckoutPath } from '../../_utils/routes';
 import { getReadableTextColor } from './themeSystem';
 
 export default function DefaultThemeNavbar({
@@ -16,8 +18,9 @@ export default function DefaultThemeNavbar({
   sections,
   fonts,
 }: NavbarProps) {
+  const router = useRouter();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { cartCount, setCheckoutStep, setShowCart } = useCart();
+  const { cartCount } = useCart();
   const { t, lang, setLang } = useLanguage();
   const primaryTextColor = getReadableTextColor(colors.primary);
 
@@ -49,8 +52,7 @@ export default function DefaultThemeNavbar({
   };
 
   const openCart = () => {
-    setCheckoutStep('cart');
-    setShowCart(true);
+    router.push(buildStorefrontCheckoutPath());
   };
 
   return (

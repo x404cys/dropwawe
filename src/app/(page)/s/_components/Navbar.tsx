@@ -1,10 +1,12 @@
 'use client';
 
 import { Globe, Menu, ShoppingBag, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { ActiveColors, SectionsConfig, StorefrontStore, StorefrontTemplate } from '../_lib/types';
 import { useCart } from '../_context/CartContext';
 import { STORE_LANG_OPTIONS, useLanguage } from '../_context/LanguageContext';
+import { buildStorefrontCheckoutPath } from '../_utils/routes';
 import {
   buildContactItems,
   getContactHref,
@@ -31,8 +33,9 @@ export default function Navbar({
   sections,
   hasAnnouncementBar,
 }: NavbarProps) {
+  const router = useRouter();
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { cartCount, setShowCart, setCheckoutStep } = useCart();
+  const { cartCount } = useCart();
   const { t, lang, setLang } = useLanguage();
   const templateLogo = (template as unknown as { logoImage?: string | null }).logoImage ?? null;
   const logoSrc = templateLogo || store.image;
@@ -68,9 +71,8 @@ export default function Navbar({
   };
 
   const openCart = () => {
-    setCheckoutStep('cart');
-    setShowCart(true);
     setShowMobileMenu(false);
+    router.push(buildStorefrontCheckoutPath());
   };
 
   const topOffsetClass = hasAnnouncementBar ? 'top-10' : 'top-0';

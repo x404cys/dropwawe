@@ -2,13 +2,19 @@ import {
   getRevenueAggregation,
   getOrderCounts,
   getProductCount,
-  getVisitorsCount,
   getCustomerStatsAgg,
   getTopProductsAgg,
   getGovernorateStatsAgg,
   getRecentOrdersAgg,
   getVisitorDemographicsAgg,
+  getVisitorLocationStatsAgg,
 } from '../repositories/dashboard.repository';
+import {
+  formatTrackedOrderName,
+  isVisitEntityType,
+  isVisitPageType,
+  type VisitPageType,
+} from '@/lib/visitor-tracking';
 import { detectDevice, detectOS } from '../utils/device-detection';
 import { classifyReferrer } from '../utils/referrer-classifier';
 import { toPercent } from '../utils/math';
@@ -22,22 +28,22 @@ export async function getDashboardStats(
     revenueAgg,
     { pendingCount, totalOrderCount },
     productCount,
-    visitCount,
     customerStatsRows,
     topProductsRows,
     govStats,
     recentOrders,
     visitorDemo,
+    visitorLocationStats,
   ] = await Promise.all([
     getRevenueAggregation(storeId),
     getOrderCounts(storeId),
     getProductCount(storeId),
-    getVisitorsCount(storeSubLink),
     getCustomerStatsAgg(storeId),
     getTopProductsAgg(storeId),
     getGovernorateStatsAgg(storeId),
     getRecentOrdersAgg(storeId),
     getVisitorDemographicsAgg(storeSubLink),
+    getVisitorLocationStatsAgg(storeSubLink),
   ]);
 
   const totalRevenue = revenueAgg._sum.total ?? 0;
@@ -199,6 +205,52 @@ export async function getDashboardStats(
       emoji: SOURCE_META[name]?.emoji ?? '🌐',
     }));
 
+  const visitCount = visitorLocationStats.total;
+  const uniqueVisitorCount = visitorLocationStats.uniqueVisitors;
+  const visitLocationCounts = new Map<VisitPageType, number>();
+
+  visitorLocationStats.pageGroups.forEach(
+    (group: { pageType: string | null; _count: { id: number } }) => {
+      const pageType = isVisitPageType(group.pageType) ? group.pageType : 'STORE_HOME';
+      visitLocationCounts.set(pageType, (visitLocationCounts.get(pageType) ?? 0) + group._count.id);
+    }
+  );
+
+  const visitLocations = Array.from(visitLocationCounts.entries())
+    .sort(([, a], [, b]) => b - a)
+    .map(([pageType, visits]) => ({
+      pageType,
+      visits,
+      percentage: toPercent(visits, visitCount),
+    }));
+
+  const visitEntities = visitorLocationStats.entityGroups
+    .map(
+      (group: {
+        entityType: string | null;
+        entityId: string | null;
+        entityName: string | null;
+        _count: { id: number };
+      }) => {
+        if (!group.entityId || !isVisitEntityType(group.entityType)) {
+          return null;
+        }
+
+        return {
+          entityType: group.entityType,
+          entityId: group.entityId,
+          entityName:
+            group.entityName?.trim() ||
+            (group.entityType === 'ORDER'
+              ? formatTrackedOrderName(group.entityId)
+              : group.entityId),
+          visits: group._count.id,
+          percentage: toPercent(group._count.id, visitCount),
+        };
+      }
+    )
+    .filter((entity): entity is NonNullable<typeof entity> => entity !== null);
+
   return {
     totalRevenue,
     availableBalance: totalRevenue,
@@ -206,7 +258,8 @@ export async function getDashboardStats(
     confirmedCount,
     pendingCount,
     productCount,
-    visitCount, // We keep the full visit count using the DB accurate getVisitorsCount
+    visitCount,
+    uniqueVisitorCount,
     customers,
     topProducts,
     revenueChart,
@@ -215,6 +268,8 @@ export async function getDashboardStats(
     deviceData,
     deviceBrands,
     trafficSources,
+    visitLocations,
+    visitEntities,
     chartData,
   };
 }

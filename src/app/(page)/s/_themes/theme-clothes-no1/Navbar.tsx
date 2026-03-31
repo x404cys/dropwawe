@@ -3,10 +3,12 @@
 'use client';
 
 import { Menu, Search, ShoppingBag, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import type { NavbarProps, StorefrontContactType } from '../../_lib/types';
 import { useCart } from '../../_context/CartContext';
 import { STORE_LANG_OPTIONS, useLanguage } from '../../_context/LanguageContext';
+import { buildStorefrontCheckoutPath } from '../../_utils/routes';
 import { buildContactItems, getContactHref, isExternalContact } from '../../_utils/contacts';
 
 const SOCIAL_LABELS: Partial<Record<StorefrontContactType, string>> = {
@@ -24,9 +26,10 @@ export default function TechFuturisticNavbar({
   sections,
   hasAnnouncementBar,
 }: NavbarProps) {
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('hero-section');
-  const { cartCount, setCheckoutStep, setShowCart } = useCart();
+  const { cartCount } = useCart();
   const { t, lang, setLang } = useLanguage();
   const accentVars = { ['--tech-accent' as string]: colors.accent } as CSSProperties;
   const templateLogo = (template as unknown as { logoImage?: string | null }).logoImage ?? null;
@@ -79,9 +82,8 @@ export default function TechFuturisticNavbar({
   };
 
   const openCart = () => {
-    setCheckoutStep('cart');
-    setShowCart(true);
     setMobileOpen(false);
+    router.push(buildStorefrontCheckoutPath());
   };
 
   const cycleLanguage = () => {

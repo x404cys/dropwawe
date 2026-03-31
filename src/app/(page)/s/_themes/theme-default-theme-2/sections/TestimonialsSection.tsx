@@ -48,7 +48,10 @@ export default function DefaultThemeTestimonialsSection({
                 borderColor: 'var(--store-border)',
               }}
             >
-              <div className="mb-5 flex items-center gap-1" style={{ color: 'var(--store-primary)' }}>
+              <div
+                className="mb-5 flex items-center gap-1"
+                style={{ color: 'var(--store-primary)' }}
+              >
                 {[1, 2, 3, 4, 5].map(star => (
                   <Star
                     key={star}

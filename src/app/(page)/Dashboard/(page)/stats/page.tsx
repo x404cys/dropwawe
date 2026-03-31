@@ -46,6 +46,7 @@ export default function StatsPage() {
   const customers = stats?.customers ?? [];
   const topProducts = stats?.topProducts ?? [];
   const visitCount = stats?.visitCount ?? 0;
+  const uniqueVisitorCount = stats?.uniqueVisitorCount ?? 0;
   const orderCount = stats?.orderCount ?? 0;
   const productCount = stats?.productCount ?? 0;
 
@@ -129,10 +130,13 @@ export default function StatsPage() {
             <AdvancedAnalytics
               orderCount={orderCount}
               visitCount={visitCount}
+              uniqueVisitorCount={uniqueVisitorCount}
               governorateData={stats?.governorateData ?? []}
               deviceData={stats?.deviceData ?? []}
               deviceBrands={stats?.deviceBrands ?? []}
               trafficSources={stats?.trafficSources ?? []}
+              visitLocations={stats?.visitLocations ?? []}
+              visitEntities={stats?.visitEntities ?? []}
             />
           </>
         )}

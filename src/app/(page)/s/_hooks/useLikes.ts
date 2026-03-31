@@ -9,9 +9,7 @@ export function useLikes() {
   const [liked, setLiked] = useState<string[]>([]);
 
   const toggleLike = (id: string) => {
-    setLiked((prev) =>
-      prev.includes(id) ? prev.filter((n) => n !== id) : [...prev, id]
-    );
+    setLiked(prev => (prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id]));
   };
 
   return { liked, toggleLike };

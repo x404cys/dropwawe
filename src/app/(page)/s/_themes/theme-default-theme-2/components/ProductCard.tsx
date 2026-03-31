@@ -3,14 +3,17 @@
 'use client';
 
 import { Heart, Package, ShoppingCart, Star, Truck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
 import { productHasVariants } from '../../../_utils/cart';
 import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
+import { buildStorefrontProductPath } from '../../../_utils/routes';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function DefaultThemeProductCard({ product, colors, fonts }: ProductCardProps) {
-  const { addToCart, liked, setSelectedProduct, toggleLike } = useCart();
+  const router = useRouter();
+  const { addToCart, liked, toggleLike } = useCart();
   const finalPrice = getDiscountedPrice(product);
   const image = product.images?.[0]?.url || product.image || null;
   const colorOptions = (product.colors ?? []).slice(0, 3);
@@ -20,6 +23,10 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
   const lowStock = !product.unlimited && product.quantity > 0 && product.quantity < 5;
   const isLiked = liked.includes(product.id);
   const hasVariants = productHasVariants(product);
+  const openProduct = () => {
+    if (isOutOfStock) return;
+    router.push(buildStorefrontProductPath(product.id));
+  };
 
   return (
     <article
@@ -31,7 +38,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
       <div className="relative">
         <button
           type="button"
-          onClick={() => !isOutOfStock && setSelectedProduct(product)}
+          onClick={openProduct}
           disabled={isOutOfStock}
           className="block w-full text-start disabled:cursor-not-allowed"
         >
@@ -82,7 +89,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
 
       <button
         type="button"
-        onClick={() => !isOutOfStock && setSelectedProduct(product)}
+        onClick={openProduct}
         disabled={isOutOfStock}
         className="block w-full px-3 pt-3 text-start disabled:cursor-not-allowed"
       >
@@ -128,7 +135,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
       <div className="px-3 pt-2 pb-3">
         <button
           type="button"
-          onClick={() => (hasVariants ? setSelectedProduct(product) : addToCart(product))}
+          onClick={() => (hasVariants ? openProduct() : addToCart(product))}
           disabled={isOutOfStock}
           className="flex w-full items-center justify-center gap-1.5 rounded-xl px-3 py-2.5 text-[11px] font-bold text-white transition-transform duration-200 ease-in-out active:scale-95 disabled:cursor-not-allowed disabled:bg-gray-300"
           style={isOutOfStock ? undefined : { backgroundColor: colors.primary }}

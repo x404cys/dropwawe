@@ -3,20 +3,64 @@
 // getIconComponent → maps string name to service icon component (SERVICE_ICON_MAP).
 
 import {
-  Palette, Monitor, Code, Camera, PenTool, Briefcase, Sparkles, Zap,
-  Heart, Star, Package, Shirt, Watch, Smartphone, Footprints, Truck,
-  Play, BookOpen, Layers, FileText, Globe, Image, Quote,
+  Palette,
+  Monitor,
+  Code,
+  Camera,
+  PenTool,
+  Briefcase,
+  Sparkles,
+  Zap,
+  Heart,
+  Star,
+  Package,
+  Shirt,
+  Watch,
+  Smartphone,
+  Footprints,
+  Truck,
+  Play,
+  BookOpen,
+  Layers,
+  FileText,
+  Globe,
+  Image,
+  Quote,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const ICON_MAP: Record<string, LucideIcon> = {
-  Palette, Monitor, Code, Camera, PenTool, Briefcase, Sparkles, Zap,
-  Heart, Star, Package, Shirt, Watch, Smartphone, Footprints, Truck,
-  Play, BookOpen, Layers, FileText,
+  Palette,
+  Monitor,
+  Code,
+  Camera,
+  PenTool,
+  Briefcase,
+  Sparkles,
+  Zap,
+  Heart,
+  Star,
+  Package,
+  Shirt,
+  Watch,
+  Smartphone,
+  Footprints,
+  Truck,
+  Play,
+  BookOpen,
+  Layers,
+  FileText,
 };
 
 const SERVICE_ICON_MAP: Record<string, LucideIcon> = {
-  Palette, Sparkles, PenTool, Zap, Star, Globe, Image, Quote,
+  Palette,
+  Sparkles,
+  PenTool,
+  Zap,
+  Star,
+  Globe,
+  Image,
+  Quote,
 };
 
 export function getCategoryIcon(iconName: string): LucideIcon {

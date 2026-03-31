@@ -1,7 +1,15 @@
 ﻿'use client';
 import { useLanguage } from '../../context/LanguageContext';
 
-import { BarChart3, DollarSign, Home, MoreHorizontal, MoreVertical, Settings, ShoppingBag } from 'lucide-react';
+import {
+  BarChart3,
+  DollarSign,
+  Home,
+  MoreHorizontal,
+  MoreVertical,
+  Settings,
+  ShoppingBag,
+} from 'lucide-react';
 import { useRouter, usePathname } from 'next/navigation';
 import { AiOutlineProduct } from 'react-icons/ai';
 import { useState, useEffect } from 'react';
@@ -73,6 +81,23 @@ export default function FloatingNavBarForDashboard() {
           </button>
 
           <button
+            onClick={() => handleNavigate('/Dashboard/OrderTrackingPage')}
+            className={`${baseStyle} ${isActive('/Dashboard/OrderTrackingPage') ? activeStyle : inactiveStyle}`}
+          >
+            <div className="relative flex flex-col items-center justify-center">
+              <ShoppingBag size={22} strokeWidth={2} />
+              {pendingCount > 0 && (
+                <span className="ring-background absolute -top-1.5 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2">
+                  {pendingCount > 9 ? '9+' : pendingCount}
+                </span>
+              )}
+              <span className="mt-1 text-[10px] font-medium">{t.orders.title}</span>
+            </div>
+            {isActive('/Dashboard/OrderTrackingPage') && (
+              <span className="bg-primary absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
+            )}
+          </button>
+          <button
             onClick={() => handleNavigate('/Dashboard/ProductManagment')}
             className={`${baseStyle} ${isActive('/Dashboard/ProductManagment') ? activeStyle : inactiveStyle}`}
           >
@@ -84,25 +109,6 @@ export default function FloatingNavBarForDashboard() {
               <span className="bg-primary absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
             )}
           </button>
-
-          <button
-            onClick={() => handleNavigate('/Dashboard/OrderTrackingPage')}
-            className={`${baseStyle} ${isActive('/Dashboard/OrderTrackingPage') ? activeStyle : inactiveStyle}`}
-          >
-            <div className="relative flex flex-col items-center justify-center">
-              <ShoppingBag size={22} strokeWidth={2} />
-              {pendingCount > 0 && (
-                <span className="ring-background absolute -top-1.5 -right-2 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[9px] font-bold text-white shadow-sm ring-2">
-                  {pendingCount > 9 ? '9+' : pendingCount}
-                </span>
-              )}
-              <span className="mt-1 text-[10px] font-medium">{t.orders.title}</span>
-            </div>
-            {isActive('/Dashboard/OrderTrackingPage') && (
-              <span className="bg-primary absolute -bottom-2 left-1/2 h-1 w-1 -translate-x-1/2 rounded-full shadow-[0_0_8px_rgba(var(--primary),0.8)]" />
-            )}
-          </button>
-
           {/* <button
             onClick={() => handleNavigate(profitPath)}
             className={`${baseStyle} ${isActive(profitPath) ? activeStyle : inactiveStyle}`}

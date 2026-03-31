@@ -1,3 +1,5 @@
+import type { VisitEntityType, VisitPageType } from '@/lib/visitor-tracking';
+
 const VISITOR_ID_STORAGE_KEY = 'visitorId';
 const VISIT_SESSION_PREFIX = 'visit';
 
@@ -27,16 +29,33 @@ function getSessionVisitKey(dedupeKey?: string) {
   return `${VISIT_SESSION_PREFIX}:${dedupeKey}`;
 }
 
+function getCurrentPath() {
+  if (typeof window === 'undefined') return '/';
+
+  const { pathname, search, hash } = window.location;
+  return `${pathname}${search}${hash}`;
+}
+
 export async function trackVisitorVisit({
+  storeName,
   path,
+  pageType,
+  entityType,
+  entityId,
+  entityName,
   dedupeKey,
   endpoint = '/api/visit',
 }: {
-  path: string;
+  storeName: string;
+  path?: string;
+  pageType?: VisitPageType;
+  entityType?: VisitEntityType;
+  entityId?: string | null;
+  entityName?: string | null;
   dedupeKey?: string;
   endpoint?: string;
 }) {
-  if (typeof window === 'undefined' || !path) return;
+  if (typeof window === 'undefined' || !storeName) return;
 
   const visitorId = getOrCreateVisitorId();
   if (!visitorId) return;
@@ -57,7 +76,12 @@ export async function trackVisitorVisit({
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         visitorId,
-        path,
+        storeName,
+        path: path?.trim() || getCurrentPath(),
+        pageType: pageType ?? null,
+        entityType: entityType ?? null,
+        entityId: entityId?.trim() || null,
+        entityName: entityName?.trim() || null,
         referrer: document.referrer || null,
       }),
       keepalive: true,

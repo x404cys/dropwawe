@@ -11,8 +11,13 @@ export function useTrackStoreVisit(storeSlug: string | null | undefined) {
     if (!storeSlug) return;
 
     void trackVisitorVisit({
-      path: storeSlug,
-      dedupeKey: `store:${storeSlug}:${pathname}`,
+      storeName: storeSlug,
+      path: pathname,
+      pageType: 'STORE_HOME',
+      entityType: 'STORE',
+      entityId: storeSlug,
+      entityName: storeSlug,
+      dedupeKey: `store-home:${storeSlug}:${pathname}`,
     });
   }, [pathname, storeSlug]);
 }

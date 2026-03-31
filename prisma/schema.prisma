@@ -44,7 +44,6 @@ model User {
   couponUsages        CouponUsage[]
   ProfitWithdrawal    ProfitWithdrawal[]
 
-
   paymentLinks PaymentLink[]
 }
 
@@ -114,7 +113,6 @@ model Store {
   ledgers     Ledger[]
   withdrawals Withdrawal[]
   template    StoreTemplate?
-
 
   paymentLinks PaymentLink[]
 }
@@ -323,13 +321,23 @@ model Payment {
 }
 
 model Visitor {
-  id        String   @id @default(cuid())
-  visitorId String
-  ip        String
-  userAgent String?
-  createdAt DateTime @default(now())
-  storeName String?
-  referrer  String?
+  id         String   @id @default(cuid())
+  visitorId  String
+  ip         String
+  userAgent  String?
+  createdAt  DateTime @default(now())
+  storeName  String?
+  path       String?
+  pageType   String?
+  entityType String?
+  entityId   String?
+  entityName String?
+  referrer   String?
+
+  @@index([storeName, createdAt])
+  @@index([storeName, pageType, createdAt])
+  @@index([storeName, entityType, entityId])
+  @@index([visitorId, createdAt])
 }
 
 //
@@ -690,7 +698,7 @@ model StoreTemplate {
   heroSecondaryButton String?
   aboutText           String?
   storeDescription    String?
-  
+
   ctaTitle  String?
   ctaDesc   String?
   ctaButton String?
@@ -730,54 +738,54 @@ model StoreTemplate {
   categoryIcons    TemplateCategoryIcon[]
   customFonts      TemplateCustomFont[]
   heroSection      TemplateHeroSection?
-  heroButtons TemplateHeroButton[]
-
+  heroButtons      TemplateHeroButton[]
 }
+
 model TemplateHeroButton {
   id         String        @id @default(cuid())
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  label      String         
-  text       String?
-  actionType String        @default("none")  
-  actionTarget  String?    
-  actionUrl     String?     
-  actionMessage String?    
-  order      Int           @default(0)
+  label         String
+  text          String?
+  actionType    String  @default("none")
+  actionTarget  String?
+  actionUrl     String?
+  actionMessage String?
+  order         Int     @default(0)
 
   @@index([templateId])
 }
+
 model TemplateService {
-  id          String        @id @default(cuid())
-  templateId  String
-  template    StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
-  icon        String        @default("Sparkles")
-  title       String?
-  desc        String?
+  icon  String  @default("Sparkles")
+  title String?
+  desc  String?
 
-  worksTitle  String?       
-  worksDesc   String?        
+  worksTitle String?
+  worksDesc  String?
 
-  order       Int           @default(0)
-  enabled     Boolean       @default(true)   
+  order   Int     @default(0)
+  enabled Boolean @default(true)
 
-
-  works       TemplateWork[]
+  works TemplateWork[]
 
   @@index([templateId])
 }
 
 model TemplateWork {
-  id          String           @id @default(cuid())
-  templateId  String
-  template    StoreTemplate    @relation(fields: [templateId], references: [id], onDelete: Cascade)
+  id         String        @id @default(cuid())
+  templateId String
+  template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   serviceId   String?
   service     TemplateService? @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   image       String?
-  displayType   String?       @default("ICON")
+  displayType String?          @default("ICON")
   title       String
   icon        String?
   category    String?
@@ -787,6 +795,7 @@ model TemplateWork {
   @@index([templateId])
   @@index([serviceId])
 }
+
 model TemplateTestimonial {
   id         String        @id @default(cuid())
   templateId String
@@ -806,8 +815,8 @@ model TemplateBanner {
   templateId String
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
   postion    String        @default("up")
-  url   String
-  order Int    @default(0)
+  url        String
+  order      Int           @default(0)
 
   @@index([templateId])
 }
@@ -849,8 +858,6 @@ model TemplateCustomFont {
   @@index([templateId])
 }
 
-
-
 model PaymentLink {
   id          String   @id @default(cuid())
   title       String
@@ -868,29 +875,29 @@ model PaymentLink {
 }
 
 model PaymentLinkSubmission {
-  id            String                  @id @default(cuid())
+  id            String            @id @default(cuid())
   paymentLinkId String
   payerName     String
   payerPhone    String
-  payerEmail    String?                  
+  payerEmail    String?
   payMethod     String
-  status        PaymentLinkStatus       @default(PENDING)
-   
-  cartId        String?                 @unique
-  tranRef       String?
-  paymentUrl    String?                  
-  respCode      String?
-  respMessage   String?
-  createdAt     DateTime                @default(now())
-  updatedAt     DateTime                @updatedAt
+  status        PaymentLinkStatus @default(PENDING)
+
+  cartId      String?  @unique
+  tranRef     String?
+  paymentUrl  String?
+  respCode    String?
+  respMessage String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 
   paymentLink PaymentLink @relation(fields: [paymentLinkId], references: [id], onDelete: Cascade)
 }
 
 enum PaymentLinkStatus {
   PENDING
-  INITIATED     
-  PAID          
+  INITIATED
+  PAID
   FAILED
   CANCELLED
 }
@@ -901,46 +908,46 @@ model TemplateHeroSection {
   template   StoreTemplate @relation(fields: [templateId], references: [id], onDelete: Cascade)
 
   // section state
-  enabled        Boolean @default(true)
-  visible        Boolean @default(true)
-  order          Int     @default(0)
+  enabled Boolean @default(true)
+  visible Boolean @default(true)
+  order   Int     @default(0)
 
   // content
-  badgeText      String?
-  badgeIcon      String?
-  overline       String?
-  title          String?
-  highlightText  String?
-  subtitle       String?
-  description    String?
+  badgeText     String?
+  badgeIcon     String?
+  overline      String?
+  title         String?
+  highlightText String?
+  subtitle      String?
+  description   String?
 
   // trust / note
-  trustText      String?
-  smallNote      String?
+  trustText String?
+  smallNote String?
 
   // buttons
-  primaryButtonText      String?
-  primaryButtonLink      String?
-  primaryButtonIcon      String?
-  primaryButtonTarget    String? @default("_self")
+  primaryButtonText   String?
+  primaryButtonLink   String?
+  primaryButtonIcon   String?
+  primaryButtonTarget String? @default("_self")
 
-  secondaryButtonText    String?
-  secondaryButtonLink    String?
-  secondaryButtonIcon    String?
-  secondaryButtonTarget  String? @default("_self")
+  secondaryButtonText   String?
+  secondaryButtonLink   String?
+  secondaryButtonIcon   String?
+  secondaryButtonTarget String? @default("_self")
 
   // optional extra CTA
-  tertiaryButtonText     String?
-  tertiaryButtonLink     String?
-  tertiaryButtonIcon     String?
-  tertiaryButtonTarget   String? @default("_self")
+  tertiaryButtonText   String?
+  tertiaryButtonLink   String?
+  tertiaryButtonIcon   String?
+  tertiaryButtonTarget String? @default("_self")
 
   // media
-  heroImage              String?
-  heroImageAlt           String?
-  heroImageMobile        String?
-  heroVideo              String?
-  heroVideoPoster        String?
+  heroImage       String?
+  heroImageAlt    String?
+  heroImageMobile String?
+  heroVideo       String?
+  heroVideoPoster String?
 
   // background
   backgroundType         String? @default("COLOR") // COLOR | IMAGE | VIDEO | GRADIENT
@@ -953,122 +960,124 @@ model TemplateHeroSection {
   backgroundGradientVia  String?
 
   // overlay
-  overlayEnabled         Boolean @default(true)
-  overlayColor           String?
-  overlayOpacity         Int     @default(35)
+  overlayEnabled Boolean @default(true)
+  overlayColor   String?
+  overlayOpacity Int     @default(35)
 
   // layout
-  layout                 String  @default("SPLIT") // CENTERED | SPLIT | IMAGE_LEFT | IMAGE_RIGHT | MINIMAL | FULLSCREEN
-  contentAlign           String  @default("center") // left | center | right
-  contentPosition        String  @default("center") // start | center | end
-  mediaPosition          String  @default("right") // left | right | top | bottom
-  contentMaxWidth        String?
-  sectionHeight          String? @default("auto") // auto | sm | md | lg | xl | screen
-  containerStyle         String? @default("boxed") // boxed | full
-  verticalPadding        String? @default("lg")
+  layout          String  @default("SPLIT") // CENTERED | SPLIT | IMAGE_LEFT | IMAGE_RIGHT | MINIMAL | FULLSCREEN
+  contentAlign    String  @default("center") // left | center | right
+  contentPosition String  @default("center") // start | center | end
+  mediaPosition   String  @default("right") // left | right | top | bottom
+  contentMaxWidth String?
+  sectionHeight   String? @default("auto") // auto | sm | md | lg | xl | screen
+  containerStyle  String? @default("boxed") // boxed | full
+  verticalPadding String? @default("lg")
 
   // behavior
-  showButtons            Boolean @default(true)
-  showBadge              Boolean @default(true)
-  showStats              Boolean @default(false)
-  showFeatures           Boolean @default(false)
-  showTrustItems         Boolean @default(false)
-  showScrollHint         Boolean @default(false)
+  showButtons    Boolean @default(true)
+  showBadge      Boolean @default(true)
+  showStats      Boolean @default(false)
+  showFeatures   Boolean @default(false)
+  showTrustItems Boolean @default(false)
+  showScrollHint Boolean @default(false)
 
   // style flags
-  roundedMedia           Boolean @default(true)
-  glassEffect            Boolean @default(false)
-  blurBackground         Boolean @default(false)
-  shadowMedia            Boolean @default(true)
-  borderMedia            Boolean @default(false)
+  roundedMedia   Boolean @default(true)
+  glassEffect    Boolean @default(false)
+  blurBackground Boolean @default(false)
+  shadowMedia    Boolean @default(true)
+  borderMedia    Boolean @default(false)
 
   // promo / campaign
-  promoText              String?
-  promoEndsAt            DateTime?
-  urgencyText            String?
+  promoText   String?
+  promoEndsAt DateTime?
+  urgencyText String?
 
   // seo-ish/accessibility
-  ariaLabel              String?
-  sectionId              String?
-  
+  ariaLabel String?
+  sectionId String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  stats       TemplateHeroStat[]
-  features    TemplateHeroFeature[]
-  trustItems  TemplateHeroTrustItem[]
-  badges      TemplateHeroBadge[]
-  socials     TemplateHeroSocialLink[]
+  stats      TemplateHeroStat[]
+  features   TemplateHeroFeature[]
+  trustItems TemplateHeroTrustItem[]
+  badges     TemplateHeroBadge[]
+  socials    TemplateHeroSocialLink[]
 
   @@index([templateId])
 }
-model TemplateHeroStat {
-  id        String              @id @default(cuid())
-  heroId    String
-  hero      TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
 
-  label     String
-  value     String
-  icon      String?
-  order     Int     @default(0)
-  enabled   Boolean @default(true)
+model TemplateHeroStat {
+  id     String              @id @default(cuid())
+  heroId String
+  hero   TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
+
+  label   String
+  value   String
+  icon    String?
+  order   Int     @default(0)
+  enabled Boolean @default(true)
 
   @@index([heroId])
 }
-model TemplateHeroFeature {
-  id        String              @id @default(cuid())
-  heroId    String
-  hero      TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
 
-  title     String
-  desc      String?
-  icon      String?
-  image     String?
-  link      String?
-  order     Int     @default(0)
-  enabled   Boolean @default(true)
+model TemplateHeroFeature {
+  id     String              @id @default(cuid())
+  heroId String
+  hero   TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
+
+  title   String
+  desc    String?
+  icon    String?
+  image   String?
+  link    String?
+  order   Int     @default(0)
+  enabled Boolean @default(true)
 
   @@index([heroId])
 }
 
 model TemplateHeroTrustItem {
-  id        String              @id @default(cuid())
-  heroId    String
-  hero      TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
+  id     String              @id @default(cuid())
+  heroId String
+  hero   TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
 
-  text      String
-  icon      String?
-  order     Int     @default(0)
-  enabled   Boolean @default(true)
+  text    String
+  icon    String?
+  order   Int     @default(0)
+  enabled Boolean @default(true)
 
   @@index([heroId])
 }
 
 model TemplateHeroBadge {
-  id        String              @id @default(cuid())
-  heroId    String
-  hero      TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
+  id     String              @id @default(cuid())
+  heroId String
+  hero   TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
 
-  text      String
-  icon      String?
-  color     String?
-  order     Int     @default(0)
-  enabled   Boolean @default(true)
+  text    String
+  icon    String?
+  color   String?
+  order   Int     @default(0)
+  enabled Boolean @default(true)
 
   @@index([heroId])
 }
 
 model TemplateHeroSocialLink {
-  id        String              @id @default(cuid())
-  heroId    String
-  hero      TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
+  id     String              @id @default(cuid())
+  heroId String
+  hero   TemplateHeroSection @relation(fields: [heroId], references: [id], onDelete: Cascade)
 
-  platform  String
-  label     String?
-  url       String
-  icon      String?
-  order     Int     @default(0)
-  enabled   Boolean @default(true)
+  platform String
+  label    String?
+  url      String
+  icon     String?
+  order    Int     @default(0)
+  enabled  Boolean @default(true)
 
   @@index([heroId])
 }

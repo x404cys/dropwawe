@@ -59,11 +59,10 @@ function CategoryBlock({
       >
         <p
           className="font-mono text-xs tracking-[0.22em] uppercase"
-          style={{ fontFamily: fonts.body, color: colors.text  }}
+          style={{ fontFamily: fonts.body, color: colors.text }}
         >
           {section.category}
         </p>
- 
       </div>
       <ProductGrid products={products} colors={colors} fonts={fonts} />
     </div>

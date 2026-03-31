@@ -1,11 +1,20 @@
 'use client';
 
+import {
+  Almarai,
+  Cairo,
+  IBM_Plex_Sans_Arabic,
+  Noto_Sans_Arabic,
+  Rubik,
+  Tajawal,
+} from 'next/font/google';
 import { useMemo, useRef } from 'react';
 import { Check, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
 import { Switch } from '@/components/ui/switch';
 import { COLOR_PRESETS } from '@/lib/template/defaults';
+import { resolveTemplateFontFamily } from '@/lib/template/font-family';
 import type { CustomFontItem, TemplateFormState } from '@/lib/template/types';
 import ColorPicker from '../ui/ColorPicker';
 import FontPicker from '../ui/FontPicker';
@@ -28,6 +37,71 @@ const PRESET_KEYS = [
   'cocoa',
   'rose',
 ] as const;
+
+const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
+  subsets: ['arabic', 'latin'],
+  weight: ['100', '200', '300', '400', '500', '600', '700'],
+  variable: '--store-font-ibm-plex-sans-arabic',
+  display: 'swap',
+  preload: false,
+});
+
+const cairo = Cairo({
+  subsets: ['arabic', 'latin'],
+  variable: '--store-font-cairo',
+  display: 'swap',
+  preload: false,
+});
+
+const tajawal = Tajawal({
+  subsets: ['arabic', 'latin'],
+  weight: ['200', '300', '400', '500', '700', '800', '900'],
+  variable: '--store-font-tajawal',
+  display: 'swap',
+  preload: false,
+});
+
+const almarai = Almarai({
+  subsets: ['arabic', 'latin'],
+  weight: ['300', '400', '700', '800'],
+  variable: '--store-font-almarai',
+  display: 'swap',
+  preload: false,
+});
+
+const notoSansArabic = Noto_Sans_Arabic({
+  subsets: ['arabic', 'latin'],
+  variable: '--store-font-noto-sans-arabic',
+  display: 'swap',
+  preload: false,
+});
+
+const rubik = Rubik({
+  subsets: ['arabic', 'latin'],
+  variable: '--store-font-rubik',
+  display: 'swap',
+  preload: false,
+});
+
+const templateEditorFontVariables = [
+  ibmPlexSansArabic.variable,
+  cairo.variable,
+  tajawal.variable,
+  almarai.variable,
+  notoSansArabic.variable,
+  rubik.variable,
+].join(' ');
+
+function getFontFormat(url: string) {
+  const lower = url.toLowerCase();
+
+  if (lower.endsWith('.woff2')) return 'woff2';
+  if (lower.endsWith('.woff')) return 'woff';
+  if (lower.endsWith('.ttf')) return 'truetype';
+  if (lower.endsWith('.otf')) return 'opentype';
+
+  return '';
+}
 
 export default function DesignTab({
   state,
@@ -117,8 +191,26 @@ export default function DesignTab({
         text: COLOR_PRESETS[state.selectedPreset]?.text ?? '#f4f4f5',
       };
 
+  const customFontFaces = state.customFonts
+    .map(font => {
+      const format = getFontFormat(font.url);
+
+      return `
+      @font-face {
+        font-family: '${font.name}';
+        src: url('/api/template/fonts/get?id=${font.id}')${format ? ` format('${format}')` : ''};
+        font-weight: 100 900;
+        font-style: normal;
+        font-display: swap;
+      }
+    `;
+    })
+    .join('\n');
+
   return (
-    <div className="space-y-4">
+    <div className={`${templateEditorFontVariables} space-y-4`}>
+      {customFontFaces && <style dangerouslySetInnerHTML={{ __html: customFontFaces }} />}
+
       <div className="bg-card border-border rounded-2xl border p-4">
         <p className="text-foreground mb-3 text-xs font-semibold">{tt.design.colors}</p>
 
@@ -222,7 +314,7 @@ export default function DesignTab({
               >
                 <span
                   className="text-foreground text-[11px] font-medium"
-                  style={{ fontFamily: font.name }}
+                  style={{ fontFamily: resolveTemplateFontFamily(font.name) }}
                 >
                   {font.name}
                 </span>
@@ -261,20 +353,29 @@ export default function DesignTab({
         <div className="p-4" style={{ backgroundColor: previewColors.bg }}>
           <p
             className="mb-1 text-sm font-bold"
-            style={{ color: previewColors.text, fontFamily: state.headingFont }}
+            style={{
+              color: previewColors.text,
+              fontFamily: resolveTemplateFontFamily(state.headingFont),
+            }}
           >
             {storeName}
           </p>
           <p
             className="mb-3 text-xs"
-            style={{ color: `${previewColors.text}88`, fontFamily: state.bodyFont }}
+            style={{
+              color: `${previewColors.text}88`,
+              fontFamily: resolveTemplateFontFamily(state.bodyFont),
+            }}
           >
             {state.tagline}
           </p>
           <div className="flex gap-2">
             <div
               className="rounded-xl px-4 py-2 text-[11px] font-bold text-white"
-              style={{ backgroundColor: previewColors.primary }}
+              style={{
+                backgroundColor: previewColors.primary,
+                fontFamily: resolveTemplateFontFamily(state.bodyFont),
+              }}
             >
               {state.heroButtonText}
             </div>
@@ -283,6 +384,7 @@ export default function DesignTab({
               style={{
                 borderColor: `${previewColors.text}20`,
                 color: previewColors.text,
+                fontFamily: resolveTemplateFontFamily(state.bodyFont),
               }}
             >
               {state.heroSecondaryButton}
