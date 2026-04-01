@@ -53,7 +53,6 @@ export default async function StorefrontProductPage({ params }: ProductPageProps
           entityType: 'PRODUCT',
           entityId: product.id,
           entityName: product.name,
-          dedupeKey: `product:${data.store.subLink ?? data.store.id}:${product.id}`,
         }}
       >
         <ProductDetailsPage

@@ -18,7 +18,7 @@ interface StorefrontClientProps {
     entityType: VisitEntityType;
     entityId?: string | null;
     entityName?: string | null;
-    dedupeKey: string;
+    dedupeKey?: string;
   };
   children: ReactNode;
 }
@@ -34,10 +34,11 @@ export default function StorefrontClient({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!store.subLink) return;
+    const storeName = store.subLink ?? store.id;
+    if (!storeName) return;
 
     void trackVisitorVisit({
-      storeName: store.subLink,
+      storeName,
       path: pathname,
       pageType: visit.pageType,
       entityType: visit.entityType,
@@ -47,6 +48,7 @@ export default function StorefrontClient({
     });
   }, [
     pathname,
+    store.id,
     store.subLink,
     visit.dedupeKey,
     visit.entityId,

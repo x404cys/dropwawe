@@ -31,7 +31,6 @@ export default async function StorefrontCheckoutPage() {
           entityType: 'STORE',
           entityId: data.store.id,
           entityName: data.store.name ?? data.store.subLink,
-          dedupeKey: `checkout:${data.store.subLink ?? data.store.id}`,
         }}
       >
         <CheckoutPage

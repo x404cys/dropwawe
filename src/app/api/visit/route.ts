@@ -6,6 +6,13 @@ import { NextResponse } from 'next/server';
 export async function POST(req: Request) {
   const body = await req.json().catch(() => null);
 
+  const createRowId = () => {
+    if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+      return crypto.randomUUID();
+    }
+    return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  };
+
   const normalizeString = (value: unknown) => {
     if (typeof value !== 'string') return null;
 
@@ -22,18 +29,22 @@ export async function POST(req: Request) {
   const entityId = normalizeString(body?.entityId);
   const entityName = normalizeString(body?.entityName);
 
-  if (!visitorId || !storeName) {
-    return NextResponse.json({ error: 'Missing visitorId or storeName' }, { status: 400 });
-  }
-
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
   const userAgent = req.headers.get('user-agent') || 'unknown';
   const schemaSupport = await getVisitorSchemaSupport();
+  const rowId = createRowId();
+  const effectiveVisitorId =
+    schemaSupport.visitorIdUnique && visitorId ? `${visitorId}:${rowId}` : visitorId;
+
+  if (!effectiveVisitorId || !storeName) {
+    return NextResponse.json({ error: 'Missing visitorId or storeName' }, { status: 400 });
+  }
 
   if (schemaSupport.enhancedColumns) {
     if (schemaSupport.visitorIdUnique) {
       await prisma.$executeRaw`
         INSERT INTO "Visitor" (
+          "id",
           "visitorId",
           "ip",
           "userAgent",
@@ -46,7 +57,8 @@ export async function POST(req: Request) {
           "referrer"
         )
         VALUES (
-          ${visitorId},
+          ${rowId},
+          ${effectiveVisitorId},
           ${ip},
           ${userAgent},
           ${storeName},
@@ -73,6 +85,7 @@ export async function POST(req: Request) {
     } else {
       await prisma.$executeRaw`
         INSERT INTO "Visitor" (
+          "id",
           "visitorId",
           "ip",
           "userAgent",
@@ -85,7 +98,8 @@ export async function POST(req: Request) {
           "referrer"
         )
         VALUES (
-          ${visitorId},
+          ${rowId},
+          ${effectiveVisitorId},
           ${ip},  
           ${userAgent},
           ${storeName},
@@ -101,6 +115,7 @@ export async function POST(req: Request) {
   } else if (schemaSupport.visitorIdUnique) {
     await prisma.$executeRaw`
       INSERT INTO "Visitor" (
+        "id",
         "visitorId",
         "ip",
         "userAgent",
@@ -108,7 +123,8 @@ export async function POST(req: Request) {
         "referrer"
       )
       VALUES (
-        ${visitorId},
+        ${rowId},
+        ${effectiveVisitorId},
         ${ip},
         ${userAgent},
         ${storeName},
@@ -125,7 +141,8 @@ export async function POST(req: Request) {
   } else {
     await prisma.visitor.create({
       data: {
-        visitorId,
+        id: rowId,
+        visitorId: effectiveVisitorId,
         ip,
         userAgent,
         storeName,

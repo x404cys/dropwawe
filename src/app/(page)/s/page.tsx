@@ -46,7 +46,6 @@ export default async function StorefrontPage() {
           entityType: 'STORE',
           entityId: data.store.id,
           entityName: data.store.name ?? data.store.subLink,
-          dedupeKey: `store-home:${data.store.subLink ?? data.store.id}`,
         }}
       >
         <StorefrontShell
