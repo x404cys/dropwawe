@@ -4,8 +4,10 @@
 
 import { Search, X } from 'lucide-react';
 import type { SearchBarProps } from '../../../_lib/types';
+import { useLanguage } from '../../../_context/LanguageContext';
 
 export default function DefaultThemeSearchBar({ value, onChange, fonts }: SearchBarProps) {
+  const { t } = useLanguage();
   return (
     <div
       className="flex items-center gap-2 rounded-2xl border px-4 py-3 transition-all duration-200 ease-in-out"
@@ -19,7 +21,7 @@ export default function DefaultThemeSearchBar({ value, onChange, fonts }: Search
       <input
         value={value}
         onChange={event => onChange(event.target.value)}
-        placeholder="ابحث عن منتج..."
+        placeholder={t.store.searchPlaceholder}
         className="flex-1 bg-transparent font-light outline-none"
         style={{
           color: 'var(--store-text)',
@@ -32,7 +34,7 @@ export default function DefaultThemeSearchBar({ value, onChange, fonts }: Search
           onClick={() => onChange('')}
           className="transition-opacity duration-200 ease-in-out hover:opacity-75"
           style={{ color: 'var(--store-text-faint)' }}
-          aria-label="مسح البحث"
+          aria-label={t.store.clearSearch}
         >
           <X className="h-4 w-4" />
         </button>
@@ -40,3 +42,4 @@ export default function DefaultThemeSearchBar({ value, onChange, fonts }: Search
     </div>
   );
 }
+

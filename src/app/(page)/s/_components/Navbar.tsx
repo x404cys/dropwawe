@@ -210,7 +210,7 @@ export default function Navbar({
               onClick={() => setShowMobileMenu(true)}
               className="flex h-10 w-10 items-center justify-center border border-white/10 lg:hidden"
               style={{ color: colors.text }}
-              aria-label={t.nav.home}
+              aria-label={t.nav.openMenu}
             >
               <Menu className="h-4 w-4" />
             </button>
@@ -245,7 +245,7 @@ export default function Navbar({
               onClick={() => setShowMobileMenu(false)}
               className="flex h-11 w-11 items-center justify-center border border-white/10"
               style={{ color: colors.text }}
-              aria-label="Close navigation"
+              aria-label={t.nav.closeMenu}
             >
               <X className="h-4 w-4" />
             </button>

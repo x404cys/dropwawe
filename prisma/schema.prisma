@@ -175,6 +175,7 @@ model Product {
   images               ProductImage[]
   sizes                ProductSize[]
   unlimited            Boolean               @default(false)
+  isDigital            Boolean               @default(false)
   colors               ProductColor[]
   isFromSupplier       Boolean               @default(false)
   supplierId           String?
@@ -380,6 +381,8 @@ enum OrderStatus {
   SHIPPED
   DELIVERED
   CANCELLED
+  PAYMENT_FAILED
+  PAYMENT_PENDING
 }
 
 enum TypePlan {

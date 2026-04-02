@@ -8,6 +8,8 @@ import { CartItem, CheckoutStep, CustomerInfo, StorefrontProduct } from '../_lib
 import { getDiscountedPrice } from '../_utils/price';
 import { isSameCartLine, productNeedsVariantSelection } from '../_utils/cart';
 
+const STORAGE_KEY = 'storefront-cart-state-v1';
+
 export interface CouponState {
   status: 'idle' | 'loading' | 'valid' | 'error';
   code: string;
@@ -58,6 +60,7 @@ interface CartContextValue {
     products: { id: string; price: number; quantity: number }[]
   ) => Promise<void>;
   removeCoupon: () => void;
+  requiresShipping: () => boolean;
   effectiveShipping: (shippingPrice?: number) => number;
   grandTotal: (shippingPrice?: number) => number;
 }
@@ -79,6 +82,47 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const [paymentMethod, setPaymentMethod] = useState<'cod' | 'electronic'>('electronic');
   const [liked, setLiked] = useState<string[]>([]);
   const [coupon, setCoupon] = useState<CouponState>(COUPON_IDLE);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const raw = window.localStorage.getItem(STORAGE_KEY);
+    if (!raw) return;
+
+    try {
+      const parsed = JSON.parse(raw) as {
+        cart?: CartItem[];
+        customerInfo?: CustomerInfo;
+        paymentMethod?: 'cod' | 'electronic';
+        liked?: string[];
+        couponCode?: string;
+      };
+
+      if (Array.isArray(parsed.cart)) setCart(parsed.cart);
+      if (parsed.customerInfo) setCustomerInfo(parsed.customerInfo);
+      if (parsed.paymentMethod === 'cod' || parsed.paymentMethod === 'electronic') {
+        setPaymentMethod(parsed.paymentMethod);
+      }
+      if (Array.isArray(parsed.liked)) setLiked(parsed.liked);
+      if (parsed.couponCode) setCoupon(prev => ({ ...prev, code: parsed.couponCode ?? '' }));
+    } catch {
+      // ignore corrupted state
+    }
+  }, []);
+
+  React.useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    const payload = {
+      cart,
+      customerInfo,
+      paymentMethod,
+      liked,
+      couponCode: coupon.code,
+    };
+
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+  }, [cart, customerInfo, paymentMethod, liked, coupon.code]);
 
   const addToCart = (product: StorefrontProduct) => {
     if (productNeedsVariantSelection(product)) {
@@ -133,6 +177,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const cartCount = cart.reduce((s, c) => s + c.qty, 0);
   const cartTotal = cart.reduce((s, c) => s + getDiscountedPrice(c.product) * c.qty, 0);
+  const requiresShipping = () => cart.some(item => !item.product.isDigital);
 
   const toggleLike = (id: string) => {
     setLiked(prev => (prev.includes(id) ? prev.filter(n => n !== id) : [...prev, id]));
@@ -151,7 +196,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     setCoupon(prev => ({ ...prev, status: 'loading', message: undefined }));
 
     try {
-      const res = await fetch('/api/s/coupons/validate', {
+      const res = await fetch('/api/coupons/validate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ code: coupon.code.trim(), storeId, products }),
@@ -191,8 +236,10 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const removeCoupon = () => setCoupon(COUPON_IDLE);
 
-  const effectiveShipping = (shippingPrice = 0) =>
-    Math.max(0, shippingPrice - coupon.shippingDiscount);
+  const effectiveShipping = (shippingPrice = 0) => {
+    const baseShipping = requiresShipping() ? shippingPrice : 0;
+    return Math.max(0, baseShipping - coupon.shippingDiscount);
+  };
 
   const grandTotal = (shippingPrice = 0) => {
     const orderDiscount =
@@ -226,6 +273,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         setCouponCode,
         applyCoupon,
         removeCoupon,
+        requiresShipping,
         effectiveShipping,
         grandTotal,
       }}

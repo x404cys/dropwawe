@@ -177,7 +177,7 @@ export default function TechFuturisticNavbar({
               type="button"
               onClick={cycleLanguage}
               className="hidden h-9 min-w-11 cursor-pointer items-center justify-center border font-mono text-[11px] tracking-[0.18em] uppercase transition-all duration-150 ease-out lg:flex"
-              aria-label="Switch language"
+              aria-label={t.language.label}
               style={iconBtnStyle}
             >
               {lang}
@@ -213,7 +213,7 @@ export default function TechFuturisticNavbar({
               type="button"
               onClick={() => setMobileOpen(c => !c)}
               className="flex h-9 w-9 items-center justify-center border transition-all duration-150 ease-out lg:hidden"
-              aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+              aria-label={mobileOpen ? t.nav.closeMenu : t.nav.openMenu}
               style={iconBtnStyle}
             >
               {mobileOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}

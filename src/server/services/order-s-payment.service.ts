@@ -27,7 +27,7 @@ type OrderBody = {
   items: ItemInput[];
   customerInfo: CustomerInfo;
   paymentMethod?: string;
-  couponCode?: string; // ✅ جديد
+  couponCode?: string;
 };
 
 type SupplierItem = {
@@ -69,10 +69,12 @@ export const orderPaymentService = {
     const store = await prisma.store.findUnique({ where: { id: storeId } });
     if (!store) throw new Error('المتجر غير موجود');
 
-    const shippingPrice: number = store.shippingPrice ?? 0;
-
     const productIds = items.map(i => i.productId);
     const productsInDb = await orderPaymentRepository.getProductsWithPricing(productIds);
+    const requiresShipping = productsInDb.some(
+      product => !(product as { isDigital?: boolean }).isDigital
+    );
+    const shippingPrice: number = requiresShipping ? (store.shippingPrice ?? 0) : 0;
 
     const errors: { productId: string; type: string; message: string }[] = [];
     let subtotal = 0;
@@ -266,7 +268,7 @@ export const orderPaymentService = {
     if (traderOrder) {
       await orderPaymentRepository.createTraderPayment(traderOrder.id, cart_id, traderOrder.total!);
     } else {
-      await orderPaymentRepository.createPaymentOrder(order.id, cart_id, finalTotal); // ✅
+      await orderPaymentRepository.createPaymentOrder(order.id, cart_id, finalTotal);
     }
 
     return {
@@ -306,6 +308,11 @@ export const orderPaymentService = {
           quantity: i.quantity,
         }))
       );
+    } else {
+      await prisma.order.update({
+        where: { id: paymentOrder.order.id },
+        data: { status: 'PAYMENT_FAILED' },
+      });
     }
 
     return paymentOrder;

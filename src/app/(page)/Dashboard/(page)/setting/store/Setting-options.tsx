@@ -22,7 +22,13 @@ import { BsTelephone } from 'react-icons/bs';
 import { PlanType } from '@/types/plans/Plans';
 import { useSubscriptions } from '../../../hooks';
 import { useLanguage } from '../../../context/LanguageContext';
-
+import { getFAQs } from '../profile/page';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '@/components/ui/accordion';
 interface Section {
   label: string;
   desc: string;
@@ -61,6 +67,7 @@ export default function SettingOptions() {
     'drop-pro': dropPro?.name || t.storeOptions.planNames.dropPro,
     'ramadan-plan': '',
   };
+  const FAQS = getFAQs(t);
 
   const sectionGroups: SectionGroup[] = [
     {
@@ -302,6 +309,35 @@ export default function SettingOptions() {
               </div>
               <ExternalLink size={16} className="text-muted-foreground/40 flex-shrink-0" />
             </button>
+          </div>
+        </div>
+        <div className="mt-6">
+          <h2
+            className={`text-muted-foreground mb-3 px-1 text-xs font-semibold tracking-wide uppercase ${textAlignClass}`}
+          >
+            FAQ
+          </h2>
+
+          <div className="bg-card border-border rounded-xl border p-2 shadow-sm">
+            <Accordion type="single" collapsible className="w-full">
+              {FAQS.map((faq, index) => (
+                <AccordionItem
+                  key={index}
+                  value={`item-${index}`}
+                  className="border-b last:border-none"
+                >
+                  <AccordionTrigger className={`text-sm font-medium ${textAlignClass}`}>
+                    {faq.q}
+                  </AccordionTrigger>
+
+                  <AccordionContent
+                    className={`text-muted-foreground text-xs leading-relaxed ${textAlignClass}`}
+                  >
+                    {faq.a}
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
           </div>
         </div>
       </div>

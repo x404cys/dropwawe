@@ -58,9 +58,18 @@ export async function POST(req: NextRequest) {
       description: product.description,
       price: Number(product.price) + Number(profit),
       image: product.image,
-      userId: session.user.id,
       category: category,
-      storeId: storeUser.store.id,
+      isDigital: (product as { isDigital?: boolean }).isDigital ?? false,
+      user: {
+        connect: {
+          id: session.user.id,
+        },
+      },
+      store: {
+        connect: {
+          id: storeUser.store.id,
+        },
+      },
       isFromSupplier: true,
     },
   });

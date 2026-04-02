@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 
 import type { StoreSectionProps } from '../../../_lib/types';
 import { useStorefront } from '../../../_hooks/useStorefront';
+import { useLanguage } from '../../../_context/LanguageContext';
 import DefaultThemeBannerCarousel from '../components/BannerCarousel';
 import DefaultThemeProductCard from '../components/ProductCard';
 import DefaultThemeSearchBar from '../components/SearchBar';
@@ -46,6 +47,7 @@ export default function DefaultThemeStoreSection({
     getProductsByCat,
     allCategoryKey,
   } = useStorefront(products);
+  const { t } = useLanguage();
 
   const sectionCategories = useMemo(
     () =>
@@ -66,11 +68,11 @@ export default function DefaultThemeStoreSection({
       (category, index, list) => list.findIndex(item => item.key === category.key) === index
     );
 
-    return [{ key: allCategoryKey, label: 'الكل' }, ...merged];
-  }, [allCategoryKey, displayCategories, sectionCategories]);
+    return [{ key: allCategoryKey, label: t.store.all }, ...merged];
+  }, [allCategoryKey, displayCategories, sectionCategories, t]);
 
   const activeCategoryLabel =
-    navigationCategories.find(category => category.key === activeCategory)?.label ?? 'الكل';
+    navigationCategories.find(category => category.key === activeCategory)?.label ?? t.store.all;
 
   const showSectionRows =
     sectionCategories.length > 0 && activeCategory === allCategoryKey && !searchQuery.trim();
@@ -80,8 +82,7 @@ export default function DefaultThemeStoreSection({
     return products.filter(product => !sectionKeys.has(product.category));
   }, [products, sectionCategories]);
 
-  const introText =
-    template.storeDescription?.trim() || 'تصفح مجموعة مرتبة بعناية بتجربة بسيطة وسريعة وواضحة.';
+  const introText = template.storeDescription?.trim() || t.store.sectionIntroFallback;
 
   return (
     <section id="store-section" className={storefrontSectionClass}>
@@ -104,12 +105,12 @@ export default function DefaultThemeStoreSection({
                 color: 'var(--store-primary)',
               }}
             >
-              Store
+              {t.nav.store}
             </span>
 
             <div className="space-y-3">
               <h2 className={storefrontTitleClass} style={{ fontFamily: fonts.heading }}>
-                منتجات مرتبة لتجربة تسوق أوضح
+                {t.store.sectionTitle}
               </h2>
               <p
                 className="max-w-2xl text-sm leading-7 sm:text-base sm:leading-8"
@@ -160,7 +161,8 @@ export default function DefaultThemeStoreSection({
 
         <div className="mb-10 flex flex-wrap items-center justify-between gap-3 text-sm">
           <p style={{ color: 'var(--store-text-soft)' }}>
-            {activeCategoryLabel} · {displayFiltered.length} منتج
+            {activeCategoryLabel} ·{' '}
+            {t.store.productsCount.replace('{count}', displayFiltered.length.toString())}
           </p>
 
           {searchQuery ? (
@@ -170,7 +172,7 @@ export default function DefaultThemeStoreSection({
               className="font-medium transition-colors duration-200"
               style={{ color: 'var(--store-text-muted)' }}
             >
-              مسح البحث
+              {t.store.clearSearch}
             </button>
           ) : null}
         </div>
@@ -198,7 +200,7 @@ export default function DefaultThemeStoreSection({
                         className="text-[11px] font-medium tracking-[0.16em] uppercase"
                         style={{ color: 'var(--store-text-faint)' }}
                       >
-                        Collection
+                        {t.store.collectionLabel}
                       </p>
                       <h3
                         className="text-2xl font-bold tracking-[-0.02em] sm:text-[2rem]"
@@ -214,7 +216,7 @@ export default function DefaultThemeStoreSection({
                       className="text-sm font-medium transition-colors duration-200"
                       style={{ color: 'var(--store-text-muted)' }}
                     >
-                      عرض المجموعة كاملة
+                      {t.store.viewAll}
                     </button>
                   </div>
 
@@ -248,13 +250,13 @@ export default function DefaultThemeStoreSection({
                     className="text-[11px] font-medium tracking-[0.16em] uppercase"
                     style={{ color: 'var(--store-text-faint)' }}
                   >
-                    More
+                    {t.store.moreLabel}
                   </p>
                   <h3
                     className="text-2xl font-bold tracking-[-0.02em] sm:text-[2rem]"
                     style={{ fontFamily: fonts.heading }}
                   >
-                    اكتشف المزيد
+                    {t.store.exploreMore}
                   </h3>
                 </div>
 
@@ -292,10 +294,12 @@ export default function DefaultThemeStoreSection({
             }}
           >
             <Package className="h-10 w-10" />
-            <p className="text-sm font-medium">لا توجد منتجات مطابقة حالياً</p>
+            <p className="text-sm font-medium">{t.store.noProducts}</p>
           </div>
         )}
       </div>
     </section>
   );
 }
+
+

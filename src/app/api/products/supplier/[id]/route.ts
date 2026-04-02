@@ -75,6 +75,8 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
     const file = formData.get('image') as File | null;
     const unlimitedStr = formData.get('unlimited') as string | null;
     const unlimited = unlimitedStr === 'true';
+    const isDigitalStr = formData.get('isDigital') as string | null;
+    const isDigital = isDigitalStr === 'true';
 
     if (!name || !priceStr || !quantityStr) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -128,20 +130,32 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
     //   imagePath = publicUrlData.publicUrl;
     // }
 
+    const updateData: Record<string, unknown> = {
+      name,
+      price,
+      quantity,
+      discount,
+      category: category ?? undefined,
+      description: description ?? undefined,
+      ...(imagePath ? { image: imagePath } : {}),
+      unlimited,
+    };
+
+    if (isDigitalStr !== null) {
+      updateData.isDigital = isDigital;
+    }
+
+    if (isDigitalStr !== null && isDigital) {
+      updateData.shippingType = null;
+      updateData.hasReturnPolicy = null;
+    } else {
+      updateData.shippingType = shippingType ?? undefined;
+      updateData.hasReturnPolicy = hasReturnPolicy ?? undefined;
+    }
+
     const updatedProduct = await prisma.product.update({
       where: { id },
-      data: {
-        name,
-        price,
-        quantity,
-        discount,
-        shippingType: shippingType ?? undefined,
-        hasReturnPolicy: hasReturnPolicy ?? undefined,
-        category: category ?? undefined,
-        description: description ?? undefined,
-        ...(imagePath ? { image: imagePath } : {}),
-        unlimited: unlimited,
-      },
+      data: updateData as any,
     });
 
     return NextResponse.json(updatedProduct);

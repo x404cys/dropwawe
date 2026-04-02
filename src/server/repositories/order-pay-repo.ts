@@ -72,7 +72,7 @@ export const orderPaymentRepository = {
         traderId,
         supplierId,
         orderId,
-        status: 'PENDING',
+        status: 'PAYMENT_PENDING',
         total,
         fullName,
         location,

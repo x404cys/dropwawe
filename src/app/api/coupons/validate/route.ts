@@ -27,6 +27,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'Invalid request data' }, { status: 401 });
     }
 
+    const store = await prisma.store.findUnique({
+      where: { id: storeId },
+      select: { shippingPrice: true },
+    });
+
+    if (!store) {
+      return NextResponse.json({ message: 'Store not found' }, { status: 404 });
+    }
+
     const coupon = await prisma.coupon.findUnique({
       where: { code },
     });
@@ -63,10 +72,20 @@ export async function POST(req: NextRequest) {
       }
     }
     if (coupon.type === 'FREE_SHIPPING') {
+      const productIds = products.map(product => product.id);
+      const cartProducts = await prisma.product.findMany({
+        where: { id: { in: productIds } },
+        select: { id: true, isDigital: true } as any,
+      });
+      const requiresShipping = cartProducts.some(
+        product => !(product as { isDigital?: boolean }).isDigital
+      );
+      const shippingDiscount = requiresShipping ? (store.shippingPrice ?? 0) : 0;
+
       return NextResponse.json({
         valid: true,
         appliedOn: 'SHIPPING',
-        shippingDiscount: coupon.value,
+        shippingDiscount,
         discount: 0,
       });
     }

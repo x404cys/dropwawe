@@ -1,4 +1,11 @@
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED';
+export type OrderStatus =
+  | 'PENDING'
+  | 'CONFIRMED'
+  | 'SHIPPED'
+  | 'DELIVERED'
+  | 'CANCELLED'
+  | 'PAYMENT_PENDING'
+  | 'PAYMENT_FAILED';
 
 export type OrderSource = 'ORDER' | 'TRADER_ORDER';
 

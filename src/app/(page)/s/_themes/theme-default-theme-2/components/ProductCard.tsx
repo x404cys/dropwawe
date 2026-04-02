@@ -9,11 +9,13 @@ import { useCart } from '../../../_context/CartContext';
 import { productHasVariants } from '../../../_utils/cart';
 import { formatPrice, getDiscountedPrice } from '../../../_utils/price';
 import { buildStorefrontProductPath } from '../../../_utils/routes';
+import { useLanguage } from '../../../_context/LanguageContext';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function DefaultThemeProductCard({ product, colors, fonts }: ProductCardProps) {
   const router = useRouter();
   const { addToCart, liked, toggleLike } = useCart();
+  const { t } = useLanguage();
   const finalPrice = getDiscountedPrice(product);
   const image = product.images?.[0]?.url || product.image || null;
   const colorOptions = (product.colors ?? []).slice(0, 3);
@@ -58,17 +60,17 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
             <div className="absolute start-2 top-2 flex flex-col gap-1">
               {(product.discount ?? 0) > 0 ? (
                 <span className="rounded-full bg-red-500 px-2 py-0.5 text-[8px] font-bold text-white">
-                  خصم {product.discount}%
+                  {t.store.discount} {product.discount}%
                 </span>
               ) : null}
 
               {isOutOfStock ? (
                 <span className="rounded-full bg-gray-900 px-2 py-0.5 text-[8px] font-bold text-white">
-                  نفد المخزون
+                  {t.product.outOfStock}
                 </span>
               ) : lowStock ? (
                 <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[8px] font-bold text-white">
-                  آخر {product.quantity} قطع
+                  {t.product.lowStock}
                 </span>
               ) : null}
             </div>
@@ -79,7 +81,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
           type="button"
           onClick={() => toggleLike(product.id)}
           className="absolute end-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-white/90 shadow-sm transition-transform duration-200 ease-in-out hover:scale-105"
-          aria-label="إعجاب"
+          aria-label={t.product.like}
         >
           <Heart
             className={`h-3.5 w-3.5 ${isLiked ? 'fill-current text-red-500' : 'text-gray-500'}`}
@@ -141,9 +143,10 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
           style={isOutOfStock ? undefined : { backgroundColor: colors.primary }}
         >
           {isOutOfStock ? <Truck className="h-3 w-3" /> : <ShoppingCart className="h-3 w-3" />}
-          {isOutOfStock ? 'غير متاح حالياً' : 'أضف للسلة'}
+          {isOutOfStock ? t.product.outOfStock : t.store.addToCart}
         </button>
       </div>
     </article>
   );
 }
+

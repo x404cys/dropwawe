@@ -5,8 +5,9 @@ import { useLanguage } from '../../../context/LanguageContext';
 import { Order } from '@/types/Products';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 import { useRouter } from 'next/navigation';
+import { type OrderStatus } from '../../../_types/order-details';
 
-export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'SHIPPED' | 'DELIVERED' | 'CANCELLED' | string;
+export type { OrderStatus } from '../../../_types/order-details';
 
 interface OrderDetailDialogProps {
   order: Order | null;
@@ -28,9 +29,11 @@ const OrderDetailDialog = ({
   const itemsToDisplay = order.items || [];
   const statusLabels: Record<string, string> = {
     PENDING: t.orders.new,
+    PAYMENT_PENDING: t.orders.paymentPending,
     CONFIRMED: t.orders.confirmed,
     SHIPPED: t.orders.transit,
     DELIVERED: t.orders.completed,
+    PAYMENT_FAILED: t.orders.paymentFailed,
     CANCELLED: t.orders.cancelled,
   };
   const statusLabel = statusLabels[order.status!] ?? order.status;
@@ -132,20 +135,7 @@ const OrderDetailDialog = ({
 
           <div className="text-muted-foreground flex items-center gap-2 text-xs">
             <Truck className="h-3.5 w-3.5" />
-            <span>
-              {t.orders.deliveryStatus}:
-              {order.status === 'PENDING'
-                ? t.orders.new
-                : order.status === 'CONFIRMED'
-                  ? t.orders.confirmed
-                  : order.status === 'SHIPPED'
-                    ? t.orders.transit
-                    : order.status === 'DELIVERED'
-                      ? t.orders.completed
-                      : order.status === 'CANCELLED'
-                        ? t.orders.cancelled
-                        : ''}
-            </span>
+            <span>{`${t.orders.deliveryStatus}: ${statusLabel}`}</span>
           </div>
 
           <div className="border-border flex items-center justify-between border-t pt-3">

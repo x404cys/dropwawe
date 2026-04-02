@@ -39,6 +39,7 @@ import {
   Ruler,
   Images,
   MessageCircle,
+  Download,
 } from 'lucide-react';
 
 // ─── Field wrapper ────────────────────────────────────────────────────────────
@@ -119,6 +120,16 @@ export default function EditProductPage() {
   const [telegramLink, setTelegramLink] = useState('');
 
   useEffect(() => {
+    if (!product.isDigital) return;
+
+    setProduct(prev => ({
+      ...prev,
+      shippingType: '',
+      hasReturnPolicy: '',
+    }));
+  }, [product.isDigital]);
+
+  useEffect(() => {
     const fetchProduct = async () => {
       try {
         const res = await fetch(`/api/products/${id}`);
@@ -176,6 +187,7 @@ export default function EditProductPage() {
       formData.append('price', product.price?.toString() ?? '');
       formData.append('quantity', product.quantity?.toString() ?? '');
       if (product.discount !== undefined) formData.append('discount', product.discount.toString());
+      formData.append('isDigital', product.isDigital ? 'true' : 'false');
       if (product.shippingType) formData.append('shippingType', product.shippingType);
       if (product.hasReturnPolicy) formData.append('hasReturnPolicy', product.hasReturnPolicy);
       if (product.category) formData.append('category', product.category);

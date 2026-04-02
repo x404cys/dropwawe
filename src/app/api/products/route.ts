@@ -30,6 +30,8 @@ export async function POST(req: Request) {
     const file = formData.get('image') as File | null;
     const unlimitedStr = formData.get('unlimited');
     const unlimited = unlimitedStr === 'true';
+    const isDigitalStr = formData.get('isDigital');
+    const isDigital = isDigitalStr === 'true';
     const galleryFiles = formData.getAll('gallery') as File[];
     const sizesRaw = formData.get('sizes') as string | null;
     const sizes: { size: string; stock: number }[] = sizesRaw ? JSON.parse(sizesRaw) : [];
@@ -90,14 +92,29 @@ export async function POST(req: Request) {
         description: description as string,
         price,
         quantity,
-        hasReturnPolicy: hasReturnPolicy as string,
-        shippingType: shippingType as string,
+        hasReturnPolicy:
+          isDigital || typeof hasReturnPolicy !== 'string' || !hasReturnPolicy.trim()
+            ? null
+            : hasReturnPolicy,
+        shippingType:
+          isDigital || typeof shippingType !== 'string' || !shippingType.trim()
+            ? null
+            : shippingType,
         discount,
         category,
         image: imageUrl,
-        userId,
         unlimited,
-        storeId: storeId,
+        isDigital,
+        user: {
+          connect: {
+            id: userId,
+          },
+        },
+        store: {
+          connect: {
+            id: storeId,
+          },
+        },
 
         isFromSupplier: !wholesalePrice ? false : true,
       },

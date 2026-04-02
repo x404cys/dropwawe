@@ -30,7 +30,7 @@ import SettingsSectionCard from '../_components/settings-section-card';
 import SettingsSectionHeading from '../_components/settings-section-heading';
 import { BsTelephone } from 'react-icons/bs';
 
-const getFAQs = (t: any) => [
+export const getFAQs = (t: any) => [
   {
     q: t.profile?.faqs?.q1 || 'كيف أضيف منتج جديد؟',
     a: t.profile?.faqs?.a1 || 'من صفحة المخزن اضغط على إضافة منتج وأدخل تفاصيل المنتج.',

@@ -131,7 +131,10 @@ export async function POST(request: NextRequest) {
 
     const safeOrderItems = orderItems.filter((i): i is OrderItem => i !== null);
 
-    const shippingPrice: number = store.shippingPrice ?? 0;
+    const requiresShipping = productsInDb.some(
+      product => !(product as { isDigital?: boolean }).isDigital
+    );
+    const shippingPrice: number = requiresShipping ? (store.shippingPrice ?? 0) : 0;
 
     let couponDiscount = 0;
     let shippingDiscount = 0;

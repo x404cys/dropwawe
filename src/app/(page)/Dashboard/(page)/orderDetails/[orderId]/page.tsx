@@ -125,6 +125,12 @@ export default function OrderDetailsPage() {
       label: t.orders.processing,
       icon: <Clock className="h-4 w-4" />,
     },
+    PAYMENT_PENDING: {
+      color: 'text-yellow-700',
+      bgColor: 'bg-yellow-50 border-yellow-200',
+      label: t.orders.paymentPending,
+      icon: <CreditCard className="h-4 w-4" />,
+    },
     CONFIRMED: {
       color: 'text-emerald-700',
       bgColor: 'bg-emerald-50 border-emerald-200',
@@ -142,6 +148,12 @@ export default function OrderDetailsPage() {
       bgColor: 'bg-green-50 border-green-200',
       label: t.orders.completed,
       icon: <Package className="h-4 w-4" />,
+    },
+    PAYMENT_FAILED: {
+      color: 'text-red-700',
+      bgColor: 'bg-red-50 border-red-200',
+      label: t.orders.paymentFailed,
+      icon: <XCircle className="h-4 w-4" />,
     },
     CANCELLED: {
       color: 'text-red-700',
@@ -200,6 +212,46 @@ export default function OrderDetailsPage() {
     }
 
     return value;
+  };
+
+  const formatOrderStatusLabel = (value?: OrderStatus | null) => {
+    if (!value) return null;
+
+    switch (value) {
+      case 'PENDING':
+        return t.orders.processing;
+      case 'PAYMENT_PENDING':
+        return t.orders.paymentPending;
+      case 'CONFIRMED':
+        return t.orders.confirmed;
+      case 'SHIPPED':
+        return t.orders.transit;
+      case 'DELIVERED':
+        return t.orders.completed;
+      case 'PAYMENT_FAILED':
+        return t.orders.paymentFailed;
+      case 'CANCELLED':
+        return t.orders.cancelled;
+      default:
+        return value;
+    }
+  };
+
+  const formatPaymentStatusLabel = (value?: string | null) => {
+    if (!value) return null;
+
+    const normalized = value.trim().toUpperCase();
+
+    switch (normalized) {
+      case 'PAYMENT_PENDING':
+        return t.orders.paymentPending;
+      case 'PAYMENT_FAILED':
+      case 'FAILED':
+      case 'FAIL':
+        return t.orders.paymentFailed;
+      default:
+        return value;
+    }
   };
 
   const formatCouponType = (type?: CouponDetails['type']) => {
@@ -303,10 +355,16 @@ export default function OrderDetailsPage() {
     );
   }
 
-  const status = statusConfig[order.status];
+  const status = statusConfig[order.status] ?? {
+    color: 'text-muted-foreground',
+    bgColor: 'bg-muted border-border',
+    label: formatOrderStatusLabel(order.status) ?? order.status,
+    icon: <Clock className="h-4 w-4" />,
+  };
+  const canManageOrderStatus = order.status === 'PENDING' || order.status === 'SHIPPED';
   const canConfirm =
-    order.status !== 'CONFIRMED' &&
-    (session.data?.user.role === 'SUPPLIER' || !hasSupplierProducts);
+    canManageOrderStatus && (session.data?.user.role === 'SUPPLIER' || !hasSupplierProducts);
+  const canCancel = canManageOrderStatus;
   const customerEmail = order.email ?? order.paymentOrder?.customerEmail ?? order.user?.email;
   const paymentMethodLabel =
     formatPaymentMethod(order.paymentMethod) ?? formatPaymentMethod(order.store?.methodPayment);
@@ -488,15 +546,17 @@ export default function OrderDetailsPage() {
                   </Button>
                 )}
 
-                <Button
-                  size="lg"
-                  variant="destructive"
-                  className="flex-1 cursor-pointer"
-                  onClick={() => setOpenCancel(true)}
-                >
-                  <XCircle className="ml-2 h-5 w-5" />
-                  {t.orders.cancelOrder}
-                </Button>
+                {canCancel && (
+                  <Button
+                    size="lg"
+                    variant="destructive"
+                    className="flex-1 cursor-pointer"
+                    onClick={() => setOpenCancel(true)}
+                  >
+                    <XCircle className="ml-2 h-5 w-5" />
+                    {t.orders.cancelOrder}
+                  </Button>
+                )}
               </div>
             </div>
 
@@ -527,8 +587,12 @@ export default function OrderDetailsPage() {
                   <DetailRow label={t.orders.paymentMethod} value={paymentMethodLabel} />
                   <DetailRow
                     label={t.orders.statusLabel}
-                    value={order.paymentOrder?.status || order.status}
-                    valueDir="ltr"
+                    value={
+                      order.paymentOrder?.status
+                        ? formatPaymentStatusLabel(order.paymentOrder.status)
+                        : formatOrderStatusLabel(order.status)
+                    }
+                    valueDir="auto"
                   />
                   <DetailRow
                     label={t.orders.amount}
@@ -671,7 +735,7 @@ export default function OrderDetailsPage() {
         </div>
       </div>
 
-      {order.status !== 'CONFIRMED' && (
+      {(canConfirm || canCancel) && (
         <>
           <Dialog open={openAccept} onOpenChange={setOpenAccept}>
             <DialogContent dir={dir} className="max-w-md">

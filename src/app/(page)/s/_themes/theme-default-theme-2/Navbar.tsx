@@ -6,18 +6,9 @@ import { useEffect, useMemo, useState } from 'react';
 
 import type { NavbarProps } from '../../_lib/types';
 import { useCart } from '../../_context/CartContext';
+import { useLanguage } from '../../_context/LanguageContext';
 import { buildStorefrontCheckoutPath } from '../../_utils/routes';
 import { borderStyle, mutedTextStyle, pageStyle, storefrontContainerClass } from './themeSystem';
-
-const sectionNavMap = {
-  hero: { scrollId: 'hero-section', label: 'الرئيسية' },
-  services: { scrollId: 'services-section', label: 'الخدمات' },
-  works: { scrollId: 'works-section', label: 'الأعمال' },
-  store: { scrollId: 'store-section', label: 'المتجر' },
-  testimonials: { scrollId: 'testimonials-section', label: 'الآراء' },
-  about: { scrollId: 'about-section', label: 'من نحن' },
-  cta: { scrollId: 'cta-section', label: 'تواصل' },
-} as const;
 
 const iconButtonClass =
   'flex h-10 w-10 items-center justify-center rounded-xl border transition-colors duration-200';
@@ -27,13 +18,27 @@ export default function DefaultThemeNavbar({ store, template, sections }: Navbar
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasScrolled, setHasScrolled] = useState(false);
   const { cartCount } = useCart();
+  const { t } = useLanguage();
+
+  const sectionNavMap = useMemo(
+    () => ({
+      hero: { scrollId: 'hero-section', label: t.nav.home },
+      services: { scrollId: 'services-section', label: t.nav.services },
+      works: { scrollId: 'works-section', label: t.nav.works },
+      store: { scrollId: 'store-section', label: t.nav.store },
+      testimonials: { scrollId: 'testimonials-section', label: t.nav.testimonials },
+      about: { scrollId: 'about-section', label: t.nav.about },
+      cta: { scrollId: 'cta-section', label: t.about.contactTitle },
+    }),
+    [t]
+  );
 
   const navItems = useMemo(
     () =>
       Object.entries(sectionNavMap)
         .filter(([key]) => sections[key as keyof typeof sections])
         .map(([, item]) => item),
-    [sections]
+    [sections, sectionNavMap]
   );
 
   useEffect(() => {
@@ -134,7 +139,7 @@ export default function DefaultThemeNavbar({ store, template, sections }: Navbar
                   ...pageStyle,
                   backgroundColor: 'color-mix(in srgb, var(--store-bg) 94%, transparent)',
                 }}
-                aria-label="بحث"
+                aria-label={t.store.searchPlaceholder}
               >
                 <Search className="h-4 w-4" />
               </button>
@@ -150,7 +155,7 @@ export default function DefaultThemeNavbar({ store, template, sections }: Navbar
                   ...pageStyle,
                   backgroundColor: 'color-mix(in srgb, var(--store-bg) 94%, transparent)',
                 }}
-                aria-label="السلة"
+                aria-label={t.store.addToCart}
               >
                 <ShoppingBag className="h-4 w-4" />
                 {cartCount > 0 ? (
@@ -173,7 +178,7 @@ export default function DefaultThemeNavbar({ store, template, sections }: Navbar
                 ...pageStyle,
                 backgroundColor: 'color-mix(in srgb, var(--store-bg) 94%, transparent)',
               }}
-              aria-label="القائمة"
+              aria-label={menuOpen ? t.nav.closeMenu : t.nav.openMenu}
             >
               {menuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>
@@ -217,3 +222,4 @@ export default function DefaultThemeNavbar({ store, template, sections }: Navbar
     </header>
   );
 }
+

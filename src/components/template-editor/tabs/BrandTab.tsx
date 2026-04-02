@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { type ReactNode, useRef, useState } from 'react';
 import { Globe, PenTool, Quote, Trash2, Upload, Zap } from 'lucide-react';
 import { CgWebsite } from 'react-icons/cg';
 import { toast } from 'sonner';
@@ -47,7 +47,21 @@ interface BrandTabProps {
   isSavingBrandChanges: boolean;
 }
 
-type SectionId = 'hero' | 'services' | 'works' | 'testimonials' | 'cta' | 'about' | 'store';
+type SectionId = 'hero' | 'services' | 'testimonials' | 'cta' | 'about' | 'store';
+type SectionGroupId = 'essentials' | 'trust' | 'commerce';
+
+type SectionCardConfig = {
+  title: string;
+  icon: ReactNode;
+  enabled: boolean;
+  onToggle: () => void;
+  open: boolean;
+  onOpenToggle: () => void;
+  count?: number;
+  children?: ReactNode;
+  noContent?: boolean;
+  audiences: string[];
+};
 
 export default function BrandTab({
   state,
@@ -122,8 +136,141 @@ export default function BrandTab({
     event.target.value = '';
   };
 
+  const audienceTags = tt.brand.audienceTags;
+
+  const sectionCards: Record<SectionId, SectionCardConfig> = {
+    hero: {
+      title: tt.brand.hero,
+      icon: <CgWebsite className="h-4 w-4" />,
+      enabled: state.sectionsConfig.hero,
+      onToggle: () => toggleSection('hero'),
+      open: openSections.hero ?? false,
+      onOpenToggle: () => toggleOpen('hero'),
+      audiences: [
+        audienceTags.store,
+        audienceTags.designer,
+        audienceTags.digitalProducts,
+        audienceTags.services,
+      ],
+      children: (
+        <HeroButtonsTable
+          buttons={state.heroButtons?.length ? state.heroButtons : defaultHeroButtons}
+          onChange={buttons => onUpdate({ heroButtons: buttons })}
+        />
+      ),
+    },
+    services: {
+      title: tt.brand.services,
+      icon: <Zap className="h-4 w-4" />,
+      enabled: state.sectionsConfig.services,
+      onToggle: () => toggleSection('services'),
+      open: openSections.services ?? false,
+      onOpenToggle: () => toggleOpen('services'),
+      count: state.services.length,
+      audiences: [audienceTags.designer, audienceTags.services, audienceTags.digitalProducts],
+      children: (
+        <ServiceWithWorksSection
+          services={state.services}
+          onAddService={onAddService}
+          onUpdateService={onUpdateService}
+          onRemoveService={onRemoveService}
+          onAddWork={onAddWork}
+          onUpdateWork={onUpdateWork}
+          onRemoveWork={onRemoveWork}
+          onUploadWorkImage={uploadWorkImage}
+        />
+      ),
+    },
+    testimonials: {
+      title: tt.brand.testimonials,
+      icon: <Quote className="h-4 w-4" />,
+      enabled: state.sectionsConfig.testimonials,
+      onToggle: () => toggleSection('testimonials'),
+      open: openSections.testimonials ?? false,
+      onOpenToggle: () => toggleOpen('testimonials'),
+      count: state.testimonials.length,
+      audiences: [audienceTags.store, audienceTags.services, audienceTags.digitalProducts],
+      children: (
+        <TestimonialsSection
+          testimonials={state.testimonials}
+          onAdd={onAddTestimonial}
+          onUpdate={onUpdateTestimonial}
+          onRemove={onRemoveTestimonial}
+        />
+      ),
+    },
+    cta: {
+      title: tt.brand.cta,
+      icon: <Zap className="h-4 w-4" />,
+      enabled: state.sectionsConfig.cta,
+      onToggle: () => toggleSection('cta'),
+      open: openSections.cta ?? false,
+      onOpenToggle: () => toggleOpen('cta'),
+      audiences: [audienceTags.store, audienceTags.digitalProducts, audienceTags.services],
+      children: (
+        <CtaSection
+          ctaTitle={state.ctaTitle}
+          ctaDesc={state.ctaDesc}
+          ctaButton={state.ctaButton}
+          onChange={onUpdate}
+        />
+      ),
+    },
+    about: {
+      title: tt.brand.about,
+      icon: <Globe className="h-4 w-4" />,
+      enabled: state.sectionsConfig.about,
+      onToggle: () => toggleSection('about'),
+      open: openSections.about ?? false,
+      onOpenToggle: () => toggleOpen('about'),
+      audiences: [audienceTags.designer, audienceTags.services, audienceTags.personalBrand],
+      children: (
+        <AboutSection
+          aboutText={state.aboutText}
+          onChange={value => onUpdate({ aboutText: value })}
+        />
+      ),
+    },
+    store: {
+      title: tt.brand.storeProducts,
+      icon: <PenTool className="h-4 w-4" />,
+      enabled: state.sectionsConfig.store,
+      onToggle: () => toggleSection('store'),
+      open: false,
+      onOpenToggle: () => {},
+      noContent: true,
+      audiences: [audienceTags.store, audienceTags.digitalProducts],
+    },
+  };
+
+  const sectionGroups: Array<{
+    id: SectionGroupId;
+    title: string;
+    description: string;
+    items: SectionId[];
+  }> = [
+    {
+      id: 'essentials',
+      title: tt.brand.sectionGroups.essentialsTitle,
+      description: tt.brand.sectionGroups.essentialsDescription,
+      items: ['hero', 'about', 'cta'],
+    },
+    {
+      id: 'trust',
+      title: tt.brand.sectionGroups.trustTitle,
+      description: tt.brand.sectionGroups.trustDescription,
+      items: ['services', 'testimonials'],
+    },
+    {
+      id: 'commerce',
+      title: tt.brand.sectionGroups.commerceTitle,
+      description: tt.brand.sectionGroups.commerceDescription,
+      items: ['store'],
+    },
+  ];
+
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 px-2 py-1.5">
       <div className="bg-card border-border rounded-2xl border p-4">
         <input
           ref={logoInputRef}
@@ -220,97 +367,53 @@ export default function BrandTab({
           <span className="text-[10px] font-normal">({tt.brand.sectionsSubtitle})</span>
         </p>
 
-        <ContentBlock
-          title={tt.brand.hero}
-          icon={<CgWebsite className="h-4 w-4" />}
-          enabled={state.sectionsConfig.hero}
-          onToggle={() => toggleSection('hero')}
-          open={openSections.hero ?? false}
-          onOpenToggle={() => toggleOpen('hero')}
-        >
-          <HeroButtonsTable
-            buttons={state.heroButtons?.length ? state.heroButtons : defaultHeroButtons}
-            onChange={buttons => onUpdate({ heroButtons: buttons })}
-          />
-        </ContentBlock>
+        {sectionGroups.map(group => (
+          <div key={group.id} className="space-y-3">
+            <div className="bg-muted/20 border-border/60 rounded-2xl border px-4 py-3">
+              <p className="text-foreground text-sm font-semibold">{group.title}</p>
+              <p className="text-muted-foreground mt-1 text-xs leading-6">{group.description}</p>
+            </div>
 
-        <ContentBlock
-          title={tt.brand.services}
-          icon={<Zap className="h-4 w-4" />}
-          enabled={state.sectionsConfig.services}
-          onToggle={() => toggleSection('services')}
-          open={openSections.services ?? false}
-          onOpenToggle={() => toggleOpen('services')}
-          count={state.services.length}
-        >
-          <ServiceWithWorksSection
-            services={state.services}
-            onAddService={onAddService}
-            onUpdateService={onUpdateService}
-            onRemoveService={onRemoveService}
-            onAddWork={onAddWork}
-            onUpdateWork={onUpdateWork}
-            onRemoveWork={onRemoveWork}
-            onUploadWorkImage={uploadWorkImage}
-          />
-        </ContentBlock>
+            <div className="space-y-2">
+              {group.items.map(sectionId => {
+                const section = sectionCards[sectionId];
 
-        <ContentBlock
-          title={tt.brand.testimonials}
-          icon={<Quote className="h-4 w-4" />}
-          enabled={state.sectionsConfig.testimonials}
-          onToggle={() => toggleSection('testimonials')}
-          open={openSections.testimonials ?? false}
-          onOpenToggle={() => toggleOpen('testimonials')}
-          count={state.testimonials.length}
-        >
-          <TestimonialsSection
-            testimonials={state.testimonials}
-            onAdd={onAddTestimonial}
-            onUpdate={onUpdateTestimonial}
-            onRemove={onRemoveTestimonial}
-          />
-        </ContentBlock>
+                return (
+                  <div key={sectionId} className="space-y-2">
+                    <div className="px-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="text-muted-foreground text-[10px] font-semibold">
+                          {tt.brand.sectionAudienceLabel}
+                        </span>
+                        {section.audiences.map(audience => (
+                          <span
+                            key={audience}
+                            className="bg-primary/10 text-primary rounded-full px-2 py-0.5 text-[10px] font-medium"
+                          >
+                            {audience}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
 
-        <ContentBlock
-          title={tt.brand.cta}
-          icon={<Zap className="h-4 w-4" />}
-          enabled={state.sectionsConfig.cta}
-          onToggle={() => toggleSection('cta')}
-          open={openSections.cta ?? false}
-          onOpenToggle={() => toggleOpen('cta')}
-        >
-          <CtaSection
-            ctaTitle={state.ctaTitle}
-            ctaDesc={state.ctaDesc}
-            ctaButton={state.ctaButton}
-            onChange={onUpdate}
-          />
-        </ContentBlock>
-
-        <ContentBlock
-          title={tt.brand.about}
-          icon={<Globe className="h-4 w-4" />}
-          enabled={state.sectionsConfig.about}
-          onToggle={() => toggleSection('about')}
-          open={openSections.about ?? false}
-          onOpenToggle={() => toggleOpen('about')}
-        >
-          <AboutSection
-            aboutText={state.aboutText}
-            onChange={value => onUpdate({ aboutText: value })}
-          />
-        </ContentBlock>
-
-        <ContentBlock
-          title={tt.brand.storeProducts}
-          icon={<PenTool className="h-4 w-4" />}
-          enabled={state.sectionsConfig.store}
-          onToggle={() => toggleSection('store')}
-          open={false}
-          onOpenToggle={() => {}}
-          noContent
-        />
+                    <ContentBlock
+                      title={section.title}
+                      icon={section.icon}
+                      enabled={section.enabled}
+                      onToggle={section.onToggle}
+                      open={section.open}
+                      onOpenToggle={section.onOpenToggle}
+                      count={section.count}
+                      noContent={section.noContent}
+                    >
+                      {section.children}
+                    </ContentBlock>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

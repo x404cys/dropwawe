@@ -2,10 +2,11 @@
 import { useLanguage } from '../../../../../context/LanguageContext';
 
 import React from 'react';
-import { Package, DollarSign, Percent } from 'lucide-react';
+import { Package, DollarSign, Percent, Download } from 'lucide-react';
 import { calculateDiscountedPrice } from '@/app/lib/utils/CalculateDiscountedPrice';
 import type { Product } from '@/types/Products';
 import { ModernInputGroup } from './ModernInputGroup';
+import { Button } from '@/components/ui/button';
 
 interface BasicInfoSectionProps {
   newProduct: Partial<Product> & { imageFile?: File; imagePreview?: string };
@@ -15,16 +16,64 @@ interface BasicInfoSectionProps {
 
 export function BasicInfoSection({ newProduct, setNewProduct, loading }: BasicInfoSectionProps) {
   const { t } = useLanguage();
+
   return (
     <div className="text-foreground">
       <div className="p-6">
         <div className="space-y-5">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-sm font-medium">
+                {t.inventory?.productType || 'نوع المنتج'}
+              </span>
+              {newProduct.isDigital && (
+                <span className="text-muted-foreground text-xs">
+                  {t.inventory?.digitalProductNote || 'المنتج الرقمي لا يحتاج شحنًا أو استرجاعًا'}
+                </span>
+              )}
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button
+                type="button"
+                variant={!newProduct.isDigital ? 'default' : 'outline'}
+                className="h-auto justify-start gap-3 rounded-xl px-4 py-3 text-right"
+                onClick={() => setNewProduct({ ...newProduct, isDigital: false })}
+                disabled={loading}
+              >
+                <Package className="h-4 w-4" />
+                <div className="flex flex-col items-start">
+                  <span>{t.inventory?.physicalProduct || 'منتج عادي'}</span>
+                  <span className="text-xs font-normal opacity-80">
+                    {t.inventory?.physicalProductHint || 'يُعامل كمنتج يحتاج شحنًا عند الطلب'}
+                  </span>
+                </div>
+              </Button>
+
+              <Button
+                type="button"
+                variant={newProduct.isDigital ? 'default' : 'outline'}
+                className="h-auto justify-start gap-3 rounded-xl px-4 py-3 text-right"
+                onClick={() => setNewProduct({ ...newProduct, isDigital: true })}
+                disabled={loading}
+              >
+                <Download className="h-4 w-4" />
+                <div className="flex flex-col items-start">
+                  <span>{t.inventory?.digitalProduct || 'منتج رقمي'}</span>
+                  <span className="text-xs font-normal opacity-80">
+                    {t.inventory?.digitalProductHint || 'لن يُحتسب له سعر توصيل'}
+                  </span>
+                </div>
+              </Button>
+            </div>
+          </div>
+
           <ModernInputGroup
             label={t.inventory?.productName || 'اسم المنتج'}
             icon={<Package className="text-foreground h-4 w-4" />}
             value={newProduct.name}
             onChange={(value: any) => setNewProduct({ ...newProduct, name: value })}
-            placeholder={t.inventory?.productNamePlaceholder || 'أدخل اسم المنتج (مثال: تيشرت قطن)'}
+            placeholder={t.inventory?.productNamePlaceholder || 'أدخل اسم المنتج'}
             disabled={loading}
             required
           />

@@ -9,6 +9,7 @@ import type {
   StorefrontHeroStat,
   StorefrontHeroTrustItem,
 } from '../../../_lib/types';
+import { useLanguage } from '../../../_context/LanguageContext';
 import { getIconComponent } from '../../../_utils/icons';
 import {
   storefrontContainerClass,
@@ -278,6 +279,7 @@ function MediaBlock({ hero }: { hero: NonNullable<HeroSectionProps['template']['
 
 export default function DefaultThemeHeroSection({ store, template, fonts }: HeroSectionProps) {
   const hero = template.heroSection;
+  const { t } = useLanguage();
 
   if (hero && (!hero.enabled || hero.visible === false)) return null;
 
@@ -291,9 +293,9 @@ export default function DefaultThemeHeroSection({ store, template, fonts }: Hero
   const subtitle = hero?.subtitle?.trim() || '';
   const overline = hero?.overline?.trim() || '';
   const primaryText =
-    hero?.primaryButtonText?.trim() || template.heroButtonText?.trim() || 'تسوق الآن';
+    hero?.primaryButtonText?.trim() || template.heroButtonText?.trim() || t.hero.primaryCta;
   const secondaryText =
-    hero?.secondaryButtonText?.trim() || template.heroSecondaryButton?.trim() || 'استكشف المزيد';
+    hero?.secondaryButtonText?.trim() || template.heroSecondaryButton?.trim() || t.hero.secondaryCta;
   const tertiaryText = hero?.tertiaryButtonText?.trim() || '';
   const primaryHref = hero?.primaryButtonLink?.trim() || '#store-section';
   const secondaryHref = hero?.secondaryButtonLink?.trim() || '#about-section';
@@ -597,7 +599,7 @@ export default function DefaultThemeHeroSection({ store, template, fonts }: Hero
               backgroundColor: isInverted ? 'rgba(255,255,255,0.08)' : 'var(--store-surface)',
             }}
           >
-            <span>اكتشف المزيد</span>
+            <span>{t.hero.secondaryCta}</span>
             <ChevronDown className="h-3.5 w-3.5" />
           </div>
         </div>
@@ -605,3 +607,4 @@ export default function DefaultThemeHeroSection({ store, template, fonts }: Hero
     </section>
   );
 }
+

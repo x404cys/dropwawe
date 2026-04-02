@@ -35,7 +35,7 @@ export default function SearchBar({ value, onChange, colors }: SearchBarProps) {
             onClick={() => onChange('')}
             className="opacity-50 transition-opacity duration-200 hover:opacity-100"
             style={{ color: colors.text }}
-            aria-label="Clear search"
+            aria-label={t.store.clearSearch}
           >
             <X className="h-4 w-4" />
           </button>

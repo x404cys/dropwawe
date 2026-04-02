@@ -1,4 +1,4 @@
-﻿// THEME: default-theme - StoreSection
+// THEME: default-theme - StoreSection
 
 'use client';
 
@@ -6,6 +6,7 @@ import { ChevronLeft, Package } from 'lucide-react';
 import { useMemo } from 'react';
 import type { StoreSectionProps } from '../../../_lib/types';
 import { useStorefront } from '../../../_hooks/useStorefront';
+import { useLanguage } from '../../../_context/LanguageContext';
 import { getCategoryIcon } from '../../../_utils/icons';
 import DefaultThemeBannerCarousel from '../components/BannerCarousel';
 import DefaultThemeProductCard from '../components/ProductCard';
@@ -32,6 +33,7 @@ export default function DefaultThemeStoreSection({
     getProductsByCat,
     allCategoryKey,
   } = useStorefront(products);
+  const { t } = useLanguage();
 
   const sectionCategories = useMemo(
     () =>
@@ -51,8 +53,8 @@ export default function DefaultThemeStoreSection({
       (category, index, list) => list.findIndex(item => item.key === category.key) === index
     );
 
-    return [{ key: allCategoryKey, label: 'الكل' }, ...merged];
-  }, [allCategoryKey, displayCategories, sectionCategories]);
+    return [{ key: allCategoryKey, label: t.store.all }, ...merged];
+  }, [allCategoryKey, displayCategories, sectionCategories, t]);
 
   const showSectionRows =
     sectionCategories.length > 0 && activeCategory === allCategoryKey && !searchQuery.trim();
@@ -230,7 +232,7 @@ export default function DefaultThemeStoreSection({
                       className="inline-flex items-center gap-1 text-[11px] font-semibold"
                       style={{ color: colors.primary }}
                     >
-                      عرض الكل <ChevronLeft className="h-3 w-3" />
+                      {t.store.viewAll} <ChevronLeft className="h-3 w-3" />
                     </button>
                   </div>
 
@@ -262,7 +264,7 @@ export default function DefaultThemeStoreSection({
                   className="mb-3 text-sm font-bold"
                   style={{ color: 'var(--store-text)', fontFamily: fonts.heading }}
                 >
-                  منتجات أخرى
+                  {t.store.otherProducts}
                 </h3>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4">
                   {remainingProducts.map(product => (
@@ -297,7 +299,7 @@ export default function DefaultThemeStoreSection({
               style={{ color: 'var(--store-text-faint)' }}
             />
             <p className="text-sm" style={{ color: 'var(--store-text-muted)' }}>
-              لا توجد منتجات
+              {t.store.noProducts}
             </p>
           </div>
         ) : null}
@@ -305,3 +307,4 @@ export default function DefaultThemeStoreSection({
     </section>
   );
 }
+

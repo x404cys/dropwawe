@@ -38,7 +38,7 @@ export default function TechFuturisticSearchBar({
             type="button"
             onClick={() => onChange('')}
             className="flex h-6 w-6 items-center justify-center text-white/40 transition-all duration-150 ease-out hover:text-[var(--tech-accent)]"
-            aria-label="Clear search"
+            aria-label={t.store.clearSearch}
           >
             <X className="h-4 w-4" />
           </button>

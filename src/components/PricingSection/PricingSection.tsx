@@ -91,23 +91,7 @@ const plans: Plan[] = [
     ],
     r: ['399 د.ع + 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
   },
-  {
-    title: 'الباقة الرمضانية',
-    price: 39000,
-    popular: true,
-    type: 'ramadan-plan',
-    features: [
-      'كل مميزات الباقة الاحترافية',
-      'متجر الكتروني بتصميم رمضاني',
-      'دعم تسويقي مكثف',
-      'ربط شركات التوصيل',
 
-      'ثيمات متجر عدد 2',
-      'صلاحية إدارة المتجر 3 أشخاص',
-      'أولوية الدعم 24/7',
-    ],
-    r: ['99 د.ع+ 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
-  },
   {
     title: 'الأساسية - دروبشيبينغ',
     price: 39000,
@@ -212,7 +196,6 @@ export default function PricingSection() {
               { key: 'all', label: 'الكل' },
               { key: 'store', label: 'متاجر' },
               { key: 'dropship', label: 'دروبشيبينغ' },
-              { key: 'ramadan-plan', label: 'رمضان' },
             ].map(b => (
               <button
                 key={b.key}
@@ -230,7 +213,7 @@ export default function PricingSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-14 pt-10 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-5">
+        <div className="grid grid-cols-1 gap-14 pt-10 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-4">
           {filteredPlans.map((plan, i) => (
             <div
               key={i}

@@ -122,7 +122,7 @@ export async function getRecentOrdersAgg(storeId: string) {
   limitDate.setMonth(limitDate.getMonth() - 1);
 
   return prisma.order.findMany({
-    where: { storeId, createdAt: { gte: limitDate } },
+    where: { storeId, createdAt: { gte: limitDate }, status: 'CONFIRMED' },
     select: { createdAt: true, status: true, total: true },
   });
 }

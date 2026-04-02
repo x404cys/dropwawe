@@ -13,6 +13,7 @@ import { useStoreProvider } from '../../context/StoreContext';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Order } from '@/types/Products';
+
 const fetcher = (url: string) =>
   fetch(url).then(res => {
     if (!res.ok) throw new Error('LOAD_ORDERS_FAILED');
@@ -21,9 +22,11 @@ const fetcher = (url: string) =>
 
 const STATUS_STYLES: Record<string, string> = {
   PENDING: 'bg-primary/10 text-primary',
+  PAYMENT_PENDING: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
   CONFIRMED: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
   SHIPPED: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
   DELIVERED: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
+  PAYMENT_FAILED: 'bg-rose-50 text-rose-600 dark:bg-rose-900/30 dark:text-rose-300',
   CANCELLED: 'bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400',
 };
 
@@ -39,18 +42,22 @@ export default function OrderSummaryPage() {
 
   const STATUS_TABS = [
     { key: 'all', label: t.all },
+    { key: 'PAYMENT_PENDING', label: t.orders.paymentPending },
     { key: 'PENDING', label: t.orders.new },
     { key: 'CONFIRMED', label: t.orders.confirmed },
     { key: 'SHIPPED', label: t.orders.transit },
     { key: 'DELIVERED', label: t.orders.completed },
+    { key: 'PAYMENT_FAILED', label: t.orders.paymentFailed },
     { key: 'CANCELLED', label: t.orders.cancelled },
   ];
 
   const STATUS_LABELS: Record<string, string> = {
     PENDING: t.orders.new,
+    PAYMENT_PENDING: t.orders.paymentPending,
     CONFIRMED: t.orders.confirmed,
     SHIPPED: t.orders.transit,
     DELIVERED: t.orders.completed,
+    PAYMENT_FAILED: t.orders.paymentFailed,
     CANCELLED: t.orders.cancelled,
   };
 

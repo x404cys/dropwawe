@@ -183,7 +183,7 @@ export default function DefaultThemeNavbar({
                 borderColor: 'var(--store-border)',
                 color: 'var(--store-text)',
               }}
-              aria-label={showMobileMenu ? 'Close menu' : 'Open menu'}
+              aria-label={showMobileMenu ? t.nav.closeMenu : t.nav.openMenu}
             >
               {showMobileMenu ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </button>

@@ -8,10 +8,12 @@ import { useRouter } from 'next/navigation';
 import type { ProductCardProps } from '../../../_lib/types';
 import { getDiscountedPrice } from '../../../_utils/price';
 import { buildStorefrontProductPath } from '../../../_utils/routes';
+import { useLanguage } from '../../../_context/LanguageContext';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
 
 export default function TechFuturisticProductCard({ product, colors, fonts }: ProductCardProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const primaryImage = product.images?.[0]?.url || product.image || null;
   const finalPrice = getDiscountedPrice(product);
   const compareAtPrice =
@@ -128,14 +130,14 @@ export default function TechFuturisticProductCard({ product, colors, fonts }: Pr
                 className="font-mono text-[10px] tracking-[0.2em] uppercase"
                 style={{ fontFamily: fonts.body, color: colors.text + '4d' }}
               >
-                OUT OF STOCK
+                {t.product.outOfStock}
               </span>
             ) : isLowStock ? (
               <span
                 className="font-mono text-[10px] tracking-[0.2em] uppercase"
                 style={{ fontFamily: fonts.body, color: colors.accent }}
               >
-                LOW STOCK
+                {t.product.lowStock}
               </span>
             ) : null}
           </div>

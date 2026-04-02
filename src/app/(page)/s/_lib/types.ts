@@ -336,6 +336,7 @@ export type StorefrontProduct = {
   selectedSize?: string | undefined;
   hasReturnPolicy?: string;
   shippingType?: string;
+  isDigital?: boolean;
   images?: StorefrontProductImage[];
   sizes?: StorefrontProductSize[];
   colors?: StorefrontProductColor[];

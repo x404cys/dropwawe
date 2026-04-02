@@ -403,7 +403,7 @@ export default function CheckoutPage({
                           className="text-xs font-medium"
                           style={{ color: 'var(--store-text-muted)' }}
                         >
-                          Clear
+                          {t.checkout.removeItem}
                         </button>
                       </div>
                     </div>
@@ -420,7 +420,7 @@ export default function CheckoutPage({
               }}
             >
               <h2 className="mb-4 text-base font-semibold" style={{ color: 'var(--store-text)' }}>
-                Coupon
+                {t.checkout.coupon}
               </h2>
 
               {coupon.status === 'valid' ? (
@@ -435,7 +435,7 @@ export default function CheckoutPage({
                     </span>
                     <span className="text-xs" style={{ color: 'var(--store-text-muted)' }}>
                       {coupon.appliedOn === 'SHIPPING'
-                        ? t.product.deliveryFast
+                        ? t.checkout.freeShipping
                         : `${formatIQD(coupon.discount)} ${t.store.currency}`}
                     </span>
                   </div>
@@ -446,7 +446,7 @@ export default function CheckoutPage({
                     className="text-xs font-medium"
                     style={{ color: 'var(--store-text-muted)' }}
                   >
-                    Clear
+                    {t.checkout.clear}
                   </button>
                 </div>
               ) : (
@@ -465,7 +465,7 @@ export default function CheckoutPage({
                       backgroundColor: 'var(--store-bg)',
                       color: 'var(--store-text)',
                     }}
-                    placeholder="Coupon"
+                    placeholder={t.checkout.couponPlaceholder}
                     dir="ltr"
                   />
 
@@ -476,7 +476,7 @@ export default function CheckoutPage({
                     className="h-11 rounded-2xl px-5 text-sm font-semibold text-white disabled:opacity-50"
                     style={{ backgroundColor: primaryColor }}
                   >
-                    {coupon.status === 'loading' ? '...' : 'Apply'}
+                    {coupon.status === 'loading' ? '...' : t.checkout.applyCoupon}
                   </button>
                 </div>
               )}
@@ -575,7 +575,7 @@ export default function CheckoutPage({
                     className="mb-2 block text-sm"
                     style={{ color: 'var(--store-text-muted)' }}
                   >
-                    Location
+                    {t.checkout.location}
                   </label>
                   <input
                     value={customerInfo.location}
@@ -588,7 +588,7 @@ export default function CheckoutPage({
                       backgroundColor: 'var(--store-bg)',
                       color: 'var(--store-text)',
                     }}
-                    placeholder="Baghdad - Karrada"
+                    placeholder={t.checkout.locationPlaceholder}
                   />
                 </div>
 
@@ -680,7 +680,7 @@ export default function CheckoutPage({
 
                 {coupon.status === 'valid' && coupon.discount > 0 ? (
                   <div className="flex items-center justify-between">
-                    <span style={{ color: 'var(--store-text-muted)' }}>Coupon</span>
+                    <span style={{ color: 'var(--store-text-muted)' }}>{t.checkout.coupon}</span>
                     <span style={{ color: primaryColor }}>
                       -{formatIQD(coupon.discount)} {t.store.currency}
                     </span>
@@ -690,9 +690,7 @@ export default function CheckoutPage({
                 <div className="flex items-center justify-between">
                   <span style={{ color: 'var(--store-text-muted)' }}>{t.product.delivery}</span>
                   <span style={{ color: 'var(--store-text)' }}>
-                    {shippingTotal > 0
-                      ? `${formatIQD(shippingTotal)} ${t.store.currency}`
-                      : t.product.deliveryFast}
+                    {formatIQD(shippingTotal)} {t.store.currency}
                   </span>
                 </div>
 

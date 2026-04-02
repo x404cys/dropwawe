@@ -16,6 +16,7 @@ export interface Product {
   selectedSize?: string;
   hasReturnPolicy?: string;
   shippingType?: string;
+  isDigital?: boolean;
   images?: { id: string; url: string }[];
   sizes?: { id: string; size: string; stock: number }[];
   colors?: { id: string; name: string; hex: string; stock: number }[];

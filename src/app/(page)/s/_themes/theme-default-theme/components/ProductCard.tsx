@@ -4,6 +4,7 @@ import { Package, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import type { ProductCardProps } from '../../../_lib/types';
 import { useCart } from '../../../_context/CartContext';
+import { useLanguage } from '../../../_context/LanguageContext';
 import { productHasVariants } from '../../../_utils/cart';
 import { getDiscountedPrice } from '../../../_utils/price';
 import { buildStorefrontProductPath } from '../../../_utils/routes';
@@ -13,6 +14,7 @@ import { getReadableTextColor } from '../themeSystem';
 export default function DefaultThemeProductCard({ product, colors, fonts }: ProductCardProps) {
   const router = useRouter();
   const { addToCart } = useCart();
+  const { t } = useLanguage();
 
   const finalPrice = getDiscountedPrice(product);
   const image = product.images?.[0]?.url || product.image || null;
@@ -57,19 +59,19 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
         <div className="absolute start-3 top-3 flex flex-col gap-1">
           {(product.discount ?? 0) > 0 && (
             <span className="rounded-full bg-red-500 px-2 py-0.5 text-[10px] font-semibold text-white">
-              خصم {product.discount}%
+              {t.store.discount} {product.discount}%
             </span>
           )}
 
           {isOutOfStock && (
             <span className="rounded-full bg-black px-2 py-0.5 text-[10px] font-semibold text-white">
-              نفد المخزون
+              {t.product.outOfStock}
             </span>
           )}
 
           {lowStock && !isOutOfStock && (
             <span className="rounded-full bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-white">
-              آخر {product.quantity}
+              {t.product.lowStock} {product.quantity}
             </span>
           )}
         </div>
@@ -110,7 +112,7 @@ export default function DefaultThemeProductCard({ product, colors, fonts }: Prod
               color: accentTextColor,
             }}
           >
-            <span>اضف للسلة</span>
+            <span>{t.store.addToCart}</span>
             <ShoppingCart className="h-4 w-4" />
           </button>
         </div>

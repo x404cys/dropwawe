@@ -63,6 +63,7 @@ export default function ProductAddPage() {
     hasReturnPolicy: '',
     shippingType: '',
     unlimited: false,
+    isDigital: false,
   });
 
   const { id } = useUser();
@@ -75,6 +76,17 @@ export default function ProductAddPage() {
   const [storeId, setStoreId] = useState<string>('');
   const [compressionProgress, setCompressionProgress] = useState(0);
   const [isCompressing, setIsCompressing] = useState(false);
+
+  useEffect(() => {
+    if (!newProduct.isDigital) return;
+
+    setNewProduct(prev => ({
+      ...prev,
+      shippingType: '',
+      hasReturnPolicy: '',
+    }));
+  }, [newProduct.isDigital]);
+
   useEffect(() => {
     if (!id) return;
 
@@ -228,6 +240,7 @@ export default function ProductAddPage() {
       formData.append('image', newProduct.imageFile);
 
       formData.append('unlimited', newProduct.unlimited ? 'true' : 'false');
+      formData.append('isDigital', newProduct.isDigital ? 'true' : 'false');
       formData.append(
         'discount',
         Number.isFinite(newProduct.discount) ? String(newProduct.discount) : '0'
@@ -314,6 +327,7 @@ export default function ProductAddPage() {
         shippingType: '',
         hasReturnPolicy: '',
         unlimited: false,
+        isDigital: false,
       });
 
       setGalleryFiles([]);
@@ -403,11 +417,13 @@ export default function ProductAddPage() {
                   onToggle={() => toggleSection('colors')}
                 />
 
-                <ShippingSection
-                  newProduct={newProduct}
-                  setNewProduct={setNewProduct}
-                  loading={loading}
-                />
+                {!newProduct.isDigital && (
+                  <ShippingSection
+                    newProduct={newProduct}
+                    setNewProduct={setNewProduct}
+                    loading={loading}
+                  />
+                )}
               </CollapsibleSection>
             </div>
 

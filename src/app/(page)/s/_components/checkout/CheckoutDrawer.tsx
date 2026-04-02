@@ -48,6 +48,7 @@ export default function CheckoutDrawer({
     setCustomerInfo,
     paymentMethod,
     setPaymentMethod,
+    requiresShipping,
   } = useCart();
   const { t, locale } = useLanguage();
 
@@ -94,7 +95,7 @@ export default function CheckoutDrawer({
         appliedOn: data.appliedOn,
       });
     } catch {
-      setCouponState({ status: 'error', message: 'حدث خطأ، حاول مجدداً', discount: 0 });
+      setCouponState({ status: 'error', message: t.checkout.errorTryAgain, discount: 0 });
     }
   };
 
@@ -104,7 +105,8 @@ export default function CheckoutDrawer({
   };
 
   // ── TOTALS ──
-  const effectiveShipping = Math.max(0, (shippingPrice || 0) - (couponState.shippingDiscount ?? 0));
+  const baseShipping = requiresShipping() ? shippingPrice || 0 : 0;
+  const effectiveShipping = Math.max(0, baseShipping - (couponState.shippingDiscount ?? 0));
   const orderDiscount =
     couponState.appliedOn === 'ORDER' || couponState.appliedOn === 'PRODUCT'
       ? couponState.discount
@@ -357,7 +359,7 @@ export default function CheckoutDrawer({
               </div>
 
               <div className="space-y-2">
-                <p className="text-foreground text-xs font-bold">كوبون الخصم</p>
+                <p className="text-foreground text-xs font-bold">{t.checkout.coupon}</p>
 
                 {couponState.status === 'valid' ? (
                   <div
@@ -371,8 +373,8 @@ export default function CheckoutDrawer({
                       </span>
                       <span className="text-muted-foreground text-xs">
                         {couponState.appliedOn === 'SHIPPING'
-                          ? '— توصيل مجاني'
-                          : `— خصم ${couponState.discount.toLocaleString(locale)} ${t.store.currency}`}
+                          ? `— ${t.checkout.freeShipping}`
+                          : `— ${t.checkout.couponDiscount} ${couponState.discount.toLocaleString(locale)} ${t.store.currency}`}
                       </span>
                     </div>
                     <button onClick={removeCoupon}>
@@ -391,7 +393,7 @@ export default function CheckoutDrawer({
                       }}
                       onKeyDown={e => e.key === 'Enter' && applyCoupon()}
                       className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 flex-1 rounded-xl border px-3 transition-colors outline-none"
-                      placeholder="أدخل كود الخصم"
+                      placeholder={t.checkout.couponPlaceholder}
                       dir="ltr"
                     />
                     <button
@@ -400,7 +402,7 @@ export default function CheckoutDrawer({
                       className="h-10 rounded-xl px-4 text-xs font-bold text-white transition-opacity disabled:opacity-50"
                       style={{ backgroundColor: primaryColor }}
                     >
-                      {couponState.status === 'loading' ? '...' : 'تطبيق'}
+                      {couponState.status === 'loading' ? '...' : t.checkout.applyCoupon}
                     </button>
                   </div>
                 )}
@@ -438,13 +440,13 @@ export default function CheckoutDrawer({
                 </div>
                 <div>
                   <label className="text-muted-foreground mb-1 block text-sm">
-                    العنوان - location
+                    {t.checkout.location}
                   </label>
                   <input
                     value={customerInfo.location}
                     onChange={e => setCustomerInfo({ ...customerInfo, location: e.target.value })}
                     className="border-border bg-card text-foreground placeholder:text-muted-foreground focus:border-primary h-10 w-full rounded-xl border px-3 transition-colors outline-none"
-                    placeholder="مثال: بغداد - الكرادة داخل"
+                    placeholder={t.checkout.locationPlaceholder}
                     dir="rtl"
                   />
                 </div>
@@ -514,7 +516,7 @@ export default function CheckoutDrawer({
               {/* Discount row */}
               {orderDiscount > 0 && (
                 <div className="flex items-center justify-between">
-                  <span className="text-muted-foreground text-sm">خصم الكوبون</span>
+                  <span className="text-muted-foreground text-sm">{t.checkout.couponDiscount}</span>
                   <span className="text-sm font-medium" style={{ color: primaryColor }}>
                     -{orderDiscount.toLocaleString(locale)}{' '}
                     <span className="text-muted-foreground text-xs">{t.store.currency}</span>
@@ -524,23 +526,19 @@ export default function CheckoutDrawer({
 
               {/* Shipping */}
               <div className="flex items-center justify-between">
-                <span className="text-muted-foreground text-sm">التوصيل</span>
+                <span className="text-muted-foreground text-sm">{t.checkout.shipping}</span>
                 <span className="text-foreground text-sm font-medium">
-                  {effectiveShipping > 0 ? (
-                    <>
-                      {effectiveShipping.toLocaleString(locale)}{' '}
-                      <span className="text-muted-foreground text-xs">{t.store.currency}</span>
-                    </>
-                  ) : (
-                    <span style={{ color: primaryColor }}>مجاني</span>
-                  )}
+                  {effectiveShipping.toLocaleString(locale)}{' '}
+                  <span className="text-muted-foreground text-xs">{t.store.currency}</span>
                 </span>
               </div>
 
               {/* Grand total */}
               <div className="border-border border-t pt-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-foreground text-sm font-semibold">المجموع الكلي</span>
+                  <span className="text-foreground text-sm font-semibold">
+                    {t.checkout.grandTotal}
+                  </span>
                   <span className="text-base font-bold" style={{ color: primaryColor }}>
                     {grandTotal.toLocaleString(locale)}{' '}
                     <span className="text-muted-foreground text-xs font-normal">

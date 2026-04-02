@@ -80,11 +80,20 @@ export async function POST(req: Request) {
         hasReturnPolicy: product.hasReturnPolicy,
         shippingPrice: product.shippingPrice,
         shippingType: product.shippingType,
-        userId: session.user.id,
-        storeId: storeUser?.store.id,
+        isDigital: (product as { isDigital?: boolean }).isDigital ?? false,
         unlimited: product.unlimited,
         isFromSupplier: true,
         supplierId: product.supplierId ?? null,
+        user: {
+          connect: {
+            id: session.user.id,
+          },
+        },
+        store: {
+          connect: {
+            id: storeUser!.store.id,
+          },
+        },
         colors: {
           create: product.colors.map(c => ({
             color: c.color,
