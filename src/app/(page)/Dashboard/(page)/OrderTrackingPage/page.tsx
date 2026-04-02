@@ -97,7 +97,7 @@ export default function OrderSummaryPage() {
     userId: '',
     storeId: '',
     fullName: o.fullName,
-    total: o.total ?? o.total,
+    total: o.finalTotal && o.finalTotal > 0 ? o.finalTotal : o.total,
     status: o.status,
     createdAt: new Date(o.createdAt).toLocaleDateString('ar-EG', {
       year: 'numeric',
@@ -281,7 +281,14 @@ export default function OrderSummaryPage() {
 
                   {/* Details */}
                   <div className="min-w-0 flex-1">
-                    {order?.paymentMethod === 'cod' ? (
+                    {order?.paymentMethod?.toUpperCase() === 'SELF_ORDER' ? (
+                      <div className="text-primary flex items-center gap-2 rounded-lg py-2">
+                        <ShoppingBag className="text-primary h-4 w-4" />
+                        <span className="text-foreground text-xs font-medium">
+                          {t.orders.directOrder}
+                        </span>
+                      </div>
+                    ) : order?.paymentMethod === 'cod' ? (
                       <div className="text-primary flex items-center gap-2 rounded-lg py-2">
                         <Banknote className="text-primary h-4 w-4" />
                         <span className="text-foreground text-xs font-medium">
@@ -322,7 +329,11 @@ export default function OrderSummaryPage() {
                   </div>
 
                   <div className="flex-shrink-0 text-left">
-                    <p className="text-foreground text-sm font-bold">{formatIQD(order.total)}</p>
+                    <p className="text-foreground text-sm font-bold">
+                      {formatIQD(
+                        order.finalTotal && order.finalTotal > 0 ? order.finalTotal : order.total
+                      )}
+                    </p>
                     <p className="text-muted-foreground text-left text-[10px]">{order.phone}</p>
                   </div>
                 </div>

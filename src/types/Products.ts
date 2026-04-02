@@ -8,6 +8,8 @@ export interface Product {
   name: string;
   price: number;
   quantity: number;
+  userId?: string | null;
+  storeId?: string | null;
   category: string;
   discount: number;
   image?: string;
@@ -19,7 +21,13 @@ export interface Product {
   isDigital?: boolean;
   images?: { id: string; url: string }[];
   sizes?: { id: string; size: string; stock: number }[];
-  colors?: { id: string; name: string; hex: string; stock: number }[];
+  colors?: {
+    id: string;
+    name?: string;
+    color?: string;
+    hex: string;
+    stock: number;
+  }[];
   unlimited?: boolean;
   isFromSupplier?: boolean;
   user?: {
@@ -46,8 +54,11 @@ export interface subInfo {
   telegram?: string;
   facebookLink?: string;
   instaLink?: string;
+  whatsapp?: string;
   whasapp?: string;
   videoLink?: string;
+  returnPolicy?: string;
+  shippingDetails?: string;
 }
 
 export interface PropsProduct {
@@ -81,6 +92,8 @@ export interface Order {
   status?: string;
   fullName?: string;
   total?: number;
+  finalTotal?: number;
+  discount?: number;
   location: string;
   phone: string;
   storeId: string;

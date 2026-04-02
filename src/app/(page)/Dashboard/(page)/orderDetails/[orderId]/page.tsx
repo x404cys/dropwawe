@@ -194,6 +194,10 @@ export default function OrderDetailsPage() {
     if (!value) return null;
     const normalized = value.trim().toUpperCase();
 
+    if (normalized.includes('SELF_ORDER') || normalized.includes('DIRECT')) {
+      return t.orders.directOrder;
+    }
+
     if (
       normalized.includes('COD') ||
       normalized.includes('CASH') ||
