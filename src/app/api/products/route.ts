@@ -161,7 +161,7 @@ export async function POST(req: Request) {
         });
       }
     }
-
+//
     for (const s of sizes) {
       await prisma.productSize.create({
         data: {
