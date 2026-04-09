@@ -1,4 +1,4 @@
-export type PlanType = 'ramadan-plan' | 'trader-basic' | 'trader-pro' | 'drop-basics' | 'drop-pro';
+export type PlanType = 'trader-basic' | 'trader-pro' | 'drop-basics' | 'drop-pro';
 
 export const plans = {
   'trader-basic': {

@@ -9,6 +9,8 @@ import { toast } from 'sonner';
 import { useStoreProvider } from '../../../../context/StoreContext';
 import SettingsPageHeader from '../../_components/settings-page-header';
 import { useLanguage } from '../../../../context/LanguageContext';
+import FeatureRestrictionNotice from '../_components/feature-restriction-notice';
+import { useStoreFeatureAccess } from '../_lib/feature-access';
 
 interface Coupon {
   id: string;
@@ -24,6 +26,7 @@ interface Coupon {
 
 export default function CouponSettingsPage() {
   const { t, dir, lang } = useLanguage();
+  const access = useStoreFeatureAccess('coupon');
   const pageT = t.dashboardPages.coupons;
   const { currentStore } = useStoreProvider();
   const [coupons, setCoupons] = useState<Coupon[]>([]);
@@ -44,6 +47,12 @@ export default function CouponSettingsPage() {
   useEffect(() => {
     if (currentStore?.id) fetchCoupons();
   }, [currentStore?.id]);
+
+  useEffect(() => {
+    if (!access.allowed && !isFetching && coupons.length === 0) {
+      setShowForm(true);
+    }
+  }, [access.allowed, coupons.length, isFetching]);
 
   const fetchCoupons = async () => {
     try {
@@ -66,6 +75,7 @@ export default function CouponSettingsPage() {
   );
 
   const toggleCoupon = async (id: string) => {
+    if (!access.allowed) return;
     const res = await fetch(`/api/coupons/toggle/${id}`, { method: 'POST' });
     setCoupons(prev => prev.map(c => (c.id === id ? { ...c, isActive: !c.isActive } : c)));
     if (res.ok) {
@@ -76,6 +86,7 @@ export default function CouponSettingsPage() {
   };
 
   const deleteCoupon = async (id: string) => {
+    if (!access.allowed) return;
     const original = [...coupons];
     setCoupons(prev => prev.filter(c => c.id !== id));
     try {
@@ -89,11 +100,13 @@ export default function CouponSettingsPage() {
   };
 
   const copyCode = (code: string) => {
+    if (!access.allowed) return;
     navigator.clipboard.writeText(code);
     toast.success(pageT.codeCopied);
   };
 
   const addCoupon = async () => {
+    if (!access.allowed) return;
     if (!newCoupon.code || !newCoupon.value || !newCoupon.expiresAt) {
       toast.error(pageT.requiredFields);
       return;
@@ -145,7 +158,7 @@ export default function CouponSettingsPage() {
       className="bg-primary hover:bg-primary/90 h-8 gap-1.5 text-xs"
     >
       <Plus className="h-3.5 w-3.5" />
-      {pageT.createCode}
+      {access.allowed ? pageT.createCode : access.viewOnlyLabel}
     </Button>
   );
 
@@ -162,6 +175,14 @@ export default function CouponSettingsPage() {
       />
 
       <main className="mx-auto max-w-xl space-y-4 px-4 pt-4">
+        {!access.allowed && (
+          <FeatureRestrictionNotice
+            title={access.lockedTitle}
+            description={access.lockedDescription}
+            hintLabel={access.subscriptionHint}
+            ctaLabel={access.ctaLabel}
+          />
+        )}
         {showForm && (
           <div className="bg-card border-border animate-in slide-in-from-top-2 space-y-4 rounded-xl border p-4 shadow-sm">
             <h3 className="text-foreground text-sm font-semibold">{t.coupons.newCoupon}</h3>
@@ -176,6 +197,7 @@ export default function CouponSettingsPage() {
                   placeholder={t.coupons.couponCodePlaceholder}
                   className="h-10 text-sm uppercase"
                   dir="ltr"
+                  disabled={!access.allowed}
                 />
               </div>
               <div className="col-span-2 sm:col-span-1">
@@ -214,6 +236,7 @@ export default function CouponSettingsPage() {
                   value={newCoupon.value}
                   onChange={e => setNewCoupon({ ...newCoupon, value: e.target.value })}
                   className="h-10 text-sm"
+                  disabled={!access.allowed}
                 />
               </div>
               <div>
@@ -226,6 +249,7 @@ export default function CouponSettingsPage() {
                   onChange={e => setNewCoupon({ ...newCoupon, minOrder: e.target.value })}
                   placeholder={t.optional}
                   className="h-10 text-sm"
+                  disabled={!access.allowed}
                 />
               </div>
               <div>
@@ -238,6 +262,7 @@ export default function CouponSettingsPage() {
                   onChange={e => setNewCoupon({ ...newCoupon, maxUsage: e.target.value })}
                   placeholder={t.optional}
                   className="h-10 text-sm"
+                  disabled={!access.allowed}
                 />
               </div>
               <div className="col-span-2">
@@ -249,13 +274,14 @@ export default function CouponSettingsPage() {
                   value={newCoupon.expiresAt}
                   onChange={e => setNewCoupon({ ...newCoupon, expiresAt: e.target.value })}
                   className="h-10 text-sm"
+                  disabled={!access.allowed}
                 />
               </div>
             </div>
             <div className="flex gap-2 pt-2">
               <Button
                 onClick={addCoupon}
-                disabled={loading}
+                disabled={loading || !access.allowed}
                 size="sm"
                 className="bg-primary hover:bg-primary/90 flex-1"
               >
@@ -318,6 +344,7 @@ export default function CouponSettingsPage() {
                           </span>
                           <button
                             onClick={() => copyCode(coupon.code)}
+                            disabled={!access.allowed}
                             className="text-muted-foreground hover:text-primary p-1 transition-colors"
                             title={pageT.copyCode}
                           >
@@ -336,6 +363,7 @@ export default function CouponSettingsPage() {
                     </div>
                     <Switch
                       checked={coupon.isActive}
+                      disabled={!access.allowed}
                       onCheckedChange={() => toggleCoupon(coupon.id)}
                     />
                   </div>
@@ -353,6 +381,7 @@ export default function CouponSettingsPage() {
                     </div>
                     <button
                       onClick={() => deleteCoupon(coupon.id)}
+                      disabled={!access.allowed}
                       className="text-muted-foreground hover:text-destructive p-1 transition-colors"
                       title={t.coupons.deleteCoupon}
                     >

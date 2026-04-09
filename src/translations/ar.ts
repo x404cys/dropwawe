@@ -387,8 +387,6 @@ export const ar = {
     modernTheme: 'ثيم عصري',
     modernThemeDesc: 'ألوان حديثة وتصميم جذاب للمتاجر الحديثة',
     popularBadge: 'شائع',
-    ramadanTheme: 'ثيم رمضان',
-    ramadanThemeDesc: 'تصميم رمضاني يناسب متجرك في الموسم',
     seasonalBadge: 'موسمي',
     newThemeWaiting: 'قالب جديد بأنتظارك',
     chooseStoreTheme: 'اختر ثيم متجرك',
@@ -1057,7 +1055,6 @@ export const ar = {
       confirmDescription: 'هل أنت متأكد من الاشتراك في خطة {plan}؟',
       processing: 'جاري...',
       confirmAction: 'تأكيد',
-      ramadanPlanName: 'الباقة الرمضانية',
       catalog: {
         traders: {
           basic: {

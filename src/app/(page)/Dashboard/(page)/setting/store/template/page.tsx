@@ -8,10 +8,13 @@ import { useStoreProvider } from '../../../../context/StoreContext';
 import SettingsPageHeader from '../../_components/settings-page-header';
 import TemplateSection from '../(page)/template-section/template-section';
 import { useLanguage } from '@/app/(page)/Dashboard/context/LanguageContext';
+import FeatureRestrictionNotice from '../_components/feature-restriction-notice';
+import { useStoreFeatureAccess } from '../_lib/feature-access';
 
 export default function TemplateSettingsPage() {
   const { currentStore } = useStoreProvider();
   const { t, dir } = useLanguage();
+  const access = useStoreFeatureAccess('template');
   const [isLoading, setIsLoading] = useState(true);
   const [categories, setCategories] = useState<string[]>([]);
 
@@ -78,6 +81,16 @@ export default function TemplateSettingsPage() {
       />
 
       <main className="mx-auto max-w-lg px-2 pt-4">
+        {!access.allowed && (
+          <div className="mb-4">
+            <FeatureRestrictionNotice
+              title={access.lockedTitle}
+              description={access.lockedDescription}
+              hintLabel={access.subscriptionHint}
+              ctaLabel={access.ctaLabel}
+            />
+          </div>
+        )}
         {isLoading ? (
           <div className="text-muted-foreground flex items-center justify-center py-20 text-sm">
             {t.templateEditor.page.loading}
@@ -91,6 +104,7 @@ export default function TemplateSettingsPage() {
             storeLogoImage={currentStore.image ?? null}
             storeSubLink={currentStore.subLink ?? ''}
             categories={categories}
+            viewOnly={!access.allowed}
           />
         ) : (
           <div className="text-muted-foreground flex items-center justify-center py-20 text-sm">

@@ -390,8 +390,6 @@ export const ku = {
     modernTheme: 'ڕووکاری مۆدێرن',
     modernThemeDesc: 'ڕەنگی مۆدێرن و دیزاینی سەرنجڕاکێش بۆ فرۆشگا مۆدێرنەکان',
     popularBadge: 'باو',
-    ramadanTheme: 'ڕووکاری ڕەمەزان',
-    ramadanThemeDesc: 'دیزاینی ڕەمەزان گونجاوە بۆ فرۆشگاکەت لەم وەرزەدا',
     seasonalBadge: 'وەرزی',
     newThemeWaiting: 'ڕووکارێکی نوێ چاوەڕوانتە',
     chooseStoreTheme: 'ڕووکاری فرۆشگاکەت هەڵبژێرە',
@@ -1063,7 +1061,6 @@ export const ku = {
       confirmDescription: 'دڵنیایت دەتەوێت بە پلانی {plan} بەشداری بکەیت؟',
       processing: 'لە کارکردندایە...',
       confirmAction: 'دڵنیاکردنەوە',
-      ramadanPlanName: 'پلانی ڕەمەزان',
       catalog: {
         traders: {
           basic: {

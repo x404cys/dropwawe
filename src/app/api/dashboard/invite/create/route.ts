@@ -3,10 +3,16 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import { nanoid } from 'nanoid';
+import { canUserAccessFeature, getFeatureAccessError } from '@/app/lib/subscription-access';
+import { STORE_FEATURE_PLANS } from '@/lib/subscription/feature-access';
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOperation);
   if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const canManage = await canUserAccessFeature(session.user.id, STORE_FEATURE_PLANS.users);
+  if (!canManage) {
+    return NextResponse.json(getFeatureAccessError(STORE_FEATURE_PLANS.users), { status: 403 });
+  }
 
   try {
     const storeUser = await prisma.storeUser.findFirst({

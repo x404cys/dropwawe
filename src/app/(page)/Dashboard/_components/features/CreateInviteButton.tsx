@@ -20,7 +20,7 @@ type MultiUser = {
   };
 };
 
-export default function CreateInvitePage() {
+export default function CreateInvitePage({ readOnly = false }: { readOnly?: boolean }) {
   const { t } = useLanguage();
   const [loading, setLoading] = useState(false);
   const [inviteCode, setInviteCode] = useState<string | null>(null);
@@ -34,6 +34,7 @@ export default function CreateInvitePage() {
   );
 
   const handleCreateInvite = async () => {
+    if (readOnly) return;
     setLoading(true);
     try {
       const res = await fetch('/api/dashboard/invite/create', {
@@ -58,7 +59,7 @@ export default function CreateInvitePage() {
   };
 
   const copyToClipboard = () => {
-    if (!inviteLink) return;
+    if (readOnly || !inviteLink) return;
     navigator.clipboard.writeText(inviteLink);
     setCopied(true);
     toast.success(t.teamSettings?.inviteCopied || 'تم نسخ رابط الدعوة');
@@ -117,7 +118,7 @@ export default function CreateInvitePage() {
       {/* Invite button */}
       <Button
         onClick={handleCreateInvite}
-        disabled={loading}
+        disabled={loading || readOnly}
         className="h-12 w-full rounded-xl text-base font-bold transition-all active:scale-[0.98]"
         size="lg"
       >
@@ -161,6 +162,7 @@ export default function CreateInvitePage() {
 
             <Button
               onClick={copyToClipboard}
+              disabled={readOnly}
               variant="outline"
               className="h-11 w-full gap-2 rounded-xl font-bold"
             >

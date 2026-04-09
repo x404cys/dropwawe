@@ -16,6 +16,7 @@ interface TemplateSectionProps {
   storeLogoImage: string | null;
   storeSubLink: string;
   categories: string[];
+  viewOnly?: boolean;
 }
 
 export default function TemplateSection({
@@ -26,6 +27,7 @@ export default function TemplateSection({
   storeLogoImage,
   storeSubLink,
   categories,
+  viewOnly = false,
 }: TemplateSectionProps) {
   const storefrontUrl = `https://${storeSubLink}.matager.store`;
 
@@ -39,6 +41,7 @@ export default function TemplateSection({
         storeLogoImage={storeLogoImage}
         categories={categories}
         storefrontUrl={storefrontUrl}
+        viewOnly={viewOnly}
       />
     </SettingsSectionCard>
   );

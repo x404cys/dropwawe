@@ -1,7 +1,9 @@
 import { authOperation } from '@/app/lib/authOperation';
 import { prisma } from '@/app/lib/db';
+import { canUserAccessFeature, getFeatureAccessError } from '@/app/lib/subscription-access';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { STORE_FEATURE_PLANS } from '@/lib/subscription/feature-access';
 
 interface MerchantLoginResponse {
   status: boolean;
@@ -10,6 +12,21 @@ interface MerchantLoginResponse {
 }
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOperation);
+  if (!session?.user?.id) {
+    return NextResponse.json({ status: false, msg: 'Unauthorized' }, { status: 401 });
+  }
+  const canManage = await canUserAccessFeature(session.user.id, STORE_FEATURE_PLANS.cShipping);
+  if (!canManage) {
+    return NextResponse.json(
+      {
+        status: false,
+        msg: 'Subscription required to modify this feature',
+        code: 'FEATURE_SUBSCRIPTION_REQUIRED',
+        requiredPlans: STORE_FEATURE_PLANS.cShipping,
+      },
+      { status: 403 }
+    );
+  }
 
   try {
     const { username, password } = await req.json();
@@ -61,7 +78,7 @@ export async function POST(req: NextRequest) {
       });
     } else {
       await prisma.merchant.create({
-        data: { username, password, token, tokenExp, userId: session?.user.id },
+        data: { username, password, token, tokenExp, userId: session.user.id },
       });
     }
 

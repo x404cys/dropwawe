@@ -56,15 +56,6 @@ export default function ThemeSection() {
       popular: true,
       allowedPlans: ['trader-pro', 'drop-pro', 'free-trial'],
     },
-    {
-      id: 'RAMADAN',
-      name: t.store?.ramadanTheme || 'رمضان',
-      description: t.store?.ramadanThemeDesc || 'تصميم رمضاني مخصص يناسب متجرك في الموسم',
-      category: 'مميز',
-      colors: ['#efe3e3', '#833334', '#f9f6f3'],
-      features: ['هوية رمضانية', 'زخارف إسلامية', 'فانوس الإشعارات'],
-      allowedPlans: ['ramadan-plan', 'free-trial'],
-    },
   ];
 
   const visibleTemplates = TEMPLATES.filter(t => {

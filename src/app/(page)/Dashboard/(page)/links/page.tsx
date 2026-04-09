@@ -20,6 +20,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useLanguage } from '../../context/LanguageContext';
+import FeatureRestrictionNotice from '../setting/store/_components/feature-restriction-notice';
+import { useStoreFeatureAccess } from '../setting/store/_lib/feature-access';
 import {
   createPaymentLink,
   deletePaymentLink,
@@ -45,6 +47,7 @@ const LOCALE_MAP = {
 
 const PaymentLinks = ({ storeId }: { storeId?: string }) => {
   const { t, dir, lang } = useLanguage();
+  const access = useStoreFeatureAccess('paymentLinks');
   const locale = LOCALE_MAP[lang];
   const pageT = t.paymentLinksPage;
 
@@ -67,7 +70,14 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
       .finally(() => setLoading(false));
   }, [pageT.fetchError, storeId]);
 
+  useEffect(() => {
+    if (!access.allowed && !loading && links.length === 0) {
+      setShowForm(true);
+    }
+  }, [access.allowed, links.length, loading]);
+
   const handleCreate = async () => {
+    if (!access.allowed) return;
     if (!title.trim() || !amount.trim()) {
       toast.error(pageT.enterTitleAndAmount);
       return;
@@ -96,6 +106,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
   };
 
   const handleDelete = async (id: string) => {
+    if (!access.allowed) return;
     setLinks(prev => prev.filter(link => link.id !== id));
     try {
       await deletePaymentLink(id);
@@ -106,6 +117,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
   };
 
   const handleCopy = (id: string) => {
+    if (!access.allowed) return;
     navigator.clipboard.writeText(generateLink(id));
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -113,6 +125,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
   };
 
   const handleShareWhatsApp = (link: PaymentLink) => {
+    if (!access.allowed) return;
     const url = generateLink(link.id);
     const text = `${link.title}\n💰 ${pageT.shareAmountLabel}: ${formatIQD(link.amount)} ${t.currency}\n${
       link.description ? `📝 ${pageT.shareDescriptionLabel}: ${link.description}\n` : ''
@@ -160,13 +173,22 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
               className="h-9 cursor-pointer gap-1.5 rounded-lg text-xs font-semibold"
             >
               <Plus className="h-3.5 w-3.5" />
-              {pageT.newLink}
+              {access.allowed ? pageT.newLink : access.viewOnlyLabel}
             </Button>
           )}
         </div>
       </div>
 
       <div className="mx-auto max-w-3xl space-y-5 px-4 py-6">
+        {!access.allowed && (
+          <FeatureRestrictionNotice
+            title={access.lockedTitle}
+            description={access.lockedDescription}
+            hintLabel={access.subscriptionHint}
+            ctaLabel={access.ctaLabel}
+          />
+        )}
+
         {links.length > 0 && !loading && (
           <div className="grid grid-cols-3 gap-3">
             {stats.map((stat, index) => (
@@ -212,6 +234,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                     onChange={event => setTitle(event.target.value)}
                     placeholder={pageT.serviceTitlePlaceholder}
                     className="h-10 rounded-xl font-light"
+                    disabled={!access.allowed}
                   />
                 </div>
 
@@ -228,6 +251,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                       type="text"
                       inputMode="numeric"
                       dir="ltr"
+                      disabled={!access.allowed}
                     />
                     <span className="text-muted-foreground bg-muted/60 absolute top-1/2 left-3 -translate-y-1/2 rounded px-1.5 py-0.5 text-[11px] font-medium">
                       {t.currency}
@@ -262,6 +286,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                   onChange={event => setDescription(event.target.value)}
                   placeholder={pageT.descriptionPlaceholder}
                   className="min-h-[72px] resize-none rounded-xl font-light"
+                  disabled={!access.allowed}
                 />
               </div>
 
@@ -279,7 +304,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
             <div className="px-5 pb-5">
               <Button
                 onClick={handleCreate}
-                disabled={saving || !title.trim() || !amount.trim()}
+                disabled={saving || !title.trim() || !amount.trim() || !access.allowed}
                 className="h-10 w-full gap-2 rounded-xl text-sm font-semibold"
               >
                 {saving ? (
@@ -315,7 +340,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
               className="h-9 gap-1.5 rounded-xl text-xs font-semibold"
             >
               <Plus className="h-3.5 w-3.5" />
-              {pageT.createFirstLink}
+              {access.allowed ? pageT.createFirstLink : access.viewOnlyLabel}
             </Button>
           </div>
         )}
@@ -376,6 +401,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
                 <div className="flex items-center gap-1.5 px-4 pb-4">
                   <Button
                     onClick={() => handleCopy(link.id)}
+                    disabled={!access.allowed}
                     variant="outline"
                     size="sm"
                     className="h-8 flex-1 gap-1.5 rounded-xl text-xs font-medium"
@@ -390,6 +416,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
                   <Button
                     onClick={() => window.open(generateLink(link.id), '_blank')}
+                    disabled={!access.allowed}
                     variant="outline"
                     size="sm"
                     className="h-8 flex-1 gap-1.5 rounded-xl text-xs font-medium"
@@ -400,6 +427,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
                   <Button
                     onClick={() => handleShareWhatsApp(link)}
+                    disabled={!access.allowed}
                     variant="outline"
                     size="sm"
                     className="h-8 flex-1 gap-1.5 rounded-xl border-emerald-200 text-xs font-medium text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700"
@@ -410,6 +438,7 @@ const PaymentLinks = ({ storeId }: { storeId?: string }) => {
 
                   <button
                     onClick={() => handleDelete(link.id)}
+                    disabled={!access.allowed}
                     className="border-border text-muted-foreground hover:text-destructive hover:border-destructive/40 flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl border transition-colors"
                     aria-label={t.delete}
                     title={t.delete}

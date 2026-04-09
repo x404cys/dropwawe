@@ -390,8 +390,6 @@ export const en = {
     modernTheme: 'Modern Theme',
     modernThemeDesc: 'Modern colors and attractive design for modern stores',
     popularBadge: 'Popular',
-    ramadanTheme: 'Ramadan Theme',
-    ramadanThemeDesc: 'Ramadan design suitable for your store in the season',
     seasonalBadge: 'Seasonal',
     newThemeWaiting: 'A new theme is waiting for you',
     chooseStoreTheme: 'Choose your store theme',
@@ -1064,7 +1062,6 @@ export const en = {
       confirmDescription: 'Are you sure you want to subscribe to the {plan} plan?',
       processing: 'Processing...',
       confirmAction: 'Confirm',
-      ramadanPlanName: 'Ramadan plan',
       catalog: {
         traders: {
           basic: {

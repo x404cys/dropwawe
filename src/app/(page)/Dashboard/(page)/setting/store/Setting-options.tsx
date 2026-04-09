@@ -23,6 +23,7 @@ import { PlanType } from '@/types/plans/Plans';
 import { useSubscriptions } from '../../../hooks';
 import { useLanguage } from '../../../context/LanguageContext';
 import { getFAQs } from '../profile/page';
+import { STORE_FEATURE_PLANS } from './_lib/feature-access';
 import {
   Accordion,
   AccordionItem,
@@ -35,7 +36,7 @@ interface Section {
   icon: ElementType;
   path: string;
   color?: string;
-  allowedPlans?: PlanType[];
+  allowedPlans?: readonly PlanType[];
   danger?: boolean;
 }
 
@@ -45,7 +46,7 @@ interface SectionGroup {
 }
 
 export default function SettingOptions() {
-  const { t, dir } = useLanguage();
+  const { t, dir, lang } = useLanguage();
   const router = useRouter();
   const base = '/Dashboard/setting/store';
   const baseToProfile = '/Dashboard/setting/profile';
@@ -53,6 +54,7 @@ export default function SettingOptions() {
 
   const ArrowIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
   const textAlignClass = dir === 'rtl' ? 'text-right' : 'text-left';
+  const viewOnlyLabel = lang === 'en' ? 'View only' : 'عرض فقط';
   const joiner = dir === 'rtl' ? '، ' : ', ';
 
   const planNames: Record<PlanType, string> = {
@@ -65,7 +67,6 @@ export default function SettingOptions() {
     'trader-pro': traderPro?.name || t.storeOptions.planNames.traderPro,
     'drop-basics': dropBasic?.name || t.storeOptions.planNames.dropBasics,
     'drop-pro': dropPro?.name || t.storeOptions.planNames.dropPro,
-    'ramadan-plan': '',
   };
   const FAQS = getFAQs(t);
 
@@ -106,35 +107,28 @@ export default function SettingOptions() {
           desc: t.templateEditor.page.subtitle,
           icon: MdOutlineDesignServices,
           path: `${base}/template`,
-          allowedPlans: [
-            'drop-basics',
-            'trader-basic',
-            'trader-pro',
-            'drop-pro',
-            'free-trial',
-            'ramadan-plan',
-          ],
+          allowedPlans: STORE_FEATURE_PLANS.template,
         },
         {
           label: t.store?.team || 'Team',
           desc: t.store?.teamDesc || 'Add managers and permissions',
           icon: FaUsersCog,
           path: `${base}/users`,
-          allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan'],
+          allowedPlans: STORE_FEATURE_PLANS.users,
         },
         {
           label: t.storeOptions.paymentLinks,
           desc: t.storeOptions.paymentLinksDesc,
           icon: TfiLink,
           path: '/Dashboard/links',
-          allowedPlans: ['drop-pro', 'trader-pro', 'ramadan-plan', 'trader-basic'],
+          allowedPlans: STORE_FEATURE_PLANS.paymentLinks,
         },
         {
           label: t.store?.coupons || 'Coupons',
           desc: t.store?.couponsDesc || 'Create and manage coupons',
           icon: BiSolidDiscount,
           path: `${base}/coupon`,
-          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
+          allowedPlans: STORE_FEATURE_PLANS.coupon,
         },
         {
           label: t.store?.createAnother || 'Create Another Store',
@@ -142,7 +136,7 @@ export default function SettingOptions() {
             t.store?.multipleStoresDesc || t.more?.storesDesc || 'Create and manage your stores',
           icon: IoStorefrontOutline,
           path: `${base}/create-another`,
-          allowedPlans: ['drop-pro'],
+          allowedPlans: STORE_FEATURE_PLANS.createAnother,
         },
       ],
     },
@@ -155,7 +149,7 @@ export default function SettingOptions() {
           icon: PiShootingStarThin,
           color: 'bg-orange-500/10 text-orange-500',
           path: `${base}/pixel`,
-          allowedPlans: ['trader-pro', 'drop-pro', 'free-trial', 'ramadan-plan'],
+          allowedPlans: STORE_FEATURE_PLANS.pixel,
         },
         {
           label: t.store?.deliveryIntegration || 'Delivery Company Integration',
@@ -163,7 +157,7 @@ export default function SettingOptions() {
           icon: FaShippingFast,
           color: 'bg-sky-500/10 text-sky-500',
           path: `${base}/c-shipping`,
-          allowedPlans: ['drop-basics', 'trader-pro', 'drop-pro', 'ramadan-plan'],
+          allowedPlans: STORE_FEATURE_PLANS.cShipping,
         },
       ],
     },
@@ -181,10 +175,10 @@ export default function SettingOptions() {
     },
   ];
 
-  const canAccess = (allowedPlans?: PlanType[]) =>
+  const canAccess = (allowedPlans?: readonly PlanType[]) =>
     !allowedPlans || allowedPlans.some(plan => hasAccess(plan));
 
-  const planLabel = (allowedPlans?: PlanType[]) => {
+  const planLabel = (allowedPlans?: readonly PlanType[]) => {
     const names = (allowedPlans ?? [])
       .map(plan => planNames[plan])
       .filter(Boolean)
@@ -210,11 +204,10 @@ export default function SettingOptions() {
                 return (
                   <button
                     key={section.path}
-                    disabled={!allowed}
-                    onClick={() => allowed && router.push(section.path)}
+                    onClick={() => router.push(section.path)}
                     className={`flex w-full items-center gap-3 px-4 py-3.5 transition-colors ${textAlignClass} ${
                       !allowed
-                        ? 'cursor-not-allowed opacity-50'
+                        ? 'hover:bg-amber-500/5 cursor-pointer'
                         : 'hover:bg-muted/50 cursor-pointer'
                     }`}
                   >
@@ -239,9 +232,9 @@ export default function SettingOptions() {
                           {section.label}
                         </p>
                         {!allowed && (
-                          <span className="flex items-center gap-0.5 text-[10px] text-orange-500">
+                          <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-600">
                             <FaCrown size={9} className="text-orange-400" />
-                            {planLabel(section.allowedPlans)}
+                            {viewOnlyLabel}
                           </span>
                         )}
                       </div>
@@ -252,6 +245,11 @@ export default function SettingOptions() {
                       >
                         {section.desc}
                       </p>
+                      {!allowed && (
+                        <p className="mt-1 text-[10px] text-amber-600">
+                          {planLabel(section.allowedPlans)}
+                        </p>
+                      )}
                     </div>
 
                     <ArrowIcon

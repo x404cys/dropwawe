@@ -190,11 +190,7 @@ export default function PlansPage() {
   ];
 
   const handleSelect = (planId: string) => {
-    const all = [
-      ...traders,
-      ...dropshippers,
-      { id: 'ramadan-plan', name: pageT.ramadanPlanName } as Plan,
-    ];
+    const all = [...traders, ...dropshippers];
     const plan = all.find(item => item.id === planId) ?? ({ id: planId, name: planId } as Plan);
     setSelectedPlan(plan);
   };

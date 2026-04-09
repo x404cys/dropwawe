@@ -30,6 +30,7 @@ interface TemplateEditorProps {
   storeLogoImage: string | null;
   categories: string[];
   storefrontUrl: string;
+  viewOnly?: boolean;
 }
 
 export default function TemplateEditor({
@@ -40,6 +41,7 @@ export default function TemplateEditor({
   storeLogoImage,
   categories,
   storefrontUrl,
+  viewOnly = false,
 }: TemplateEditorProps) {
   const { t, dir } = useLanguage();
   const [activeTab, setActiveTab] = useState<TabId>('brand');
@@ -69,9 +71,10 @@ export default function TemplateEditor({
   ];
 
   useEffect(() => {
+    if (viewOnly) return;
     if (activeTab !== 'storefront') return;
     void editor.ensureCategoryIcons(categories);
-  }, [activeTab, categories, editor.ensureCategoryIcons]);
+  }, [activeTab, categories, editor.ensureCategoryIcons, viewOnly]);
 
   useEffect(() => {
     setStoreNameDraft(storeName);
@@ -243,7 +246,7 @@ export default function TemplateEditor({
         </div>
       </div>
 
-      <div className="mt-2 space-y-4">
+      <div className="relative mt-2 space-y-4">
         {activeTab === 'brand' && (
           <BrandTab
             state={editor.formState}
@@ -312,6 +315,12 @@ export default function TemplateEditor({
         {activeTab === 'contact' && (
           <ContactTab state={editor.formState} onUpdate={editor.update} />
         )}
+        {viewOnly && (
+          <div
+            aria-hidden="true"
+            className="absolute inset-0 z-10 cursor-not-allowed rounded-2xl bg-background/5"
+          />
+        )}
       </div>
 
       <div className="fixed right-0 bottom-20 left-0 z-30 mx-auto px-3 md:bottom-3 md:max-w-lg md:-translate-x-1/4">
@@ -328,7 +337,7 @@ export default function TemplateEditor({
 
           <Button
             onClick={handleSave}
-            disabled={isSavingChanges || !hasUnsavedChanges}
+            disabled={viewOnly || isSavingChanges || !hasUnsavedChanges}
             className={`h-9 flex-1 gap-1.5 rounded-lg text-xs font-semibold md:h-11 md:gap-2 md:rounded-xl md:text-sm ${
               hasUnsavedChanges ? '' : 'opacity-60'
             }`}
@@ -341,6 +350,7 @@ export default function TemplateEditor({
           <Button
             onClick={handleReset}
             variant="ghost"
+            disabled={viewOnly}
             className="text-muted-foreground hover:text-destructive h-9 w-9 rounded-lg p-0 md:h-11 md:w-11 md:rounded-xl"
             title={tt.actions.reset}
             id="template-reset-btn"

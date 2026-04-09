@@ -6,6 +6,8 @@ import { useLanguage } from '../../../../context/LanguageContext';
 import SettingsPageHeader from '../../_components/settings-page-header';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
+import FeatureRestrictionNotice from '../_components/feature-restriction-notice';
+import { useStoreFeatureAccess } from '../_lib/feature-access';
 
 const features = [
   {
@@ -31,12 +33,22 @@ const features = [
 export default function CreateAnotherStorePage() {
   const router = useRouter();
   const { t, dir } = useLanguage();
+  const access = useStoreFeatureAccess('createAnother');
 
   return (
     <section dir={dir} className="min-h-screen pb-28">
       <SettingsPageHeader title={t.store?.createAnother || 'إنشاء متجر إضافي'} />
 
       <div className="mx-auto max-w-xl space-y-8 px-4 pt-8">
+        {!access.allowed && (
+          <FeatureRestrictionNotice
+            title={access.lockedTitle}
+            description={access.lockedDescription}
+            hintLabel={access.subscriptionHint}
+            ctaLabel={access.ctaLabel}
+          />
+        )}
+
         {/* Hero area */}
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -95,6 +107,7 @@ export default function CreateAnotherStorePage() {
           <Button
             size="lg"
             onClick={() => router.push('/create-store/create-another')}
+            disabled={!access.allowed}
             className="h-13 w-full rounded-2xl text-base font-bold shadow-md transition-all active:scale-[0.98]"
           >
             {t.store?.createNewStore || 'إنشاء متجر جديد'}

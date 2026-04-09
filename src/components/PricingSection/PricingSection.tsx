@@ -3,10 +3,8 @@
 import { useEffect, useState } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { Check, Sparkles } from 'lucide-react';
+import { Check } from 'lucide-react';
 import { formatIQD } from '@/app/lib/utils/CalculateDiscountedPrice';
-import { signIn } from 'next-auth/react';
-import Image from 'next/image';
 import {
   Dialog,
   DialogContent,
@@ -25,7 +23,7 @@ interface Plan {
   features: string[];
   popular?: boolean;
   r?: string[];
-  type: 'store' | 'dropship' | 'ramadan-plan';
+  type: 'store' | 'dropship';
 }
 const faqs = [
   {
@@ -140,32 +138,6 @@ export default function PricingSection() {
   }, []);
 
   const filteredPlans = filter === 'all' ? plans : plans.filter(p => p.type === filter);
-  const useCountdown = (days: number) => {
-    const [timeLeft, setTimeLeft] = useState(0);
-
-    useEffect(() => {
-      const endDate =
-        Number(localStorage.getItem('ramadanEnd')) || Date.now() + days * 24 * 60 * 60 * 1000;
-
-      localStorage.setItem('ramadanEnd', String(endDate));
-
-      const interval = setInterval(() => {
-        setTimeLeft(endDate - Date.now());
-      }, 1000);
-
-      return () => clearInterval(interval);
-    }, [days]);
-
-    const d = Math.max(0, timeLeft);
-
-    return {
-      days: Math.floor(d / (1000 * 60 * 60 * 24)),
-      hours: Math.floor((d / (1000 * 60 * 60)) % 24),
-      minutes: Math.floor((d / (1000 * 60)) % 60),
-      seconds: Math.floor((d / 1000) % 60),
-    };
-  };
-  const timer = useCountdown(35);
 
   return (
     <section
@@ -220,17 +192,6 @@ export default function PricingSection() {
               data-aos="fade-up"
               className={`relative flex h-full flex-col rounded-[28px] bg-sky-100/90 p-6 text-center shadow-xl backdrop-blur transition duration-700`}
             >
-              {plan.type === 'ramadan-plan' && (
-                <div className="absolute top-2 -left-3 flex text-3xl">
-                  <Image
-                    src={'/img-theme/IMG_8473-removebg-preview.png'}
-                    alt="al"
-                    width={100}
-                    height={200}
-                  />
-                </div>
-              )}
-
               <span className="absolute -top-10 left-1/2 mx-auto inline-flex h-16 w-[85%] max-w-[220px] -translate-x-1/2 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
                 <span className="text-lg leading-tight">{plan.title}</span>
                 <span className="font-extrabold">{formatIQD(plan.price)}</span>
@@ -244,28 +205,6 @@ export default function PricingSection() {
                   </li>
                 ))}
               </ul>
-              {plan.type === 'ramadan-plan' && (
-                <div className="mt-12 flex gap-3 text-center text-xs md:mt-0 md:gap-3 md:px-0 md:pt-0">
-                  {[
-                    { label: 'يوم', value: timer.days },
-                    { label: 'ساعة', value: timer.hours },
-                    { label: 'دقيقة', value: timer.minutes },
-                    { label: 'ثانية', value: timer.seconds },
-                  ].map(t => (
-                    <div
-                      key={t.label}
-                      className={`min-w-[10px] rounded-xl px-3 py-1 text-xs ${
-                        t.label === 'ثانية'
-                          ? 'bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%'
-                          : 'bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80%'
-                      }`}
-                    >
-                      <div className="text-lg font-bold">{t.value}</div>
-                      <div className="text-xs">{t.label}</div>
-                    </div>
-                  ))}
-                </div>
-              )}
               <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-900">
                 <p className="mb-2 font-bold">رسوم المعاملات</p>
                 {plan.r?.map(r => (

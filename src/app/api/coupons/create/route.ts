@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
+import { canUserAccessFeature, getFeatureAccessError } from '@/app/lib/subscription-access';
+import { STORE_FEATURE_PLANS } from '@/lib/subscription/feature-access';
 
 type CouponBody = {
   code: string;
@@ -25,6 +27,14 @@ type CouponBody = {
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOperation);
+  if (!session?.user?.id) {
+    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+  }
+
+  const canManage = await canUserAccessFeature(session.user.id, STORE_FEATURE_PLANS.coupon);
+  if (!canManage) {
+    return NextResponse.json(getFeatureAccessError(STORE_FEATURE_PLANS.coupon), { status: 403 });
+  }
 
   try {
     const body: CouponBody = await req.json();
@@ -88,7 +98,7 @@ export async function POST(req: Request) {
         code: String(code).trim().toUpperCase(),
         scope,
         type,
-        userId: session?.user.id,
+        userId: session.user.id,
         value: Number(value),
         storeId: storeId || null,
         productId: productId || null,

@@ -15,6 +15,7 @@ interface ShippingSectionProps {
   fieldErrors: { [key: string]: string };
   onPhoneChange: (value: string) => void;
   onShippingPriceChange: (value: string) => void;
+  readOnly?: boolean;
 }
 
 interface MerchantLoginResponse {
@@ -32,6 +33,7 @@ export default function CShippingSection({
   fieldErrors,
   onPhoneChange,
   onShippingPriceChange,
+  readOnly = false,
 }: ShippingSectionProps) {
   const { t } = useLanguage();
   const [username, setUsername] = useState('');
@@ -57,6 +59,7 @@ export default function CShippingSection({
   }, []);
 
   const login = async () => {
+    if (readOnly) return;
     try {
       setLoading(true);
       const res = await axios.post<MerchantLoginResponse>(
@@ -112,6 +115,7 @@ export default function CShippingSection({
             onChange={e => setUsername(e.target.value)}
             placeholder={t.store?.alwaseetUsernamePlaceholder || 'اسم المستخدم في تطبيق الوسيط'}
             className="h-11 pl-10"
+            disabled={readOnly}
           />
           <User className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
         </div>
@@ -129,11 +133,13 @@ export default function CShippingSection({
             onChange={e => setPassword(e.target.value)}
             placeholder="••••••••"
             className="h-11 pr-10 pl-10"
+            disabled={readOnly}
           />
           <MdPassword className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
           <button
             type="button"
             onClick={() => setShowPassword(v => !v)}
+            disabled={readOnly}
             className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2 transition-colors"
           >
             {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
@@ -144,7 +150,7 @@ export default function CShippingSection({
       {/* Submit */}
       <Button
         onClick={login}
-        disabled={loading || !username || !password}
+        disabled={loading || !username || !password || readOnly}
         className="h-12 w-full rounded-xl text-base font-bold transition-all active:scale-[0.98]"
       >
         {loading ? (

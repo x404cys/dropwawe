@@ -38,6 +38,7 @@ interface PixelSectionProps {
   onSnapPixelChange: (value: string | null) => void;
   showForm: boolean;
   setShowForm: (show: boolean) => void;
+  readOnly?: boolean;
 }
 
 export default function PixelSection({
@@ -51,6 +52,7 @@ export default function PixelSection({
   onSnapPixelChange,
   showForm,
   setShowForm,
+  readOnly = false,
 }: PixelSectionProps) {
   const { t } = useLanguage();
 
@@ -133,7 +135,7 @@ export default function PixelSection({
   ].filter(Boolean) as Pixel[];
 
   const addPixel = () => {
-    if (!newPixel.pixelId) return;
+    if (readOnly || !newPixel.pixelId) return;
 
     switch (newPixel.platform) {
       case 'facebook':
@@ -155,6 +157,7 @@ export default function PixelSection({
   };
 
   const deletePixel = (platform: PlatformKey) => {
+    if (readOnly) return;
     switch (platform) {
       case 'facebook':
         onFacebookPixelChange('');
@@ -172,6 +175,7 @@ export default function PixelSection({
   };
 
   const copyId = (id: string) => {
+    if (readOnly) return;
     navigator.clipboard.writeText(id);
     toast.success(t.store.codeCopied);
   };
@@ -214,6 +218,7 @@ export default function PixelSection({
               value={newPixel.name}
               onChange={event => setNewPixel({ ...newPixel, name: event.target.value })}
               placeholder={t.store.customNamePlaceholder}
+              disabled={readOnly}
             />
           </div>
           <div>
@@ -223,10 +228,11 @@ export default function PixelSection({
               onChange={event => setNewPixel({ ...newPixel, pixelId: event.target.value })}
               placeholder="1234567890123456"
               dir="ltr"
+              disabled={readOnly}
             />
           </div>
           <div className="flex gap-2 pt-2">
-            <Button onClick={addPixel} size="sm" className="flex-1">
+            <Button onClick={addPixel} size="sm" className="flex-1" disabled={readOnly}>
               <Plus className="mr-1 h-4 w-4" />
               {t.store.addPixel}
             </Button>
@@ -273,6 +279,7 @@ export default function PixelSection({
                       </span>
                       <button
                         onClick={() => copyId(pixel.pixelId)}
+                        disabled={readOnly}
                         className="text-muted-foreground hover:text-primary p-1 transition-colors"
                         aria-label={t.store.codeCopied}
                         title={t.store.codeCopied}
@@ -297,6 +304,7 @@ export default function PixelSection({
                 </div>
                 <button
                   onClick={() => deletePixel(pixel.platform)}
+                  disabled={readOnly}
                   className="text-muted-foreground hover:bg-destructive/10 hover:text-destructive rounded-lg p-2 transition-colors"
                   title={t.store.deletePixel}
                   aria-label={t.store.deletePixel}

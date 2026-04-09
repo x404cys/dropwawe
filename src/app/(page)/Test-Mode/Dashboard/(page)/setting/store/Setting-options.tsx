@@ -51,7 +51,6 @@ export default function SettingOptions({ activeSection, onSectionChange }: Setti
     'multi-drop': 'خطة الدروب شيبر',
     'multi-trader': 'خطة التاجر',
     'free-trial': 'الخطة المجانية',
-    'ramadan-plan': '',
   };
 
   const sectionGroups: SectionGroup[] = [

@@ -2,6 +2,8 @@
 
 import { authOperation } from '@/app/lib/authOperation';
 import { prisma } from '@/app/lib/db';
+import { canUserAccessFeature } from '@/app/lib/subscription-access';
+import { STORE_FEATURE_PLANS } from '@/lib/subscription/feature-access';
 import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
 import { payTabsService } from '../services/paytabs.service';
@@ -33,6 +35,9 @@ export async function createPaymentLink(data: {
 }) {
   const session = await getServerSession(authOperation);
   if (!session?.user?.id) throw new Error('غير مصرح');
+  const canManage = await canUserAccessFeature(session.user.id, STORE_FEATURE_PLANS.paymentLinks);
+  if (!canManage) throw new Error('Subscription required to modify this feature');
+
   const storeId = await prisma.storeUser.findFirst({
     where: { userId: session.user.id },
   });
@@ -55,6 +60,9 @@ export async function createPaymentLink(data: {
 export async function deletePaymentLink(id: string) {
   const session = await getServerSession(authOperation);
   if (!session?.user?.id) throw new Error('غير مصرح');
+
+  const canManage = await canUserAccessFeature(session.user.id, STORE_FEATURE_PLANS.paymentLinks);
+  if (!canManage) throw new Error('Subscription required to modify this feature');
 
   await prisma.paymentLink.deleteMany({
     where: { id, userId: session.user.id },

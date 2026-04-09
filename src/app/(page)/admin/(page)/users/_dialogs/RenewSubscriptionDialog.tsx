@@ -23,7 +23,6 @@ interface RenewSubscriptionDialogProps {
 
 const PLANS = [
   { id: 'free-trial', name: 'تجربة مجانية', monthlyPrice: 0, months: 1 },
-  { id: 'ramadan-plan', name: 'باقة رمضان', monthlyPrice: 39000, months: 1 },
   { id: 'trader-basic', name: 'الاساسية للتجار', monthlyPrice: 39000, months: 1 },
   { id: 'trader-pro', name: 'الاحترافية للتجار', monthlyPrice: 69000, months: 1 },
   { id: 'drop-basics', name: 'الباقة الاساسية - للدروب شيبر', monthlyPrice: 39000, months: 1 },
@@ -36,7 +35,7 @@ export function RenewSubscriptionDialog({
   onClose,
   onConfirm,
 }: RenewSubscriptionDialogProps) {
-  const [selectedPlan, setSelectedPlan] = useState(PLANS[1].id);
+  const [selectedPlan, setSelectedPlan] = useState(PLANS[0].id);
   const [isLoading, setIsLoading] = useState(false);
 
   if (!user) return null;
