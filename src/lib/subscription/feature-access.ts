@@ -6,7 +6,7 @@ export const ACCESS_MAP: Record<PlanType, PlanType[]> = {
   'drop-basics': ['drop-basics'],
   'drop-pro': ['drop-basics', 'drop-pro'],
   'multi-basics': ['drop-basics', 'trader-basic'],
-  'multi-pro': ['drop-pro', 'trader-pro', 'drop-basics', 'trader-basic'],
+  'multi-pro': ['trader-pro', 'drop-basics', 'trader-basic'],
   'multi-trader': ['trader-basic', 'trader-pro'],
   'multi-drop': ['drop-basics', 'drop-pro'],
   'free-trial': [
@@ -20,19 +20,13 @@ export const ACCESS_MAP: Record<PlanType, PlanType[]> = {
 };
 
 export const STORE_FEATURE_PLANS = {
-  template: [
-    'drop-basics',
-    'trader-basic',
-    'trader-pro',
-    'drop-pro',
-    'free-trial',
-  ],
-  users: ['drop-pro', 'trader-pro'],
-  paymentLinks: ['drop-pro', 'trader-pro', 'trader-basic'],
-  coupon: ['drop-basics', 'trader-pro', 'drop-pro', 'free-trial'],
-  createAnother: ['drop-pro'],
-  pixel: ['trader-pro', 'drop-pro', 'free-trial'],
-  cShipping: ['drop-basics', 'trader-pro', 'drop-pro'],
+  template: ['trader-pro'],
+  users: ['trader-pro'],
+  paymentLinks: ['trader-pro'],
+  coupon: ['trader-pro'],
+  createAnother: ['trader-pro'],
+  pixel: ['trader-pro'],
+  cShipping: ['trader-pro'],
 } as const satisfies Record<string, PlanType[]>;
 
 export type StoreFeatureKey = keyof typeof STORE_FEATURE_PLANS;

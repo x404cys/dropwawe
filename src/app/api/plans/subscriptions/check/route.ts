@@ -2,6 +2,18 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { prisma } from '@/app/lib/db';
 import { authOperation } from '@/app/lib/authOperation';
+import {
+  buildSubscriptionEndDate,
+  isLifetimeSubscription,
+} from '@/lib/subscription/subscription-period';
+
+function getRemainingDays(planType: string, durationDays: number, endDate: Date, now: Date) {
+  if (isLifetimeSubscription(planType, durationDays)) {
+    return null;
+  }
+
+  return Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+}
 
 export async function GET() {
   try {
@@ -11,6 +23,7 @@ export async function GET() {
     }
 
     const userId = session.user.id;
+    const now = new Date();
 
     const isSubUser = await prisma.storeUser.findFirst({
       where: { userId, isOwner: false },
@@ -56,27 +69,28 @@ export async function GET() {
               description: ownerSubscription.plan.description,
               startDate: ownerSubscription.startDate,
               endDate: ownerSubscription.endDate,
-              remainingDays:
-                ownerSubscription.plan.type === 'trader-basic'
-                  ? null
-                  : Math.ceil(
-                      (ownerSubscription.endDate.getTime() - new Date().getTime()) /
-                        (1000 * 60 * 60 * 24)
-                    ),
+              remainingDays: getRemainingDays(
+                ownerSubscription.plan.type,
+                ownerSubscription.plan.durationDays,
+                ownerSubscription.endDate,
+                now
+              ),
               detailsSubscription: ownerSubscription.plan,
             }
           : null,
       });
     }
 
-    const now = new Date();
-
     let subscription = await prisma.userSubscription.findFirst({
       where: { userId, isActive: true },
       include: { plan: true },
     });
 
-    if (subscription && now > subscription.endDate) {
+    if (
+      subscription &&
+      !isLifetimeSubscription(subscription.plan.type, subscription.plan.durationDays) &&
+      now > subscription.endDate
+    ) {
       await prisma.userSubscription.update({
         where: { id: subscription.id },
         data: { isActive: false },
@@ -86,39 +100,35 @@ export async function GET() {
     }
 
     if (!subscription) {
-      const freePlan = await prisma.subscriptionPlan.findFirst({
-        where: { type: 'free-trial' },
+      const defaultPlan = await prisma.subscriptionPlan.findFirst({
+        where: { type: 'trader-basic' },
       });
 
-      if (!freePlan) {
+      if (!defaultPlan) {
         return NextResponse.json({
           status: 'NO_PLAN',
-          message: 'Free plan not configured',
-        });
-      }
-
-      const usedTrialBefore = await prisma.userSubscription.findFirst({
-        where: {
-          userId,
-          planId: freePlan.id,
-        },
-      });
-
-      if (usedTrialBefore) {
-        return NextResponse.json({
-          status: 'NEED_SUBSCRIPTION',
-          message: 'Free trial expired',
+          message: 'Default plan not configured',
         });
       }
 
       const startDate = new Date();
-      const endDate = new Date();
-      endDate.setDate(endDate.getDate() + freePlan.durationDays);
+      const endDate = buildSubscriptionEndDate(
+        startDate,
+        defaultPlan.durationDays,
+        defaultPlan.type
+      );
 
-      const trialSubscription = await prisma.userSubscription.create({
-        data: {
+      const defaultSubscription = await prisma.userSubscription.upsert({
+        where: { userId },
+        create: {
           userId,
-          planId: freePlan.id,
+          planId: defaultPlan.id,
+          startDate,
+          endDate,
+          isActive: true,
+        },
+        update: {
+          planId: defaultPlan.id,
           startDate,
           endDate,
           isActive: true,
@@ -127,19 +137,21 @@ export async function GET() {
       });
 
       return NextResponse.json({
-        status: 'TRIAL_ACTIVE',
+        status: 'ACTIVE',
         subscription: {
-          id: trialSubscription.id,
-          planName: trialSubscription.plan.name,
-          type: trialSubscription.plan.type,
-          description: trialSubscription.plan.description,
+          id: defaultSubscription.id,
+          planName: defaultSubscription.plan.name,
+          type: defaultSubscription.plan.type,
+          description: defaultSubscription.plan.description,
           startDate,
           endDate,
-          remainingDays:
-            trialSubscription.plan.type === 'trader-basic'
-              ? null
-              : Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
-          detailsSubscription: trialSubscription.plan,
+          remainingDays: getRemainingDays(
+            defaultSubscription.plan.type,
+            defaultSubscription.plan.durationDays,
+            endDate,
+            now
+          ),
+          detailsSubscription: defaultSubscription.plan,
         },
       });
     }
@@ -153,12 +165,12 @@ export async function GET() {
         description: subscription.plan.description,
         startDate: subscription.startDate,
         endDate: subscription.endDate,
-        remainingDays:
-          subscription.plan.type === 'trader-basic'
-            ? null
-            : Math.ceil(
-                (subscription.endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
-              ),
+        remainingDays: getRemainingDays(
+          subscription.plan.type,
+          subscription.plan.durationDays,
+          subscription.endDate,
+          now
+        ),
         detailsSubscription: subscription.plan,
       },
     });

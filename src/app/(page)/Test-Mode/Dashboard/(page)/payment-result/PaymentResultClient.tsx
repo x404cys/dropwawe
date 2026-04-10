@@ -9,6 +9,7 @@ import { LuCopy } from 'react-icons/lu';
 import { CiShare1 } from 'react-icons/ci';
 import { toast } from 'sonner';
 import type { PaymentResult } from '@/types/api/PaymentRes';
+import { isLifetimeSubscription } from '@/lib/subscription/subscription-period';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -50,6 +51,12 @@ export default function PaymentResultClient() {
       : null,
     fetcher
   );
+  const isLifetimePlan = payment
+    ? isLifetimeSubscription(
+        payment.userSubscription.plan?.type,
+        payment.userSubscription.plan?.durationDays
+      )
+    : false;
 
   const handleShare = async () => {
     const url = window.location.href;
@@ -200,7 +207,9 @@ export default function PaymentResultClient() {
                   <div className="flex flex-col">
                     <span className="text-[14px] text-[#555]">تاريخ الانتهاء</span>
                     <span className="mt-1 font-mono text-[15px] font-medium text-[#111]">
-                      {new Date(payment.userSubscription.endDate).toLocaleDateString('ar')}
+                      {isLifetimePlan
+                        ? 'لا نهائية'
+                        : new Date(payment.userSubscription.endDate).toLocaleDateString('ar')}
                     </span>
                   </div>
 
@@ -257,7 +266,7 @@ export default function PaymentResultClient() {
                   <div className="flex flex-col">
                     <span className="text-[14px] text-[#555]">مدة الخطة (أيام)</span>
                     <span className="mt-1 font-medium text-[#111]">
-                      {payment.userSubscription.plan.durationDays}
+                      {isLifetimePlan ? 'لا نهائية' : payment.userSubscription.plan.durationDays}
                     </span>
                   </div>
 

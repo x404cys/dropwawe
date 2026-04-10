@@ -1,4 +1,5 @@
 'use client';
+
 import { useLanguage } from '../../../../context/LanguageContext';
 import { useParams, useRouter } from 'next/navigation';
 import { plans } from '../../_data/plans';
@@ -30,22 +31,26 @@ export default function PlanCheckout() {
   const [confirming, setConfirming] = useState(false);
 
   const plan = plans[type as keyof typeof plans];
+  const isLifetimePlan = type === 'trader-basic';
 
   const handleSubscribe = async () => {
     if (!type) return;
     setLoading(true);
     fbEvent('InitiateCheckout', { content_name: type });
+
     try {
       const result = await subscribePlan(type);
       if (result.redirect_url) {
         window.location.href = result.redirect_url;
         return;
       }
+
       fbEvent('Purchase', {
         content_name: type,
         currency: 'IQD',
         value: plan.price,
       });
+
       toast.success(`تم الاشتراك في ${plan.name}`);
       router.push('/Dashboard');
       setConfirming(false);
@@ -106,7 +111,9 @@ export default function PlanCheckout() {
 
             <div className="bg-muted/50 border-border/50 flex items-center gap-4 rounded-2xl border p-4">
               <div className="flex-1">
-                <p className="text-muted-foreground mb-1 text-xs font-medium">السعر الشهري</p>
+                <p className="text-muted-foreground mb-1 text-xs font-medium">
+                  {isLifetimePlan ? 'سعر الخطة' : 'السعر الشهري'}
+                </p>
                 <div className="flex items-baseline gap-2">
                   {'oldPrice' in plan && (plan as any).oldPrice && (
                     <span className="text-muted-foreground text-sm line-through">
@@ -116,9 +123,12 @@ export default function PlanCheckout() {
                   <span className="text-foreground text-3xl font-black">
                     {plan.price.toLocaleString()}
                   </span>
-                  <span className="text-muted-foreground text-sm font-semibold">د.ع / شهر</span>
+                  <span className="text-muted-foreground text-sm font-semibold">
+                    {isLifetimePlan ? 'د.ع / مدى الحياة' : 'د.ع / شهر'}
+                  </span>
                 </div>
               </div>
+
               {'oldPrice' in plan && (plan as any).oldPrice && (
                 <div className="flex-shrink-0 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-1.5 text-xs font-black text-emerald-600">
                   خصم {Math.round((1 - plan.price / (plan as any).oldPrice) * 100)}%
@@ -166,7 +176,9 @@ export default function PlanCheckout() {
             <div className="bg-muted/40 border-border/40 flex items-center gap-3 rounded-2xl border p-4">
               <ShieldCheck className="h-5 w-5 flex-shrink-0 text-emerald-500" />
               <p className="text-muted-foreground text-xs leading-relaxed">
-                يتم تفعيل اشتراكك فوراً بعد إتمام الدفع بنجاح
+                {isLifetimePlan
+                  ? 'سيتم تفعيل الخطة مباشرة لحسابك بدون رسوم إضافية.'
+                  : 'يتم تفعيل اشتراكك فوراً بعد إتمام الدفع بنجاح'}
               </p>
             </div>
           </motion.div>
@@ -179,11 +191,15 @@ export default function PlanCheckout() {
           >
             <div className="flex items-center gap-2">
               <CreditCard className="text-primary h-5 w-5" />
-              <h2 className="text-foreground text-base font-bold">ملخص الدفع</h2>
+              <h2 className="text-foreground text-base font-bold">
+                {isLifetimePlan ? 'ملخص التفعيل' : 'ملخص الدفع'}
+              </h2>
             </div>
 
             <div className="from-primary/5 border-primary/10 space-y-1 rounded-2xl border bg-gradient-to-b to-transparent py-6 text-center">
-              <p className="text-muted-foreground text-xs font-medium">المبلغ الإجمالي</p>
+              <p className="text-muted-foreground text-xs font-medium">
+                {isLifetimePlan ? 'رسوم الاشتراك' : 'المبلغ الإجمالي'}
+              </p>
               <p className="text-foreground text-4xl font-black tracking-tight">
                 {plan.price.toLocaleString()}
                 <span className="text-muted-foreground mr-1 text-base font-semibold">د.ع</span>
@@ -205,7 +221,7 @@ export default function PlanCheckout() {
               className="h-13 w-full cursor-pointer rounded-2xl text-base font-bold transition-all active:scale-[0.98]"
               size="lg"
             >
-              {type !== 'trader-basic' ? 'تأكيد الدفع' : 'تأكيد الاشتراك'}
+              {isLifetimePlan ? 'تأكيد التفعيل' : 'تأكيد الدفع'}
               <ArrowRight className="mr-2 h-4 w-4" />
             </Button>
 
@@ -219,7 +235,9 @@ export default function PlanCheckout() {
 
             <div className="text-muted-foreground flex items-center justify-center gap-1.5">
               <Lock className="h-3.5 w-3.5" />
-              <p className="text-xs font-medium">دفع آمن ومشفر بالكامل</p>
+              <p className="text-xs font-medium">
+                {isLifetimePlan ? 'تفعيل مباشر وآمن للحساب' : 'دفع آمن ومشفر بالكامل'}
+              </p>
             </div>
           </motion.div>
         </div>
@@ -251,11 +269,20 @@ export default function PlanCheckout() {
               <div className="space-y-1.5 text-center">
                 <h3 className="text-foreground text-xl font-bold">تأكيد الاشتراك</h3>
                 <p className="text-muted-foreground text-sm leading-relaxed">
-                  ستُخصم{' '}
-                  <span className="text-foreground font-bold">
-                    {plan.price.toLocaleString()} د.ع
-                  </span>{' '}
-                  شهرياً مقابل خطة <span className="text-foreground font-bold">{plan.name}</span>
+                  {isLifetimePlan ? (
+                    <>
+                      سيتم تفعيل خطة <span className="text-foreground font-bold">{plan.name}</span>{' '}
+                      مجانًا بشكل دائم لحسابك
+                    </>
+                  ) : (
+                    <>
+                      ستُخصم{' '}
+                      <span className="text-foreground font-bold">
+                        {plan.price.toLocaleString()} د.ع
+                      </span>{' '}
+                      شهرياً مقابل خطة <span className="text-foreground font-bold">{plan.name}</span>
+                    </>
+                  )}
                 </p>
               </div>
 

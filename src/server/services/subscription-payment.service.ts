@@ -8,6 +8,7 @@ import {
   PAYTABS_CURRENCY,
 } from '../config/paytabs.config';
 import { planRoleMap } from '@/app/lib/planRoleMap';
+import { buildSubscriptionEndDate } from '@/lib/subscription/subscription-period';
 
 export const subscriptionPaymentService = {
   createUpgradePayment: async (
@@ -21,8 +22,7 @@ export const subscriptionPaymentService = {
     if (!plan) throw new Error('Plan not found');
 
     const now = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + plan.durationDays);
+    const endDate = buildSubscriptionEndDate(now, plan.durationDays, plan.type);
 
     const currentSubscription = await subscriptionRepository.getUserSubscription(userId);
 

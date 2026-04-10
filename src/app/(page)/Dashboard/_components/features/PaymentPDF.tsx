@@ -11,6 +11,7 @@ import {
   Image,
 } from '@react-pdf/renderer';
 import { PaymentResult } from '@/types/api/PaymentRes';
+import { isLifetimeSubscription } from '@/lib/subscription/subscription-period';
 
 Font.register({
   family: 'Roboto',
@@ -194,9 +195,15 @@ interface PaymentPDFProps {
   payment: PaymentResult;
 }
 
-export const PaymentPDF = ({ payment }: PaymentPDFProps) => (
-  <Document>
-    <Page style={styles.page}>
+export const PaymentPDF = ({ payment }: PaymentPDFProps) => {
+  const isLifetimePlan = isLifetimeSubscription(
+    payment.userSubscription.plan.type,
+    payment.userSubscription.plan.durationDays
+  );
+
+  return (
+    <Document>
+      <Page style={styles.page}>
       <View style={styles.header}>
         <View style={styles.logoSection}>
           <Text style={styles.companyName}>MATAGER</Text>
@@ -250,11 +257,13 @@ export const PaymentPDF = ({ payment }: PaymentPDFProps) => (
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Expiration Date:</Text>
           <Text style={styles.rowValue}>
-            {new Date(payment.userSubscription.endDate).toLocaleDateString('en-US', {
-              year: 'numeric',
-              month: 'short',
-              day: 'numeric',
-            })}
+            {isLifetimePlan
+              ? 'Lifetime'
+              : new Date(payment.userSubscription.endDate).toLocaleDateString('en-US', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
           </Text>
         </View>
         <View style={styles.row}>
@@ -283,7 +292,9 @@ export const PaymentPDF = ({ payment }: PaymentPDFProps) => (
         </View>
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Duration:</Text>
-          <Text style={styles.rowValue}>{payment.userSubscription.plan.durationDays} days</Text>
+          <Text style={styles.rowValue}>
+            {isLifetimePlan ? 'Lifetime' : `${payment.userSubscription.plan.durationDays} days`}
+          </Text>
         </View>
         <View style={styles.row}>
           <Text style={styles.rowLabel}>Max Stores:</Text>
@@ -324,6 +335,7 @@ export const PaymentPDF = ({ payment }: PaymentPDFProps) => (
           © {new Date().getFullYear()} Matager. All rights reserved. This is an official document.
         </Text>
       </View>
-    </Page>
-  </Document>
-);
+      </Page>
+    </Document>
+  );
+};

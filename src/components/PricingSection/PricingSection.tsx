@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation';
 
 interface Plan {
   title: string;
-  price: number;
+  price: string;
   features: string[];
   popular?: boolean;
   r?: string[];
@@ -56,7 +56,7 @@ const faqs = [
 const plans: Plan[] = [
   {
     title: 'الأساسية - تطوير المتاجر',
-    price: 39000,
+    price: 'مجانية',
     type: 'store',
     features: [
       'متجر إلكتروني',
@@ -65,65 +65,29 @@ const plans: Plan[] = [
       'إدارة الطلبات',
       'إدارة المخزون',
       'ثيم متجر واحد',
-      'ربط ميتا وتيك توك وسناب بكسل',
       'صلاحية إدارة المتجر لشخص واحد',
     ],
     r: ['499 د.ع+ 3.25%', 'تغطية كلف بوابة الدفع الالكتروني'],
   },
   {
     title: 'الاحترافية - تطوير المتاجر',
-    price: 69000,
+    price: '69000',
     popular: true,
     type: 'store',
     features: [
       'كل مميزات الباقة الأساسية',
-      'متجر احترافي',
+      'متجر الكتروني عدد 2',
       'إشعارات واتساب',
       'دعم تسويقي',
       'كوبونات خصم',
       'ربط ميتا وتيك توك وسناب بكسل',
       'ربط شركات التوصيل',
-      'ثيمات متحر عدد 2',
+      'تخصيص قالب المتجر بشكل كامل',
       'صلاحية ادارة المتجر لـ 3 اشخاص',
+      'روابط دفع مخصصة لكل زبون لمقدمي خدمات والفريلانسرز',
       'اولوية الدعم 24/7',
     ],
     r: ['399 د.ع + 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
-  },
-
-  {
-    title: 'الأساسية - دروبشيبينغ',
-    price: 39000,
-    type: 'dropship',
-    features: [
-      'متجر إلكتروني عدد 1 ',
-      'منتجات جاهزة للرفع عدد 5',
-      'محتوى جاهز للمنتجات',
-      'حد الطلبات 125 شهرياً',
-
-      'الربط مع شركات التوصيل',
-      'ثيمات متجر عدد 1',
-      'صلاحية إدارة المتجر لشخص واحد',
-    ],
-    r: ['199 د.ع+ 3.25%', 'تغطية كلف بوابة الدفع الالكتروني'],
-  },
-  {
-    title: 'الاحترافية - دروبشيبينغ',
-    price: 69000,
-    popular: true,
-    type: 'dropship',
-    features: [
-      'متجر إلكتروني عدد 2',
-      'عدد منتجات غير محدود',
-      'عدد طلبات غير محدود',
-
-      'خصومات ومكافآت',
-      'ربط ميتا وتيك توك وسناب بكسل',
-      'الربط مع شركات التوصيل',
-      'ثيمات متجر عدد 2',
-      'صلاحية إدارة المتجر 3 أشخاص',
-      'أولوية الدعم 24/7',
-    ],
-    r: ['99 د.ع+ 2.75%', 'تغطية كلف بوابة الدفع الالكتروني'],
   },
 ];
 
@@ -167,7 +131,6 @@ export default function PricingSection() {
             {[
               { key: 'all', label: 'الكل' },
               { key: 'store', label: 'متاجر' },
-              { key: 'dropship', label: 'دروبشيبينغ' },
             ].map(b => (
               <button
                 key={b.key}
@@ -185,43 +148,46 @@ export default function PricingSection() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-14 pt-10 sm:grid-cols-2 md:grid-cols-3 md:gap-6 lg:grid-cols-4 xl:grid-cols-4">
+        <div className="flex flex-wrap justify-center gap-6 pt-10">
           {filteredPlans.map((plan, i) => (
             <div
               key={i}
               data-aos="fade-up"
-              className={`relative flex h-full flex-col rounded-[28px] bg-sky-100/90 p-6 text-center shadow-xl backdrop-blur transition duration-700`}
+              className="w-full max-w-[420px] sm:w-[46%] lg:w-[42%] xl:w-[38%]"
             >
-              <span className="absolute -top-10 left-1/2 mx-auto inline-flex h-16 w-[85%] max-w-[220px] -translate-x-1/2 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
-                <span className="text-lg leading-tight">{plan.title}</span>
-                <span className="font-extrabold">{formatIQD(plan.price)}</span>
-              </span>
+              <div className="relative flex h-full flex-col rounded-[28px] bg-sky-100/90 p-6 text-center shadow-xl backdrop-blur transition duration-700">
+                <span className="absolute -top-10 left-1/2 mx-auto inline-flex h-16 w-[85%] max-w-[220px] -translate-x-1/2 cursor-pointer flex-col items-center justify-center gap-0.5 rounded-3xl bg-gradient-to-l from-sky-300/80 from-5% via-sky-200/80 via-60% to-sky-200/90 to-80% py-2 text-center font-bold text-sky-900 shadow-[inset_0_2px_4px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105">
+                  <span className="text-lg leading-tight">{plan.title}</span>
+                  <span className="font-extrabold">{plan.price}</span>
+                </span>
 
-              <ul className="mt-4 flex-1 space-y-3 text-right text-sm text-sky-900">
-                {plan.features.map(f => (
-                  <li key={f} className="flex gap-2">
-                    <Check className="mt-1 h-4 w-4 text-sky-600" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-900">
-                <p className="mb-2 font-bold">رسوم المعاملات</p>
-                {plan.r?.map(r => (
-                  <div key={r} className="flex gap-2 font-normal">
-                    <span>{r}</span>
-                  </div>
-                ))}
-              </div>
+                <ul className="mt-4 flex-1 space-y-3 text-right text-sm text-sky-900">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex gap-2">
+                      <Check className="mt-1 h-4 w-4 shrink-0 text-sky-600" />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
 
-              <div className="mt-2">
-                <button
-                  onClick={() => setOpen(true)}
-                  className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-800/80 from-5% via-sky-800/80 via-60% to-sky-800/90 to-80% px-8 py-1.5 font-bold text-white shadow-[inset_0_0.5px_0.5px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
-                >
-                  اختر هذه الباقة
-                  <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_2px_1px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
-                </button>
+                <div className="mt-5 border-t border-sky-300/50 pt-4 text-right text-xs text-sky-900">
+                  <p className="mb-2 font-bold">رسوم المعاملات</p>
+                  {plan.r?.map(r => (
+                    <div key={r} className="flex gap-2 font-normal">
+                      <span>{r}</span>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-4">
+                  <button
+                    onClick={() => setOpen(true)}
+                    className="relative cursor-pointer rounded-full bg-gradient-to-l from-sky-800/80 from-5% via-sky-800/80 via-60% to-sky-800/90 to-80% px-8 py-1.5 font-bold text-white shadow-[inset_0_0.5px_0.5px_rgba(255,255,255,0.8),_0_6px_20px_rgba(0,150,200,0.35)] ring-2 ring-white/70 backdrop-blur-lg transition-all duration-300 hover:scale-105"
+                  >
+                    اختر هذه الباقة
+                    <span className="pointer-events-none absolute inset-0 rounded-full shadow-[0_0_2px_1px_rgba(255,255,255,0.6)] ring-1 ring-white/70" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

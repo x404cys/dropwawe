@@ -3,6 +3,7 @@ import { prisma } from '@/app/lib/db';
 import { getServerSession } from 'next-auth';
 import { authOperation } from '@/app/lib/authOperation';
 import { planRoleMap } from '@/app/lib/planRoleMap';
+import { buildSubscriptionEndDate } from '@/lib/subscription/subscription-period';
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,8 +32,7 @@ export async function POST(req: NextRequest) {
     }
 
     const now = new Date();
-    const endDate = new Date();
-    endDate.setDate(endDate.getDate() + plan.durationDays);
+    const endDate = buildSubscriptionEndDate(now, plan.durationDays, plan.type);
 
     const currentSubscription = await prisma.userSubscription.findUnique({
       where: { userId },

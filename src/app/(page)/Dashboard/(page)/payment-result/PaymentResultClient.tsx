@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import type { PaymentResult } from '@/types/api/PaymentRes';
 import { useSession } from 'next-auth/react';
+import { isLifetimeSubscription } from '@/lib/subscription/subscription-period';
 
 const fetcher = (url: string) => fetch(url).then(res => res.json());
 
@@ -52,6 +53,12 @@ export default function PaymentResultClient() {
       : null,
     fetcher
   );
+  const isLifetimePlan = payment
+    ? isLifetimeSubscription(
+        payment.userSubscription.plan?.type,
+        payment.userSubscription.plan?.durationDays
+      )
+    : false;
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(window.location.href);
@@ -179,7 +186,9 @@ export default function PaymentResultClient() {
                     {t.plans.endDate}
                   </span>
                   <span className="font-mono text-[14px] font-medium text-gray-900 dark:text-gray-200">
-                    {new Date(payment?.userSubscription?.endDate).toLocaleDateString('ar')}
+                    {isLifetimePlan
+                      ? 'لا نهائية'
+                      : new Date(payment?.userSubscription?.endDate).toLocaleDateString('ar')}
                   </span>
                 </div>
                 <div className="flex flex-col">
@@ -244,7 +253,7 @@ export default function PaymentResultClient() {
                 <div className="flex flex-col">
                   <span className="text-[13px] text-gray-500 dark:text-gray-400">المدة</span>
                   <span className="mt-1 text-[14px] font-medium text-gray-900 dark:text-gray-200">
-                    {payment?.userSubscription?.plan?.durationDays} يوم
+                    {isLifetimePlan ? 'لا نهائية' : `${payment?.userSubscription?.plan?.durationDays} يوم`}
                   </span>
                 </div>
               </div>
